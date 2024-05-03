@@ -1,5 +1,5 @@
 {
-	"name": "amd-rocprof-compute-data-plugin",
+	"name": "amd-rocprofiler-compute-data-plugin",
 	"version": "1.0.0",
 	"description": "",
 	"main": "server/mongo-proxy.js",

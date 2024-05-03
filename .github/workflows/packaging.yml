@@ -37,7 +37,7 @@ jobs:
           cd build
           make package_source
       - name: Rename tarball
-        run: mv build/rocprof-compute-*.tar.gz build/rocprofiler-compute-${{github.ref_name}}.tar.gz
+        run: mv build/rocprofiler-compute-*.tar.gz build/rocprofiler-compute-${{github.ref_name}}.tar.gz
       - name: Archive tarball
         uses: actions/upload-artifact@v4
         with:
@@ -48,9 +48,9 @@ jobs:
       - name: Determine release name
         run: |
           if [[ ${{github.ref_name}} == rocm-* ]]; then
-            echo "RELEASE_NAME=rocprof-compute ${{ env.VERSION }} for ${{github.ref_name}}"
+            echo "RELEASE_NAME=rocprofiler-compute ${{ env.VERSION }} for ${{github.ref_name}}"
           else
-            echo "RELEASE_NAME=rocprof-compute ${{ env.VERSION }}"
+            echo "RELEASE_NAME=rocprofiler-compute ${{ env.VERSION }}"
           fi >> $GITHUB_ENV
       - name: Upload tarball Release Asset
         uses: softprops/action-gh-release@v2

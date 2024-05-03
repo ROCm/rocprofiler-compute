@@ -81,15 +81,15 @@ def omniarg_parser(
         help="Profile the target application",
         usage="""
 
-rocprof-compute profile --name <workload_name> [profile options] [roofline options] -- <profile_cmd>
+rocprofiler-compute profile --name <workload_name> [profile options] [roofline options] -- <profile_cmd>
 
 ---------------------------------------------------------------------------------
 Examples:
-\trocprof-compute profile -n vcopy_all -- ./vcopy -n 1048576 -b 256
-\trocprof-compute profile -n vcopy_SPI_TCC -b SQ TCC -- ./vcopy -n 1048576 -b 256
-\trocprof-compute profile -n vcopy_kernel -k vecCopy -- ./vcopy -n 1048576 -b 256
-\trocprof-compute profile -n vcopy_disp -d 0 -- ./vcopy -n 1048576 -b 256
-\trocprof-compute profile -n vcopy_roof --roof-only -- ./vcopy -n 1048576 -b 256
+\trocprofiler-compute profile -n vcopy_all -- ./vcopy -n 1048576 -b 256
+\trocprofiler-compute profile -n vcopy_SPI_TCC -b SQ TCC -- ./vcopy -n 1048576 -b 256
+\trocprofiler-compute profile -n vcopy_kernel -k vecCopy -- ./vcopy -n 1048576 -b 256
+\trocprofiler-compute profile -n vcopy_disp -d 0 -- ./vcopy -n 1048576 -b 256
+\trocprofiler-compute profile -n vcopy_roof --roof-only -- ./vcopy -n 1048576 -b 256
 ---------------------------------------------------------------------------------
         """,
         prog="tool",
@@ -274,14 +274,14 @@ Examples:
     ## ----------------------------
     db_parser = subparsers.add_parser(
         "database",
-        help="Interact with rocprof-compute database",
+        help="Interact with rocprofiler-compute database",
         usage="""
-            \nrocprof-compute database <interaction type> [connection options]
+            \nrocprofiler-compute database <interaction type> [connection options]
 
             \n\n-------------------------------------------------------------------------------
             \nExamples:
-            \n\trocprof-compute database --import -H pavii1 -u temp -t asw -w workloads/vcopy/mi200/
-            \n\trocprof-compute database --remove -H pavii1 -u temp -w rocprof-compute_asw_sample_mi200
+            \n\trocprofiler-compute database --import -H pavii1 -u temp -t asw -w workloads/vcopy/mi200/
+            \n\trocprofiler-compute database --remove -H pavii1 -u temp -w rocprofiler-compute_asw_sample_mi200
             \n-------------------------------------------------------------------------------\n
         """,
         prog="tool",
@@ -302,7 +302,7 @@ Examples:
         required=False,
         dest="upload",
         action="store_true",
-        help="\t\t\t\tImport workload to rocprof-compute DB",
+        help="\t\t\t\tImport workload to rocprofiler-compute DB",
     )
     interaction_group.add_argument(
         "-r",
@@ -310,7 +310,7 @@ Examples:
         required=False,
         dest="remove",
         action="store_true",
-        help="\t\t\t\tRemove a workload from rocprof-compute DB",
+        help="\t\t\t\tRemove a workload from rocprofiler-compute DB",
     )
 
     connection_group.add_argument(
@@ -368,13 +368,13 @@ Examples:
         "analyze",
         help="Analyze existing profiling results at command line",
         usage="""
-rocprof-compute analyze --path <workload_path> [analyze options]
+rocprofiler-compute analyze --path <workload_path> [analyze options]
 
 -----------------------------------------------------------------------------------
 Examples:
-\trocprof-compute analyze -p workloads/vcopy/mi200/ --list-metrics gfx90a
-\trocprof-compute analyze -p workloads/mixbench/mi200/ --dispatch 12 34 --decimal 3
-\trocprof-compute analyze -p workloads/mixbench/mi200/ --gui
+\trocprofiler-compute analyze -p workloads/vcopy/mi200/ --list-metrics gfx90a
+\trocprofiler-compute analyze -p workloads/mixbench/mi200/ --dispatch 12 34 --decimal 3
+\trocprofiler-compute analyze -p workloads/mixbench/mi200/ --gui
 -----------------------------------------------------------------------------------
         """,
         prog="tool",
@@ -456,7 +456,7 @@ Examples:
         type=int,
         nargs="?",
         const=8050,
-        help="\t\tActivate a GUI to interate with rocprof-compute metrics.\n\t\tOptionally, specify port to launch application (DEFAULT: 8050)",
+        help="\t\tActivate a GUI to interate with rocprofiler-compute metrics.\n\t\tOptionally, specify port to launch application (DEFAULT: 8050)",
     )
     analyze_advanced_group.add_argument(
         "--random-port",
