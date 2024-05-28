@@ -262,9 +262,7 @@ def run(cmd):
 
 def gpu_soc():
     ## 1) Parse arch details from rocminfo
-    ## 1) Parse arch details from rocminfo
     rocminfo = str(
-        # decode with utf-8 to account for rocm-smi changes in latest rocm
         # decode with utf-8 to account for rocm-smi changes in latest rocm
         subprocess.run(
             ["rocminfo"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -273,7 +271,6 @@ def gpu_soc():
     rocminfo = rocminfo.split("\n")
     soc_regex = re.compile(r"^\s*Name\s*:\s+ ([a-zA-Z0-9]+)\s*$", re.MULTILINE)
     devices = list(filter(soc_regex.match, rocminfo))
-    gpu_arch = devices[0].split()[1]
     gpu_arch = devices[0].split()[1]
 
     if not gpu_arch in SUPPORTED_ARCHS.keys():
@@ -504,11 +501,7 @@ def test_path():
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI200
     elif "MI300" in soc:
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
-    elif "MI300" in soc:
-        assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
     else:
-        print("This test is not supported for {}".format(soc))
-        assert 0
         print("This test is not supported for {}".format(soc))
         assert 0
 
@@ -596,11 +589,7 @@ def test_device_filter():
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI200
     elif "MI300" in soc:
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
-    elif "MI300" in soc:
-        assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
     else:
-        print("Testing isn't supported yet for {}".format(soc))
-        assert 0
         print("Testing isn't supported yet for {}".format(soc))
         assert 0
 
@@ -1227,10 +1216,8 @@ def test_block_SQ_SPI():
             "SQ_INST_LEVEL_SMEM.csv",
             "SQ_LEVEL_WAVES.csv",
             "timestamps.csv",
-            "pmc_perf_2.csv",
-            "pmc_perf_4.csv",
-            "pmc_perf_6.csv",
-            "pmc_perf_8.csv",
+            "pmc_perf_10.csv",
+            "pmc_perf_12.csv",
             "pmc_perf.csv",
             "SQ_INST_LEVEL_LDS.csv",
             "SQ_INST_LEVEL_VMEM.csv",
@@ -1438,11 +1425,7 @@ def test_dispatch_0_1():
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI200
     elif "MI300" in soc:
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
-    elif "MI300" in soc:
-        assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
     else:
-        print("Testing isn't supported yet for {}".format(soc))
-        assert 0
         print("Testing isn't supported yet for {}".format(soc))
         assert 0
 
@@ -1469,11 +1452,7 @@ def test_dispatch_2():
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI200
     elif "MI300" in soc:
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
-    elif "MI300" in soc:
-        assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
     else:
-        print("Testing isn't supported yet for {}".format(soc))
-        assert 0
         print("Testing isn't supported yet for {}".format(soc))
         assert 0
 
@@ -1503,11 +1482,7 @@ def test_join_type_grid():
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI200
     elif "MI300" in soc:
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
-    elif "MI300" in soc:
-        assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
     else:
-        print("Testing isn't supported yet for {}".format(soc))
-        assert 0
         print("Testing isn't supported yet for {}".format(soc))
         assert 0
 
@@ -1534,11 +1509,7 @@ def test_join_type_kernel():
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI200
     elif "MI300" in soc:
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
-    elif "MI300" in soc:
-        assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
     else:
-        print("Testing isn't supported yet for {}".format(soc))
-        assert 0
         print("Testing isn't supported yet for {}".format(soc))
         assert 0
 
