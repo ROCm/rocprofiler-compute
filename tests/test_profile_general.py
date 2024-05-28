@@ -89,8 +89,6 @@ ALL_CSVS_MI200 = sorted(
         "pmc_perf_17.csv",
         "pmc_perf_18.csv",
         "roofline.csv",
-        "sysinfo.csv",
-        "timestamps.csv",
     ]
 )
 ALL_CSVS_MI300 = sorted(
