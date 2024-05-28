@@ -29,12 +29,6 @@
 # import logging
 import os
 import sys
-<<<<<<< HEAD:src/rocprof-compute
-=======
-from pip._internal.req import parse_requirements
-from pathlib import Path
-from importlib import import_module, metadata
->>>>>>> b3aa4ede (remove use of distutils package entirely to avoid future deprecation):src/omniperf
 import re
 
 try:
@@ -82,11 +76,7 @@ def verify_deps():
     for location in depsLocation:
         checkFile = os.path.join(bindir, location)
         if os.path.exists(checkFile):
-<<<<<<< HEAD:src/rocprof-compute
             with open(checkFile, "r", encoding="utf-8") as file_in:
-=======
-            with open(checkFile, "r") as file_in:
->>>>>>> b3aa4ede (remove use of distutils package entirely to avoid future deprecation):src/omniperf
                 dependencies = file_in.read().splitlines()
 
             error = False
