@@ -262,9 +262,7 @@ def run(cmd):
 
 def gpu_soc():
     ## 1) Parse arch details from rocminfo
-    ## 1) Parse arch details from rocminfo
     rocminfo = str(
-        # decode with utf-8 to account for rocm-smi changes in latest rocm
         # decode with utf-8 to account for rocm-smi changes in latest rocm
         subprocess.run(
             ["rocminfo"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -273,7 +271,6 @@ def gpu_soc():
     rocminfo = rocminfo.split("\n")
     soc_regex = re.compile(r"^\s*Name\s*:\s+ ([a-zA-Z0-9]+)\s*$", re.MULTILINE)
     devices = list(filter(soc_regex.match, rocminfo))
-    gpu_arch = devices[0].split()[1]
     gpu_arch = devices[0].split()[1]
 
     if not gpu_arch in SUPPORTED_ARCHS.keys():
