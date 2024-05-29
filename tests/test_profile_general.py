@@ -266,7 +266,6 @@ def gpu_soc():
         subprocess.run(
             ["rocminfo"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
         ).stdout.decode("utf-8")
-        ).stdout.decode("utf-8")
     )
     rocminfo = rocminfo.split("\n")
     soc_regex = re.compile(r"^\s*Name\s*:\s+ ([a-zA-Z0-9]+)\s*$", re.MULTILINE)
@@ -530,10 +529,6 @@ def test_path():
     if soc == "MI100":
         assert sorted(list(file_dict.keys())) == ALL_CSVS
     elif soc == "MI200":
-
-    if soc == "MI100":
-        assert sorted(list(file_dict.keys())) == ALL_CSVS
-    elif soc == "MI200":
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI200
     elif "MI300" in soc:
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
@@ -588,7 +583,6 @@ def test_kernel_names():
     )
 
     if soc == "MI100" or "MI300" in soc:
-    if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
         assert e.value.code >= 1
         # Do not continue testing
@@ -624,9 +618,6 @@ def test_device_filter():
     test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, 1, num_kernels)
-    if soc == "MI100":
-        assert sorted(list(file_dict.keys())) == ALL_CSVS
-    elif soc == "MI200":
     if soc == "MI100":
         assert sorted(list(file_dict.keys())) == ALL_CSVS
     elif soc == "MI200":
@@ -1496,9 +1487,6 @@ def test_dispatch_0_1():
     if soc == "MI100":
         assert sorted(list(file_dict.keys())) == ALL_CSVS
     elif soc == "MI200":
-    if soc == "MI100":
-        assert sorted(list(file_dict.keys())) == ALL_CSVS
-    elif soc == "MI200":
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI200
     elif "MI300" in soc:
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
@@ -1527,9 +1515,6 @@ def test_dispatch_2():
     test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, 1)
-    if soc == "MI100":
-        assert sorted(list(file_dict.keys())) == ALL_CSVS
-    elif soc == "MI200":
     if soc == "MI100":
         assert sorted(list(file_dict.keys())) == ALL_CSVS
     elif soc == "MI200":
@@ -1567,9 +1552,6 @@ def test_join_type_grid():
     if soc == "MI100":
         assert sorted(list(file_dict.keys())) == ALL_CSVS
     elif soc == "MI200":
-    if soc == "MI100":
-        assert sorted(list(file_dict.keys())) == ALL_CSVS
-    elif soc == "MI200":
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI200
     elif "MI300" in soc:
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
@@ -1601,9 +1583,6 @@ def test_join_type_kernel():
     if soc == "MI100":
         assert sorted(list(file_dict.keys())) == ALL_CSVS
     elif soc == "MI200":
-    if soc == "MI100":
-        assert sorted(list(file_dict.keys())) == ALL_CSVS
-    elif soc == "MI200":
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI200
     elif "MI300" in soc:
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI300
@@ -1632,7 +1611,6 @@ def test_sort_dispatches():
         config, options, workload_dir, check_success=False
     )
 
-    if soc == "MI100" or "MI300" in soc:
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
         assert e.value.code >= 1
@@ -1667,7 +1645,6 @@ def test_sort_kernels():
     )
 
     if soc == "MI100" or "MI300" in soc:
-    if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
         assert e.value.code >= 1
         # Do not continue testing
@@ -1699,7 +1676,6 @@ def test_mem_levels_HBM():
         config, options, workload_dir, check_success=False
     )
 
-    if soc == "MI100" or "MI300" in soc:
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
         assert e.value.code >= 1
@@ -1733,7 +1709,6 @@ def test_mem_levels_L2():
     )
 
     if soc == "MI100" or "MI300" in soc:
-    if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
         assert e.value.code >= 1
         # Do not continue testing
@@ -1765,7 +1740,6 @@ def test_mem_levels_vL1D():
         config, options, workload_dir, check_success=False
     )
 
-    if soc == "MI100" or "MI300" in soc:
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
         assert e.value.code >= 1
@@ -1799,7 +1773,6 @@ def test_mem_levels_LDS():
     )
 
     if soc == "MI100" or "MI300" in soc:
-    if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
         assert e.value.code >= 1
         # Do not continue testing
@@ -1831,7 +1804,6 @@ def test_mem_levels_HBM_LDS():
         config, options, workload_dir, check_success=False
     )
 
-    if soc == "MI100" or "MI300" in soc:
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
         assert e.value.code >= 1
@@ -1865,7 +1837,6 @@ def test_mem_levels_vL1D_LDS():
     )
 
     if soc == "MI100" or "MI300" in soc:
-    if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
         assert e.value.code >= 1
         # Do not continue testing
@@ -1897,7 +1868,6 @@ def test_mem_levels_L2_vL1D_LDS():
         config, options, workload_dir, check_success=False
     )
 
-    if soc == "MI100" or "MI300" in soc:
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
         assert e.value.code >= 1
