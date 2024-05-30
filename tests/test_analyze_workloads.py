@@ -244,6 +244,7 @@ def test_analyze_no_roof_MI300X_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_no_roof_MI100():
     with pytest.raises(SystemExit) as e:
         with patch(
@@ -262,6 +263,7 @@ def test_analyze_no_roof_MI300A_A1():
         ):
             rocprof_compute.main()
     assert e.value.code == 0
+
 
 def test_analyze_no_roof_MI200():
     with pytest.raises(SystemExit) as e:
@@ -397,6 +399,7 @@ def test_analyze_join_type_grid_MI300X_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_join_type_grid_MI100():
     with pytest.raises(SystemExit) as e:
         with patch(
@@ -425,6 +428,7 @@ def test_analyze_join_type_grid_MI300A_A1():
         ):
             rocprof_compute.main()
     assert e.value.code == 0
+
 
 def test_analyze_join_type_grid_MI200():
     with pytest.raises(SystemExit) as e:
@@ -1660,6 +1664,7 @@ def test_analyze_ipblocks_CPC_MI300X_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_ipblocks_CPC_MI100():
     with pytest.raises(SystemExit) as e:
         with patch(
@@ -1688,6 +1693,7 @@ def test_analyze_ipblocks_CPC_MI300A_A1():
         ):
             rocprof_compute.main()
     assert e.value.code == 0
+
 
 def test_analyze_ipblocks_CPC_MI200():
     with pytest.raises(SystemExit) as e:
