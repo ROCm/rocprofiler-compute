@@ -778,7 +778,7 @@ def test_decimal_2():
                     "rocprof-compute",
                     "analyze",
                     "--path",
-                    indir1,
+                    workload_dir,
                     "--decimal",
                     "1",
                 ],
