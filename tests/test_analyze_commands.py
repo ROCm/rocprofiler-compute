@@ -14,10 +14,14 @@ baseline_opts = ["rocprofiler-compute", "analyze"]
 config = {}
 config["cleanup"] = True if "PYTEST_XDIST_WORKER_COUNT" in os.environ else False
 
+indir1 = "tests/workloads/vcopy/MI100"
+indir2 = "tests/workloads/vcopy/MI200"
+
 indirs = [
     "tests/workloads/vcopy/MI100",
     "tests/workloads/vcopy/MI200",
     "tests/workloads/vcopy/MI300A_A1",
+    "tests/workloads/vcopy/MI300X_A1",
     "tests/workloads/vcopy/MI300X_A1",
 ]
 
@@ -774,7 +778,7 @@ def test_decimal_2():
                     "rocprofiler-compute",
                     "analyze",
                     "--path",
-                    workload_dir,
+                    indir1,
                     "--decimal",
                     "1",
                 ],
