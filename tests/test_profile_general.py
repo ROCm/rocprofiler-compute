@@ -72,13 +72,6 @@ ALL_CSVS = sorted(
         "pmc_perf_7.csv",
         "pmc_perf_8.csv",
         "pmc_perf_9.csv",
-        "sysinfo.csv",
-        "timestamps.csv",
-    ]
-)
-ALL_CSVS_MI200 = sorted(
-    ALL_CSVS
-    + [
         "pmc_perf_10.csv",
         "pmc_perf_11.csv",
         "pmc_perf_12.csv",
@@ -86,6 +79,13 @@ ALL_CSVS_MI200 = sorted(
         "pmc_perf_14.csv",
         "pmc_perf_15.csv",
         "pmc_perf_16.csv",
+        "sysinfo.csv",
+        "timestamps.csv",
+    ]
+)
+ALL_CSVS_MI200 = sorted(
+    ALL_CSVS
+    + [
         "pmc_perf_17.csv",
         "pmc_perf_18.csv",
         "roofline.csv",
@@ -94,13 +94,6 @@ ALL_CSVS_MI200 = sorted(
 ALL_CSVS_MI300 = sorted(
     ALL_CSVS
     + [
-        "pmc_perf_10.csv",
-        "pmc_perf_11.csv",
-        "pmc_perf_12.csv",
-        "pmc_perf_13.csv",
-        "pmc_perf_14.csv",
-        "pmc_perf_15.csv",
-        "pmc_perf_16.csv",
         "pmc_perf_17.csv",
     ]
 
@@ -518,7 +511,6 @@ def test_no_roof():
     if soc == "MI100":
         assert sorted(list(file_dict.keys())) == ALL_CSVS
     elif soc == "MI200":
-        breakpoint()
         assert sorted(list(file_dict.keys())) == sorted(
             list(filter(lambda elm: elm != "roofline.csv", ALL_CSVS_MI200))
         )
