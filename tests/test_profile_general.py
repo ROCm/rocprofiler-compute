@@ -692,7 +692,7 @@ def test_block_SQ():
             "SQ_INST_LEVEL_VMEM.csv",
             "sysinfo.csv",
         ]
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(
@@ -722,7 +722,7 @@ def test_block_SQC():
     ]
     if soc == "MI200":
         expected_csvs.append("roofline.csv")
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(
@@ -756,7 +756,7 @@ def test_block_TA():
     ]
     if soc == "MI200":
         expected_csvs.insert(9, "roofline.csv")
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(
@@ -804,7 +804,7 @@ def test_block_TD():
             "sysinfo.csv",
             "timestamps.csv",
         ]
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(
@@ -840,7 +840,7 @@ def test_block_TCP():
     ]
     if soc == "MI200":
         expected_csvs.insert(11, "roofline.csv")
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(
@@ -906,7 +906,7 @@ def test_block_TCC():
             "sysinfo.csv",
             "timestamps.csv",
         ]
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(
@@ -941,7 +941,7 @@ def test_block_SPI():
     ]
     if soc == "MI200":
         expected_csvs.insert(10, "roofline.csv")
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(
@@ -973,7 +973,7 @@ def test_block_CPC():
     ]
     if soc == "MI200":
         expected_csvs.insert(7, "roofline.csv")
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(inspect.stack()[0][3], workload_dir, file_dict)
@@ -999,7 +999,7 @@ def test_block_CPF():
     ]
     if soc == "MI200":
         expected_csvs.insert(5, "roofline.csv")
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(
@@ -1075,7 +1075,7 @@ def test_block_SQ_CPC():
             "SQ_INST_LEVEL_VMEM.csv",
             "sysinfo.csv",
         ]
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(
@@ -1151,7 +1151,7 @@ def test_block_SQ_TA():
             "SQ_INST_LEVEL_VMEM.csv",
             "sysinfo.csv",
         ]
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(inspect.stack()[0][3], workload_dir, file_dict)
@@ -1221,7 +1221,7 @@ def test_block_SQ_SPI():
             "SQ_INST_LEVEL_VMEM.csv",
             "sysinfo.csv",
         ]
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(
@@ -1296,7 +1296,7 @@ def test_block_SQ_SQC_TCP_CPC():
             "SQ_INST_LEVEL_VMEM.csv",
             "sysinfo.csv",
         ]
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(inspect.stack()[0][3], workload_dir, file_dict)
@@ -1368,7 +1368,7 @@ def test_block_SQ_SPI_TA_TCC_CPF():
             "SQ_INST_LEVEL_VMEM.csv",
             "sysinfo.csv",
         ]
-    
+
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(

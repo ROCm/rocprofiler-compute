@@ -22,7 +22,6 @@ indirs = [
     "tests/workloads/vcopy/MI200",
     "tests/workloads/vcopy/MI300A_A1",
     "tests/workloads/vcopy/MI300X_A1",
-    "tests/workloads/vcopy/MI300X_A1",
 ]
 
 
