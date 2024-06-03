@@ -160,7 +160,7 @@ if(${GIT_CLONE})
 endif()
 
 # Setup testing collateral
-    add_subdirectory(tests)
+add_subdirectory(tests)
 
 enable_testing()
 
