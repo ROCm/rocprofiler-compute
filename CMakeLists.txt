@@ -35,6 +35,8 @@ project(
 set(PACKAGE_NAME "rocprofiler-compute")
 set(PACKAGE_NAME_UNDERSCORE "rocprofiler_compute")
 
+set(CMAKE_HIP_FLAGS_RELEASE "-O2")
+
 include(ExternalProject)
 include(GNUInstallDirs)
 
@@ -160,15 +162,7 @@ if(${GIT_CLONE})
 endif()
 
 # Setup testing collateral
-
-option(ENABLE_TESTS "Enable compilation of testing collateral" OFF)
-set(CMAKE_HIP_FLAGS_RELEASE "-O2")
-if(${ENABLE_TESTS})
-    enable_language("C" "HIP")
-    add_subdirectory(tests)
-
-endif()
-message(STATUS "Enable tests compilation: ${ENABLE_TESTS}")
+add_subdirectory(tests)
 
 enable_testing()
 
