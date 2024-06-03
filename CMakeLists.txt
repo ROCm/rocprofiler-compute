@@ -161,7 +161,15 @@ if(${GIT_CLONE})
 endif()
 
 # Setup testing collateral
-add_subdirectory(tests)
+
+option(ENABLE_TESTS "Enable compilation of testing collateral" OFF)
+set(CMAKE_HIP_FLAGS_RELEASE "-O2")
+if(${ENABLE_TESTS})
+    enable_language("C" "HIP")
+    add_subdirectory(tests)
+
+endif()
+message(STATUS "Enable tests compilation: ${ENABLE_TESTS}")
 
 enable_testing()
 
