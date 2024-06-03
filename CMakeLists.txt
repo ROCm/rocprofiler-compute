@@ -36,8 +36,6 @@ set(PACKAGE_NAME "rocprofiler-compute")
 set(PACKAGE_NAME_UNDERSCORE "rocprofiler_compute")
 set(EXECUTABLE_NAME "rocprof-compute")
 
-set(CMAKE_HIP_FLAGS_RELEASE "-O2")
-
 include(ExternalProject)
 include(GNUInstallDirs)
 
@@ -163,7 +161,7 @@ if(${GIT_CLONE})
 endif()
 
 # Setup testing collateral
-add_subdirectory(tests)
+    add_subdirectory(tests)
 
 enable_testing()
 
