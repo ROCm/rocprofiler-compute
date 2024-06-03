@@ -80,12 +80,20 @@ jobs:
           mkdir build
           cd build
           ml cmake
+<<<<<<< HEAD
           cmake -DENABLE_TESTS=ON -DCMAKE_HIP_ARCHITECTURES=$CI_ARCH -DENABLE_COVERAGE=ON -DPYTEST_NUMPROCS=8 ..
       - name: Build tests and Run [profile] mode
         run: |
           cd build
           make
           srun -N 1 -J rocprof-compute -p $CI_QUEUE -t 00:20:00 ctest -j 4 --resource-spec-file ../tests/4gpus.json --verbose -L profile
+=======
+          cmake -DENABLE_COVERAGE=ON -DPYTEST_NUMPROCS=8 ..
+      - name: Build tests and Run [profile] mode
+        run: |
+          cd build
+          srun -N 1 -J omniperf -p $CI_QUEUE -t 00:20:00 make; ctest -j 4 --resource-spec-file ../tests/4gpus.json --verbose -L profile
+>>>>>>> 5077f9e2 (update CI to build necessary vcopy binary via new additions to build)
       - name: Run [analyze workloads] mode
         if: '!cancelled()'
         run: |
