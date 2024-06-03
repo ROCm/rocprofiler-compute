@@ -35,6 +35,8 @@ project(
 set(PACKAGE_NAME "rocprofiler-compute")
 set(PACKAGE_NAME_UNDERSCORE "rocprofiler_compute")
 
+set(CMAKE_HIP_FLAGS_RELEASE "-O2")
+
 include(ExternalProject)
 include(GNUInstallDirs)
 
