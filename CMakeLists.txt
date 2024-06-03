@@ -27,15 +27,13 @@ string(REGEX REPLACE "([0-9]+)\.([0-9]+)\.([0-9]+)(.*)" "\\1.\\2.\\3" OMNIPERF_V
 project(
     rocprofiler-compute
     VERSION ${OMNIPERF_VERSION}
-    LANGUAGES C
+    LANGUAGES HIP
     DESCRIPTION
         "A system performance profiling tool for machine learning/HPC workloads running on AMD MI GPUs"
     HOMEPAGE_URL "https://github.com/ROCm/rocprofiler-compute")
 
 set(PACKAGE_NAME "rocprofiler-compute")
 set(PACKAGE_NAME_UNDERSCORE "rocprofiler_compute")
-
-set(CMAKE_HIP_FLAGS_RELEASE "-O2")
 
 include(ExternalProject)
 include(GNUInstallDirs)
@@ -162,7 +160,7 @@ if(${GIT_CLONE})
 endif()
 
 # Setup testing collateral
-add_subdirectory(tests)
+    add_subdirectory(tests)
 
 enable_testing()
 
