@@ -15,11 +15,7 @@ services:
     build: .
     environment:
       - GF_PATHS_CONFIG="grafana/etc/grafana.ini"
-<<<<<<< HEAD
       - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=amd-rocprofiler-compute-data-plugin
-=======
-      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=amd-omniperf-data-plugin
->>>>>>> dbe52cfc (Move all Grafana assets into subdir. Update plugin dependencies)
       - GF_DEFAULT_APP_MODE=development
     ports:
       - "14000:4000"
