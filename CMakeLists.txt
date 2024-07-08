@@ -269,7 +269,7 @@ add_test(
 
 add_test(
     NAME test_analyze_workloads
-    COMMAND pytest -n ${PYTEST_NUMPROCS} --junitxml=tests/test_analyze_workloads.xml
+    COMMAND ${Python3_EXECUTABLE} -m pytest -n ${PYTEST_NUMPROCS} --junitxml=tests/test_analyze_workloads.xml
             ${COV_OPTION} ${PROJECT_SOURCE_DIR}/tests/test_analyze_workloads.py
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
