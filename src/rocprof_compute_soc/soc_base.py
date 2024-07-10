@@ -379,8 +379,6 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
 
     normal_counters = OrderedDict()
 
-    mpattern = r"^pmc:(.*)"
-
     for fname in pmc_files_list:
 
         lines = open(fname, "r").read().splitlines()
@@ -399,31 +397,36 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
 
             counters = m.group(1).split()
 
-            # Check for accumulate counter
             if "SQ_ACCUM_PREV_HIRES" in counters:
+                # Accumulate counters
                 accumulate_counters.append(counters.copy())
-                counters.clear()
-            
-            # PMC counters
-            for ctr in counters:
-                
-                # Channel counter 
-                if '[' in ctr:
+            else: 
+                # Normal counters
+                for ctr in counters:
+                    
+                    # Channel counter e.g. TCC_ATOMIC[0]
+                    if '[' in ctr:
 
-                    # Remove number, append "_sum" so we know to add the channel later
-                    channel = int(ctr.split('[')[1].split(']')[0])
-                    if channel == 0:
-                        counter_name = ctr.split('[')[0] + "_sum"
+                        # Remove channel number, append "_expand" so we know
+                        # add the channel numbers back later
+                        channel = int(ctr.split('[')[1].split(']')[0])
+                        if channel == 0:
+                            counter_name = ctr.split('[')[0] + "_expand"
+                            try:
+                                normal_counters[counter_name] += 1
+                            except:
+                                normal_counters[counter_name] = 1
+                    else:
                         try:
-                            normal_counters[counter_name] += 1
+                            normal_counters[ctr] += 1
                         except:
-                            normal_counters[counter_name] = 1
-                else:
-                    counter_name = ctr
-                    try:
-                        normal_counters[ctr] += 1
-                    except:
-                        normal_counters[ctr] = 1
+                            normal_counters[ctr] = 1
+
+    # De-duplicate. Remove accumulate counters from normal counters
+    for accus in accumulate_counters:
+        for accu in accus:
+            if accu in normal_counters:
+                del normal_counters[accu]
 
     output_files = []
 
@@ -448,19 +451,31 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
             output_files[-1].add(ctr)
 
 
+    # Output to files
     for i, f in enumerate(output_files):
         file_name = os.path.join(workload_perfmon_dir, "pmc_perf_{}.txt".format(i))
 
         pmc = []
-        for name, item in f.blocks.items():
-            for ctr in item.elements:
+        for block_name in f.blocks.keys():
+            if block_name == "TCC":
 
-                # Expand TCC counters
-                # e.g. TCC_HIT_sum = TCC_HIT[0] TCC_HIT[1] .... TCC_HIT[15]
-                if "TCC" in name and "_sum" in ctr:
-                    c = ctr.split("_sum")[0]
-                    pmc.extend(expand_channels(c, perfmon_config["TCC_channels"]))
-                else:
+                # Expand and interleve the TCC channel counters
+                # e.g.  TCC_HIT[0] TCC_ATOMIC[0] ... TCC_HIT[1] TCC_ATOMIC[1] ...
+                channel_counters = []
+                for ctr in f.blocks[block_name].elements:
+                    if "_expand" in ctr:
+                        channel_counters.append(ctr.split("_expand")[0])
+
+                for i in range(0, perfmon_config["TCC_channels"]):
+                    for c in channel_counters:
+                        pmc.append("{}[{}]".format(c, i))
+
+                # Handle the rest of the TCC counters
+                for ctr in f.blocks[block_name].elements:
+                    if "_expand" not in ctr:
+                        pmc.append(ctr)
+            else:
+                for ctr in f.blocks[block_name].elements:
                     pmc.append(ctr)
 
         stext = "pmc: " + " ".join(pmc)
@@ -473,8 +488,8 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
         fd.write("kernel:\n")
         fd.close()
     
-    # add a timestamp file
-    fd = open(workload_perfmon_dir + "/timestamps.txt", "w")
+    # Add a timestamp file
+    fd = open(os.path.join(workload_perfmon_dir, "timestamps.txt"), "w")
     fd.write("pmc:\n\n")
     fd.write("gpu:\n")
     fd.write("range:\n")
