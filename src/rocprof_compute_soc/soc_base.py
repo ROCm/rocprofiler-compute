@@ -263,9 +263,7 @@ class OmniSoC_Base:
             pmc_files_list = ref_pmc_files_list
 
         # Coalesce and writeback workload specific perfmon
-        perfmon_coalesce(
-            pmc_files_list, self.__perfmon_config, self.__workload_dir
-        )
+        perfmon_coalesce(pmc_files_list, self.__perfmon_config, self.__workload_dir)
 
     # ----------------------------------------------------
     # Required methods to be implemented by child classes
@@ -285,41 +283,6 @@ class OmniSoC_Base:
         """Perform any SoC-specific setup prior to analysis."""
         console_debug("analysis", "perform SoC analysis setup for %s" % self.__arch)
 
-def getblock(counter):
-    return counter.split('_')[0]
-
-# Set with limited size
-class LimitedSet:
-    def __init__(self, maxsize) -> None:
-        self.avail = maxsize
-        self.elements = []
-
-    def add(self, e) -> None:
-        if e in self.elements:
-            return True
-        elif self.avail <= 0:
-            return False
-
-        self.avail -= 1
-        self.elements.append(e)
-
-        return True
-
-# Represents a file that lists PMC counters. Number of counters for each
-# block limited according to perfmon config.
-class CounterFile:
-    def __init__(self, name, perfmon_config) -> None:
-        self.file_name = name
-        self.blocks = {b: LimitedSet(v) for b, v in perfmon_config.items()}
-
-    def add(self, counter) -> bool:
-        block = getblock(counter)
-        
-        # SQ and SQC belong to the same IP block
-        if block == 'SQC':
-            block = 'SQ'
-
-        return self.blocks[block].add(counter)
 
 def getblock(counter):
     return counter.split("_")[0]
@@ -429,18 +392,18 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
             if "SQ_ACCUM_PREV_HIRES" in counters:
                 # Accumulate counters
                 accumulate_counters.append(counters.copy())
-            else: 
+            else:
                 # Normal counters
                 for ctr in counters:
-                    
+
                     # Channel counter e.g. TCC_ATOMIC[0]
-                    if '[' in ctr:
+                    if "[" in ctr:
 
                         # Remove channel number, append "_expand" so we know
                         # add the channel numbers back later
-                        channel = int(ctr.split('[')[1].split(']')[0])
+                        channel = int(ctr.split("[")[1].split("]")[0])
                         if channel == 0:
-                            counter_name = ctr.split('[')[0] + "_expand"
+                            counter_name = ctr.split("[")[0] + "_expand"
                             try:
                                 normal_counters[counter_name] += 1
                             except:
@@ -480,10 +443,11 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
 
         # All files are full, create a new file
         if not added:
-            output_files.append(CounterFile("pmc_perf_{}.txt".format(file_count), perfmon_config))
+            output_files.append(
+                CounterFile("pmc_perf_{}.txt".format(file_count), perfmon_config)
+            )
             file_count += 1
             output_files[-1].add(ctr)
-
 
     # Output to files
     for f in output_files:
@@ -513,7 +477,7 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
                     pmc.append(ctr)
 
         stext = "pmc: " + " ".join(pmc)
-        
+
         # Write counters to file
         fd = open(file_name, "w")
         fd.write(stext + "\n\n")
@@ -521,7 +485,7 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
         fd.write("range:\n")
         fd.write("kernel:\n")
         fd.close()
-    
+
     # Add a timestamp file
     fd = open(os.path.join(workload_perfmon_dir, "timestamps.txt"), "w")
     fd.write("pmc:\n\n")
