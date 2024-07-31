@@ -303,7 +303,7 @@ SGPR limited
 ------------
 
 Finally, we modify our kernel once more to make it limited by
-:ref:`SGPRs <desc-salu>`:
+`SGPRs <salu>`__:
 
 .. code-block:: cpp
 
