@@ -6,6 +6,8 @@ on:
     paths:
       - 'docs/archive/docs-2.x/**'
       - 'docs/archive/docs-1.x/**'
+      - 'docs/archive/docs-2.x/**'
+      - 'docs/archive/docs-1.x/**'
       - '.github/workflows/docs.yml'
 
   workflow_dispatch:
@@ -36,7 +38,7 @@ jobs:
       - name: Build 1.x docs
         run: |
           cd docs/archive/docs-1.x
-          make html
+          make html	
       - name: Build 2.x docs
         run: |
           cd docs/archive/docs-2.x
