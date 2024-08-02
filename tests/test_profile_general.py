@@ -71,14 +71,6 @@ ALL_CSVS = sorted(
         "pmc_perf_6.csv",
         "pmc_perf_7.csv",
         "pmc_perf_8.csv",
-        "pmc_perf_9.csv",
-        "pmc_perf_10.csv",
-        "pmc_perf_11.csv",
-        "pmc_perf_12.csv",
-        "pmc_perf_13.csv",
-        "pmc_perf_14.csv",
-        "pmc_perf_15.csv",
-        "pmc_perf_16.csv",
         "sysinfo.csv",
         "timestamps.csv",
     ]
@@ -86,15 +78,13 @@ ALL_CSVS = sorted(
 ALL_CSVS_MI200 = sorted(
     ALL_CSVS
     + [
-        "pmc_perf_17.csv",
-        "pmc_perf_18.csv",
+        "pmc_perf_9.csv",
         "roofline.csv",
     ]
 )
 ALL_CSVS_MI300 = sorted(
     ALL_CSVS
     + [
-        "pmc_perf_17.csv",
     ]
 
 )
