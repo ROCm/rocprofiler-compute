@@ -3,9 +3,15 @@ name: Formatting
 
 on:
   push:
+<<<<<<< HEAD
     branches: [ amd-mainline, amd-staging, release/** ]
   pull_request:
     branches: [ amd-mainline, amd-staging, release/** ]
+=======
+    branches: [ main, dev, amd-mainline, amd-staging ]
+  pull_request:
+    branches: [ main, dev, amd-mainline, amd-staging ]
+>>>>>>> c3ce1aae (Prep work for branch renaming (#389))
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
