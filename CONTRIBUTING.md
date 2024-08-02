@@ -5,6 +5,7 @@ To keep our development fast and conflict free, we recommend you to [fork](https
 Afterwards, git clone your repository to your local machine. But that is not it! To keep track of the original develop repository, add it as another remote.
 
 ```
+<<<<<<< HEAD
 git remote add mainline https://github.com/ROCm/rocprofiler-compute.git
 git checkout amd-staging
 ```
@@ -31,9 +32,15 @@ and apply your changes there.
 
 - Ensure the PR description clearly describes the problem and solution. If there is an existing GitHub issue open describing this bug, please include it in the description so we can close it.
 
+<<<<<<< HEAD
 - Ensure the PR is based on the `amd-staging` branch of the ROCm Compute Profiler GitHub repository.
 
 - ROCm Compute Profiler requires new commits to include a "Signed-off-by" token in the commit message (typically enabled via the `git commit -s` option), indicating your agreement to the projects's [Developer's Certificate of Origin](https://developercertificate.org/) and compatability with the project [LICENSE](https://github.com/ROCm/rocprofiler-compute/blob/main/LICENSE):
+=======
+- Ensure the PR is based on the `amd-staging` branch of the Omniperf GitHub repository.
+
+- Omniperf requires new commits to include a "Signed-off-by" token in the commit message (typically enabled via the `git commit -s` option), indicating your agreement to the projects's [Developer's Certificate of Origin](https://developercertificate.org/) and compatability with the project [LICENSE](LICENSE):
+>>>>>>> c3ce1aae (Prep work for branch renaming (#389))
 
 
 > (a) The contribution was created in whole or in part by me and I
