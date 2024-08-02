@@ -1,12 +1,12 @@
 ## How to fork from us
 
-To keep our development fast and conflict free, we recommend you to [fork](https://github.com/ROCm/rocprofiler-compute/fork) our repository and start your work from our `dev` branch in your private repository.
+To keep our development fast and conflict free, we recommend you to [fork](https://github.com/ROCm/omniperf/fork) our repository and start your work from our `amd-staging` branch in your private repository.
 
 Afterwards, git clone your repository to your local machine. But that is not it! To keep track of the original develop repository, add it as another remote.
 
 ```
-git remote add mainline https://github.com/ROCm/rocprofiler-compute.git
-git checkout dev
+git remote add mainline https://github.com/ROCm/omniperf.git
+git checkout amd-staging
 ```
 
 As always in git, start a new branch with
