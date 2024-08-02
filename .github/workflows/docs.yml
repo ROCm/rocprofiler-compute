@@ -2,7 +2,11 @@ name: Documentation
 
 on:
   push:
+<<<<<<< HEAD
     branches: [ amd-mainline ]
+=======
+    branches: [ main, amd-mainline ]
+>>>>>>> c3ce1aae (Prep work for branch renaming (#389))
     paths:
       - 'docs/archive/docs-2.x/**'
       - 'docs/archive/docs-1.x/**'
@@ -36,7 +40,7 @@ jobs:
       - name: Build 1.x docs
         run: |
           cd docs/archive/docs-1.x
-          make html	
+          make html
       - name: Build 2.x docs
         run: |
           cd docs/archive/docs-2.x
