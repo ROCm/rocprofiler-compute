@@ -71,14 +71,6 @@ ALL_CSVS = sorted(
         "pmc_perf_6.csv",
         "pmc_perf_7.csv",
         "pmc_perf_8.csv",
-        "pmc_perf_9.csv",
-        "pmc_perf_10.csv",
-        "pmc_perf_11.csv",
-        "pmc_perf_12.csv",
-        "pmc_perf_13.csv",
-        "pmc_perf_14.csv",
-        "pmc_perf_15.csv",
-        "pmc_perf_16.csv",
         "sysinfo.csv",
         "timestamps.csv",
     ]
@@ -86,15 +78,13 @@ ALL_CSVS = sorted(
 ALL_CSVS_MI200 = sorted(
     ALL_CSVS
     + [
-        "pmc_perf_17.csv",
-        "pmc_perf_18.csv",
+        "pmc_perf_9.csv",
         "roofline.csv",
     ]
 )
 ALL_CSVS_MI300 = sorted(
     ALL_CSVS
     + [
-        "pmc_perf_17.csv",
     ]
 )
 ROOF_ONLY_FILES = sorted(
@@ -265,37 +255,6 @@ def gpu_soc():
     gpu_arch = devices[0].split()[1]
     gpu_arch = devices[0].split()[1]
 
-    if not gpu_arch in SUPPORTED_ARCHS.keys():
-        print("Cannot find a supported arch in rocminfo")
-        assert 0
-    else:
-        num_devices = (
-            len(devices)
-            if not "CI_VISIBLE_DEVICES" in os.environ
-            else os.environ["CI_VISIBLE_DEVICES"]
-        )
-
-    ## 2) Deduce gpu model name from arch
-    gpu_model = list(SUPPORTED_ARCHS[gpu_arch].keys())[0].upper()
-    if gpu_model == "MI300":
-        gpu_model = list(SUPPORTED_ARCHS[gpu_arch].values())[0][0]
-    if gpu_arch == "gfx942":
-        soc_regex = re.compile(
-            r"^\s*Marketing Name\s*:\s+ ([ a-zA-Z0-9]+)\s*$", re.MULTILINE
-        )
-        names = list(filter(soc_regex.match, rocminfo))
-        gpu_model_2 = names[0].split()[4]
-        if "MI300A" in gpu_model_2 or "MI300A" in check_arch_override():
-            gpu_model = "MI300A_A1"
-        elif "MI300X" in gpu_model_2 or "MI300X" in check_arch_override():
-            gpu_model = "MI300X_A1"
-        else:
-            print(
-                "Cannot parse MI300 details from rocminfo. Please verify output or set the arch using (e.g.,) "
-                'export ROCPROFCOMPUTE_ARCH_OVERRIDE="MI300A"'
-            )
-            assert 0
-    return gpu_model
     if not gpu_arch in SUPPORTED_ARCHS.keys():
         print("Cannot find a supported arch in rocminfo")
         assert 0
@@ -705,18 +664,14 @@ def test_block_SQ():
     if "MI300" in soc:
         expected_csvs = [
             "pmc_perf_0.csv",
-            "pmc_perf_11.csv",
             "pmc_perf_1.csv",
             "pmc_perf_3.csv",
             "pmc_perf_5.csv",
             "pmc_perf_7.csv",
-            "pmc_perf_9.csv",
             "SQ_IFETCH_LEVEL.csv",
             "SQ_INST_LEVEL_SMEM.csv",
             "SQ_LEVEL_WAVES.csv",
             "timestamps.csv",
-            "pmc_perf_10.csv",
-            "pmc_perf_12.csv",
             "pmc_perf_2.csv",
             "pmc_perf_4.csv",
             "pmc_perf_6.csv",
@@ -904,8 +859,6 @@ def test_block_TCC():
         "pmc_perf_6.csv",
         "pmc_perf_7.csv",
         "pmc_perf_8.csv",
-        "pmc_perf_9.csv",
-        "pmc_perf_10.csv",
         "sysinfo.csv",
         "timestamps.csv",
     ]
@@ -1092,18 +1045,14 @@ def test_block_SQ_CPC():
     if "MI300" in soc:
         expected_csvs = [
             "pmc_perf_0.csv",
-            "pmc_perf_11.csv",
             "pmc_perf_1.csv",
             "pmc_perf_3.csv",
             "pmc_perf_5.csv",
             "pmc_perf_7.csv",
-            "pmc_perf_9.csv",
             "SQ_IFETCH_LEVEL.csv",
             "SQ_INST_LEVEL_SMEM.csv",
             "SQ_LEVEL_WAVES.csv",
             "timestamps.csv",
-            "pmc_perf_10.csv",
-            "pmc_perf_12.csv",
             "pmc_perf_2.csv",
             "pmc_perf_4.csv",
             "pmc_perf_6.csv",
@@ -1172,18 +1121,14 @@ def test_block_SQ_TA():
     if "MI300" in soc:
         expected_csvs = [
             "pmc_perf_0.csv",
-            "pmc_perf_11.csv",
             "pmc_perf_1.csv",
             "pmc_perf_3.csv",
             "pmc_perf_5.csv",
             "pmc_perf_7.csv",
-            "pmc_perf_9.csv",
             "SQ_IFETCH_LEVEL.csv",
             "SQ_INST_LEVEL_SMEM.csv",
             "SQ_LEVEL_WAVES.csv",
             "timestamps.csv",
-            "pmc_perf_10.csv",
-            "pmc_perf_12.csv",
             "pmc_perf_2.csv",
             "pmc_perf_4.csv",
             "pmc_perf_6.csv",
@@ -1248,12 +1193,10 @@ def test_block_SQ_SPI():
     if "MI300" in soc:
         expected_csvs = [
             "pmc_perf_0.csv",
-            "pmc_perf_11.csv",
             "pmc_perf_1.csv",
             "pmc_perf_3.csv",
             "pmc_perf_5.csv",
             "pmc_perf_7.csv",
-            "pmc_perf_9.csv",
             "SQ_IFETCH_LEVEL.csv",
             "SQ_INST_LEVEL_SMEM.csv",
             "SQ_LEVEL_WAVES.csv",
@@ -1296,6 +1239,9 @@ def test_block_SQ_SQC_TCP_CPC():
         "pmc_perf_3.csv",
         "pmc_perf_4.csv",
         "pmc_perf_5.csv",
+        "pmc_perf_6.csv",
+        "pmc_perf_7.csv",
+        "pmc_perf_8.csv",
         "sysinfo.csv",
         "timestamps.csv",
     ]
@@ -1323,18 +1269,14 @@ def test_block_SQ_SQC_TCP_CPC():
     if "MI300" in soc:
         expected_csvs = [
             "pmc_perf_0.csv",
-            "pmc_perf_11.csv",
             "pmc_perf_1.csv",
             "pmc_perf_3.csv",
             "pmc_perf_5.csv",
             "pmc_perf_7.csv",
-            "pmc_perf_9.csv",
             "SQ_IFETCH_LEVEL.csv",
             "SQ_INST_LEVEL_SMEM.csv",
             "SQ_LEVEL_WAVES.csv",
             "timestamps.csv",
-            "pmc_perf_10.csv",
-            "pmc_perf_12.csv",
             "pmc_perf_2.csv",
             "pmc_perf_4.csv",
             "pmc_perf_6.csv",
@@ -1372,6 +1314,9 @@ def test_block_SQ_SPI_TA_TCC_CPF():
         "pmc_perf_3.csv",
         "pmc_perf_4.csv",
         "pmc_perf_5.csv",
+        "pmc_perf_6.csv",
+        "pmc_perf_7.csv",
+        "pmc_perf_8.csv",
         "sysinfo.csv",
         "timestamps.csv",
     ]
@@ -1399,18 +1344,14 @@ def test_block_SQ_SPI_TA_TCC_CPF():
     if "MI300" in soc:
         expected_csvs = [
             "pmc_perf_0.csv",
-            "pmc_perf_11.csv",
             "pmc_perf_1.csv",
             "pmc_perf_3.csv",
             "pmc_perf_5.csv",
             "pmc_perf_7.csv",
-            "pmc_perf_9.csv",
             "SQ_IFETCH_LEVEL.csv",
             "SQ_INST_LEVEL_SMEM.csv",
             "SQ_LEVEL_WAVES.csv",
             "timestamps.csv",
-            "pmc_perf_10.csv",
-            "pmc_perf_12.csv",
             "pmc_perf_2.csv",
             "pmc_perf_4.csv",
             "pmc_perf_6.csv",
