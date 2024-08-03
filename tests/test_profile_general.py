@@ -89,6 +89,8 @@ ALL_CSVS_MI200 = sorted(
         "pmc_perf_17.csv",
         "pmc_perf_18.csv",
         "roofline.csv",
+        "sysinfo.csv",
+        "timestamps.csv",
     ]
 )
 ALL_CSVS_MI300 = sorted(
@@ -105,6 +107,7 @@ ALL_CSVS_MI300 = sorted(
     ]
 
 )
+
 ROOF_ONLY_FILES = sorted(
     [
         "empirRoof_gpu-0_fp32_fp64.pdf",
@@ -880,6 +883,8 @@ def test_block_TCC():
         "pmc_perf_6.csv",
         "pmc_perf_7.csv",
         "pmc_perf_8.csv",
+        "pmc_perf_9.csv",
+        "pmc_perf_10.csv",
         "sysinfo.csv",
         "timestamps.csv",
     ]
@@ -1262,9 +1267,6 @@ def test_block_SQ_SQC_TCP_CPC():
         "pmc_perf_3.csv",
         "pmc_perf_4.csv",
         "pmc_perf_5.csv",
-        "pmc_perf_6.csv",
-        "pmc_perf_7.csv",
-        "pmc_perf_8.csv",
         "sysinfo.csv",
         "timestamps.csv",
     ]
@@ -1337,9 +1339,6 @@ def test_block_SQ_SPI_TA_TCC_CPF():
         "pmc_perf_3.csv",
         "pmc_perf_4.csv",
         "pmc_perf_5.csv",
-        "pmc_perf_6.csv",
-        "pmc_perf_7.csv",
-        "pmc_perf_8.csv",
         "sysinfo.csv",
         "timestamps.csv",
     ]
