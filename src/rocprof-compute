@@ -59,8 +59,17 @@ def verify_deps_version(localVer, desiredVer, operator):
 
 
 def verify_deps():
-    """Utility to read library dependencies from requirements.txt and endeavor to load them within current execution environment. 
-    Used in top-level rocprof-compute to provide error messages if necessary dependencies are not available. """
+    """Utility to read library dependencies from requirements.txt and endeavor
+    to load them within current execution environment.
+    Used in top-level omniperf to provide error messages if necessary
+    dependencies are not available."""
+
+    # Check which version of python is being used
+    if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 8):
+        print("[ERROR] Python 3.8 or higher is required to run rocprof-compute."
+              f" The current version is {sys.version_info[0]}.{sys.version_info[1]}.")
+        sys.exit(1)
+
     bindir = Path(__file__).resolve().parent
     depsLocation = ["requirements.txt", "../requirements.txt"]
 
@@ -99,7 +108,7 @@ def verify_deps():
                         ):
                             print(
                                 f"[ERROR] the '{dependency}' distribution does "
-                                "not meet version requirements to use rocprofiler-compute."
+                                "not meet version requirements to use rocprof-compute."
                             )
                             print("  --> version installed :", localVersion)
                             error = True
