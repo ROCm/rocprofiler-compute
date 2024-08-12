@@ -2,11 +2,7 @@ name: tarball
 
 on:
   push:
-<<<<<<< HEAD
-    branches: [ amd-mainline, release/** ]
-=======
-    branches: [ main, amd-mainline ]
->>>>>>> c3ce1aae (Prep work for branch renaming (#389))
+    branches: [ amd-mainline ]
   pull_request:
 
 concurrency:
@@ -103,15 +99,8 @@ jobs:
       - name: Access rocprofiler-compute using modulefile
         run: |
           . /etc/profile.d/lmod.sh
-<<<<<<< HEAD
           module use $INSTALL_DIR/rocprofiler-compute/share/rocprofiler-compute/modulefiles
           module load rocprofiler-compute
           module list
           rocprof-compute --version
-=======
-          module use $INSTALL_DIR/omniperf/share/omniperf/modulefiles
-          module load omniperf
-          module list
-          omniperf --version
->>>>>>> c3ce1aae (Prep work for branch renaming (#389))
 

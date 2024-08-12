@@ -2,11 +2,7 @@ name: mi-rhel9
 
 on:
   push:
-<<<<<<< HEAD
-    branches: [ amd-mainline, release/** ]
-=======
-    branches: [ main, amd-mainline ]
->>>>>>> c3ce1aae (Prep work for branch renaming (#389))
+    branches: [ amd-mainline ]
 
   # Allows manual execution
   workflow_dispatch:
