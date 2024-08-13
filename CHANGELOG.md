@@ -1,34 +1,12 @@
-# Changelog for Omniperf
+# Changelog for ROCm Compute Profiler
 
-Full documentation for Omniperf is available at [https://rocm.docs.amd.com/projects/omniperf/en/latest/](https://rocm.docs.amd.com/projects/omniperf/en/latest/).
-
-## (Unreleased) Omniperf 2.1.0 for ROCm 6.2.2
-
-### Changes
-
-  * enable rocprofv1 for MI300 hardware (#391)
-  * refactoring and updating documemtation (#362, #394, #398, #414, #420)
-  * branch renaming and workflow updates (#389, #404, #409)
-  * bug fix for analysis output
-  * add dependency checks on application launch (#393)
-  * patch for profiling multi-process/multi-GPU applications (#376, #396)
-  * packaging updates (#386)
-  * rename CHANGES to CHANGELOG.md (#410)
-  * rollback Grafana version in Dockerfile for Angular plugin compatibility (#416)
-  * enable CI triggers for Azure CI (#426)
-  * add GPU model distinction for MI300 systems (#423)
-  * new MAINTAINERS.md guide for omniperf publishing procedures (#402)
-
-### Optimizations
-
-  * reduced running time of Omniperf when profiling (#384) 
-  * console logging improvements
+Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.amd.com/projects/rocprofiler-compute/en/latest/](https://rocm.docs.amd.com/projects/rocprofiler-compute/en/latest/).
 
 ## Omniperf 2.0.1 for ROCm 6.2.0
 
 ### Changes
 
-  * new option to force hardware target via `OMNIPERF_ARCH_OVERRIDE` global (#370)
+  * new option to force hardware target via `ROCPROFCOMPUTE_ARCH_OVERRIDE` global (#370)
   * CI/CD support for MI300 hardware (#373)
   * support for MI308X hardware (#375)
 
