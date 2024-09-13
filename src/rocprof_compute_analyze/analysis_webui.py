@@ -38,10 +38,13 @@ from dash.dependencies import Input, Output, State
 
 BINARY_NAME = "rocprof-compute"
 
+
 class webui_analysis(OmniAnalyze_Base):
     def __init__(self, args, supported_archs):
         super().__init__(args, supported_archs)
-        self.app = dash.Dash(__name__, title=BINARY_NAME, external_stylesheets=[dbc.themes.CYBORG])
+        self.app = dash.Dash(
+            __name__, title=BINARY_NAME, external_stylesheets=[dbc.themes.CYBORG]
+        )
         self.dest_dir = os.path.abspath(args.path[0][0])
         self.arch = None
 
