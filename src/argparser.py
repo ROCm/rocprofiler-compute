@@ -280,7 +280,7 @@ Examples:
     ## ----------------------------
     db_parser = subparsers.add_parser(
         "database",
-        help="Interact with rocprofiler-compute database",
+        help="Interact with rocprof-compute database",
         usage="""
             \nrocprof-compute database <interaction type> [connection options]
 
@@ -308,7 +308,7 @@ Examples:
         required=False,
         dest="upload",
         action="store_true",
-        help="\t\t\t\tImport workload to rocprofiler-compute DB",
+        help="\t\t\t\tImport workload to rocprof-compute DB",
     )
     interaction_group.add_argument(
         "-r",
@@ -316,7 +316,7 @@ Examples:
         required=False,
         dest="remove",
         action="store_true",
-        help="\t\t\t\tRemove a workload from rocprofiler-compute DB",
+        help="\t\t\t\tRemove a workload from rocprof-compute DB",
     )
 
     connection_group.add_argument(
@@ -462,7 +462,7 @@ Examples:
         type=int,
         nargs="?",
         const=8050,
-        help="\t\tActivate a GUI to interate with rocprofiler-compute metrics.\n\t\tOptionally, specify port to launch application (DEFAULT: 8050)",
+        help="\t\tActivate a GUI to interate with rocprof-compute metrics.\n\t\tOptionally, specify port to launch application (DEFAULT: 8050)",
     )
     analyze_advanced_group.add_argument(
         "--random-port",

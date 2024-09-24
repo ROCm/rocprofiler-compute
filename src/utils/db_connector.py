@@ -79,12 +79,7 @@ class DatabaseConnector:
             )
 
         self.connection_info["db"] = (
-            "rocprofiler-compute_"
-            + str(self.args.team)
-            + "_"
-            + str(name)
-            + "_"
-            + str(soc)
+            "rocprof-compute_" + str(self.args.team) + "_" + str(name) + "_" + str(soc)
         )
 
     @demarcate

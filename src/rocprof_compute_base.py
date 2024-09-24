@@ -173,7 +173,7 @@ class RocProfCompute:
 
     def parse_args(self):
         parser = argparse.ArgumentParser(
-            description="Command line interface for AMD's GPU profiler, rocprofiler-compute",
+            description="Command line interface for AMD's GPU profiler, ROCm Compute Profiler",
             prog="tool",
             formatter_class=lambda prog: argparse.RawTextHelpFormatter(
                 prog, max_help_position=30
