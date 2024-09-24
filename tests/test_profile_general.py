@@ -24,8 +24,8 @@ SUPPORTED_ARCHS = {
 
 
 def check_arch_override():
-    if "OMNIPERF_ARCH_OVERRIDE" in os.environ.keys():
-        return os.environ["OMNIPERF_ARCH_OVERRIDE"]
+    if "ROCPROFCOMPUTE_ARCH_OVERRIDE" in os.environ.keys():
+        return os.environ["ROCPROFCOMPUTE_ARCH_OVERRIDE"]
     return ""
 
 
@@ -42,7 +42,7 @@ config["COUNTER_LOGGING"] = False
 config["METRIC_COMPARE"] = False
 config["METRIC_LOGGING"] = False
 
-baseline_opts = ["omniperf", "profile", "-n", "app_1", "-VVV"]
+baseline_opts = ["rocprof-compute", "profile", "-n", "app_1", "-VVV"]
 
 num_kernels = 3
 num_devices = 1
@@ -312,7 +312,7 @@ def gpu_soc():
         else:
             print(
                 "Cannot parse MI300 details from rocminfo. Please verify output or set the arch using (e.g.,) "
-                'export OMNIPERF_ARCH_OVERRIDE="MI300A"'
+                'export ROCPROFCOMPUTE_ARCH_OVERRIDE="MI300A"'
             )
             assert 0
     return gpu_model

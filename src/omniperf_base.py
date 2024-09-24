@@ -98,12 +98,12 @@ class Omniperf:
     def print_graphic(self):
         """Log program name as ascii art to terminal."""
         ascii_art = r"""
-  ___                  _                  __ 
- / _ \ _ __ ___  _ __ (_)_ __   ___ _ __ / _|
-| | | | '_ ` _ \| '_ \| | '_ \ / _ \ '__| |_ 
-| |_| | | | | | | | | | | |_) |  __/ |  |  _|
- \___/|_| |_| |_|_| |_|_| .__/ \___|_|  |_|  
-                        |_|                  
+                                 __                                       _       
+ _ __ ___   ___ _ __  _ __ ___  / _|       ___ ___  _ __ ___  _ __  _   _| |_ ___ 
+| '__/ _ \ / __| '_ \| '__/ _ \| |_ _____ / __/ _ \| '_ ` _ \| '_ \| | | | __/ _ \
+| | | (_) | (__| |_) | | | (_) |  _|_____| (_| (_) | | | | | | |_) | |_| | ||  __/
+|_|  \___/ \___| .__/|_|  \___/|_|        \___\___/|_| |_| |_| .__/ \__,_|\__\___|
+               |_|                                           |_|                  
 """
         print(ascii_art)
 
@@ -169,12 +169,12 @@ class Omniperf:
 
     def parse_args(self):
         parser = argparse.ArgumentParser(
-            description="Command line interface for AMD's GPU profiler, Omniperf",
+            description="Command line interface for AMD's GPU profiler, rocprof-compute",
             prog="tool",
             formatter_class=lambda prog: argparse.RawTextHelpFormatter(
                 prog, max_help_position=30
             ),
-            usage="omniperf [mode] [options]",
+            usage="rocprof-compute [mode] [options]",
         )
         omniarg_parser(
             parser, config.omniperf_home, self.__supported_archs, self.__version
@@ -186,7 +186,9 @@ class Omniperf:
                 print(generate_machine_specs(self.__args))
                 sys.exit(0)
             parser.print_help(sys.stderr)
-            console_error("Omniperf requires you pass a valid mode. Detected None.")
+            console_error(
+                "rocprof-compute requires you pass a valid mode. Detected None."
+            )
         return
 
     @demarcate

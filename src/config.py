@@ -26,4 +26,4 @@ from pathlib import Path
 
 # NB: Creating a new module to share global vars across modules
 omniperf_home = Path(__file__).resolve().parent
-prog = "omniperf"
+prog = "rocprof-compute"

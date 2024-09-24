@@ -79,15 +79,15 @@ def omniarg_parser(parser, omniperf_home, supported_archs, omniperf_version):
         help="Profile the target application",
         usage="""
 
-omniperf profile --name <workload_name> [profile options] [roofline options] -- <profile_cmd>
+rocprof-compute profile --name <workload_name> [profile options] [roofline options] -- <profile_cmd>
 
 ---------------------------------------------------------------------------------
 Examples:
-\tomniperf profile -n vcopy_all -- ./vcopy -n 1048576 -b 256
-\tomniperf profile -n vcopy_SPI_TCC -b SQ TCC -- ./vcopy -n 1048576 -b 256
-\tomniperf profile -n vcopy_kernel -k vecCopy -- ./vcopy -n 1048576 -b 256
-\tomniperf profile -n vcopy_disp -d 0 -- ./vcopy -n 1048576 -b 256
-\tomniperf profile -n vcopy_roof --roof-only -- ./vcopy -n 1048576 -b 256
+\trocprof-compute profile -n vcopy_all -- ./vcopy -n 1048576 -b 256
+\trocprof-compute profile -n vcopy_SPI_TCC -b SQ TCC -- ./vcopy -n 1048576 -b 256
+\trocprof-compute profile -n vcopy_kernel -k vecCopy -- ./vcopy -n 1048576 -b 256
+\trocprof-compute profile -n vcopy_disp -d 0 -- ./vcopy -n 1048576 -b 256
+\trocprof-compute profile -n vcopy_roof --roof-only -- ./vcopy -n 1048576 -b 256
 ---------------------------------------------------------------------------------
         """,
         prog="tool",
@@ -272,14 +272,14 @@ Examples:
     ## ----------------------------
     db_parser = subparsers.add_parser(
         "database",
-        help="Interact with Omniperf database",
+        help="Interact with rocprof-compute database",
         usage="""
-            \nomniperf database <interaction type> [connection options]
+            \nrocprof-compute database <interaction type> [connection options]
 
             \n\n-------------------------------------------------------------------------------
             \nExamples:
-            \n\tomniperf database --import -H pavii1 -u temp -t asw -w workloads/vcopy/mi200/
-            \n\tomniperf database --remove -H pavii1 -u temp -w omniperf_asw_sample_mi200
+            \n\trocprof-compute database --import -H pavii1 -u temp -t asw -w workloads/vcopy/mi200/
+            \n\trocprof-compute database --remove -H pavii1 -u temp -w rocprof-compute_asw_sample_mi200
             \n-------------------------------------------------------------------------------\n
         """,
         prog="tool",
@@ -300,7 +300,7 @@ Examples:
         required=False,
         dest="upload",
         action="store_true",
-        help="\t\t\t\tImport workload to Omniperf DB",
+        help="\t\t\t\tImport workload to rocprof-compute DB",
     )
     interaction_group.add_argument(
         "-r",
@@ -308,7 +308,7 @@ Examples:
         required=False,
         dest="remove",
         action="store_true",
-        help="\t\t\t\tRemove a workload from Omniperf DB",
+        help="\t\t\t\tRemove a workload from rocprof-compute DB",
     )
 
     connection_group.add_argument(
@@ -366,13 +366,13 @@ Examples:
         "analyze",
         help="Analyze existing profiling results at command line",
         usage="""
-omniperf analyze --path <workload_path> [analyze options]
+rocprof-compute analyze --path <workload_path> [analyze options]
 
 -----------------------------------------------------------------------------------
 Examples:
-\tomniperf analyze -p workloads/vcopy/mi200/ --list-metrics gfx90a
-\tomniperf analyze -p workloads/mixbench/mi200/ --dispatch 12 34 --decimal 3
-\tomniperf analyze -p workloads/mixbench/mi200/ --gui
+\trocprof-compute analyze -p workloads/vcopy/mi200/ --list-metrics gfx90a
+\trocprof-compute analyze -p workloads/mixbench/mi200/ --dispatch 12 34 --decimal 3
+\trocprof-compute analyze -p workloads/mixbench/mi200/ --gui
 -----------------------------------------------------------------------------------
         """,
         prog="tool",
@@ -454,7 +454,7 @@ Examples:
         type=int,
         nargs="?",
         const=8050,
-        help="\t\tActivate a GUI to interate with Omniperf metrics.\n\t\tOptionally, specify port to launch application (DEFAULT: 8050)",
+        help="\t\tActivate a GUI to interate with rocprof-compute metrics.\n\t\tOptionally, specify port to launch application (DEFAULT: 8050)",
     )
     analyze_advanced_group.add_argument(
         "--random-port",
