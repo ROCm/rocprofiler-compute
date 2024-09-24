@@ -142,7 +142,7 @@ def get_version_display(version, sha, mode):
     """Pretty print versioning info"""
     buf = io.StringIO()
     print("-" * 40, file=buf)
-    print("Omniperf version: %s (%s)" % (version, mode), file=buf)
+    print("rocprof-compute version: %s (%s)" % (version, mode), file=buf)
     print("Git revision:     %s" % sha, file=buf)
     print("-" * 40, file=buf)
     return buf.getvalue()
