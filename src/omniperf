@@ -107,8 +107,8 @@ def verify_deps():
                             localVersion, desiredVersion, operator
                         ):
                             print(
-                                f"[ERROR] the '{dependency}' distribution does "
-                                "not meet version requirements to use omniperf."
+                                "[ERROR] the '%s' distribution does not meet version requirements to use rocprof-compute."
+                                % dependency
                             )
                             print("  --> version installed :", localVersion)
                             error = True
