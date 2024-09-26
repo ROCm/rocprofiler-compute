@@ -24,15 +24,15 @@ to use ROCm Compute Profiler to optimize your code.
 
 .. note::
 
-   In this chapter, **MI2XX** refers to any of the CDNA2 architecture-based AMD
-   Instinct MI250X, MI250, and MI210 accelerators interchangeably in cases
-   where the exact product at hand is not relevant.
+   In this chapter, **MI300** refers to any of the CDNA3 architecture-based
+   Instinct MI300X and MI300A accelerators interchangeably in cases where the
+   exact product at hand is not relevant.
+
+   Likewise, **MI200** refers to any of the CDNA2 architecture-based AMD
+   Instinct MI250X, MI250, and MI210 accelerators interchangeably.
 
    For a comparison of AMD Instinct accelerator specifications, refer to
-   :doc:`Hardware specifications <rocm:reference/gpu-arch-specs>`. For product
-   details, see the :prod-page:`MI250X <mi200/mi250x>`,
-   :prod-page:`MI250 <mi200/mi250>`, and :prod-page:`MI210 <mi200/mi210>`
-   product pages.
+   :doc:`Hardware specifications <rocm:reference/gpu-arch-specs>`.
 
 In this chapter, the AMD Instinct performance model used by ROCm Compute Profiler is divided into a handful of
 key hardware blocks, each detailed in the following sections:

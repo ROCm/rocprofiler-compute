@@ -42,7 +42,7 @@ instructions (and scalar store instructions on architectures where they exist)
 from wavefronts in the :doc:`CUs <compute-unit>`. The sL1D is shared between
 multiple CUs (:gcn-crash-course:`36`) -- the exact number of CUs depends on the
 architecture in question (3 CUs in GCN™ GPUs and MI100, 2 CUs in
-:ref:`MI2XX <mixxx-note>`) -- and is backed by the :doc:`L2 cache <l2-cache>`.
+:ref:`MI200 <mixxx-note>`) -- and is backed by the :doc:`L2 cache <l2-cache>`.
 
 In typical usage, the data in the sL1D is comprised of:
 

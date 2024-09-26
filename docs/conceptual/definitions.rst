@@ -102,7 +102,7 @@ generations, but may differ in exact implementation.
 In addition, these memory types *might* differ between accelerators on the same
 system, even when accessing the same memory allocation.
 
-For example, an :ref:`MI2XX <mixxx-note>` accelerator accessing *fine-grained*
+For example, an :ref:`MI200 <mixxx-note>` accelerator accessing *fine-grained*
 memory allocated local to that device may see the allocation as coherently
 cacheable, while a remote accelerator might see the same allocation as
 *uncached*.
@@ -117,7 +117,7 @@ These memory types include:
 
    * - Uncached Memory (UC)
      - Memory that will not be cached in this accelerator. On
-       :ref:`MI2XX <mixxx-note>` accelerators, this corresponds “fine-grained”
+       :ref:`MI200 <mixxx-note>` accelerators, this corresponds “fine-grained”
        (or, “coherent”) memory allocated on a remote accelerator or the host,
        for example, using ``hipHostMalloc`` or ``hipMallocManaged`` with default
        allocation flags.
@@ -125,7 +125,7 @@ These memory types include:
    * - Non-hardware-Coherent Memory (NC)
      - Memory that will be cached by the accelerator, and is only guaranteed to
        be consistent at kernel boundaries / after software-driven
-       synchronization events. On :ref:`MI2XX <mixxx-note>` accelerators, this
+       synchronization events. On :ref:`MI200 <mixxx-note>` accelerators, this
        type of memory maps to, for example, “coarse-grained” ``hipHostMalloc``’d
        memory -- that is, allocated with the ``hipHostMallocNonCoherent``
        flag -- or ``hipMalloc``’d memory allocated on a remote accelerator.
@@ -134,7 +134,7 @@ These memory types include:
      - Memory for which only reads from the accelerator where the memory was
        allocated will be cached. Writes to CC memory are uncached, and trigger
        invalidations of any line within this accelerator. On
-       :ref:`MI2XX <mixxx-note>` accelerators, this type of memory maps to
+       :ref:`MI200 <mixxx-note>` accelerators, this type of memory maps to
        “fine-grained” memory allocated on the local accelerator using, for
        example, the ``hipExtMallocWithFlags`` API using the
        ``hipDeviceMallocFinegrained`` flag.
@@ -142,7 +142,7 @@ These memory types include:
    * - Read/Write Coherent Memory (RW)
      - Memory that will be cached by the accelerator, but may be invalidated by
        writes from remote devices at kernel boundaries / after software-driven
-       synchronization events. On :ref:`MI2XX <mixxx-note>` accelerators, this
+       synchronization events. On :ref:`MI200 <mixxx-note>` accelerators, this
        corresponds to “coarse-grained” memory allocated locally to the
        accelerator, using for example, the default ``hipMalloc`` allocator.
 

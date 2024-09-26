@@ -85,6 +85,10 @@ extlinks = {
         "https://old.hotchips.org/wp-content/uploads/hc_archives/hc29/HC29.21-Monday-Pub/HC29.21.10-GPU-Gaming-Pub/HC29.21.120-Radeon-Vega10-Mantor-AMD-f1.pdf#page=%s",
         "AMD Radeon Next Generation GPU Architecture - Vega10 (slide %s)",
     ),
+    "mi300-isa-pdf": (
+        "https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/instruction-set-architectures/amd-instinct-mi300-cdna3-instruction-set-architecture.pdf#page=%s",
+        "AMD Instinct MI300 ISA Reference Guide (page %s)",
+    ),
     "mi200-isa-pdf": (
         "https://www.amd.com/system/files/TechDocs/instinct-mi200-cdna2-instruction-set-architecture.pdf#page=%s",
         "AMD Instinct MI200 ISA Reference Guide (page %s)",

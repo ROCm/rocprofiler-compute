@@ -185,7 +185,7 @@ operation.
 .. note::
 
    The assembly in these experiments were generated for an
-   :ref:`MI2XX <mixxx-note>` accelerator using ROCm 5.6.0, and may change
+   :ref:`MI200 <mixxx-note>` accelerator using ROCm 5.6.0, and may change
    depending on ROCm versions and the targeted hardware architecture.
 
 .. _generic-write-ex:
@@ -611,12 +611,12 @@ Spill/Scratch (BUFFER)
 ----------------------
 
 Next we examine the use of "Spill/Scratch" memory. On current CDNA
-accelerators such as the :ref:`MI2XX <mixxx-note>`, this is implemented using
+accelerators such as the :ref:`MI200 <mixxx-note>`, this is implemented using
 the :ref:`private <memory-spaces>` memory space, which maps to
 :llvm-docs:`"scratch" memory <amdgpu-address-spaces>` in AMDGPU hardware
 terminology. This type of memory can be accessed via different instructions
 depending on the specific architecture targeted. However, current CDNA
-accelerators such as the :ref:`MI2XX <mixxx-note>` use so called ``buffer``
+accelerators such as the :ref:`MI200 <mixxx-note>` use so called ``buffer``
 instructions to access private memory in a simple (and typically) coalesced
 manner. See
 :mi200-isa-pdf:`Sec. 9.1, "Vector Memory Buffer Instructions" of the CDNA2 ISA guide <>`
