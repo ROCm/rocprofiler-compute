@@ -4,29 +4,17 @@
 [![Docs](https://github.com/ROCm/rocprofiler-compute/actions/workflows/docs.yml/badge.svg)](https://rocm.github.io/rocprofiler-compute/)
 [![DOI](https://zenodo.org/badge/561919887.svg)](https://zenodo.org/badge/latestdoi/561919887)
 
-<<<<<<< HEAD
 # ROCm Compute Profiler
 
 ## General
 
 ROCm Compute Profiler, formerly known as Omniperf, is a system performance profiling tool for machine
-=======
-# Omniperf
-
-## General
-
-Omniperf is a system performance profiling tool for machine
->>>>>>> 38bff8bc (Docs: refactor and integrate into ROCm docs portal (#362))
 learning/HPC workloads running on AMD MI GPUs. The tool presently
 targets usage on MI100, MI200, and MI300 accelerators.
 
 * For more information on available features, installation steps, and
 workload profiling and analysis, please refer to the online
-<<<<<<< HEAD
 [documentation](https://rocm.docs.amd.com/projects/rocprofiler-compute/en/latest/).
-=======
-[documentation](https://rocm.docs.amd.com/projects/omniperf/en/latest/).
->>>>>>> 38bff8bc (Docs: refactor and integrate into ROCm docs portal (#362))
 
 * ROCm Compute Profiler is an AMD open source research project and is not supported
 as part of the ROCm software stack. We welcome contributions and
@@ -62,7 +50,7 @@ style reference is provided below for convenience:
                   Keith Lowery and
                   Nicholas Curtis and
                   Cristian Di Pietrantonio},
-  title        = {AMDResearch/rocprof-compute: v2.0.1 (23 September 2024)},
+  title        = {AMDResearch/rocprof-compute: v2.1.0 (27 September 2024)},
   month        = september,
   year         = 2024,
   publisher    = {Zenodo},
