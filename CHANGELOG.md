@@ -24,7 +24,7 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
   * reduced running time of Omniperf when profiling (#384) 
   * console logging improvements
 
-## (Unreleased) Omniperf 2.1.0 for ROCm 6.2.2
+## Omniperf 2.1.0 for ROCm 6.2.2
 
 ### Changes
 
