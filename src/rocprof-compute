@@ -117,17 +117,17 @@ def main():
     # verify required python dependencies
     verify_deps()
 
-    omniperf = rocprof_Compute()
+    rocprof_compute = rocprof_Compute()
 
-    mode = omniperf.get_mode()
+    mode = rocprof_compute.get_mode()
 
     # major omniperf execution modes
     if mode == "profile":
-        omniperf.run_profiler()
+        rocprof_compute.run_profiler()
     elif mode == "database":
-        omniperf.update_db()
+        rocprof_compute.update_db()
     elif mode == "analyze":
-        omniperf.run_analysis()
+        rocprof_compute.run_analysis()
     else:
         console_error("Unsupported execution mode")
 

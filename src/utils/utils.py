@@ -87,12 +87,12 @@ def trace_logger(message, *args, **kwargs):
     logging.log(logging.TRACE, message, *args, **kwargs)
 
 
-def get_version(omniperf_home) -> dict:
+def get_version(rocprof_compute_home) -> dict:
     """Return Omniperf versioning info"""
 
     # symantic version info - note that version file(s) can reside in
     # two locations depending on development vs formal install
-    searchDirs = [omniperf_home, omniperf_home.parent]
+    searchDirs = [rocprof_compute_home, rocprof_compute_home.parent]
     found = False
     versionDir = None
 
@@ -110,7 +110,7 @@ def get_version(omniperf_home) -> dict:
         console_error("Cannot find VERSION file at {}".format(searchDirs))
 
     # git version info
-    gitDir = os.path.join(omniperf_home.parent, ".git")
+    gitDir = os.path.join(rocprof_compute_home.parent, ".git")
     if (shutil.which("git") is not None) and os.path.exists(gitDir):
         gitQuery = subprocess.run(
             ["git", "log", "--pretty=format:%h", "-n", "1"],
