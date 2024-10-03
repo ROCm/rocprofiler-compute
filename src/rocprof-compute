@@ -32,13 +32,9 @@ import sys
 import re
 
 try:
-<<<<<<< HEAD
     from pathlib import Path
     from importlib import metadata
     from rocprof_compute_base import rocprof_Compute
-=======
-    from omniperf_base import rocprof_Compute
->>>>>>> 2ca3b125 (Rename of config.py and its imports. Rename of md files.)
     from utils.utils import console_error
 except ImportError as e:
     # print("Failed to import required modules: " + str(e))
