@@ -88,7 +88,11 @@ def trace_logger(message, *args, **kwargs):
 
 
 def get_version(rocprof_compute_home) -> dict:
+<<<<<<< HEAD
     """Return ROCm Compute Profiler versioning info"""
+=======
+    """Return Omniperf versioning info"""
+>>>>>>> 52b09a8f (Rename of src variables.)
 
     # symantic version info - note that version file(s) can reside in
     # two locations depending on development vs formal install
