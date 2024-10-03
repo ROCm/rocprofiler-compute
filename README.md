@@ -4,7 +4,6 @@
 [![Docs](https://github.com/ROCm/rocprofiler-compute/actions/workflows/docs.yml/badge.svg)](https://rocm.github.io/rocprofiler-compute/)
 [![DOI](https://zenodo.org/badge/561919887.svg)](https://zenodo.org/badge/latestdoi/561919887)
 
-<<<<<<< HEAD
 # ROCm Compute Profiler
 
 ## General
