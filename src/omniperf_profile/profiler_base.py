@@ -51,7 +51,7 @@ class OmniProfiler_Base:
         self.__profiler = profiler_mode
         self._soc = soc  # OmniSoC obj
         self.__perfmon_dir = os.path.join(
-            str(config.omniperf_home), "omniperf_soc", "profile_configs"
+            str(config.rocprof_compute_home), "omniperf_soc", "profile_configs"
         )
 
     def get_args(self):

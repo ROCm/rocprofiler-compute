@@ -36,7 +36,7 @@ class gfx941_soc(OmniSoC_Base):
         if hasattr(self.get_args(), "roof_only") and self.get_args().roof_only:
             self.set_perfmon_dir(
                 os.path.join(
-                    str(config.omniperf_home),
+                    str(config.rocprof_compute_home),
                     "omniperf_soc",
                     "profile_configs",
                     "gfx940",
@@ -47,7 +47,7 @@ class gfx941_soc(OmniSoC_Base):
             # NB: We're using generalized Mi300 perfmon configs
             self.set_perfmon_dir(
                 os.path.join(
-                    str(config.omniperf_home), "omniperf_soc", "profile_configs", "gfx940"
+                    str(config.rocprof_compute_home), "omniperf_soc", "profile_configs", "gfx940"
                 )
             )
         self.set_compatible_profilers(["rocprofv1", "rocprofv2"])

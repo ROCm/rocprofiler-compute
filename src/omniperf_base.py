@@ -62,7 +62,7 @@ MI300_CHIP_IDS = {
 }
 
 
-class Omniperf:
+class rocprof_Compute:
     def __init__(self):
         self.__args = None
         self.__profiler_mode = None
@@ -111,7 +111,7 @@ class Omniperf:
         return self.__mode
 
     def set_version(self):
-        vData = get_version(config.omniperf_home)
+        vData = get_version(config.rocprof_compute_home)
         self.__version["ver"] = vData["version"]
         self.__version["ver_pretty"] = get_version_display(
             vData["version"], vData["sha"], vData["mode"]
@@ -177,7 +177,7 @@ class Omniperf:
             usage="rocprof-compute [mode] [options]",
         )
         omniarg_parser(
-            parser, config.omniperf_home, self.__supported_archs, self.__version
+            parser, config.rocprof_compute_home, self.__supported_archs, self.__version
         )
         self.__args = parser.parse_args()
 

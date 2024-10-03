@@ -34,7 +34,7 @@ class gfx908_soc(OmniSoC_Base):
         self.set_arch("gfx908")
         self.set_perfmon_dir(
             os.path.join(
-                str(config.omniperf_home),
+                str(config.rocprof_compute_home),
                 "omniperf_soc",
                 "profile_configs",
                 self.get_arch(),

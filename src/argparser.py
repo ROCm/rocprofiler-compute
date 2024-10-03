@@ -34,11 +34,11 @@ def print_avail_arch(avail_arch: list):
     return ret_str
 
 
-def add_general_group(parser, omniperf_version):
+def add_general_group(parser, rocprof_compute_version):
     general_group = parser.add_argument_group("General Options")
 
     general_group.add_argument(
-        "-v", "--version", action="version", version=omniperf_version["ver_pretty"]
+        "-v", "--version", action="version", version=rocprof_compute_version["ver_pretty"]
     )
     general_group.add_argument(
         "-V",
@@ -57,14 +57,14 @@ def add_general_group(parser, omniperf_version):
         )
 
 
-def omniarg_parser(parser, omniperf_home, supported_archs, omniperf_version):
+def omniarg_parser(parser, rocprof_compute_home, supported_archs, rocprof_compute_version):
     # -----------------------------------------
     # Parse arguments (dependent on mode)
     # -----------------------------------------
 
     ## General Command Line Options
     ## ----------------------------
-    add_general_group(parser, omniperf_version)
+    add_general_group(parser, rocprof_compute_version)
     parser._positionals.title = "Modes"
     parser._optionals.title = "Help"
 
@@ -98,7 +98,7 @@ Examples:
     )
     profile_parser._optionals.title = "Help"
 
-    add_general_group(profile_parser, omniperf_version)
+    add_general_group(profile_parser, rocprof_compute_version)
     profile_group = profile_parser.add_argument_group("Profile Options")
     roofline_group = profile_parser.add_argument_group("Standalone Roofline Options")
 
@@ -290,7 +290,7 @@ Examples:
     )
     db_parser._optionals.title = "Help"
 
-    add_general_group(db_parser, omniperf_version)
+    add_general_group(db_parser, rocprof_compute_version)
     interaction_group = db_parser.add_argument_group("Interaction Type")
     connection_group = db_parser.add_argument_group("Connection Options")
 
@@ -383,7 +383,7 @@ Examples:
     )
     analyze_parser._optionals.title = "Help"
 
-    add_general_group(analyze_parser, omniperf_version)
+    add_general_group(analyze_parser, rocprof_compute_version)
     analyze_group = analyze_parser.add_argument_group("Analyze Options")
     analyze_advanced_group = analyze_parser.add_argument_group("Advanced Options")
 
@@ -499,7 +499,7 @@ Examples:
         dest="config_dir",
         metavar="",
         help="\t\tSpecify the directory of customized configs.",
-        default=omniperf_home.joinpath("omniperf_soc/analysis_configs/"),
+        default=rocprof_compute_home.joinpath("omniperf_soc/analysis_configs/"),
     )
     analyze_advanced_group.add_argument(
         "--save-dfs",

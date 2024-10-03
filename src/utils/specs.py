@@ -91,7 +91,7 @@ def generate_machine_specs(args, sysinfo: dict = None):
             console_error(
                 "Detected mismatch in sysinfo versioning. You need to reprofile to update data."
             )
-        version = get_version(config.omniperf_home)["version"]
+        version = get_version(config.rocprof_compute_home)["version"]
         if sysinfo_ver != version[: version.find(".")]:
             console_error(
                 "Detected mismatch in sysinfo versioning. You need to reprofile to update data."
@@ -106,7 +106,7 @@ def generate_machine_specs(args, sysinfo: dict = None):
     hostname = socket.gethostname()
 
     # set specs version
-    vData = get_version(config.omniperf_home)
+    vData = get_version(config.rocprof_compute_home)
     version = vData["version"]
     # NB: Just taking major as specs version. May want to make this more specific in the future
     specs_version = version[

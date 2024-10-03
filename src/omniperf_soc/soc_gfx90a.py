@@ -36,7 +36,7 @@ class gfx90a_soc(OmniSoC_Base):
         if hasattr(self.get_args(), "roof_only") and self.get_args().roof_only:
             self.set_perfmon_dir(
                 os.path.join(
-                    str(config.omniperf_home),
+                    str(config.rocprof_compute_home),
                     "omniperf_soc",
                     "profile_configs",
                     self.get_arch(),
@@ -46,7 +46,7 @@ class gfx90a_soc(OmniSoC_Base):
         else:
             self.set_perfmon_dir(
                 os.path.join(
-                    str(config.omniperf_home),
+                    str(config.rocprof_compute_home),
                     "omniperf_soc",
                     "profile_configs",
                     self.get_arch(),

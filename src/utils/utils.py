@@ -470,8 +470,8 @@ def mibench(args, mspec):
         # check two potential locations for roofline binaries due to differences in
         # development usage vs formal install
         potential_paths = [
-            "%s/utils/rooflines/roofline" % config.omniperf_home,
-            "%s/bin/roofline" % config.omniperf_home.parent.parent,
+            "%s/utils/rooflines/roofline" % config.rocprof_compute_home,
+            "%s/bin/roofline" % config.rocprof_compute_home.parent.parent,
         ]
 
         for dir in potential_paths:
