@@ -121,7 +121,7 @@ def main():
 
     mode = rocprof_compute.get_mode()
 
-    # major rocprof_compute execution modes
+    # major rocprof-compute execution modes
     if mode == "profile":
         rocprof_compute.run_profiler()
     elif mode == "database":
