@@ -61,7 +61,7 @@ def verify_deps_version(localVer, desiredVer, operator):
 def verify_deps():
     """Utility to read library dependencies from requirements.txt and endeavor
     to load them within current execution environment.
-    Used in top-level omniperf to provide error messages if necessary
+    Used in top-level rocprof-compute to provide error messages if necessary
     dependencies are not available."""
 
     # Check which version of python is being used
