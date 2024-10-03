@@ -33,7 +33,7 @@ from importlib import import_module, metadata
 import re
 
 try:
-    from omniperf_base import rocprof_Compute
+    from rocprof_compute_base import rocprof_Compute
     from utils.utils import console_error
 except:
     pass

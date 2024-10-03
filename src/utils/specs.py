@@ -58,7 +58,7 @@ VERSION_LOC = [
 
 
 def detect_arch(_rocminfo):
-    from omniperf_base import SUPPORTED_ARCHS
+    from rocprof_compute_base import SUPPORTED_ARCHS
 
     for idx1, linetext in enumerate(_rocminfo):
         gpu_arch = search(r"^\s*Name\s*:\s+ ([a-zA-Z0-9]+)\s*$", linetext)
