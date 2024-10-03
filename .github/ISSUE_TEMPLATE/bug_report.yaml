@@ -115,11 +115,7 @@ body:
     id: logs
     attributes:
       label: Relevant log output
-<<<<<<< HEAD
-      description: Please copy and paste rocprof-compute's `log.txt` file. This will be automatically formatted into code, so no need for backticks.
-=======
-      description: Please copy and paste Omniperf's `log.txt` file. This will be automatically formatted into code, so no need for backticks.
->>>>>>> 1cc960d7 (Update issue template)
+      description: Please copy and paste rocprof-Compute's `log.txt` file. This will be automatically formatted into code, so no need for backticks.
       render: shell
 
   - type: textarea
