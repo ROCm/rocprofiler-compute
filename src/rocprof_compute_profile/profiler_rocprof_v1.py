@@ -24,7 +24,7 @@
 
 import os
 
-from omniperf_profile.profiler_base import OmniProfiler_Base
+from rocprof_compute_profile.profiler_base import OmniProfiler_Base
 from utils.utils import demarcate, replace_timestamps, console_log
 
 

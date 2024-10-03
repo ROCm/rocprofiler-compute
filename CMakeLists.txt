@@ -316,9 +316,9 @@ install(
     DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${PROJECT_NAME}
     COMPONENT main
     PATTERN "__pycache__" EXCLUDE)
-# src/omniperf_profile
+# src/rocprof_compute_profile
 install(
-    DIRECTORY src/omniperf_profile
+    DIRECTORY src/rocprof_compute_profile
     DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${PROJECT_NAME}
     COMPONENT main
     PATTERN "__pycache__" EXCLUDE)
