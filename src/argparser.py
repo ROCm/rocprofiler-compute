@@ -499,7 +499,7 @@ Examples:
         dest="config_dir",
         metavar="",
         help="\t\tSpecify the directory of customized configs.",
-        default=rocprof_compute_home.joinpath("omniperf_soc/analysis_configs/"),
+        default=rocprof_compute_home.joinpath("rocprof_compute_soc/analysis_configs/"),
     )
     analyze_advanced_group.add_argument(
         "--save-dfs",

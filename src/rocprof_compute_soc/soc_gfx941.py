@@ -24,20 +24,20 @@
 
 import os
 import config
-from omniperf_soc.soc_base import OmniSoC_Base
+from rocprof_compute_soc.soc_base import OmniSoC_Base
 from utils.utils import demarcate, mibench, console_log, console_error
 from roofline import Roofline
 
 
-class gfx942_soc(OmniSoC_Base):
+class gfx941_soc(OmniSoC_Base):
     def __init__(self, args, mspec):
         super().__init__(args, mspec)
-        self.set_arch("gfx942")
+        self.set_arch("gfx941")
         if hasattr(self.get_args(), "roof_only") and self.get_args().roof_only:
             self.set_perfmon_dir(
                 os.path.join(
                     str(config.rocprof_compute_home),
-                    "omniperf_soc",
+                    "rocprof_compute_soc",
                     "profile_configs",
                     "gfx940",
                     "roofline",
@@ -47,7 +47,7 @@ class gfx942_soc(OmniSoC_Base):
             # NB: We're using generalized Mi300 perfmon configs
             self.set_perfmon_dir(
                 os.path.join(
-                    str(config.rocprof_compute_home), "omniperf_soc", "profile_configs", "gfx940"
+                    str(config.rocprof_compute_home), "rocprof_compute_soc", "profile_configs", "gfx940"
                 )
             )
         self.set_compatible_profilers(["rocprofv1", "rocprofv2"])
@@ -64,17 +64,10 @@ class gfx942_soc(OmniSoC_Base):
                 "SPI": 2,
                 "GRBM": 2,
                 "GDS": 4,
-                "TCC_channels": 16,
+                "TCC_channels": 32,
             }
         )
         # self.roofline_obj = Roofline(args, self._mspec)
-
-        # Workaround for broken --showmclkrange
-        # MI300X/MI300A/MI308X have 1300MHz mclk
-        if self._mspec.gpu_model == "MI300":
-            if self._mspec.max_mclk == None or self._mspec.cur_mclk == None:
-                self._mspec.max_mclk = 1300
-                self._mspec.cur_mclk = 1300
 
         # Set arch specific specs
         self._mspec._l2_banks = 16

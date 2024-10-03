@@ -174,7 +174,7 @@ def generate_machine_specs(args, sysinfo: dict = None):
     )
     # Load above SoC specs via module import
     try:
-        soc_module = importlib.import_module("omniperf_soc.soc_" + specs.gpu_arch)
+        soc_module = importlib.import_module("rocprof_compute_soc.soc_" + specs.gpu_arch)
     except ModuleNotFoundError as e:
         console_error(
             "Arch %s marked as supported, but couldn't find class implementation %s."

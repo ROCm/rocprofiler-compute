@@ -310,9 +310,9 @@ install(
     PROGRAMS ${rooflinebins}
     DESTINATION ${CMAKE_INSTALL_BINDIR}
     COMPONENT main)
-# src/omniperf_soc
+# src/rocprof_compute_soc
 install(
-    DIRECTORY src/omniperf_soc
+    DIRECTORY src/rocprof_compute_soc
     DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${PROJECT_NAME}
     COMPONENT main
     PATTERN "__pycache__" EXCLUDE)

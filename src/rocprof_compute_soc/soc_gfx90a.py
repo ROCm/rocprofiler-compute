@@ -24,7 +24,7 @@
 
 import os
 import config
-from omniperf_soc.soc_base import OmniSoC_Base
+from rocprof_compute_soc.soc_base import OmniSoC_Base
 from utils.utils import demarcate, mibench, console_log
 from roofline import Roofline
 
@@ -37,7 +37,7 @@ class gfx90a_soc(OmniSoC_Base):
             self.set_perfmon_dir(
                 os.path.join(
                     str(config.rocprof_compute_home),
-                    "omniperf_soc",
+                    "rocprof_compute_soc",
                     "profile_configs",
                     self.get_arch(),
                     "roofline",
@@ -47,7 +47,7 @@ class gfx90a_soc(OmniSoC_Base):
             self.set_perfmon_dir(
                 os.path.join(
                     str(config.rocprof_compute_home),
-                    "omniperf_soc",
+                    "rocprof_compute_soc",
                     "profile_configs",
                     self.get_arch(),
                 )
