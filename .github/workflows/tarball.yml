@@ -81,7 +81,6 @@ jobs:
       - name: Verify expected paths
         run: |
           # find $INSTALL_DIR
-<<<<<<< HEAD
           test -d $INSTALL_DIR/rocprof-compute
           test -x $INSTALL_DIR/rocprof-compute/bin/rocprofiler-compute
           test -s $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/VERSION
@@ -92,18 +91,6 @@ jobs:
           test -d $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/utils
           test -s $INSTALL_DIR/rocprof-compute/share/rocprofiler-compute/sample/vcopy.cpp
           test -d $INSTALL_DIR/rocprof-compute/share/rocprofiler-compute/modulefiles
-=======
-          test -d $INSTALL_DIR/omniperf
-          test -x $INSTALL_DIR/omniperf/bin/omniperf
-          test -s $INSTALL_DIR/omniperf/libexec/omniperf/VERSION
-          test -s $INSTALL_DIR/omniperf/libexec/omniperf/VERSION.sha
-          test -d $INSTALL_DIR/omniperf/libexec/omniperf/rocprof_compute_analyze
-          test -d $INSTALL_DIR/omniperf/libexec/omniperf/rocprof_compute_profile
-          test -d $INSTALL_DIR/omniperf/libexec/omniperf/rocprof_compute_soc
-          test -d $INSTALL_DIR/omniperf/libexec/omniperf/utils
-          test -s $INSTALL_DIR/omniperf/share/omniperf/sample/vcopy.cpp
-          test -d $INSTALL_DIR/omniperf/share/omniperf/modulefiles
->>>>>>> d36127b1 (Rename all occurrences of omniperf_analyze to rocprof_compute_analyze.)
       - name: Query version (setting PYTHONPATH by hand)
         run: |
           export PYTHONPATH=${INSTALL_DIR}/python-libs:$PYTHONPATH
