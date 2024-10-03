@@ -35,7 +35,7 @@ with open("../VERSION", encoding="utf-8") as f:
     version_number = match[1]
 
 # project info
-project = "Omniperf"
+project = "ROCm Compute Profiler"
 author = "Advanced Micro Devices, Inc."
 copyright = "Copyright (c) 2024 Advanced Micro Devices, Inc. All rights reserved."
 version = version_number
@@ -51,7 +51,7 @@ html_static_path = ["sphinx/static/css"]
 html_css_files = ["o_custom.css"]
 
 external_toc_path = "./sphinx/_toc.yml"
-external_projects_current_project = "omniperf"
+external_projects_current_project = "rocprofiler-compute"
 
 # frequently used external resources
 extlinks = {
