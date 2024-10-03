@@ -290,12 +290,12 @@ install(
           VERSION.sha
     DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${PROJECT_NAME}
     COMPONENT main)
-# src/omniperf_analyze
+# src/rocprof_compute_analyze
 install(
-    DIRECTORY src/omniperf_analyze
+    DIRECTORY src/rocprof_compute_analyze
     DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${PROJECT_NAME}
     COMPONENT main
-    PATTERN src/omniperf_analyze/tests EXCLUDE
+    PATTERN src/rocprof_compute_analyze/tests EXCLUDE
     PATTERN "__pycache__" EXCLUDE)
 # src/utils
 install(
@@ -361,7 +361,7 @@ add_custom_target(
     COMMAND
         ${PROJECT_SOURCE_DIR}/utils/update_license.py --source ${PROJECT_SOURCE_DIR}
         --license ${PROJECT_SOURCE_DIR}/LICENSE --file
-        "src/omniperf,cmake/Dockerfile,cmake/rocm_install.sh,docker/docker-entrypoint.sh,src/omniperf_analyze/convertor/mongodb/convert"
+        "src/omniperf,cmake/Dockerfile,cmake/rocm_install.sh,docker/docker-entrypoint.sh,src/rocprof_compute_analyze/convertor/mongodb/convert"
     )
 
 # TEST collateral

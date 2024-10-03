@@ -85,7 +85,7 @@ jobs:
           test -x $INSTALL_DIR/omniperf/bin/omniperf
           test -s $INSTALL_DIR/omniperf/libexec/omniperf/VERSION
           test -s $INSTALL_DIR/omniperf/libexec/omniperf/VERSION.sha
-          test -d $INSTALL_DIR/omniperf/libexec/omniperf/omniperf_analyze
+          test -d $INSTALL_DIR/omniperf/libexec/omniperf/rocprof_compute_analyze
           test -d $INSTALL_DIR/omniperf/libexec/omniperf/omniperf_profile
           test -d $INSTALL_DIR/omniperf/libexec/omniperf/omniperf_soc
           test -d $INSTALL_DIR/omniperf/libexec/omniperf/utils

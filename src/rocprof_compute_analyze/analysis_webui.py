@@ -22,7 +22,7 @@
 # SOFTWARE.
 ##############################################################################el
 
-from omniperf_analyze.analysis_base import OmniAnalyze_Base
+from rocprof_compute_analyze.analysis_base import OmniAnalyze_Base
 from utils.utils import demarcate, console_debug, console_error
 from utils import file_io, parser
 from utils.gui import build_bar_chart, build_table_chart

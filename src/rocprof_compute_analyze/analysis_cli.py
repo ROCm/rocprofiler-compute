@@ -22,7 +22,7 @@
 # SOFTWARE.
 ##############################################################################el
 
-from omniperf_analyze.analysis_base import OmniAnalyze_Base
+from rocprof_compute_analyze.analysis_base import OmniAnalyze_Base
 from utils.utils import demarcate, console_error
 from utils import file_io, parser, tty
 from utils.kernel_name_shortener import kernel_name_shortener

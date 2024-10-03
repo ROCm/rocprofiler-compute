@@ -31,7 +31,7 @@ pythonpath = [
       "src",
       "src/omniperf_soc",
       "src/utils",
-      "src/omniperf_analyze/utils",
+      "src/rocprof_compute_analyze/utils",
       "tests"
     ]
 
