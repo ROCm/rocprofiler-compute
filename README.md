@@ -26,7 +26,7 @@ contribution process.
 
 ## Development
 
-rocprof-compute follows a
+ROCm Compute Profiler follows a
 [main-dev](https://nvie.com/posts/a-successful-git-branching-model/)
 branching model. As a result, our latest stable release is shipped
 from the `amd-mainline` branch, while new features are developed in our
