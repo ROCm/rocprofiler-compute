@@ -5,6 +5,7 @@
 [![DOI](https://zenodo.org/badge/561919887.svg)](https://zenodo.org/badge/latestdoi/561919887)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # ROCm Compute Profiler
 
 ## General
@@ -17,6 +18,13 @@ ROCm Compute Profiler is a system performance profiling tool for machine
 
 rocprof-compute is a system performance profiling tool for machine
 >>>>>>> 412643e9 (Rebranding of github README.md and AUTHORS.)
+=======
+# ROCm Compute Profiler
+
+## General
+
+ROCm Compute Profiler is a system performance profiling tool for machine
+>>>>>>> dae91af3 (Rebranding of top level md files.)
 learning/HPC workloads running on AMD MI GPUs. The tool presently
 targets usage on MI100, MI200, and MI300 accelerators.
 
@@ -25,10 +33,14 @@ workload profiling and analysis, please refer to the online
 [documentation](https://rocm.docs.amd.com/projects/rocprofiler-compute/en/latest/).
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 * ROCm Compute Profiler is an AMD open source research project and is not supported
 =======
 * rocprof-compute is an AMD open source research project and is not supported
 >>>>>>> 412643e9 (Rebranding of github README.md and AUTHORS.)
+=======
+* ROCm Compute Profiler is an AMD open source research project and is not supported
+>>>>>>> dae91af3 (Rebranding of top level md files.)
 as part of the ROCm software stack. We welcome contributions and
 feedback from the community. Please see the
 [CONTRIBUTING.md](CONTRIBUTING.md) file for additional details on our
@@ -39,10 +51,14 @@ contribution process.
 ## Development
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ROCm Compute Profiler follows a
 =======
 rocprof-compute follows a
 >>>>>>> 412643e9 (Rebranding of github README.md and AUTHORS.)
+=======
+ROCm Compute Profiler follows a
+>>>>>>> dae91af3 (Rebranding of top level md files.)
 [main-dev](https://nvie.com/posts/a-successful-git-branching-model/)
 branching model. As a result, our latest stable release is shipped
 from the `amd-mainline` branch, while new features are developed in our
