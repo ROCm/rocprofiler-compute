@@ -220,7 +220,7 @@ class OmniProfiler_Base:
         df["End_Timestamp"] = endNs
         # finally, join the drop key
         df = df.drop(columns=["key"])
-        # save to file and delete old file(s), skip if we're being called outside of Omniperf
+        # save to file and delete old file(s), skip if we're being called outside of rocprof_Compute
         if type(self.__args.path) == str:
             df.to_csv(out, index=False)
             if not self.__args.verbose:

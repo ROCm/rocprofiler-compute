@@ -150,7 +150,7 @@ class rocprof_Compute:
 
     @demarcate
     def load_soc_specs(self, sysinfo: dict = None):
-        """Load OmniSoC instance for Omniperf run"""
+        """Load OmniSoC instance for rocprof_Compute run"""
         self.__mspec = generate_machine_specs(self.__args, sysinfo)
         if self.__args.specs:
             print(self.__mspec)

@@ -427,7 +427,7 @@ class Roofline:
         else:
             mibench(self.__args, self.__mspec)
 
-    # NB: Currently the post_prossesing() method is the only one being used by omniperf,
+    # NB: Currently the post_prossesing() method is the only one being used by rocprof-compute,
     # we include pre_processing() and profile() methods for those who wish to borrow the roofline module
     @abstractmethod
     def post_processing(self):
