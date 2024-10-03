@@ -4,12 +4,12 @@ LDS examples
 ============
 
 For this example, consider the
-:dev-sample:`LDS sample <lds.hip>` distributed as a part of Omniperf. This
+:dev-sample:`LDS sample <lds.hip>` distributed as a part of ROCm Compute Profiler. This
 code contains two kernels to explore how both :doc:`LDS </conceptual/local-data-share>` bandwidth and
-bank conflicts are calculated in Omniperf.
+bank conflicts are calculated in ROCm Compute Profiler.
 
 This example was compiled and run on an MI250 accelerator using ROCm
-v5.6.0, and Omniperf v2.0.0.
+v5.6.0, and ROCm Compute Profiler v2.0.0.
 
 .. code-block:: shell-session
 
@@ -93,7 +93,7 @@ Recall our definition of this metric:
 
 Here we see that this instruction *could* have loaded up to 256 bytes of
 data (4 bytes for each work-item in the wavefront), and therefore this
-is the expected value for this metric in Omniperf, hence why this metric
+is the expected value for this metric in ROCm Compute Profiler, hence why this metric
 is named the “theoretical” bandwidth.
 
 To further illustrate this point we plot the relationship of the
@@ -104,11 +104,11 @@ launched from 1 to 256:
 .. figure:: ../data/profiling-by-example/ldsbandwidth.png
    :align: center
    :alt: Comparison of effective bandwidth versus the theoretical bandwidth
-         metric in Omniperf for our simple example.
+         metric in ROCm Compute Profiler for our simple example.
    :width: 800
 
    Comparison of effective bandwidth versus the theoretical bandwidth
-   metric in Omniperf for our simple example.
+   metric in ROCm Compute Profiler for our simple example.
 
 Here we see that the theoretical bandwidth metric follows a step-function. It
 increases only when another wavefront issues an LDS instruction for up to 256

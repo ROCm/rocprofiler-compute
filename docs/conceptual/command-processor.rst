@@ -1,6 +1,6 @@
 .. meta::
-   :description: Omniperf performance model: Command processor (CP)
-   :keywords: Omniperf, ROCm, profiler, tool, Instinct, accelerator, command, processor, fetcher, packet processor, CPF, CPC
+   :description: ROCm Compute Profiler performance model: Command processor (CP)
+   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, command, processor, fetcher, packet processor, CPF, CPC
 
 **********************
 Command processor (CP)

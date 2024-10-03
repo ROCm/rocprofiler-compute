@@ -5,7 +5,7 @@ Infinity Fabric transactions
 
  For this example, consider the
  :dev-sample:`Infinity Fabric™ sample <fabric.hip>` distributed as a part of
- Omniperf.
+ ROCm Compute Profiler.
 
 This following code snippet launches a simple read-only kernel.
 
@@ -36,7 +36,7 @@ is identically false -- and thus we expect no writes.
 
 .. note::
 
-   The actual sample included with Omniperf also includes the ability to select
+   The actual sample included with ROCm Compute Profiler also includes the ability to select
    different operation types (such as atomics, writes). This abbreviated version
    is presented here for reference only.
 
@@ -44,13 +44,13 @@ Finally, this sample code lets the user control the
 :ref:`granularity of an allocation <memory-type>`, the owner of an allocation
 (local HBM, CPU DRAM or remote HBM), and the size of an allocation (the default
 is :math:`\sim4`\ GiB) via command line arguments. In doing so, we can explore
-the impact of these parameters on the L2-Fabric metrics reported by Omniperf to
+the impact of these parameters on the L2-Fabric metrics reported by ROCm Compute Profiler to
 further understand their meaning.
 
 .. note::
 
    All results in this section were generated an a node of Infinity
-   Fabric connected MI250 accelerators using ROCm version 5.6.0, and Omniperf
+   Fabric connected MI250 accelerators using ROCm version 5.6.0, and ROCm Compute Profiler
    version 2.0.0. Although results may vary with ROCm versions and accelerator
    connectivity, we expect the lessons learned here to be broadly applicable.
 

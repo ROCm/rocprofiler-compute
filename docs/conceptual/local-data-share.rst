@@ -1,6 +1,6 @@
 .. meta::
-   :description: Omniperf performance model: Local data share (LDS)
-   :keywords: Omniperf, ROCm, profiler, tool, Instinct, accelerator, local, data, share, LDS
+   :description: ROCm Compute Profiler performance model: Local data share (LDS)
+   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, local, data, share, LDS
 
 **********************
 Local data share (LDS)

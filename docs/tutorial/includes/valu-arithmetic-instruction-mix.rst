@@ -5,7 +5,7 @@ VALU arithmetic instruction mix
 
  For this example, consider the
  :dev-sample:`instruction mix sample <instmix.hip>` distributed as a part
- of Omniperf.
+ of ROCm Compute Profiler.
 
 .. note::
 
@@ -55,7 +55,7 @@ Instruction mix
 ^^^^^^^^^^^^^^^
 
  This example was compiled and run on a MI250 accelerator using ROCm
- v5.6.0, and Omniperf v2.0.0.
+ v5.6.0, and ROCm Compute Profiler v2.0.0.
 
 .. code-block:: shell
 

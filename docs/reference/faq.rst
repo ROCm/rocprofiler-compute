@@ -1,6 +1,6 @@
 .. meta::
-    :description: Omniperf FAQ and troubleshooting
-    :keywords: Omniperf, FAQ, troubleshooting, ROCm, profiler, tool, Instinct,
+    :description: ROCm Compute Profiler FAQ and troubleshooting
+    :keywords: ROCm Compute Profiler, FAQ, troubleshooting, ROCm, profiler, tool, Instinct,
                accelerator, AMD, SSH, error, version, workaround, help
 
 ***
@@ -9,7 +9,7 @@ FAQ
 
 Frequently asked questions and troubleshooting tips.
 
-How do I export profiling data I have already generated using Omniperf?
+How do I export profiling data I have already generated using ROCm Compute Profiler?
 =======================================================================
 
 To interact with the Grafana GUI, you must sync data with the MongoDB

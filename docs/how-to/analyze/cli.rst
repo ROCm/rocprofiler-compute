@@ -1,14 +1,14 @@
 .. meta::
-   :description: Omniperf analysis: CLI analysis
-   :keywords: Omniperf, ROCm, profiler, tool, Instinct, accelerator, command line, analyze, filtering, metrics, baseline, comparison
+   :description: ROCm Compute Profiler analysis: CLI analysis
+   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, command line, analyze, filtering, metrics, baseline, comparison
 
 ************
 CLI analysis
 ************
 
-This section provides an overview of Omniperf's CLI analysis features.
+This section provides an overview of ROCm Compute Profiler's CLI analysis features.
 
-* :ref:`Derived metrics <cli-list-metrics>`: All of Omniperf's built-in metrics.
+* :ref:`Derived metrics <cli-list-metrics>`: All of ROCm Compute Profiler's built-in metrics.
 
 * :ref:`Baseline comparison <analysis-baseline-comparison>`: Compare multiple
   runs in a side-by-side manner.
@@ -26,7 +26,7 @@ Run ``omniperf analyze -h`` for more details.
 Walkthrough
 ===========
 
-1. To begin, generate a high-level analysis report using Omniperf's ``-b`` (or ``--block``) flag. 
+1. To begin, generate a high-level analysis report using ROCm Compute Profiler's ``-b`` (or ``--block``) flag. 
 
    .. code-block:: shell
 
@@ -40,7 +40,7 @@ Walkthrough
                               |_|                  
 
       Analysis mode = cli
-      [analysis] deriving Omniperf metrics...
+      [analysis] deriving ROCm Compute Profiler metrics...
 
       --------------------------------------------------------------------------------
       0. Top Stats
@@ -146,7 +146,7 @@ Walkthrough
                               |_|                  
 
       Analysis mode = cli
-      [analysis] deriving Omniperf metrics...
+      [analysis] deriving ROCm Compute Profiler metrics...
       0 -> Top Stats
       1 -> System Info
       2 -> System Speed-of-Light
@@ -280,7 +280,7 @@ Walkthrough
 4. Optimize the application, iterate, and re-profile to inspect performance
    changes.
 
-5. Redo a comprehensive analysis with Omniperf CLI at any optimization
+5. Redo a comprehensive analysis with ROCm Compute Profiler CLI at any optimization
    milestone.
 
 .. _cli-analysis-options:
@@ -322,7 +322,7 @@ Filter kernels
      $ omniperf analyze -p workloads/vcopy/MI200/ --list-stats
 
      Analysis mode = cli
-     [analysis] deriving Omniperf metrics...
+     [analysis] deriving ROCm Compute Profiler metrics...
 
      --------------------------------------------------------------------------------
      Detected Kernels (sorted descending by duration)
@@ -349,7 +349,7 @@ Filter kernels
      $ omniperf analyze -p workloads/vcopy/MI200/ -k 0
 
      Analysis mode = cli
-     [analysis] deriving Omniperf metrics...
+     [analysis] deriving ROCm Compute Profiler metrics...
 
      --------------------------------------------------------------------------------
      0. Top Stats

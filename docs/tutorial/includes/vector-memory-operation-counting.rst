@@ -10,7 +10,7 @@ Global / Generic (FLAT)
 
 For this example, consider the
 :dev-sample:`vector memory sample <vmem.hip>` distributed as a part of
-Omniperf. This code launches many different versions of a simple
+ROCm Compute Profiler. This code launches many different versions of a simple
 read/write/atomic-only kernels targeting various address spaces. For example,
 below is our simple ``global_write`` kernel:
 
@@ -24,7 +24,7 @@ below is our simple ``global_write`` kernel:
 .. note::
 
    This example was compiled and run on an MI250 accelerator using ROCm
-   v5.6.0, and Omniperf v2.0.0.
+   v5.6.0, and ROCm Compute Profiler v2.0.0.
 
 .. code-block:: shell-session
 
@@ -304,7 +304,7 @@ Here we observe a now familiar pattern:
   the compiler to statically eliminate, but is identically false. In this
   case, our ``main()`` function initializes the data in ``ptr`` to zero.
 
-Running Omniperf on this kernel yields:
+Running ROCm Compute Profiler on this kernel yields:
 
 .. code-block:: shell-session
 
@@ -383,7 +383,7 @@ false conditional (both ``zero`` and ``filter`` are set to zero in the
 kernel launch). Note that this is a *different* conditional from our
 pointer assignment (to avoid combination of the two).
 
-Running Omniperf on this kernel reports:
+Running ROCm Compute Profiler on this kernel reports:
 
 .. code-block:: shell-session
 
@@ -468,7 +468,7 @@ to a pointer.
    }
 
 
-Running Omniperf on this kernel yields:
+Running ROCm Compute Profiler on this kernel yields:
 
 .. code-block:: shell-session
 
@@ -537,7 +537,7 @@ operation targets both LDS and global memory:
 This assigns every other work-item to atomically update global memory or
 local memory.
 
-Running this kernel through Omniperf shows:
+Running this kernel through ROCm Compute Profiler shows:
 
 .. code-block:: shell-session
 
@@ -647,13 +647,13 @@ Our strategy here is to:
   to global memory to prevent the compiler from optimizing it out.
 
 This example was compiled and run on an MI250 accelerator using ROCm v5.6.0, and
-Omniperf v2.0.0.
+ROCm Compute Profiler v2.0.0.
 
 .. code-block:: shell-session
 
    $ hipcc -O3 stack.hip -o stack.hip
 
-And profiled using Omniperf:
+And profiled using ROCm Compute Profiler:
 
 .. code-block:: shell-session
 
