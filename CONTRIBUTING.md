@@ -5,18 +5,8 @@ To keep our development fast and conflict free, we recommend you to [fork](https
 Afterwards, git clone your repository to your local machine. But that is not it! To keep track of the original develop repository, add it as another remote.
 
 ```
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 git remote add mainline https://github.com/ROCm/rocprofiler-compute.git
-=======
-git remote add mainline https://github.com/ROCm/omniperf.git
->>>>>>> 33099901 (Rebranding of top level md files.)
 git checkout amd-staging
-=======
-git remote add mainline https://github.com/ROCm/rocprofiler-compute.git
-git checkout dev
->>>>>>> 48ade826 (Rebranding of top level md files.)
 ```
 
 As always in git, start a new branch with
