@@ -507,11 +507,7 @@ Examples:
         dest="config_dir",
         metavar="",
         help="\t\tSpecify the directory of customized configs.",
-<<<<<<< HEAD
         default=rocprof_compute_home.joinpath("rocprof_compute_soc/analysis_configs/"),
-=======
-        default=rocprof_compute_home.joinpath("omniperf_soc/analysis_configs/"),
->>>>>>> b62b85c1 (Rename of config.py and its imports. Rename of md files.)
     )
     analyze_advanced_group.add_argument(
         "--save-dfs",
