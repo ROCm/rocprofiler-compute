@@ -24,7 +24,7 @@
 # SOFTWARE.
 ##############################################################################el
 
-pushd /var/lib/grafana/plugins/omniperf_plugin
+pushd /var/lib/grafana/plugins/rocprof-compute_plugin
 npm run server &
 popd
 
