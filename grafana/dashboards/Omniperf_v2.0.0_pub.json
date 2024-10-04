@@ -12827,8 +12827,13 @@
       {
         "current": {
           "selected": true,
+<<<<<<< HEAD
           "text": "rocprofiler-compute_pymongo4_Vcopy_gfx90a",
           "value": "rocprofiler-compute_pymongo4_Vcopy_gfx90a"
+=======
+          "text": "rocprof-compute_pymongo4_Vcopy_gfx90a",
+          "value": "rocprof-compute_pymongo4_Vcopy_gfx90a"
+>>>>>>> 2e84e884 (Rename of grafana dir.)
         },
         "definition": "workload_names.names.aggregate([\n  {\"$group\": {\n    \"_id\": \"&name\"\n  }}\n]);",
         "hide": 0,
