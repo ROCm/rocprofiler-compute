@@ -1,6 +1,6 @@
 local help_message = [[
 
-Omniperf is an open-source performance analysis tool for profiling
+ROCm Compute Profiler is an open-source performance analysis tool for profiling
 machine learning/HPC workloads running on AMD MI GPUs.
 
 Version @OMNIPERF_FULL_VERSION@
@@ -8,11 +8,11 @@ Version @OMNIPERF_FULL_VERSION@
 
 help(help_message,"\n")
 
-whatis("Name: omniperf")
+whatis("Name: rocprof-compute")
 whatis("Version: @OMNIPERF_FULL_VERSION@")
 whatis("Keywords: Profiling, Performance, GPU")
 whatis("Description: tool for GPU performance profiling")
-whatis("URL: https://github.com/ROCm/omniperf")
+whatis("URL: https://github.com/ROCm/rocprofiler-compute")
 
 -- Export environmental variables
 local topDir="@CMAKE_INSTALL_PREFIX@"
