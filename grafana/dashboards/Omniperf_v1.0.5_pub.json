@@ -13324,7 +13324,11 @@
   },
   "timepicker": {},
   "timezone": "",
+<<<<<<< HEAD
   "title": "rocprof-compute_v1.0.5_pub",
+=======
+  "title": "rocprof-Compute_v1.0.5_pub",
+>>>>>>> 9f6fe40a (Rename of grafana dir.)
   "uid": "MIPerf_v1_0_0630202211",
   "version": 3,
   "weekStart": ""
