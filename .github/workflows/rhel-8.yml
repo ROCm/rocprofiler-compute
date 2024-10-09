@@ -42,11 +42,7 @@ jobs:
         run: |
           mkdir build
           cd build
-<<<<<<< HEAD
           cmake -DCMAKE_INSTALL_PREFIX=/opt/rocprofiler-compute -DPYTEST_NUMPROCS=4 ..
-=======
-          cmake -DCMAKE_INSTALL_PREFIX=/opt/rocprof-compute -DPYTEST_NUMPROCS=4 ..
->>>>>>> 17c5b980 (Rename of .github dir.)
           make install
       - name: CTest- Analyze Commands
         run: |

@@ -115,11 +115,7 @@ body:
     id: logs
     attributes:
       label: Relevant log output
-<<<<<<< HEAD
       description: Please copy and paste rocprof-compute's `log.txt` file. This will be automatically formatted into code, so no need for backticks.
-=======
-      description: Please copy and paste rocprof-Compute's `log.txt` file. This will be automatically formatted into code, so no need for backticks.
->>>>>>> 17c5b980 (Rename of .github dir.)
       render: shell
 
   - type: textarea
