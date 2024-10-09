@@ -2,8 +2,6 @@
 
 pyinstaller src/rocprofiler-compute.py \
     --name "rocprofiler-compute" \
-pyinstaller src/rocprofiler-compute.py \
-    --name "rocprofiler-compute" \
     --add-data "src/perfmon_pub/*:perfmon_pub" \
     --add-data "src/utils/*:utils" \
     --add-data "src/soc_params/*.csv:soc_params" \
