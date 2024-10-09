@@ -17,7 +17,7 @@ exclude = '''
     | external
     | .pytest_cache
     | build
-    | build-omniperf
+    | build-rocprof_compute
   )/
 )
 '''
