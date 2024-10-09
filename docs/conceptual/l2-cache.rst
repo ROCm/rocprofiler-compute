@@ -314,7 +314,6 @@ by ROCm Compute Profiler:
 .. figure:: ../data/performance-model/fabric.png
    :align: center
    :alt: L2-Fabric transaction flow on AMD Instinct MI-series accelerators
-   :width: 800
 
    L2↔Fabric transaction flow on AMD Instinct MI-series accelerators.
 
@@ -355,7 +354,6 @@ flow splits at this point:
 .. figure:: ../data/performance-model/split.*
    :align: center
    :alt: Splitting request flow
-   :width: 800
 
    Splitting request flow
 
@@ -365,7 +363,6 @@ uncached write request, as reflected by a non-split flow:
 .. figure:: ../data/performance-model/nosplit.*
    :align: center
    :alt: Non-splitting request flow
-   :width: 800
 
    Non-splitting request flow
 
@@ -379,7 +376,6 @@ counted as *two* uncached read requests (that is, the request is split):
 .. figure:: ../data/performance-model/uncached.*
    :align: center
    :alt: Uncached read-request splitting
-   :width: 800
 
    Uncached read-request splitting.
 
