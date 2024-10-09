@@ -2,6 +2,8 @@
 
 pyinstaller src/rocprofiler-compute.py \
     --name "rocprofiler-compute" \
+pyinstaller src/rocprofiler-compute.py \
+    --name "rocprofiler-compute" \
     --add-data "src/perfmon_pub/*:perfmon_pub" \
     --add-data "src/utils/*:utils" \
     --add-data "src/soc_params/*.csv:soc_params" \
@@ -54,16 +56,12 @@ echo "(build.sh) Loading dash_svg"
 dash_info=$(pip3 show dash_svg)
 dash_loc=$(sed -n '8p' <<<"$dash_info")
 cp -r ${dash_loc:10}/dash_svg "$distpath"/rocprofiler-compute/
+cp -r ${dash_loc:10}/dash_svg "$distpath"/rocprofiler-compute/
 
 echo "(build.sh) Fixing flattened directories"
 #TODO: Copy orig file structure from over to flattened packaged version
-<<<<<<< HEAD
 rm -rf "$distpath"/rocprofiler-compute/rocprof_compute_analyze/
 cp -r src/rocprof_compute_analyze/ "$distpath"/rocprofiler-compute/
-=======
-rm -rf "$distpath"/omniperf/rocprof_compute_analyze/
-cp -r src/rocprof_compute_analyze/ "$distpath"/omniperf/
->>>>>>> 724e735a (Rename all occurrences of omniperf_analyze to rocprof_compute_analyze.)
 
 rm -rf "$distpath"/rocprofiler-compute/perfmon_pub/
 cp -r src/perfmon_pub/ "$distpath"/rocprofiler-compute/
