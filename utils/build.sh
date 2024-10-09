@@ -2,8 +2,11 @@
 
 pyinstaller src/rocprofiler-compute.py \
     --name "rocprofiler-compute" \
+<<<<<<< HEAD
 pyinstaller src/rocprofiler-compute.py \
     --name "rocprofiler-compute" \
+=======
+>>>>>>> 79d87081 (Rename CMake file and rename paths from omniperf to rocprofcompute.)
     --add-data "src/perfmon_pub/*:perfmon_pub" \
     --add-data "src/utils/*:utils" \
     --add-data "src/soc_params/*.csv:soc_params" \
@@ -55,7 +58,6 @@ echo "(build.sh) Loading dash_svg"
 # Take care of dash-svg module that isn't detected by PyInstaller
 dash_info=$(pip3 show dash_svg)
 dash_loc=$(sed -n '8p' <<<"$dash_info")
-cp -r ${dash_loc:10}/dash_svg "$distpath"/rocprofiler-compute/
 cp -r ${dash_loc:10}/dash_svg "$distpath"/rocprofiler-compute/
 
 echo "(build.sh) Fixing flattened directories"
