@@ -286,8 +286,8 @@ install(
     COMPONENT main)
 # support files and version info
 install(
-    FILES src/argparser.py src/config.py src/rocprof_compute_base.py src/roofline.py VERSION
-          VERSION.sha
+    FILES src/argparser.py src/config.py src/rocprof_compute_base.py src/roofline.py
+          VERSIONVERSION.sha
     DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${PROJECT_NAME}
     COMPONENT main)
 # src/rocprof_compute_analyze

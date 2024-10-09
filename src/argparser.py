@@ -57,7 +57,9 @@ def add_general_group(parser, rocprof_compute_version):
         )
 
 
-def omniarg_parser(parser, rocprof_compute_home, supported_archs, rocprof_compute_version):
+def omniarg_parser(
+    parser, rocprof_compute_home, supported_archs, rocprof_compute_version
+):
     # -----------------------------------------
     # Parse arguments (dependent on mode)
     # -----------------------------------------

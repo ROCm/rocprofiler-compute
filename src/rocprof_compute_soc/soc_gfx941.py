@@ -47,7 +47,10 @@ class gfx941_soc(OmniSoC_Base):
             # NB: We're using generalized Mi300 perfmon configs
             self.set_perfmon_dir(
                 os.path.join(
-                    str(config.rocprof_compute_home), "rocprof_compute_soc", "profile_configs", "gfx940"
+                    str(config.rocprof_compute_home),
+                    "rocprof_compute_soc",
+                    "profile_configs",
+                    "gfx940",
                 )
             )
         self.set_compatible_profilers(["rocprofv1", "rocprofv2"])
