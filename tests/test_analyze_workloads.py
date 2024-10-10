@@ -550,6 +550,7 @@ def test_analyze_dispatch_7_MI300X_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_dispatch_7_MI100():
     with pytest.raises(SystemExit) as e:
         with patch(
@@ -574,6 +575,7 @@ def test_analyze_dispatch_7_MI300A_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_dispatch_7_MI200():
     with pytest.raises(SystemExit) as e:
         with patch(
@@ -597,6 +599,7 @@ def test_analyze_kernel_inv_int_MI300X_A1():
         ):
             rocprof_compute.main()
     assert e.value.code == 0
+
 
 def test_analyze_kernel_inv_int_MI100():
     with pytest.raises(SystemExit) as e:
@@ -626,6 +629,7 @@ def test_analyze_kernel_inv_int_MI300A_A1():
         ):
             rocprof_compute.main()
     assert e.value.code == 0
+
 
 def test_analyze_kernel_inv_int_MI200():
     with pytest.raises(SystemExit) as e:
@@ -684,6 +688,7 @@ def test_analyze_kernel_inv_str_MI300X_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_kernel_inv_str_MI100():
     with pytest.raises(SystemExit) as e:
         with patch(
@@ -712,6 +717,7 @@ def test_analyze_kernel_inv_str_MI300A_A1():
         ):
             rocprof_compute.main()
     assert e.value.code == 0
+
 
 def test_analyze_kernel_inv_str_MI200():
     with pytest.raises(SystemExit) as e:
