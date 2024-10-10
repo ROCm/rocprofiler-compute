@@ -28,7 +28,8 @@ project(
     rocprofcompute
     VERSION ${OMNIPERF_VERSION}
     LANGUAGES C
-    DESCRIPTION "A system performance profiling tool for machine learning/HPC workloads running on AMD MI GPUs"
+    DESCRIPTION
+        "A system performance profiling tool for machine learning/HPC workloads running on AMD MI GPUs"
     HOMEPAGE_URL "https://github.com/ROCm/rocprofiler-compute")
 
 set(PACKAGE_NAME "rocprof-compute")
@@ -400,8 +401,10 @@ set(CPACK_PACKAGE_NAME
     "${PROJECT_NAME}"
     CACHE STRING "")
 set(CPACK_PACKAGE_CONTACT "https://github.com/ROCm/rocprofiler-compute")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ROCm Compute Profiler: tool for GPU performance profiling")
-set(CPACK_RPM_PACKAGE_DESCRIPTION "ROCm Compute Profiler is a performance analysis tool for profiling
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
+    "ROCm Compute Profiler: tool for GPU performance profiling")
+set(CPACK_RPM_PACKAGE_DESCRIPTION
+    "ROCm Compute Profiler is a performance analysis tool for profiling
 machine learning/HPC workloads running on AMD GPUs.")
 set(CPACK_PACKAGE_VENDOR "Advanced Micro Devices, Inc.")
 
