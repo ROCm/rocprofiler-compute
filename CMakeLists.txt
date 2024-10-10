@@ -27,7 +27,7 @@ string(REGEX REPLACE "([0-9]+)\.([0-9]+)\.([0-9]+)(.*)" "\\1.\\2.\\3" OMNIPERF_V
 project(
     rocprofiler-compute
     VERSION ${OMNIPERF_VERSION}
-    LANGUAGES HIP
+    LANGUAGES C
     DESCRIPTION
         "A system performance profiling tool for machine learning/HPC workloads running on AMD MI GPUs"
     HOMEPAGE_URL "https://github.com/ROCm/rocprofiler-compute")
