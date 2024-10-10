@@ -256,7 +256,7 @@ def test_analyze_no_roof_MI300X_A1():
             "sys.argv",
             ["rocprof-compute", "analyze", "--path", "tests/workloads/no_roof/MI300X_A1"],
         ):
-            omniperf.main()
+            rocprof_compute.main()
     assert e.value.code == 0
 
 
@@ -291,7 +291,7 @@ def test_analyze_no_roof_MI300A_A1():
             "sys.argv",
             ["rocprof-compute", "analyze", "--path", "tests/workloads/no_roof/MI300A_A1"],
         ):
-            omniperf.main()
+            rocprof_compute.main()
     assert e.value.code == 0
 
 
@@ -451,7 +451,7 @@ def test_analyze_join_type_grid_MI300X_A1():
                 "tests/workloads/join_type_grid/MI300X_A1",
             ],
         ):
-            omniperf.main()
+            rocprof_compute.main()
     assert e.value.code == 0
 
 
@@ -496,7 +496,7 @@ def test_analyze_join_type_grid_MI300A_A1():
                 "tests/workloads/join_type_grid/MI300A_A1",
             ],
         ):
-            omniperf.main()
+            rocprof_compute.main()
     assert e.value.code == 0
 
 
@@ -514,11 +514,15 @@ def test_analyze_join_type_grid_MI200():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_dispatch_7_MI300A_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/dispatch_7/MI300A_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/dispatch_7/MI300A_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_kernel_MI300X_A1():
@@ -535,11 +539,15 @@ def test_analyze_kernel_MI300X_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_kernel_inv_int_MI300X_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/kernel_inv_int/MI300X_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/kernel_inv_int/MI300X_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_kernel_MI100():
@@ -551,11 +559,15 @@ def test_analyze_kernel_MI100():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_kernel_inv_int_MI300A_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/kernel_inv_int/MI300A_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/kernel_inv_int/MI300A_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_kernel_MI300A_A1():
@@ -572,11 +584,15 @@ def test_analyze_kernel_MI300A_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_mem_levels_vL1D_MI200():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/mem_levels_vL1D/MI200']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/mem_levels_vL1D/MI200"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_kernel_MI200():
@@ -588,11 +604,15 @@ def test_analyze_kernel_MI200():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_kernel_inv_str_MI300X_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/kernel_inv_str/MI300X_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/kernel_inv_str/MI300X_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_kernel_substr_MI300X_A1():
@@ -609,11 +629,15 @@ def test_analyze_kernel_substr_MI300X_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_kernel_inv_str_MI300A_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/kernel_inv_str/MI300A_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/kernel_inv_str/MI300A_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_kernel_substr_MI100():
@@ -630,11 +654,20 @@ def test_analyze_kernel_substr_MI100():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_ipblocks_SQ_SPI_MI300X_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/ipblocks_SQ_SPI/MI300X_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            [
+                "omniperf",
+                "analyze",
+                "--path",
+                "tests/workloads/ipblocks_SQ_SPI/MI300X_A1",
+            ],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_kernel_substr_MI300A_A1():
@@ -651,11 +684,20 @@ def test_analyze_kernel_substr_MI300A_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_ipblocks_SQ_SPI_MI300A_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/ipblocks_SQ_SPI/MI300A_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            [
+                "omniperf",
+                "analyze",
+                "--path",
+                "tests/workloads/ipblocks_SQ_SPI/MI300A_A1",
+            ],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_kernel_substr_MI200():
@@ -672,11 +714,15 @@ def test_analyze_kernel_substr_MI200():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_dispatch_2_MI300X_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/dispatch_2/MI300X_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/dispatch_2/MI300X_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_dispatch_7_MI300X_A1():
@@ -693,11 +739,16 @@ def test_analyze_dispatch_7_MI300X_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_dispatch_2_MI300A_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/dispatch_2/MI300A_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/dispatch_2/MI300A_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
+
 
 def test_analyze_dispatch_7_MI100():
     with pytest.raises(SystemExit) as e:
@@ -728,11 +779,16 @@ def test_analyze_dispatch_7_MI300A_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_dispatch_0_1_MI300X_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/dispatch_0_1/MI300X_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/dispatch_0_1/MI300X_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
+
 
 def test_analyze_dispatch_7_MI200():
     with pytest.raises(SystemExit) as e:
@@ -763,11 +819,16 @@ def test_analyze_kernel_inv_int_MI300X_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_dispatch_0_1_MI300A_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/dispatch_0_1/MI300A_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/dispatch_0_1/MI300A_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
+
 
 def test_analyze_kernel_inv_int_MI100():
     with pytest.raises(SystemExit) as e:
@@ -798,11 +859,16 @@ def test_analyze_kernel_inv_int_MI300A_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_dispatch_6_8_MI300X_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/dispatch_6_8/MI300X_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/dispatch_6_8/MI300X_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
+
 
 def test_analyze_kernel_inv_int_MI200():
     with pytest.raises(SystemExit) as e:
@@ -833,11 +899,15 @@ def test_analyze_mem_levels_vL1D_MI200():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_dispatch_6_8_MI300A_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/dispatch_6_8/MI300A_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/dispatch_6_8/MI300A_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_sort_kernels_MI200():
@@ -854,11 +924,15 @@ def test_analyze_sort_kernels_MI200():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_device_inv_int_MI300X_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/device_inv_int/MI300X_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/device_inv_int/MI300X_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_kernel_inv_str_MI300X_A1():
@@ -875,11 +949,16 @@ def test_analyze_kernel_inv_str_MI300X_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_device_inv_int_MI300A_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/device_inv_int/MI300A_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/device_inv_int/MI300A_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
+
 
 def test_analyze_kernel_inv_str_MI100():
     with pytest.raises(SystemExit) as e:
@@ -910,11 +989,16 @@ def test_analyze_kernel_inv_str_MI300A_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_ipblocks_SQ_TA_MI300X_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/ipblocks_SQ_TA/MI300X_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/ipblocks_SQ_TA/MI300X_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
+
 
 def test_analyze_kernel_inv_str_MI200():
     with pytest.raises(SystemExit) as e:
@@ -945,11 +1029,15 @@ def test_analyze_ipblocks_SQ_SPI_MI300X_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_ipblocks_SQ_TA_MI300A_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/ipblocks_SQ_TA/MI300A_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/ipblocks_SQ_TA/MI300A_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_ipblocks_SQ_SPI_MI100():
@@ -1086,11 +1174,20 @@ def test_analyze_dispatch_0_1_MI100():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_join_type_kernel_MI300X_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/join_type_kernel/MI300X_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            [
+                "omniperf",
+                "analyze",
+                "--path",
+                "tests/workloads/join_type_kernel/MI300X_A1",
+            ],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_dispatch_0_1_MI300A_A1():
@@ -1107,11 +1204,20 @@ def test_analyze_dispatch_0_1_MI300A_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_join_type_kernel_MI300A_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/join_type_kernel/MI300A_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            [
+                "omniperf",
+                "analyze",
+                "--path",
+                "tests/workloads/join_type_kernel/MI300A_A1",
+            ],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_dispatch_0_1_MI200():
@@ -1128,11 +1234,20 @@ def test_analyze_dispatch_0_1_MI200():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_ipblocks_SQ_SQC_TCP_CPC_MI300X_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/ipblocks_SQ_SQC_TCP_CPC/MI300X_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            [
+                "omniperf",
+                "analyze",
+                "--path",
+                "tests/workloads/ipblocks_SQ_SQC_TCP_CPC/MI300X_A1",
+            ],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_mem_levels_LDS_MI200():
@@ -1284,11 +1399,15 @@ def test_analyze_device_inv_int_MI300X_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_ipblocks_CPF_MI200():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/ipblocks_CPF/MI200']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/ipblocks_CPF/MI200"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_device_inv_int_MI100():
@@ -1590,11 +1709,15 @@ def test_analyze_ipblocks_SQ_SQC_TCP_CPC_MI300X_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_kernel_names_MI200():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/kernel_names/MI200']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/kernel_names/MI200"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_ipblocks_SQ_SQC_TCP_CPC_MI100():
@@ -1626,11 +1749,15 @@ def test_analyze_ipblocks_SQ_SQC_TCP_CPC_MI300A_A1():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_ipblocks_SQ_MI300X_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/ipblocks_SQ/MI300X_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/ipblocks_SQ/MI300X_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_ipblocks_SQ_SQC_TCP_CPC_MI200():
@@ -1737,11 +1864,15 @@ def test_analyze_sort_dispatches_MI200():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_ipblocks_SQ_MI300A_A1():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/ipblocks_SQ/MI300A_A1']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/ipblocks_SQ/MI300A_A1"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_kernel_names_MI200():
@@ -1975,7 +2106,7 @@ def test_analyze_ipblocks_CPC_MI300X_A1():
                 "tests/workloads/ipblocks_CPC/MI300X_A1",
             ],
         ):
-            omniperf.main()
+            rocprof_compute.main()
     assert e.value.code == 0
 
 
@@ -2020,7 +2151,7 @@ def test_analyze_ipblocks_CPC_MI300A_A1():
                 "tests/workloads/ipblocks_CPC/MI300A_A1",
             ],
         ):
-            omniperf.main()
+            rocprof_compute.main()
     assert e.value.code == 0
 
 
@@ -2038,11 +2169,15 @@ def test_analyze_ipblocks_CPC_MI200():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 def test_analyze_ipblocks_SPI_MI100():
-	with pytest.raises(SystemExit) as e:
-		with patch('sys.argv',['omniperf', 'analyze', '--path', 'tests/workloads/ipblocks_SPI/MI100']):
-			omniperf.main()
-	assert e.value.code == 0
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            ["omniperf", "analyze", "--path", "tests/workloads/ipblocks_SPI/MI100"],
+        ):
+            omniperf.main()
+    assert e.value.code == 0
 
 
 def test_analyze_ipblocks_SQ_SPI_TA_TCC_CPF_MI300X_A1():
@@ -2191,5 +2326,5 @@ def test_analyze_ipblocks_SPI_MI200():
                 "tests/workloads/ipblocks_SPI/MI200",
             ],
         ):
-            omniperf.main()
+            rocprof_compute.main()
     assert e.value.code == 0
