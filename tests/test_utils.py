@@ -142,7 +142,7 @@ def launch_omniperf(config, options, workload_dir, check_success=True):
         with patch(
             "sys.argv", options + ["--path", workload_dir, "--"] + config["app_1"]
         ):
-            config["omniperf"].main()
+            config["rocprof-compute"].main()
 
     # verify run status
     if check_success:

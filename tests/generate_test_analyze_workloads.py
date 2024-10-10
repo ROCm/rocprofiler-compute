@@ -31,7 +31,7 @@ if __name__ == "__main__":
                     + workload
                     + "/"
                     + arch
-                    + "']):\n\t\t\tomniperf.main()"
+                    + "']):\n\t\t\trocprof_compute.main()"
                     + "\n\tassert e.value.code == 0"
                 )
                 f.write(test)

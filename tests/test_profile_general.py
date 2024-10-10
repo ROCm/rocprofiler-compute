@@ -34,7 +34,7 @@ def check_arch_override():
 # --
 
 config = {}
-config["omniperf"] = SourceFileLoader("omniperf", "src/omniperf").load_module()
+config["rocprof-compute"] = SourceFileLoader("rocprof-compute", "src/rocprof-compute").load_module()
 config["kernel_name_1"] = "vecCopy(double*, double*, double*, int, int) [clone .kd]"
 config["app_1"] = ["./tests/vcopy", "-n", "1048576", "-b", "256", "-i", "3"]
 config["cleanup"] = True
@@ -364,7 +364,7 @@ def baseline_compare_metric(test_name, workload_dir, args=[]):
     t = subprocess.Popen(
         [
             sys.executable,
-            "src/omniperf",
+            "src/rocprof_compute",
             "analyze",
             "--path",
             Baseline_dir,
@@ -503,7 +503,7 @@ def validate(test_name, workload_dir, file_dict, args=[]):
 def test_path():
     options = baseline_opts
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
 
@@ -526,7 +526,7 @@ def test_path():
 def test_no_roof():
     options = baseline_opts + ["--no-roof"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     if soc == "MI100":
@@ -554,7 +554,7 @@ def test_no_roof():
 def test_kernel_names():
     options = baseline_opts + ["--roof-only", "--kernel-names"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_omniperf(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -589,7 +589,7 @@ def test_device_filter():
 
     options = baseline_opts + ["--device", device_id]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, 1, num_kernels)
     if soc == "MI100":
@@ -617,7 +617,7 @@ def test_device_filter():
 def test_kernel():
     options = baseline_opts + ["--kernel", config["kernel_name_1"]]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     if soc == "MI100":
@@ -643,7 +643,7 @@ def test_kernel():
 def test_block_SQ():
     options = baseline_opts + ["--block", "SQ"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -719,7 +719,7 @@ def test_block_SQ():
 def test_block_SQC():
     options = baseline_opts + ["--block", "SQC"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -749,7 +749,7 @@ def test_block_SQC():
 def test_block_TA():
     options = baseline_opts + ["--block", "TA"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -783,7 +783,7 @@ def test_block_TA():
 def test_block_TD():
     options = baseline_opts + ["--block", "TD"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -831,7 +831,7 @@ def test_block_TD():
 def test_block_TCP():
     options = baseline_opts + ["--block", "TCP"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -867,7 +867,7 @@ def test_block_TCP():
 def test_block_TCC():
     options = baseline_opts + ["--block", "TCC"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -933,7 +933,7 @@ def test_block_TCC():
 def test_block_SPI():
     options = baseline_opts + ["--block", "SPI"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -968,7 +968,7 @@ def test_block_SPI():
 def test_block_CPC():
     options = baseline_opts + ["--block", "CPC"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -996,7 +996,7 @@ def test_block_CPC():
 def test_block_CPF():
     options = baseline_opts + ["--block", "CPF"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -1026,7 +1026,7 @@ def test_block_CPF():
 def test_block_SQ_CPC():
     options = baseline_opts + ["--block", "SQ", "CPC"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -1102,7 +1102,7 @@ def test_block_SQ_CPC():
 def test_block_SQ_TA():
     options = baseline_opts + ["--block", "SQ", "TA"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -1174,7 +1174,7 @@ def test_block_SQ_TA():
 def test_block_SQ_SPI():
     options = baseline_opts + ["--block", "SQ", "SPI"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -1249,7 +1249,7 @@ def test_block_SQ_SPI():
 def test_block_SQ_SQC_TCP_CPC():
     options = baseline_opts + ["--block", "SQ", "SQC", "TCP", "CPC"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -1321,7 +1321,7 @@ def test_block_SQ_SQC_TCP_CPC():
 def test_block_SQ_SPI_TA_TCC_CPF():
     options = baseline_opts + ["--block", "SQ", "SPI", "TA", "TCC", "CPF"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     expected_csvs = [
@@ -1397,7 +1397,7 @@ def test_block_SQ_SPI_TA_TCC_CPF():
 def test_dispatch_0():
     options = baseline_opts + ["--dispatch", "0"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, 1)
     if soc == "MI100":
@@ -1427,7 +1427,7 @@ def test_dispatch_0():
 def test_dispatch_0_1():
     options = baseline_opts + ["--dispatch", "0:2"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, 2)
     if soc == "MI100":
@@ -1454,7 +1454,7 @@ def test_dispatch_0_1():
 def test_dispatch_2():
     options = baseline_opts + ["--dispatch", dispatch_id]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, 1)
     if soc == "MI100":
@@ -1484,7 +1484,7 @@ def test_dispatch_2():
 def test_join_type_grid():
     options = baseline_opts + ["--join-type", "grid"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
     if soc == "MI100":
@@ -1510,7 +1510,7 @@ def test_join_type_grid():
 def test_join_type_kernel():
     options = baseline_opts + ["--join-type", "kernel"]
     workload_dir = test_utils.get_output_dir()
-    test_utils.launch_omniperf(config, options, workload_dir)
+    test_utils.launch_rocprof_compute(config, options, workload_dir)
 
     file_dict = test_utils.check_csv_files(workload_dir, num_devices, num_kernels)
 
@@ -1537,7 +1537,7 @@ def test_join_type_kernel():
 def test_sort_dispatches():
     options = baseline_opts + ["--roof-only", "--sort", "dispatches"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_omniperf(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1568,7 +1568,7 @@ def test_sort_dispatches():
 def test_sort_kernels():
     options = baseline_opts + ["--roof-only", "--sort", "kernels"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_omniperf(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1598,7 +1598,7 @@ def test_sort_kernels():
 def test_mem_levels_HBM():
     options = baseline_opts + ["--roof-only", "--mem-level", "HBM"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_omniperf(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1628,7 +1628,7 @@ def test_mem_levels_HBM():
 def test_mem_levels_L2():
     options = baseline_opts + ["--roof-only", "--mem-level", "L2"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_omniperf(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1658,7 +1658,7 @@ def test_mem_levels_L2():
 def test_mem_levels_vL1D():
     options = baseline_opts + ["--roof-only", "--mem-level", "vL1D"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_omniperf(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1688,7 +1688,7 @@ def test_mem_levels_vL1D():
 def test_mem_levels_LDS():
     options = baseline_opts + ["--roof-only", "--mem-level", "LDS"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_omniperf(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1718,7 +1718,7 @@ def test_mem_levels_LDS():
 def test_mem_levels_HBM_LDS():
     options = baseline_opts + ["--roof-only", "--mem-level", "HBM", "LDS"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_omniperf(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1748,7 +1748,7 @@ def test_mem_levels_HBM_LDS():
 def test_mem_levels_vL1D_LDS():
     options = baseline_opts + ["--roof-only", "--mem-level", "vL1D", "LDS"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_omniperf(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1778,7 +1778,7 @@ def test_mem_levels_vL1D_LDS():
 def test_mem_levels_L2_vL1D_LDS():
     options = baseline_opts + ["--roof-only", "--mem-level", "L2", "vL1D", "LDS"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_omniperf(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
