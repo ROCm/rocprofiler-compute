@@ -47,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tarball-testing
-          path: build/rocprof-compute-*.tar.gz
+          path: build/rocprofiler-compute-*.tar.gz
           retention-days: 3
   disttest:
     runs-on: ubuntu-latest
