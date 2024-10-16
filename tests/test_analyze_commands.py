@@ -61,13 +61,9 @@ def test_list_kernels():
 @pytest.mark.list_metrics
 def test_list_metrics_gfx90a():
     with pytest.raises(SystemExit) as e:
-<<<<<<< HEAD
         with patch(
             "sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx90a"]
         ):
-=======
-        with patch("sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx90a"]):
->>>>>>> 08333e1d (Rename of tests dir.)
             rocprof_compute.main()
     assert e.value.code == 1
 
@@ -94,13 +90,9 @@ def test_list_metrics_gfx90a():
 @pytest.mark.list_metrics
 def test_list_metrics_gfx906():
     with pytest.raises(SystemExit) as e:
-<<<<<<< HEAD
         with patch(
             "sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx906"]
         ):
-=======
-        with patch("sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx906"]):
->>>>>>> 08333e1d (Rename of tests dir.)
             rocprof_compute.main()
     assert e.value.code == 1
 
@@ -127,13 +119,9 @@ def test_list_metrics_gfx906():
 @pytest.mark.list_metrics
 def test_list_metrics_gfx908():
     with pytest.raises(SystemExit) as e:
-<<<<<<< HEAD
         with patch(
             "sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx908"]
         ):
-=======
-        with patch("sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx908"]):
->>>>>>> 08333e1d (Rename of tests dir.)
             rocprof_compute.main()
     assert e.value.code == 1
 
@@ -1141,40 +1129,6 @@ def test_baseline():
         ):
             rocprof_compute.main()
     assert e.value.code == 0
-
-<<<<<<< HEAD
-=======
-    with pytest.raises(SystemExit) as e:
-        with patch(
-            "sys.argv",
-            [
-                "rocprof-compute",
-                "analyze",
-                "--path",
-                "tests/workloads/vcopy/MI200",
-                "--path",
-                "tests/workloads/vcopy/MI200",
-            ],
-        ):
-            rocprof_compute.main()
-    assert e.value.code == 1
-
-    with pytest.raises(SystemExit) as e:
-        with patch(
-            "sys.argv",
-            [
-                "rocprof-compute",
-                "analyze",
-                "--path",
-                "tests/workloads/vcopy/MI100",
-                "--path",
-                "tests/workloads/vcopy/MI100",
-            ],
-        ):
-            rocprof_compute.main()
-    assert e.value.code == 1
-
->>>>>>> 08333e1d (Rename of tests dir.)
 
 @pytest.mark.misc
 def test_dependency_MI100():
