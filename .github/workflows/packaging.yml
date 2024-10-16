@@ -60,6 +60,6 @@ jobs:
           generate_release_notes: True
           draft: False # toggle for debugging
           files: |
-            build/rocprof-compute-${{github.ref_name}}.tar.gz
+            build/rocprofiler-compute-${{github.ref_name}}.tar.gz
           name: ${{ env.RELEASE_NAME }}
 
