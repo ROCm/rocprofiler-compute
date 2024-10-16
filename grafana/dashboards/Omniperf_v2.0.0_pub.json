@@ -13408,8 +13408,8 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "rocprof-Compute_v2.0_pubx",
-  "uid": "rocprof-Compute_v20x",
+  "title": "rocprof-compute_v2.0_pubx",
+  "uid": "rocprof-compute_v20x",
   "version": 2,
   "weekStart": ""
 }

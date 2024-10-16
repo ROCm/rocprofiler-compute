@@ -48,9 +48,9 @@ jobs:
       - name: Determine release name
         run: |
           if [[ ${{github.ref_name}} == rocm-* ]]; then
-            echo "RELEASE_NAME=Omniperf ${{ env.VERSION }} for ${{github.ref_name}}"
+            echo "RELEASE_NAME=rocprof-compute ${{ env.VERSION }} for ${{github.ref_name}}"
           else
-            echo "RELEASE_NAME=Omniperf ${{ env.VERSION }}"
+            echo "RELEASE_NAME=rocprof-compute ${{ env.VERSION }}"
           fi >> $GITHUB_ENV
       - name: Upload tarball Release Asset
         uses: softprops/action-gh-release@v2
