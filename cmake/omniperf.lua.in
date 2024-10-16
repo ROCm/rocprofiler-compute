@@ -8,7 +8,7 @@ Version @OMNIPERF_FULL_VERSION@
 
 help(help_message,"\n")
 
-whatis("Name: rocprof-compute")
+whatis("Name: @PROJECT_NAME@")
 whatis("Version: @OMNIPERF_FULL_VERSION@")
 whatis("Keywords: Profiling, Performance, GPU")
 whatis("Description: tool for GPU performance profiling")
