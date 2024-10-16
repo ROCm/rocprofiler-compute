@@ -25,7 +25,7 @@ string(REGEX REPLACE "([0-9]+)\.([0-9]+)\.([0-9]+)(.*)" "\\1.\\2.\\3" OMNIPERF_V
 # string(REGEX REPLACE "^\\." "" OMNIPERF_VERSION_TWEAK "${OMNIPERF_VERSION_TWEAK}")
 
 project(
-    rocprofcompute
+    rocprofiler-compute
     VERSION ${OMNIPERF_VERSION}
     LANGUAGES C
     DESCRIPTION
