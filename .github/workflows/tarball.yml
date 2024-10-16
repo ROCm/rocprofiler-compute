@@ -81,7 +81,7 @@ jobs:
         run: |
           # find $INSTALL_DIR
           test -d $INSTALL_DIR/rocprofiler-compute
-          test -x $INSTALL_DIR/rocprofiler-compute/bin/rocprofiler-compute
+          test -x $INSTALL_DIR/rocprofiler-compute/bin/rocprof-compute
           test -s $INSTALL_DIR/rocprofiler-compute/libexec/rocprofiler-compute/VERSION
           test -s $INSTALL_DIR/rocprofiler-compute/libexec/rocprofiler-compute/VERSION.sha
           test -d $INSTALL_DIR/rocprofiler-compute/libexec/rocprofiler-compute/rocprof_compute_analyze
