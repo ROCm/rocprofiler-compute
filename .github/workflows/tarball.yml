@@ -100,8 +100,8 @@ jobs:
       - name: Access rocprof-compute using modulefile
         run: |
           . /etc/profile.d/lmod.sh
-          module use $INSTALL_DIR/rocprof-compute/share/rocprof-compute/modulefiles
-          module load rocprof-compute
+          module use $INSTALL_DIR/rocprof-compute/share/rocprofiler-compute/modulefiles
+          module load rocprofiler-compute
           module list
           rocprof-compute --version
 
