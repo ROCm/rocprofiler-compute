@@ -61,7 +61,7 @@ jobs:
         with:
           name: tarball-testing
       - name: Expand
-        run:  tar xfz rocprof-compute-*.tar.gz; rm rocprof-compute-*.tar.gz
+        run:  tar xfz rocprofiler-compute-*.tar.gz; rm rocprofiler-compute-*.tar.gz
       - name: Python dependency installs
         run: |
           cd rocprof-compute-*
