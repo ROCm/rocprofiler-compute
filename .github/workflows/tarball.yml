@@ -82,15 +82,15 @@ jobs:
         run: |
           # find $INSTALL_DIR
           test -d $INSTALL_DIR/rocprof-compute
-          test -x $INSTALL_DIR/rocprof-compute/bin/rocprof-compute
-          test -s $INSTALL_DIR/rocprof-compute/libexec/rocprof-compute/VERSION
-          test -s $INSTALL_DIR/rocprof-compute/libexec/rocprof-compute/VERSION.sha
-          test -d $INSTALL_DIR/rocprof-compute/libexec/rocprof-compute/rocprof_compute_analyze
-          test -d $INSTALL_DIR/rocprof-compute/libexec/rocprof-compute/rocprof_compute_profile
-          test -d $INSTALL_DIR/rocprof-compute/libexec/rocprof-compute/rocprof_compute_soc
-          test -d $INSTALL_DIR/rocprof-compute/libexec/rocprof-compute/utils
-          test -s $INSTALL_DIR/rocprof-compute/share/rocprof-compute/sample/vcopy.cpp
-          test -d $INSTALL_DIR/rocprof-compute/share/rocprof-compute/modulefiles
+          test -x $INSTALL_DIR/rocprof-compute/bin/rocprofiler-compute
+          test -s $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/VERSION
+          test -s $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/VERSION.sha
+          test -d $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/rocprof_compute_analyze
+          test -d $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/rocprof_compute_profile
+          test -d $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/rocprof_compute_soc
+          test -d $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/utils
+          test -s $INSTALL_DIR/rocprof-compute/share/rocprofiler-compute/sample/vcopy.cpp
+          test -d $INSTALL_DIR/rocprof-compute/share/rocprofiler-compute/modulefiles
       - name: Query version (setting PYTHONPATH by hand)
         run: |
           export PYTHONPATH=${INSTALL_DIR}/python-libs:$PYTHONPATH
