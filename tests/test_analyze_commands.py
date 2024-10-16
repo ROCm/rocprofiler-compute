@@ -60,7 +60,9 @@ def test_list_kernels():
 @pytest.mark.list_metrics
 def test_list_metrics_gfx90a():
     with pytest.raises(SystemExit) as e:
-        with patch("sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx90a"]):
+        with patch(
+            "sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx90a"]
+        ):
             rocprof_compute.main()
     assert e.value.code == 1
 
@@ -87,7 +89,9 @@ def test_list_metrics_gfx90a():
 @pytest.mark.list_metrics
 def test_list_metrics_gfx906():
     with pytest.raises(SystemExit) as e:
-        with patch("sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx906"]):
+        with patch(
+            "sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx906"]
+        ):
             rocprof_compute.main()
     assert e.value.code == 1
 
@@ -114,7 +118,9 @@ def test_list_metrics_gfx906():
 @pytest.mark.list_metrics
 def test_list_metrics_gfx908():
     with pytest.raises(SystemExit) as e:
-        with patch("sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx908"]):
+        with patch(
+            "sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx908"]
+        ):
             rocprof_compute.main()
     assert e.value.code == 1
 

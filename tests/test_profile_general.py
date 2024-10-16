@@ -34,7 +34,9 @@ def check_arch_override():
 # --
 
 config = {}
-config["rocprof-compute"] = SourceFileLoader("rocprof-compute", "src/rocprof-compute").load_module()
+config["rocprof-compute"] = SourceFileLoader(
+    "rocprof-compute", "src/rocprof-compute"
+).load_module()
 config["kernel_name_1"] = "vecCopy(double*, double*, double*, int, int) [clone .kd]"
 config["app_1"] = ["./tests/vcopy", "-n", "1048576", "-b", "256", "-i", "3"]
 config["cleanup"] = True
@@ -554,7 +556,9 @@ def test_no_roof():
 def test_kernel_names():
     options = baseline_opts + ["--roof-only", "--kernel-names"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(
+        config, options, workload_dir, check_success=False
+    )
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1537,7 +1541,9 @@ def test_join_type_kernel():
 def test_sort_dispatches():
     options = baseline_opts + ["--roof-only", "--sort", "dispatches"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(
+        config, options, workload_dir, check_success=False
+    )
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1568,7 +1574,9 @@ def test_sort_dispatches():
 def test_sort_kernels():
     options = baseline_opts + ["--roof-only", "--sort", "kernels"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(
+        config, options, workload_dir, check_success=False
+    )
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1598,7 +1606,9 @@ def test_sort_kernels():
 def test_mem_levels_HBM():
     options = baseline_opts + ["--roof-only", "--mem-level", "HBM"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(
+        config, options, workload_dir, check_success=False
+    )
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1628,7 +1638,9 @@ def test_mem_levels_HBM():
 def test_mem_levels_L2():
     options = baseline_opts + ["--roof-only", "--mem-level", "L2"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(
+        config, options, workload_dir, check_success=False
+    )
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1658,7 +1670,9 @@ def test_mem_levels_L2():
 def test_mem_levels_vL1D():
     options = baseline_opts + ["--roof-only", "--mem-level", "vL1D"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(
+        config, options, workload_dir, check_success=False
+    )
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1688,7 +1702,9 @@ def test_mem_levels_vL1D():
 def test_mem_levels_LDS():
     options = baseline_opts + ["--roof-only", "--mem-level", "LDS"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(
+        config, options, workload_dir, check_success=False
+    )
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1718,7 +1734,9 @@ def test_mem_levels_LDS():
 def test_mem_levels_HBM_LDS():
     options = baseline_opts + ["--roof-only", "--mem-level", "HBM", "LDS"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(
+        config, options, workload_dir, check_success=False
+    )
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1748,7 +1766,9 @@ def test_mem_levels_HBM_LDS():
 def test_mem_levels_vL1D_LDS():
     options = baseline_opts + ["--roof-only", "--mem-level", "vL1D", "LDS"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(
+        config, options, workload_dir, check_success=False
+    )
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
@@ -1778,7 +1798,9 @@ def test_mem_levels_vL1D_LDS():
 def test_mem_levels_L2_vL1D_LDS():
     options = baseline_opts + ["--roof-only", "--mem-level", "L2", "vL1D", "LDS"]
     workload_dir = test_utils.get_output_dir()
-    e = test_utils.launch_rocprof_compute(config, options, workload_dir, check_success=False)
+    e = test_utils.launch_rocprof_compute(
+        config, options, workload_dir, check_success=False
+    )
 
     if soc == "MI100" or "MI300" in soc:
         # assert that it did not run
