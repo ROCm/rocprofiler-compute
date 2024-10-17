@@ -64,43 +64,43 @@ jobs:
         run:  tar xfz rocprofiler-compute-*.tar.gz; rm rocprofiler-compute-*.tar.gz
       - name: Python dependency installs
         run: |
-          cd rocprof-compute-*
+          cd rocprofiler-compute-*
           python3 -m pip install -t${INSTALL_DIR}/python-libs -r requirements.txt
       - name: Configure
         run:  |
-          cd rocprof-compute-*
+          cd rocprofiler-compute-*
           mkdir build
           cd build
-          cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}/rocprof-compute \
+          cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}/rocprofiler-compute \
             -DPYTHON_DEPS=${INSTALL_DIR}/python-libs ..
       - name: Install
         run:  |
-          cd rocprof-compute-*
+          cd rocprofiler-compute-*
           cd build
           make install
       - name: Verify expected paths
         run: |
           # find $INSTALL_DIR
-          test -d $INSTALL_DIR/rocprof-compute
-          test -x $INSTALL_DIR/rocprof-compute/bin/rocprofiler-compute
-          test -s $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/VERSION
-          test -s $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/VERSION.sha
-          test -d $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/rocprof_compute_analyze
-          test -d $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/rocprof_compute_profile
-          test -d $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/rocprof_compute_soc
-          test -d $INSTALL_DIR/rocprof-compute/libexec/rocprofiler-compute/utils
-          test -s $INSTALL_DIR/rocprof-compute/share/rocprofiler-compute/sample/vcopy.cpp
-          test -d $INSTALL_DIR/rocprof-compute/share/rocprofiler-compute/modulefiles
+          test -d $INSTALL_DIR/rocprofiler-compute
+          test -x $INSTALL_DIR/rocprofiler-compute/bin/rocprofiler-compute
+          test -s $INSTALL_DIR/rocprofiler-compute/libexec/rocprofiler-compute/VERSION
+          test -s $INSTALL_DIR/rocprofiler-compute/libexec/rocprofiler-compute/VERSION.sha
+          test -d $INSTALL_DIR/rocprofiler-compute/libexec/rocprofiler-compute/rocprof_compute_analyze
+          test -d $INSTALL_DIR/rocprofiler-compute/libexec/rocprofiler-compute/rocprof_compute_profile
+          test -d $INSTALL_DIR/rocprofiler-compute/libexec/rocprofiler-compute/rocprof_compute_soc
+          test -d $INSTALL_DIR/rocprofiler-compute/libexec/rocprofiler-compute/utils
+          test -s $INSTALL_DIR/rocprofiler-compute/share/rocprofiler-compute/sample/vcopy.cpp
+          test -d $INSTALL_DIR/rocprofiler-compute/share/rocprofiler-compute/modulefiles
       - name: Query version (setting PYTHONPATH by hand)
         run: |
           export PYTHONPATH=${INSTALL_DIR}/python-libs:$PYTHONPATH
-          $INSTALL_DIR/rocprof-compute/bin/rocprof-compute --version
+          $INSTALL_DIR/rocprofiler-compute/bin/rocprof-compute --version
       - name: Install Lmod
         run: sudo apt-get install -y lmod
-      - name: Access rocprof-compute using modulefile
+      - name: Access rocprofiler-compute using modulefile
         run: |
           . /etc/profile.d/lmod.sh
-          module use $INSTALL_DIR/rocprof-compute/share/rocprofiler-compute/modulefiles
+          module use $INSTALL_DIR/rocprofiler-compute/share/rocprofiler-compute/modulefiles
           module load rocprofiler-compute
           module list
           rocprof-compute --version
