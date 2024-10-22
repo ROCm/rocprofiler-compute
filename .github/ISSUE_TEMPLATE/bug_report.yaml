@@ -115,7 +115,7 @@ body:
     id: logs
     attributes:
       label: Relevant log output
-      description: Please copy and paste rocprof-compute's `log.txt` file. This will be automatically formatted into code, so no need for backticks.
+      description: Please copy and paste rocprofiler-compute's `log.txt` file. This will be automatically formatted into code, so no need for backticks.
       render: shell
 
   - type: textarea
