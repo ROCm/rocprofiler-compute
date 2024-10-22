@@ -81,15 +81,15 @@ def omniarg_parser(
         help="Profile the target application",
         usage="""
 
-rocprofiler-compute profile --name <workload_name> [profile options] [roofline options] -- <profile_cmd>
+rocprof-compute profile --name <workload_name> [profile options] [roofline options] -- <profile_cmd>
 
 ---------------------------------------------------------------------------------
 Examples:
-\trocprofiler-compute profile -n vcopy_all -- ./vcopy -n 1048576 -b 256
-\trocprofiler-compute profile -n vcopy_SPI_TCC -b SQ TCC -- ./vcopy -n 1048576 -b 256
-\trocprofiler-compute profile -n vcopy_kernel -k vecCopy -- ./vcopy -n 1048576 -b 256
-\trocprofiler-compute profile -n vcopy_disp -d 0 -- ./vcopy -n 1048576 -b 256
-\trocprofiler-compute profile -n vcopy_roof --roof-only -- ./vcopy -n 1048576 -b 256
+\trocprof-compute profile -n vcopy_all -- ./vcopy -n 1048576 -b 256
+\trocprof-compute profile -n vcopy_SPI_TCC -b SQ TCC -- ./vcopy -n 1048576 -b 256
+\trocprof-compute profile -n vcopy_kernel -k vecCopy -- ./vcopy -n 1048576 -b 256
+\trocprof-compute profile -n vcopy_disp -d 0 -- ./vcopy -n 1048576 -b 256
+\trocprof-compute profile -n vcopy_roof --roof-only -- ./vcopy -n 1048576 -b 256
 ---------------------------------------------------------------------------------
         """,
         prog="tool",
@@ -276,12 +276,12 @@ Examples:
         "database",
         help="Interact with rocprofiler-compute database",
         usage="""
-            \nrocprofiler-compute database <interaction type> [connection options]
+            \nrocprof-compute database <interaction type> [connection options]
 
             \n\n-------------------------------------------------------------------------------
             \nExamples:
-            \n\trocprofiler-compute database --import -H pavii1 -u temp -t asw -w workloads/vcopy/mi200/
-            \n\trocprofiler-compute database --remove -H pavii1 -u temp -w rocprofiler-compute_asw_sample_mi200
+            \n\trocprof-compute database --import -H pavii1 -u temp -t asw -w workloads/vcopy/mi200/
+            \n\trocprof-compute database --remove -H pavii1 -u temp -w rocprofiler-compute_asw_sample_mi200
             \n-------------------------------------------------------------------------------\n
         """,
         prog="tool",
@@ -368,13 +368,13 @@ Examples:
         "analyze",
         help="Analyze existing profiling results at command line",
         usage="""
-rocprofiler-compute analyze --path <workload_path> [analyze options]
+rocprof-compute analyze --path <workload_path> [analyze options]
 
 -----------------------------------------------------------------------------------
 Examples:
-\trocprofiler-compute analyze -p workloads/vcopy/mi200/ --list-metrics gfx90a
-\trocprofiler-compute analyze -p workloads/mixbench/mi200/ --dispatch 12 34 --decimal 3
-\trocprofiler-compute analyze -p workloads/mixbench/mi200/ --gui
+\trocprof-compute analyze -p workloads/vcopy/mi200/ --list-metrics gfx90a
+\trocprof-compute analyze -p workloads/mixbench/mi200/ --dispatch 12 34 --decimal 3
+\trocprof-compute analyze -p workloads/mixbench/mi200/ --gui
 -----------------------------------------------------------------------------------
         """,
         prog="tool",

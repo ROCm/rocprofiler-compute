@@ -12,7 +12,7 @@ A clear and concise description of what the bug is.
 
 **Development Environment:**
  - Linux Distribution: [e.g. Ubuntu20.04, RHEL8]
- - ROCm Compute Profiler Version: [e.g. try `rocprof-compute --version`]
+ - ROCm Compute Profiler Version: [e.g. try `rocprofiler-compute --version`]
  - GPU: [e.g. Mi100, Mi200]
  - Custer (if applicable): [e.g. Crusher, ]
 
