@@ -258,9 +258,7 @@ def counter_compare(test_name, errors_pd, baseline_df, run_df, threshold=5):
                     # if 0 show absolute difference
                     diff = round(baseline_data - run_data, 2)
                     if diff > threshold:
-                        print(
-                            str(idx_1) + "[" + pmc_counter + "] diff is :" + str(diff)
-                        )
+                        print(str(idx_1) + "[" + pmc_counter + "] diff is :" + str(diff))
         differences["kernel_name"] = [kernel_name]
         differences["test_name"] = [test_name]
         differences["gpu-id"] = [gpu_id]
@@ -470,9 +468,7 @@ def baseline_compare_metric(test_name, workload_dir, args=[]):
                         )
                         error_df = pd.concat([error_df, new_error])
                         counts = error_df.groupby(["Index"]).cumcount()
-                        reoccurring_metrics = error_df.loc[
-                            counts > MAX_REOCCURING_COUNT
-                        ]
+                        reoccurring_metrics = error_df.loc[counts > MAX_REOCCURING_COUNT]
                         reoccurring_metrics["counts"] = counts[
                             counts > MAX_REOCCURING_COUNT
                         ]

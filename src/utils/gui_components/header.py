@@ -65,9 +65,7 @@ def get_header(raw_pmc, input_filters, kernel_names):
                                 children=[
                                     dbc.DropdownMenu(
                                         [
-                                            dbc.DropdownMenuItem(
-                                                "Overview", header=True
-                                            ),
+                                            dbc.DropdownMenuItem("Overview", header=True),
                                             dbc.DropdownMenuItem(
                                                 "Roofline",
                                                 href="#roofline",
@@ -88,9 +86,7 @@ def get_header(raw_pmc, input_filters, kernel_names):
                                                 href="#system_speed-of-light",
                                                 external_link=True,
                                             ),
-                                            dbc.DropdownMenuItem(
-                                                "Compute", header=True
-                                            ),
+                                            dbc.DropdownMenuItem("Compute", header=True),
                                             dbc.DropdownMenuItem(
                                                 "Command Processor (CPF/CPC)",
                                                 href="#command_processor_cpccpf",

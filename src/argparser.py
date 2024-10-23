@@ -116,9 +116,7 @@ Examples:
         required=True,
         help="\t\t\tAssign a name to workload.",
     )
-    profile_group.add_argument(
-        "--target", type=str, default=None, help=argparse.SUPPRESS
-    )
+    profile_group.add_argument("--target", type=str, default=None, help=argparse.SUPPRESS)
     profile_group.add_argument(
         "-p",
         "--path",

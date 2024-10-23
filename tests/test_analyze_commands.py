@@ -7,9 +7,7 @@ import shutil
 import pandas as pd
 import test_utils
 
-rocprof_compute = SourceFileLoader(
-    "rocprof-compute", "src/rocprof-compute"
-).load_module()
+rocprof_compute = SourceFileLoader("rocprof-compute", "src/rocprof-compute").load_module()
 
 baseline_opts = ["rocprof-compute", "analyze"]
 
