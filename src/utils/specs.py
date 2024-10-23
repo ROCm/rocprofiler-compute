@@ -134,9 +134,7 @@ def generate_machine_specs(args, sysinfo: dict = None):
         linux_distro = ""
     rocm_version = get_rocm_ver().strip()
     # FIXME: use device
-    vbios = search(
-        r"VBIOS version: (.*?)$", run(["rocm-smi", "-v"], exit_on_error=True)
-    )
+    vbios = search(r"VBIOS version: (.*?)$", run(["rocm-smi", "-v"], exit_on_error=True))
     compute_partition = search(
         r"Compute Partition:\s*(\w+)", run(["rocm-smi", "--showcomputepartition"])
     )
@@ -176,9 +174,7 @@ def generate_machine_specs(args, sysinfo: dict = None):
     )
     # Load above SoC specs via module import
     try:
-        soc_module = importlib.import_module(
-            "rocprof_compute_soc.soc_" + specs.gpu_arch
-        )
+        soc_module = importlib.import_module("rocprof_compute_soc.soc_" + specs.gpu_arch)
     except ModuleNotFoundError as e:
         console_error(
             "Arch %s marked as supported, but couldn't find class implementation %s."
@@ -565,9 +561,7 @@ class MachineSpecs:
                         if name == "version":
                             topstr += f"Output version: {value}\n"
                         else:
-                            console_error(
-                                f"Unknown out of table printing field: {name}"
-                            )
+                            console_error(f"Unknown out of table printing field: {name}")
                         continue
                     if "name" in field.metadata:
                         name = field.metadata["name"]

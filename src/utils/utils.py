@@ -424,9 +424,7 @@ def detect_roofline(mspec):
         # Must be a valid Ubuntu machine
         distro = ubuntu_distro
     else:
-        console_error(
-            "roofline", "Cannot find a valid binary for your operating system"
-        )
+        console_error("roofline", "Cannot find a valid binary for your operating system")
 
     target_binary = {"rocm_ver": rocm_ver, "distro": distro}
     return target_binary
@@ -501,9 +499,7 @@ def mibench(args, mspec):
             break
 
     if not found:
-        console_error(
-            "roofline", "Unable to locate expected binary (%s)." % binary_paths
-        )
+        console_error("roofline", "Unable to locate expected binary (%s)." % binary_paths)
 
     my_args = [
         path_to_binary,

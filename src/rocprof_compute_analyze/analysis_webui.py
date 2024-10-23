@@ -203,10 +203,7 @@ class webui_analysis(OmniAnalyze_Base):
                         for t_type, table_config in data_source.items():
                             original_df = base_data[base_run].dfs[table_config["id"]]
                             # The sys info table need to add index back
-                            if (
-                                t_type == "raw_csv_table"
-                                and "Info" in original_df.keys()
-                            ):
+                            if t_type == "raw_csv_table" and "Info" in original_df.keys():
                                 original_df.reset_index(inplace=True)
 
                             content = determine_chart_type(

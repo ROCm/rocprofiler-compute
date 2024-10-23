@@ -196,9 +196,7 @@ def show_all(args, runs, archConfigs, output):
                                             )
                                             for x in base_df[header]
                                         ]
-                                        df = pd.concat(
-                                            [df, cur_df_copy[header]], axis=1
-                                        )
+                                        df = pd.concat([df, cur_df_copy[header]], axis=1)
 
                 if not df.empty:
                     # subtitle for each table in a panel if existing

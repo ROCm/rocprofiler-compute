@@ -601,9 +601,7 @@ class Fabric(RectFrame):
         canvas.rect(self.x_min, self.y_min, self.x_max, self.y_max)
         canvas.text(self.x_min + 6.0, self.y_max - 2.0, "   " + self.label)
         canvas.text(self.x_min + 2.0, self.y_max - 4.0, "Latency (cycles)")
-        canvas.rect(
-            self.x_min + 2.0, self.y_max - 9, self.x_max - 2.0, self.y_max - 4.5
-        )
+        canvas.rect(self.x_min + 2.0, self.y_max - 9, self.x_max - 2.0, self.y_max - 4.5)
 
         i = 1
         for k, v in self.lat.items():
@@ -639,17 +637,13 @@ class Wire_Fabric_HBM(RectFrame):
             self.y_max,
             "{key:<2}: {val:>4.0f}".format(key="Rd", val=self.rd),
         )
-        canvas.text(
-            self.x_min + self.text_x_offset - 2, self.y_max - 1.0, "<-----------"
-        )
+        canvas.text(self.x_min + self.text_x_offset - 2, self.y_max - 1.0, "<-----------")
         canvas.text(
             self.x_min + self.text_x_offset,
             self.y_max - 2.0,
             "{key:<2}: {val:>4.0f}".format(key="Wr", val=self.wr),
         )
-        canvas.text(
-            self.x_min + self.text_x_offset - 2, self.y_max - 3.0, "----------->"
-        )
+        canvas.text(self.x_min + self.text_x_offset - 2, self.y_max - 3.0, "----------->")
 
 
 # HBM

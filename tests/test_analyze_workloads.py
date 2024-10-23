@@ -13,9 +13,7 @@ import test_utils
 from unittest.mock import patch
 from importlib.machinery import SourceFileLoader
 
-rocprof_compute = SourceFileLoader(
-    "rocprof-compute", "src/rocprof-compute"
-).load_module()
+rocprof_compute = SourceFileLoader("rocprof-compute", "src/rocprof-compute").load_module()
 
 ##################################################
 ##          Generated tests                     ##

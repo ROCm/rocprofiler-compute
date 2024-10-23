@@ -312,9 +312,7 @@ class Roofline:
                     mode="markers",
                     marker={"color": "#00CC96"},
                     marker_symbol=(
-                        SYMBOLS
-                        if self.__run_parameters["include_kernel_names"]
-                        else None
+                        SYMBOLS if self.__run_parameters["include_kernel_names"] else None
                     ),
                 )
             )
@@ -326,9 +324,7 @@ class Roofline:
                     mode="markers",
                     marker={"color": "#EF553B"},
                     marker_symbol=(
-                        SYMBOLS
-                        if self.__run_parameters["include_kernel_names"]
-                        else None
+                        SYMBOLS if self.__run_parameters["include_kernel_names"] else None
                     ),
                 )
             )
@@ -340,9 +336,7 @@ class Roofline:
                     mode="markers",
                     marker={"color": "#636EFA"},
                     marker_symbol=(
-                        SYMBOLS
-                        if self.__run_parameters["include_kernel_names"]
-                        else None
+                        SYMBOLS if self.__run_parameters["include_kernel_names"] else None
                     ),
                 )
             )

@@ -188,9 +188,9 @@ class OmniSoC_Base:
             0
         ].upper()
         if self._mspec.gpu_model == "MI300":
-            self._mspec.gpu_model = list(
-                SUPPORTED_ARCHS[self._mspec.gpu_arch].values()
-            )[0][0]
+            self._mspec.gpu_model = list(SUPPORTED_ARCHS[self._mspec.gpu_arch].values())[
+                0
+            ][0]
         if self._mspec.gpu_arch == "gfx942":
             if (
                 "MI300A" in "\n".join(self._mspec._rocminfo)
@@ -203,9 +203,7 @@ class OmniSoC_Base:
             ):
                 self._mspec.gpu_model = "MI300X_A1"
             # We need to distinguish MI308X by peeking reported num CUs
-            elif (
-                self._mspec.cu_per_gpu == "80" or "MI308X" in self.check_arch_override()
-            ):
+            elif self._mspec.cu_per_gpu == "80" or "MI308X" in self.check_arch_override():
                 self._mspec.gpu_model = "MI308X"
             else:
                 console_error(
@@ -262,9 +260,7 @@ class OmniSoC_Base:
                 # default: take all perfmons
                 pmc_files_list = ref_pmc_files_list
         else:
-            ref_pmc_files_list = glob.glob(
-                self.__perfmon_dir + "/" + "pmc_roof_perf.txt"
-            )
+            ref_pmc_files_list = glob.glob(self.__perfmon_dir + "/" + "pmc_roof_perf.txt")
             pmc_files_list = ref_pmc_files_list
 
         # Coalesce and writeback workload specific perfmon
