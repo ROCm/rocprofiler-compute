@@ -34,6 +34,7 @@ project(
 
 set(PACKAGE_NAME "rocprofiler-compute")
 set(PACKAGE_NAME_UNDERSCORE "rocprofiler_compute")
+set(EXECUTABLE_NAME "rocprof-compute")
 
 include(ExternalProject)
 include(GNUInstallDirs)
@@ -278,10 +279,10 @@ add_test(
 # Install
 # ---------
 
-# top-level omniperf utility
+# top-level rocprofiler-compute utility
 install(
-    PROGRAMS src/${PACKAGE_NAME}
-    DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${PROJECT_NAME}
+    PROGRAMS src/${EXECUTABLE_NAME}
+    DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${EXECUTABLE_NAME}
     COMPONENT main)
 # python dependency requirements
 install(
@@ -347,12 +348,12 @@ install(
     DESTINATION ${MOD_INSTALL_PATH}
     COMPONENT main)
 
-# top-level symlink for bin/omniperf
+# top-level symlink for bin/rocprof-compute
 install(
     CODE "execute_process(
     COMMAND bash -c \"set -e
     cd \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}
-    ln -sf ../${CMAKE_INSTALL_LIBEXECDIR}/${PROJECT_NAME}/${PACKAGE_NAME} ${CMAKE_INSTALL_BINDIR}/${PACKAGE_NAME}
+    ln -sf ../${CMAKE_INSTALL_LIBEXECDIR}/${PROJECT_NAME}/${EXECUTABLE_NAME} ${CMAKE_INSTALL_BINDIR}/${EXECUTABLE_NAME}
     \")"
     COMPONENT main)
 

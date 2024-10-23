@@ -47,7 +47,9 @@ class ColoredFormatter(logging.Formatter):
     def format(self, record):
         levelname = record.levelname
         if levelname in COLORS:
-            levelname_color = COLOR_SEQ % (30 + COLORS[levelname]) + levelname + RESET_SEQ
+            levelname_color = (
+                COLOR_SEQ % (30 + COLORS[levelname]) + levelname + RESET_SEQ
+            )
             record.levelname = levelname_color
         return logging.Formatter.format(self, record)
 
@@ -141,7 +143,9 @@ def setup_logging_priority(verbosity, quietmode, appmode):
         elif loglevel in {"ERROR", "error"}:
             loglevel = logging.ERROR
         else:
-            print("Ignoring unsupported ROCPROFCOMPUTE_LOGLEVEL setting (%s)" % loglevel)
+            print(
+                "Ignoring unsupported ROCPROFCOMPUTE_LOGLEVEL setting (%s)" % loglevel
+            )
             sys.exit(1)
 
     # update console loglevel based on command-line args/env settings

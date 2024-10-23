@@ -38,7 +38,10 @@ def add_general_group(parser, rocprof_compute_version):
     general_group = parser.add_argument_group("General Options")
 
     general_group.add_argument(
-        "-v", "--version", action="version", version=rocprof_compute_version["ver_pretty"]
+        "-v",
+        "--version",
+        action="version",
+        version=rocprof_compute_version["ver_pretty"],
     )
     general_group.add_argument(
         "-V",
@@ -113,7 +116,9 @@ Examples:
         required=True,
         help="\t\t\tAssign a name to workload.",
     )
-    profile_group.add_argument("--target", type=str, default=None, help=argparse.SUPPRESS)
+    profile_group.add_argument(
+        "--target", type=str, default=None, help=argparse.SUPPRESS
+    )
     profile_group.add_argument(
         "-p",
         "--path",
@@ -196,7 +201,10 @@ Examples:
             "--use-rocscope", default=False, dest="use_rocscope", help=argparse.SUPPRESS
         )
         profile_group.add_argument(
-            "--kernel-summaries", default=False, dest="summaries", help=argparse.SUPPRESS
+            "--kernel-summaries",
+            default=False,
+            dest="summaries",
+            help=argparse.SUPPRESS,
         )
     profile_group.add_argument(
         "--join-type",
@@ -521,7 +529,9 @@ Examples:
         "-g", dest="debug", action="store_true", help="\t\tDebug single metric."
     )
     analyze_advanced_group.add_argument(
-        "--dependency", action="store_true", help="\t\tList the installation dependency."
+        "--dependency",
+        action="store_true",
+        help="\t\tList the installation dependency.",
     )
     analyze_advanced_group.add_argument(
         "--kernel-verbose",

@@ -400,7 +400,11 @@ def detect_roofline(mspec):
         rooflineBinary = os.environ["ROOFLINE_BIN"]
         if os.path.exists(rooflineBinary):
             console_warning("roofline", "Detected user-supplied binary")
-            return {"rocm_ver": "override", "distro": "override", "path": rooflineBinary}
+            return {
+                "rocm_ver": "override",
+                "distro": "override",
+                "path": rooflineBinary,
+            }
         else:
             msg = "user-supplied path to binary not accessible"
             msg += "--> ROOFLINE_BIN = %s\n" % target_binary
@@ -420,7 +424,9 @@ def detect_roofline(mspec):
         # Must be a valid Ubuntu machine
         distro = ubuntu_distro
     else:
-        console_error("roofline", "Cannot find a valid binary for your operating system")
+        console_error(
+            "roofline", "Cannot find a valid binary for your operating system"
+        )
 
     target_binary = {"rocm_ver": rocm_ver, "distro": distro}
     return target_binary
@@ -495,7 +501,9 @@ def mibench(args, mspec):
             break
 
     if not found:
-        console_error("roofline", "Unable to locate expected binary (%s)." % binary_paths)
+        console_error(
+            "roofline", "Unable to locate expected binary (%s)." % binary_paths
+        )
 
     my_args = [
         path_to_binary,

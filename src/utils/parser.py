@@ -399,7 +399,9 @@ def gen_counter_list(formula):
         )
         for node in ast.walk(tree):
             if isinstance(node, ast.Name):
-                val = str(node.id)[:-4] if str(node.id).endswith("_sum") else str(node.id)
+                val = (
+                    str(node.id)[:-4] if str(node.id).endswith("_sum") else str(node.id)
+                )
                 if val.isupper() and val not in function_filter:
                     counters.append(val)
                     visited = True
@@ -565,7 +567,11 @@ def build_dfs(archConfigs, filter_metrics, sys_info):
 
                             else:
                                 for k, v in entries.items():
-                                    if k != "tips" and k != "coll_level" and k != "alias":
+                                    if (
+                                        k != "tips"
+                                        and k != "coll_level"
+                                        and k != "alias"
+                                    ):
                                         values.append(v)
                                         eqn_content.append(v)
 
@@ -750,7 +756,9 @@ def eval_metric(dfs, dfs_type, sys_info, raw_pmc_df, debug):
                                     print("~" * 40 + "\nExpression:")
                                     print(expr, "=", row[expr])
                                     print("Inputs:")
-                                    matched_vars = re.findall(r"ammolite__\w+", row[expr])
+                                    matched_vars = re.findall(
+                                        r"ammolite__\w+", row[expr]
+                                    )
                                     if matched_vars:
                                         for v in matched_vars:
                                             print(

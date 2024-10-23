@@ -50,7 +50,9 @@ top_stats_build_in_config = {
     1: {
         "id": 1,
         "title": "Dispatch List",
-        "data source": [{"raw_csv_table": {"id": 2, "source": "pmc_dispatch_info.csv"}}],
+        "data source": [
+            {"raw_csv_table": {"id": 2, "source": "pmc_dispatch_info.csv"}}
+        ],
     },
 }
 
@@ -119,7 +121,9 @@ def create_df_kernel_top_stats(
 
     # First, create a dispatches file used to populate global vars
     dispatch_info = df.loc[:, ["Dispatch_ID", "Kernel_Name", "GPU_ID"]]
-    dispatch_info.to_csv(os.path.join(raw_data_dir, "pmc_dispatch_info.csv"), index=False)
+    dispatch_info.to_csv(
+        os.path.join(raw_data_dir, "pmc_dispatch_info.csv"), index=False
+    )
 
     time_stats = pd.concat(
         [df["Kernel_Name"], (df["End_Timestamp"] - df["Start_Timestamp"])],

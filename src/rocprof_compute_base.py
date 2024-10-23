@@ -40,7 +40,11 @@ from utils.utils import (
     console_error,
     set_locale_encoding,
 )
-from utils.logger import setup_console_handler, setup_logging_priority, setup_file_handler
+from utils.logger import (
+    setup_console_handler,
+    setup_logging_priority,
+    setup_file_handler,
+)
 from argparser import omniarg_parser
 import config
 import pandas as pd
