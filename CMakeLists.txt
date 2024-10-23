@@ -282,7 +282,7 @@ add_test(
 # top-level rocprofiler-compute utility
 install(
     PROGRAMS src/${EXECUTABLE_NAME}
-    DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${PROJECT_NAME}
+    DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${EXECUTABLE_NAME}
     COMPONENT main)
 # python dependency requirements
 install(

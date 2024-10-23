@@ -110,7 +110,9 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
     target_precision = dtype[2:]
 
     if dtype != "FP16" and dtype != "I8":
-        peakOps = float(benchmark_data[dtype + "Flops"][roofline_parameters["device_id"]])
+        peakOps = float(
+            benchmark_data[dtype + "Flops"][roofline_parameters["device_id"]]
+        )
     for i in range(0, len(cacheHierarchy)):
         # Plot BW line
         console_debug("roofline", "Current cache level is %s" % cacheHierarchy[i])
@@ -356,7 +358,9 @@ def calc_ai(sort_type, ret_df):
 
         calls += 1
 
-        if sort_type == "kernels" and (at_end == True or (kernelName != next_kernelName)):
+        if sort_type == "kernels" and (
+            at_end == True or (kernelName != next_kernelName)
+        ):
             myList.append(
                 AI_Data(
                     kernelName,
@@ -381,11 +385,11 @@ def calc_ai(sort_type, ret_df):
                     kernelName, idx, calls
                 )
             )
-            total_flops = valu_flops = mfma_flops_bf16 = mfma_flops_f16 = mfma_iops_i8 = (
-                mfma_flops_f32
-            ) = mfma_flops_f64 = lds_data = L1cache_data = L2cache_data = hbm_data = (
-                calls
-            ) = totalDuration = avgDuration = 0.0
+            total_flops = valu_flops = mfma_flops_bf16 = mfma_flops_f16 = (
+                mfma_iops_i8
+            ) = mfma_flops_f32 = mfma_flops_f64 = lds_data = L1cache_data = (
+                L2cache_data
+            ) = hbm_data = calls = totalDuration = avgDuration = 0.0
 
         if sort_type == "dispatches":
             myList.append(
@@ -407,11 +411,11 @@ def calc_ai(sort_type, ret_df):
                     avgDuration,
                 )
             )
-            total_flops = valu_flops = mfma_flops_bf16 = mfma_flops_f16 = mfma_iops_i8 = (
-                mfma_flops_f32
-            ) = mfma_flops_f64 = lds_data = L1cache_data = L2cache_data = hbm_data = (
-                calls
-            ) = totalDuration = avgDuration = 0.0
+            total_flops = valu_flops = mfma_flops_bf16 = mfma_flops_f16 = (
+                mfma_iops_i8
+            ) = mfma_flops_f32 = mfma_flops_f64 = lds_data = L1cache_data = (
+                L2cache_data
+            ) = hbm_data = calls = totalDuration = avgDuration = 0.0
 
     myList.sort(key=lambda x: x.totalDuration, reverse=True)
 
@@ -475,7 +479,9 @@ def calc_ai(sort_type, ret_df):
 
 
 def constuct_roof(roofline_parameters, dtype):
-    benchmark_results = os.path.join(roofline_parameters["workload_dir"], "roofline.csv")
+    benchmark_results = os.path.join(
+        roofline_parameters["workload_dir"], "roofline.csv"
+    )
     # -----------------------------------------------------
     # Initialize roofline data dictionary from roofline.csv
     # -----------------------------------------------------

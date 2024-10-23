@@ -95,7 +95,8 @@ class OmniProfiler_Base:
                 )
             else:
                 console_error(
-                    "%s is an unrecognized option for --join-type" % self.__args.join_type
+                    "%s is an unrecognized option for --join-type"
+                    % self.__args.join_type
                 )
 
             if df is None:
@@ -121,7 +122,9 @@ class OmniProfiler_Base:
         }
         # Check for vgpr counter in ROCm < 5.3
         if "vgpr" in df.columns:
-            duplicate_cols["vgpr"] = [col for col in df.columns if col.startswith("vgpr")]
+            duplicate_cols["vgpr"] = [
+                col for col in df.columns if col.startswith("vgpr")
+            ]
         # Check for vgpr counter in ROCm >= 5.3
         else:
             duplicate_cols["Arch_VGPR"] = [
