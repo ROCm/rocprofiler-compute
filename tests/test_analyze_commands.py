@@ -8,10 +8,10 @@ import pandas as pd
 import test_utils
 
 rocprof_compute = SourceFileLoader(
-    "rocprofiler-compute", "src/rocprofiler-compute"
+    "rocprof-compute", "src/rocprof-compute"
 ).load_module()
 
-baseline_opts = ["rocprofiler-compute", "analyze"]
+baseline_opts = ["rocprof-compute", "analyze"]
 
 config = {}
 config["cleanup"] = True if "PYTEST_XDIST_WORKER_COUNT" in os.environ else False
@@ -32,7 +32,7 @@ def test_valid_path():
         with pytest.raises(SystemExit) as e:
             with patch(
                 "sys.argv",
-                ["rocprofiler-compute", "analyze", "--path", workload_dir],
+                ["rocprof-compute", "analyze", "--path", workload_dir],
             ):
                 rocprof_compute.main()
         assert e.value.code == 0
@@ -48,7 +48,7 @@ def test_list_kernels():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -64,7 +64,7 @@ def test_list_kernels():
 def test_list_metrics_gfx90a():
     with pytest.raises(SystemExit) as e:
         with patch(
-            "sys.argv", ["rocprofiler-compute", "analyze", "--list-metrics", "gfx90a"]
+            "sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx90a"]
         ):
             rocprof_compute.main()
     assert e.value.code == 1
@@ -75,7 +75,7 @@ def test_list_metrics_gfx90a():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -93,7 +93,7 @@ def test_list_metrics_gfx90a():
 def test_list_metrics_gfx906():
     with pytest.raises(SystemExit) as e:
         with patch(
-            "sys.argv", ["rocprofiler-compute", "analyze", "--list-metrics", "gfx906"]
+            "sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx906"]
         ):
             rocprof_compute.main()
     assert e.value.code == 1
@@ -104,7 +104,7 @@ def test_list_metrics_gfx906():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -122,7 +122,7 @@ def test_list_metrics_gfx906():
 def test_list_metrics_gfx908():
     with pytest.raises(SystemExit) as e:
         with patch(
-            "sys.argv", ["rocprofiler-compute", "analyze", "--list-metrics", "gfx908"]
+            "sys.argv", ["rocprof-compute", "analyze", "--list-metrics", "gfx908"]
         ):
             rocprof_compute.main()
     assert e.value.code == 1
@@ -133,7 +133,7 @@ def test_list_metrics_gfx908():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -155,7 +155,7 @@ def test_filter_block_1():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -177,7 +177,7 @@ def test_filter_block_2():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -199,7 +199,7 @@ def test_filter_block_3():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -221,7 +221,7 @@ def test_filter_block_4():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -243,7 +243,7 @@ def test_filter_block_5():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -265,7 +265,7 @@ def test_filter_block_6():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -287,7 +287,7 @@ def test_filter_kernel_1():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -309,7 +309,7 @@ def test_filter_kernel_2():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -331,7 +331,7 @@ def test_filter_kernel_3():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -354,7 +354,7 @@ def test_dispatch_1():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -376,7 +376,7 @@ def test_dispatch_2():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -398,7 +398,7 @@ def test_dispatch_3():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -420,7 +420,7 @@ def test_dispatch_4():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -443,7 +443,7 @@ def test_dispatch_5():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -466,7 +466,7 @@ def test_gpu_ids():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -488,7 +488,7 @@ def test_normal_unit_per_wave():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -510,7 +510,7 @@ def test_normal_unit_per_cycle():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -532,7 +532,7 @@ def test_normal_unit_per_second():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -554,7 +554,7 @@ def test_normal_unit_per_kernel():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -576,7 +576,7 @@ def test_max_stat_num_1():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -598,7 +598,7 @@ def test_max_stat_num_2():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -620,7 +620,7 @@ def test_max_stat_num_3():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -642,7 +642,7 @@ def test_max_stat_num_4():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -664,7 +664,7 @@ def test_time_unit_s():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -686,7 +686,7 @@ def test_time_unit_ms():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -708,7 +708,7 @@ def test_time_unit_us():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -730,7 +730,7 @@ def test_time_unit_ns():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -752,7 +752,7 @@ def test_decimal_1():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -774,7 +774,7 @@ def test_decimal_2():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -796,7 +796,7 @@ def test_decimal_3():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -819,7 +819,7 @@ def test_save_dfs():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -852,7 +852,7 @@ def test_save_dfs():
         with patch(
             "sys.argv",
             [
-                "rocprofiler-compute",
+                "rocprof-compute",
                 "analyze",
                 "--path",
                 workload_dir,
@@ -881,7 +881,7 @@ def test_col_1():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -903,7 +903,7 @@ def test_col_2():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -925,7 +925,7 @@ def test_col_3():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -948,7 +948,7 @@ def test_g():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -969,7 +969,7 @@ def test_kernel_verbose_0():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -991,7 +991,7 @@ def test_kernel_verbose_1():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -1013,7 +1013,7 @@ def test_kernel_verbose_2():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -1035,7 +1035,7 @@ def test_kernel_verbose_3():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -1057,7 +1057,7 @@ def test_kernel_verbose_4():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -1079,7 +1079,7 @@ def test_kernel_verbose_5():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -1101,7 +1101,7 @@ def test_kernel_verbose_6():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,
@@ -1121,7 +1121,7 @@ def test_baseline():
         with patch(
             "sys.argv",
             [
-                "rocprofiler-compute",
+                "rocprof-compute",
                 "analyze",
                 "--path",
                 "tests/workloads/vcopy/MI200",
@@ -1140,7 +1140,7 @@ def test_dependency_MI100():
             with patch(
                 "sys.argv",
                 [
-                    "rocprofiler-compute",
+                    "rocprof-compute",
                     "analyze",
                     "--path",
                     workload_dir,

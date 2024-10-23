@@ -44,7 +44,7 @@ config["COUNTER_LOGGING"] = False
 config["METRIC_COMPARE"] = False
 config["METRIC_LOGGING"] = False
 
-baseline_opts = ["rocprofiler-compute", "profile", "-n", "app_1", "-VVV"]
+baseline_opts = ["rocprof-compute", "profile", "-n", "app_1", "-VVV"]
 
 num_kernels = 3
 num_devices = 1

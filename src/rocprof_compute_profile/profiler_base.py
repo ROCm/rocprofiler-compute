@@ -266,7 +266,7 @@ class OmniProfiler_Base:
             self.__args.remaining = " ".join(self.__args.remaining)
         else:
             console_error(
-                "Profiling command required. Pass application executable after -- at the end of options.\n\t\ti.e. rocprofiler-compute profile -n vcopy -- ./vcopy -n 1048576 -b 256"
+                "Profiling command required. Pass application executable after -- at the end of options.\n\t\ti.e. rocprof-compute profile -n vcopy -- ./vcopy -n 1048576 -b 256"
             )
 
         # verify name meets MongoDB length requirements and no illegal chars

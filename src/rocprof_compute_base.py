@@ -178,7 +178,7 @@ class RocProfCompute:
             formatter_class=lambda prog: argparse.RawTextHelpFormatter(
                 prog, max_help_position=30
             ),
-            usage="rocprofiler-compute [mode] [options]",
+            usage="rocprof-compute [mode] [options]",
         )
         omniarg_parser(
             parser, config.rocprof_compute_home, self.__supported_archs, self.__version
@@ -191,7 +191,7 @@ class RocProfCompute:
                 sys.exit(0)
             parser.print_help(sys.stderr)
             console_error(
-                "rocprofiler-compute requires you pass a valid mode. Detected None."
+                "rocprof-compute requires you pass a valid mode. Detected None."
             )
         return
 

@@ -2,11 +2,6 @@
 
 pyinstaller src/rocprofiler-compute.py \
     --name "rocprofiler-compute" \
-<<<<<<< HEAD
-pyinstaller src/rocprofiler-compute.py \
-    --name "rocprofiler-compute" \
-=======
->>>>>>> 79d87081 (Rename CMake file and rename paths from omniperf to rocprofcompute.)
     --add-data "src/perfmon_pub/*:perfmon_pub" \
     --add-data "src/utils/*:utils" \
     --add-data "src/soc_params/*.csv:soc_params" \

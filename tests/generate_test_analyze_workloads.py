@@ -27,7 +27,7 @@ if __name__ == "__main__":
                     + arch
                     + "():"
                     + "\n\twith pytest.raises(SystemExit) as e:"
-                    + "\n\t\twith patch('sys.argv',['rocprofiler-compute', 'analyze', '--path', '"
+                    + "\n\t\twith patch('sys.argv',['rocprof-compute', 'analyze', '--path', '"
                     + workload
                     + "/"
                     + arch
