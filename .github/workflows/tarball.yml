@@ -93,7 +93,7 @@ jobs:
       - name: Query version (setting PYTHONPATH by hand)
         run: |
           export PYTHONPATH=${INSTALL_DIR}/python-libs:$PYTHONPATH
-          $INSTALL_DIR/rocprofiler-compute/bin/rocprofiler-compute --version
+          $INSTALL_DIR/rocprofiler-compute/bin/rocprof-compute --version
       - name: Install Lmod
         run: sudo apt-get install -y lmod
       - name: Access rocprofiler-compute using modulefile
