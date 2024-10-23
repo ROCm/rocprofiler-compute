@@ -418,7 +418,7 @@ class Roofline:
                 if not self.__args.remaining:
                     console_error(
                         "profiling"
-                        "An <app_cmd> is required to run.\nrocprofiler-compute profile -n test -- <app_cmd>"
+                        "An <app_cmd> is required to run.\rrocprof-compute profile -n test -- <app_cmd>"
                     )
                 # TODO: Add an equivelent of characterize_app() to run profiling directly out of this module
 

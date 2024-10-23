@@ -3,7 +3,7 @@ from unittest.mock import patch
 from importlib.machinery import SourceFileLoader
 
 rocprof_compute = SourceFileLoader(
-    "rocprofiler-compute", "src/rocprofiler-compute"
+    "rocprof-compute", "src/rocprof-compute"
 ).load_module()
 
 ##################################################
@@ -15,7 +15,7 @@ def test_import_D_str_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -37,7 +37,7 @@ def test_D_str_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -59,7 +59,7 @@ def test_import_dev01p3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -81,7 +81,7 @@ def test_import_SQC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -103,7 +103,7 @@ def test_SQC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -125,7 +125,7 @@ def test_import_Axes2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -147,7 +147,7 @@ def test_Axes2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -169,7 +169,7 @@ def test_import_no_roof_SQ_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -191,7 +191,7 @@ def test_no_roof_SQ_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -213,7 +213,7 @@ def test_import_CPF_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -235,7 +235,7 @@ def test_CPF_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -257,7 +257,7 @@ def test_import_no_roof_LDS_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -279,7 +279,7 @@ def test_no_roof_LDS_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -301,7 +301,7 @@ def test_import_D_str_inv4_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -323,7 +323,7 @@ def test_D_str_inv4_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -345,7 +345,7 @@ def test_roof_only_K_int_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -367,7 +367,7 @@ def test_import_no_roof_SPI_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -389,7 +389,7 @@ def test_no_roof_SPI_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -411,7 +411,7 @@ def test_import_no_roof_K_str_valid_2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -433,7 +433,7 @@ def test_no_roof_K_str_valid_2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -455,7 +455,7 @@ def test_import_no_roof_mixbench1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -477,7 +477,7 @@ def test_no_roof_mixbench1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -499,7 +499,7 @@ def test_import_no_roof_TA_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -521,7 +521,7 @@ def test_no_roof_TA_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -543,7 +543,7 @@ def test_import_no_roof_CPF_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -565,7 +565,7 @@ def test_no_roof_CPF_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -587,7 +587,7 @@ def test_import_no_roof_CPC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -609,7 +609,7 @@ def test_no_roof_CPC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -631,7 +631,7 @@ def test_import_K_str_inv3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -653,7 +653,7 @@ def test_K_str_inv3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -675,7 +675,7 @@ def test_import_LDS_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -697,7 +697,7 @@ def test_LDS_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -719,7 +719,7 @@ def test_import_no_roof_K_str_valid_3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -741,7 +741,7 @@ def test_roof_only_D_int_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -763,7 +763,7 @@ def test_roof_only_K_str_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -785,7 +785,7 @@ def test_roof_only_SQC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -807,7 +807,7 @@ def test_import_no_roof_Axes2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -829,7 +829,7 @@ def test_no_roof_Axes2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -851,7 +851,7 @@ def test_import_HBM_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -873,7 +873,7 @@ def test_HBM_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -895,7 +895,7 @@ def test_roof_only_TA_CPC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -917,7 +917,7 @@ def test_roof_only_D_val_int_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -939,7 +939,7 @@ def test_import_no_roof_L2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -961,7 +961,7 @@ def test_no_roof_L2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -983,7 +983,7 @@ def test_import_L2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1005,7 +1005,7 @@ def test_L2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1027,7 +1027,7 @@ def test_import_no_roof_dev1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1049,7 +1049,7 @@ def test_no_roof_dev1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1071,7 +1071,7 @@ def test_roof_only_K_str_inv3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1093,7 +1093,7 @@ def test_roof_only_K_str_valid_1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1115,7 +1115,7 @@ def test_roof_only_CPC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1137,7 +1137,7 @@ def test_import_no_roof_Axes3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1159,7 +1159,7 @@ def test_no_roof_Axes3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1181,7 +1181,7 @@ def test_import_no_roof_D_str_inv3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1203,7 +1203,7 @@ def test_no_roof_D_str_inv3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1225,7 +1225,7 @@ def test_import_no_roof_D_int_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1247,7 +1247,7 @@ def test_no_roof_D_int_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1269,7 +1269,7 @@ def test_import_TD_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1291,7 +1291,7 @@ def test_TD_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1313,7 +1313,7 @@ def test_roof_only_D_int_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1335,7 +1335,7 @@ def test_import_D_val_int2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1357,7 +1357,7 @@ def test_D_val_int2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1379,7 +1379,7 @@ def test_import_no_roof_mixbench2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1401,7 +1401,7 @@ def test_no_roof_mixbench2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1423,7 +1423,7 @@ def test_roof_only_SPI_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1445,7 +1445,7 @@ def test_import_no_roof_D_val_int2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1467,7 +1467,7 @@ def test_no_roof_D_val_int2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1489,7 +1489,7 @@ def test_import_K_str_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1511,7 +1511,7 @@ def test_K_str_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1533,7 +1533,7 @@ def test_roof_only_TA_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1555,7 +1555,7 @@ def test_import_K_str_valid_3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1577,7 +1577,7 @@ def test_import_SQ_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1599,7 +1599,7 @@ def test_SQ_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1621,7 +1621,7 @@ def test_import_no_roof_D_str_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1643,7 +1643,7 @@ def test_no_roof_D_str_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1665,7 +1665,7 @@ def test_import_no_roof_dev01p3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1687,7 +1687,7 @@ def test_roof_only_D_val_int2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1709,7 +1709,7 @@ def test_import_no_roof_D_str_inv4_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1731,7 +1731,7 @@ def test_no_roof_D_str_inv4_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1753,7 +1753,7 @@ def test_roof_only_CPF_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1775,7 +1775,7 @@ def test_import_mixbench_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1797,7 +1797,7 @@ def test_mixbench_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1819,7 +1819,7 @@ def test_roof_only_D_str_inv4_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1841,7 +1841,7 @@ def test_import_no_roof_kernels_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1863,7 +1863,7 @@ def test_no_roof_kernels_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1885,7 +1885,7 @@ def test_roof_only_TCC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1907,7 +1907,7 @@ def test_import_TA_CPC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1929,7 +1929,7 @@ def test_TA_CPC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1951,7 +1951,7 @@ def test_roof_only_SQ_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1973,7 +1973,7 @@ def test_import_K_int_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -1995,7 +1995,7 @@ def test_K_int_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2017,7 +2017,7 @@ def test_roof_only_TCP_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2039,7 +2039,7 @@ def test_roof_only_K_str_valid_2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2061,7 +2061,7 @@ def test_import_D_int_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2083,7 +2083,7 @@ def test_D_int_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2105,7 +2105,7 @@ def test_roof_only_Axes3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2127,7 +2127,7 @@ def test_import_dev0_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2149,7 +2149,7 @@ def test_dev0_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2171,7 +2171,7 @@ def test_roof_only_K_str_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2193,7 +2193,7 @@ def test_import_Axes1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2215,7 +2215,7 @@ def test_Axes1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2237,7 +2237,7 @@ def test_roof_only_HBM_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2259,7 +2259,7 @@ def test_import_D_val_int_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2281,7 +2281,7 @@ def test_D_val_int_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2303,7 +2303,7 @@ def test_import_no_roof_TCC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2325,7 +2325,7 @@ def test_no_roof_TCC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2347,7 +2347,7 @@ def test_import_no_roof_SQC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2369,7 +2369,7 @@ def test_no_roof_SQC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2391,7 +2391,7 @@ def test_roof_only_TD_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2413,7 +2413,7 @@ def test_import_no_roof_K_int_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2435,7 +2435,7 @@ def test_no_roof_K_int_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2457,7 +2457,7 @@ def test_import_no_roof_Axes1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2479,7 +2479,7 @@ def test_no_roof_Axes1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2501,7 +2501,7 @@ def test_import_SPI_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2523,7 +2523,7 @@ def test_SPI_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2545,7 +2545,7 @@ def test_roof_only_D_str_inv3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2567,7 +2567,7 @@ def test_import_no_roof_D_val_int_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2589,7 +2589,7 @@ def test_no_roof_D_val_int_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2611,7 +2611,7 @@ def test_import_K_str_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2633,7 +2633,7 @@ def test_K_str_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2655,7 +2655,7 @@ def test_import_CPC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2677,7 +2677,7 @@ def test_CPC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2699,7 +2699,7 @@ def test_roof_only_dispatches_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2721,7 +2721,7 @@ def test_roof_only_mixbench2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2743,7 +2743,7 @@ def test_import_Axes4_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2765,7 +2765,7 @@ def test_Axes4_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2787,7 +2787,7 @@ def test_import_no_roof_TCP_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2809,7 +2809,7 @@ def test_no_roof_TCP_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2831,7 +2831,7 @@ def test_roof_only_LDS_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2853,7 +2853,7 @@ def test_import_invdev_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2875,7 +2875,7 @@ def test_invdev_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2897,7 +2897,7 @@ def test_import_no_roof_dev0_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2919,7 +2919,7 @@ def test_no_roof_dev0_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2941,7 +2941,7 @@ def test_roof_only_Axes1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2963,7 +2963,7 @@ def test_roof_only_invdev_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -2985,7 +2985,7 @@ def test_roof_only_D_str_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3007,7 +3007,7 @@ def test_import_no_roof_K_str_inv3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3029,7 +3029,7 @@ def test_no_roof_K_str_inv3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3051,7 +3051,7 @@ def test_import_no_roof_K_str_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3073,7 +3073,7 @@ def test_no_roof_K_str_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3095,7 +3095,7 @@ def test_import_D_str_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3117,7 +3117,7 @@ def test_D_str_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3139,7 +3139,7 @@ def test_import_kernels_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3161,7 +3161,7 @@ def test_kernels_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3183,7 +3183,7 @@ def test_import_no_roof_Axes4_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3205,7 +3205,7 @@ def test_no_roof_Axes4_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3227,7 +3227,7 @@ def test_import_CMD_INV_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3249,7 +3249,7 @@ def test_import_K_int_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3271,7 +3271,7 @@ def test_K_int_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3293,7 +3293,7 @@ def test_import_mixbench2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3315,7 +3315,7 @@ def test_mixbench2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3337,7 +3337,7 @@ def test_roof_only_Double_N_flag_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3359,7 +3359,7 @@ def test_import_no_roof_TD_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3381,7 +3381,7 @@ def test_no_roof_TD_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3403,7 +3403,7 @@ def test_import_TCC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3425,7 +3425,7 @@ def test_TCC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3447,7 +3447,7 @@ def test_roof_only_dev0_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3469,7 +3469,7 @@ def test_import_no_roof_D_str_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3491,7 +3491,7 @@ def test_no_roof_D_str_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3513,7 +3513,7 @@ def test_roof_only_L2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3535,7 +3535,7 @@ def test_import_no_roof_TA_CPC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3557,7 +3557,7 @@ def test_no_roof_TA_CPC_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3579,7 +3579,7 @@ def test_import_no_roof_Double_N_flag_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3601,7 +3601,7 @@ def test_no_roof_Double_N_flag_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3623,7 +3623,7 @@ def test_import_Double_N_flag_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3645,7 +3645,7 @@ def test_Double_N_flag_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3667,7 +3667,7 @@ def test_roof_only_K_int_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3689,7 +3689,7 @@ def test_import_no_roof_K_str_valid_1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3711,7 +3711,7 @@ def test_no_roof_K_str_valid_1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3733,7 +3733,7 @@ def test_roof_only_mixbench1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3755,7 +3755,7 @@ def test_import_dev1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3777,7 +3777,7 @@ def test_dev1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3799,7 +3799,7 @@ def test_import_no_roof_K_str_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3821,7 +3821,7 @@ def test_no_roof_K_str_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3843,7 +3843,7 @@ def test_import_K_str_valid_1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3865,7 +3865,7 @@ def test_K_str_valid_1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3887,7 +3887,7 @@ def test_import_mixbench1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3909,7 +3909,7 @@ def test_mixbench1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3931,7 +3931,7 @@ def test_import_no_roof_CMD_INV_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3953,7 +3953,7 @@ def test_roof_only_D_str_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3975,7 +3975,7 @@ def test_import_no_roof_HBM_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -3997,7 +3997,7 @@ def test_no_roof_HBM_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4019,7 +4019,7 @@ def test_roof_only_kernels_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4041,7 +4041,7 @@ def test_import_D_int_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4063,7 +4063,7 @@ def test_D_int_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4085,7 +4085,7 @@ def test_import_K_str_valid_2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4107,7 +4107,7 @@ def test_K_str_valid_2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4129,7 +4129,7 @@ def test_import_TCP_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4151,7 +4151,7 @@ def test_TCP_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4173,7 +4173,7 @@ def test_import_Axes3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4195,7 +4195,7 @@ def test_Axes3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4217,7 +4217,7 @@ def test_import_no_roof_invdev_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4239,7 +4239,7 @@ def test_no_roof_invdev_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4261,7 +4261,7 @@ def test_import_no_roof_dispatches_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4283,7 +4283,7 @@ def test_no_roof_dispatches_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4305,7 +4305,7 @@ def test_import_D_str_inv3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4327,7 +4327,7 @@ def test_D_str_inv3_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4349,7 +4349,7 @@ def test_import_TA_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4371,7 +4371,7 @@ def test_TA_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4393,7 +4393,7 @@ def test_import_no_roof_D_int_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4415,7 +4415,7 @@ def test_no_roof_D_int_inv1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4437,7 +4437,7 @@ def test_import_dispatches_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4459,7 +4459,7 @@ def test_dispatches_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4481,7 +4481,7 @@ def test_roof_only_dev1_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4503,7 +4503,7 @@ def test_import_no_roof_K_int_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",
@@ -4525,7 +4525,7 @@ def test_no_roof_K_int_inv2_mi100():
     with patch(
         "sys.argv",
         [
-            "rocprofiler-compute",
+            "rocprof-compute",
             "database",
             "--import",
             "-H",

@@ -44,7 +44,7 @@ body:
       description: |
         What version of ROCm Compute Profiler are you using? Hint:
         ```shell
-        rocprofiler-compute --version
+        rocprof-compute --version
         ```
       placeholder: e.g. 2.1.0
     validations:
