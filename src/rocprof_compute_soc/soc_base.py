@@ -324,45 +324,6 @@ class CounterFile:
         return self.blocks[block].add(counter)
 
 
-def getblock(counter):
-    return counter.split("_")[0]
-
-
-# Set with limited size
-class LimitedSet:
-    def __init__(self, maxsize) -> None:
-        self.avail = maxsize
-        self.elements = []
-
-    def add(self, e) -> None:
-        if e in self.elements:
-            return True
-        elif self.avail <= 0:
-            return False
-
-        self.avail -= 1
-        self.elements.append(e)
-
-        return True
-
-
-# Represents a file that lists PMC counters. Number of counters for each
-# block limited according to perfmon config.
-class CounterFile:
-    def __init__(self, name, perfmon_config) -> None:
-        self.file_name = name
-        self.blocks = {b: LimitedSet(v) for b, v in perfmon_config.items()}
-
-    def add(self, counter) -> bool:
-        block = getblock(counter)
-
-        # SQ and SQC belong to the same IP block
-        if block == "SQC":
-            block = "SQ"
-
-        return self.blocks[block].add(counter)
-
-
 @demarcate
 def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
     """Sort and bucket all related performance counters to minimize required application passes"""
