@@ -34,7 +34,7 @@ import re
 try:
     from pathlib import Path
     from importlib import metadata
-    from rocprof_compute_base import rocprof_Compute
+    from rocprof_compute_base import RocProfCompute
     from utils.utils import console_error
 except ImportError as e:
     # print("Failed to import required modules: " + str(e))
@@ -132,7 +132,7 @@ def main():
     # verify required python dependencies
     verify_deps()
 
-    rocprof_compute = rocprof_Compute()
+    rocprof_compute = RocProfCompute()
 
     mode = rocprof_compute.get_mode()
 
