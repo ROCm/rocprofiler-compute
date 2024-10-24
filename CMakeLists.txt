@@ -16,17 +16,17 @@ message(STATUS "Hostname: ${LOCALHOST}")
 # Versioning info derived from file
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" FULL_VERSION_STRING LIMIT_COUNT 1)
 string(REGEX REPLACE "(\n|\r)" "" FULL_VERSION_STRING "${FULL_VERSION_STRING}")
-set(OMNIPERF_FULL_VERSION "${FULL_VERSION_STRING}")
-string(REGEX REPLACE "([0-9]+)\.([0-9]+)\.([0-9]+)(.*)" "\\1.\\2.\\3" OMNIPERF_VERSION
+set(ROCPROFCOMPUTE_FULL_VERSION "${FULL_VERSION_STRING}")
+string(REGEX REPLACE "([0-9]+)\.([0-9]+)\.([0-9]+)(.*)" "\\1.\\2.\\3" ROCPROFCOMPUTE_VERSION
                      "${FULL_VERSION_STRING}")
 
-# string(REGEX REPLACE "(${OMNIPERF_VERSION})(.*)" "\\2" OMNIPERF_VERSION_TWEAK
+# string(REGEX REPLACE "(${ROCPROFCOMPUTE_VERSION})(.*)" "\\2" ROCPROFCOMPUTE_VERSION_TWEAK
 # "${FULL_VERSION_STRING}")
-# string(REGEX REPLACE "^\\." "" OMNIPERF_VERSION_TWEAK "${OMNIPERF_VERSION_TWEAK}")
+# string(REGEX REPLACE "^\\." "" ROCPROFCOMPUTE_VERSION_TWEAK "${ROCPROFCOMPUTE_VERSION_TWEAK}")
 
 project(
     rocprofiler-compute
-    VERSION ${OMNIPERF_VERSION}
+    VERSION ${ROCPROFCOMPUTE_VERSION}
     LANGUAGES C
     DESCRIPTION
         "A system performance profiling tool for machine learning/HPC workloads running on AMD MI GPUs"
@@ -44,9 +44,9 @@ find_package(Git)
 if(Git_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     execute_process(
         COMMAND git log --pretty=format:%h -n 1
-        OUTPUT_VARIABLE OMNIPERF_GIT_REV
+        OUTPUT_VARIABLE ROCPROFCOMPUTE_GIT_REV
         OUTPUT_STRIP_TRAILING_WHITESPACE)
-    message(STATUS "Git revision: ${OMNIPERF_GIT_REV}")
+    message(STATUS "Git revision: ${ROCPROFCOMPUTE_GIT_REV}")
     set(GIT_CLONE TRUE)
 else()
     set(GIT_CLONE FALSER)
@@ -142,14 +142,14 @@ set(moduleFileTemplate "omniperf.lua.in")
 
 configure_file(
     ${PROJECT_SOURCE_DIR}/cmake/${moduleFileTemplate}
-    ${PROJECT_BINARY_DIR}/${MOD_INSTALL_PATH}/${OMNIPERF_FULL_VERSION}.lua @ONLY)
+    ${PROJECT_BINARY_DIR}/${MOD_INSTALL_PATH}/${ROCPROFCOMPUTE_FULL_VERSION}.lua @ONLY)
 
 # Thera mods
 if(LOCALHOST MATCHES "TheraS01|.*\.thera\.amd\.com|thera-hn")
     list(APPEND CMAKE_MESSAGE_INDENT "  ")
     message(STATUS "Using thera-specific modulefile modification")
     file(READ ${PROJECT_SOURCE_DIR}/cmake/modfile.thera.mod mod_additions)
-    file(APPEND ${PROJECT_BINARY_DIR}/${MOD_INSTALL_PATH}/${OMNIPERF_FULL_VERSION}.lua
+    file(APPEND ${PROJECT_BINARY_DIR}/${MOD_INSTALL_PATH}/${ROCPROFCOMPUTE_FULL_VERSION}.lua
          ${mod_additions})
     list(POP_BACK CMAKE_MESSAGE_INDENT)
 endif()
@@ -344,7 +344,7 @@ install(
     PATTERN "workloads" EXCLUDE)
 # modulefile
 install(
-    FILES ${PROJECT_BINARY_DIR}/${MOD_INSTALL_PATH}/${OMNIPERF_FULL_VERSION}.lua
+    FILES ${PROJECT_BINARY_DIR}/${MOD_INSTALL_PATH}/${ROCPROFCOMPUTE_FULL_VERSION}.lua
     DESTINATION ${MOD_INSTALL_PATH}
     COMPONENT main)
 
@@ -409,6 +409,10 @@ set(CPACK_RPM_PACKAGE_DESCRIPTION
 machine learning/HPC workloads running on AMD GPUs.")
 set(CPACK_PACKAGE_VENDOR "Advanced Micro Devices, Inc.")
 
+# Package versioning
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(CPACK_PACKAGE_VERSION
     "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}"
     )
