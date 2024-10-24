@@ -32,7 +32,6 @@ import numpy as np
 from utils.utils import demarcate, console_debug, console_log, console_error
 from pathlib import Path
 from collections import OrderedDict
-from collections import OrderedDict
 
 from rocprof_compute_base import SUPPORTED_ARCHS
 from rocprof_compute_base import MI300_CHIP_IDS
@@ -101,11 +100,6 @@ class OmniSoC_Base:
         """Fetch any SoC specific arguments required by the profiler"""
         # assume no SoC specific options and return empty list by default
         return []
-
-    def check_arch_override(self):
-        if "ROCPROFCOMPUTE_ARCH_OVERRIDE" in os.environ.keys():
-            return os.environ["ROCPROFCOMPUTE_ARCH_OVERRIDE"]
-        return ""
 
     @demarcate
     def populate_mspec(self):
@@ -188,28 +182,9 @@ class OmniSoC_Base:
             0
         ].upper()
         if self._mspec.gpu_model == "MI300":
-            self._mspec.gpu_model = list(SUPPORTED_ARCHS[self._mspec.gpu_arch].values())[
-                0
-            ][0]
-        if self._mspec.gpu_arch == "gfx942":
-            if (
-                "MI300A" in "\n".join(self._mspec._rocminfo)
-                or "MI300A" in self.check_arch_override()
-            ):
-                self._mspec.gpu_model = "MI300A_A1"
-            elif (
-                "MI300X" in "\n".join(self._mspec._rocminfo)
-                or "MI300X" in self.check_arch_override()
-            ):
-                self._mspec.gpu_model = "MI300X_A1"
-            # We need to distinguish MI308X by peeking reported num CUs
-            elif self._mspec.cu_per_gpu == "80" or "MI308X" in self.check_arch_override():
-                self._mspec.gpu_model = "MI308X"
-            else:
-                console_error(
-                    "Cannot parse MI300 details from rocminfo. Please verify output or set the arch using (e.g.,) "
-                    'export ROCPROFCOMPUTE_ARCH_OVERRIDE="MI300A"'
-                )
+            # Use Chip ID to distinguish MI300 gpu model using the built-in dictionary
+            if self._mspec.chip_id in MI300_CHIP_IDS:
+                self._mspec.chip_id = MI300_CHIP_IDS[self._mspec.chip_id]
 
         self._mspec.num_xcd = str(
             total_xcds(self._mspec.chip_id, self._mspec.compute_partition)
@@ -339,8 +314,6 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
         lines = open(fname, "r").read().splitlines()
 
         for line in lines:
-
-            # Strip all comments, skip empty lines
 
             # Strip all comments, skip empty lines
             stext = line.split("#")[0].strip()
