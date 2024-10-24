@@ -17,12 +17,14 @@ message(STATUS "Hostname: ${LOCALHOST}")
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" FULL_VERSION_STRING LIMIT_COUNT 1)
 string(REGEX REPLACE "(\n|\r)" "" FULL_VERSION_STRING "${FULL_VERSION_STRING}")
 set(ROCPROFCOMPUTE_FULL_VERSION "${FULL_VERSION_STRING}")
-string(REGEX REPLACE "([0-9]+)\.([0-9]+)\.([0-9]+)(.*)" "\\1.\\2.\\3" ROCPROFCOMPUTE_VERSION
-                     "${FULL_VERSION_STRING}")
+string(REGEX REPLACE "([0-9]+)\.([0-9]+)\.([0-9]+)(.*)" "\\1.\\2.\\3"
+                     ROCPROFCOMPUTE_VERSION "${FULL_VERSION_STRING}")
 
-# string(REGEX REPLACE "(${ROCPROFCOMPUTE_VERSION})(.*)" "\\2" ROCPROFCOMPUTE_VERSION_TWEAK
+# string(REGEX REPLACE "(${ROCPROFCOMPUTE_VERSION})(.*)" "\\2"
+# ROCPROFCOMPUTE_VERSION_TWEAK
 # "${FULL_VERSION_STRING}")
-# string(REGEX REPLACE "^\\." "" ROCPROFCOMPUTE_VERSION_TWEAK "${ROCPROFCOMPUTE_VERSION_TWEAK}")
+# string(REGEX REPLACE "^\\." "" ROCPROFCOMPUTE_VERSION_TWEAK
+# "${ROCPROFCOMPUTE_VERSION_TWEAK}")
 
 project(
     rocprofiler-compute
@@ -138,7 +140,7 @@ set(MOD_INSTALL_PATH
     CACHE STRING "Install path for modulefile")
 message(STATUS "Modulefile install path: ${MOD_INSTALL_PATH}")
 
-set(moduleFileTemplate "omniperf.lua.in")
+set(moduleFileTemplate "rocprofcompute.lua.in")
 
 configure_file(
     ${PROJECT_SOURCE_DIR}/cmake/${moduleFileTemplate}
@@ -149,7 +151,8 @@ if(LOCALHOST MATCHES "TheraS01|.*\.thera\.amd\.com|thera-hn")
     list(APPEND CMAKE_MESSAGE_INDENT "  ")
     message(STATUS "Using thera-specific modulefile modification")
     file(READ ${PROJECT_SOURCE_DIR}/cmake/modfile.thera.mod mod_additions)
-    file(APPEND ${PROJECT_BINARY_DIR}/${MOD_INSTALL_PATH}/${ROCPROFCOMPUTE_FULL_VERSION}.lua
+    file(APPEND
+         ${PROJECT_BINARY_DIR}/${MOD_INSTALL_PATH}/${ROCPROFCOMPUTE_FULL_VERSION}.lua
          ${mod_additions})
     list(POP_BACK CMAKE_MESSAGE_INDENT)
 endif()
