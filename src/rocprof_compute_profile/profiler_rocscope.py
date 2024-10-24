@@ -22,11 +22,11 @@
 # SOFTWARE.
 ##############################################################################el
 
-from rocprof_compute_profile.profiler_base import OmniProfiler_Base
+from rocprof_compute_profile.profiler_base import RocProfCompute_Base
 from utils.utils import demarcate, console_log
 
 
-class rocscope_profiler(OmniProfiler_Base):
+class rocscope_profiler(RocProfCompute_Base):
     def __init__(self, profiling_args, profiler_mode, soc):
         super().__init__(profiling_args, profiler_mode, soc)
 

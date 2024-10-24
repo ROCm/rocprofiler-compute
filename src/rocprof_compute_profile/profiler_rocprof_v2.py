@@ -24,7 +24,7 @@
 
 import os
 import shlex
-from rocprof_compute_profile.profiler_base import OmniProfiler_Base
+from rocprof_compute_profile.profiler_base import RocProfCompute_Base
 from utils.utils import (
     demarcate,
     console_log,
@@ -32,7 +32,7 @@ from utils.utils import (
 )
 
 
-class rocprof_v2_profiler(OmniProfiler_Base):
+class rocprof_v2_profiler(RocProfCompute_Base):
     def __init__(self, profiling_args, profiler_mode, soc):
         super().__init__(profiling_args, profiler_mode, soc)
         self.ready_to_profile = (

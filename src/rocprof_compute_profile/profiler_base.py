@@ -45,7 +45,7 @@ import config
 import pandas as pd
 
 
-class OmniProfiler_Base:
+class RocProfCompute_Base:
     def __init__(self, args, profiler_mode, soc):
         self.__args = args
         self.__profiler = profiler_mode
