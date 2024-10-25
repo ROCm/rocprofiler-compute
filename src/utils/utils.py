@@ -257,6 +257,34 @@ def get_agent_dict(data):
     
     return agent_map
 
+# Returns a dictionary that maps agent ID to GPU ID
+# starting at 0.
+def get_gpuid_dict(data):
+    
+    agents = data['rocprofiler-sdk-tool'][0]['agents']
+
+    agent_list = []
+
+    # Get agent ID and node_id for GPU agents only
+    for agent in agents:
+
+        if agent['type'] == 2:
+            agent_id = agent['id']['handle']
+            node_id = agent['node_id']
+            agent_list.append((agent_id, node_id))
+
+    # Sort by node ID
+    agent_list.sort(key=lambda x: x[1])
+
+    # Map agent ID to node id
+    map = {}
+    gpu_id = 0
+    for agent in agent_list:
+        map[agent[0]] = gpu_id
+        gpu_id = gpu_id + 1
+
+    return map
+
 # Create a dictionary that maps counter ID to counter objects
 def v3_json_get_counters(data):
     counters = data['rocprofiler-sdk-tool'][0]['counters']
@@ -294,6 +322,8 @@ def v3_json_to_csv(json_file_path, csv_file_path):
     agents = get_agent_dict(data)
     pid = data['rocprofiler-sdk-tool'][0]['metadata']['pid']
 
+    gpuid_map = get_gpuid_dict(data)
+
     counter_info = v3_json_get_counters(data)
 
     # CSV headers. If there are no dispatches we still end up with a valid CSV file.
@@ -329,7 +359,9 @@ def v3_json_to_csv(json_file_path, csv_file_path):
         row = {}
 
         row['Dispatch_ID'] = dispatch_info['dispatch_id']
-        row['GPU_ID'] = agents[agent_id]['node_id']
+
+        row['GPU_ID'] = gpuid_map[agent_id]
+
         row['Queue_ID'] = dispatch_info['queue_id']['handle']
         row['PID'] = pid
         row['TID'] = d['thread_id']
