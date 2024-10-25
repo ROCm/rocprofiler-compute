@@ -55,7 +55,10 @@ external_projects_current_project = "rocprofiler-compute"
 
 # frequently used external resources
 extlinks = {
-    "dev-sample": ("https://github.com/ROCm/rocprofiler-compute/blob/amd-mainline/sample/%s", "%s"),
+    "dev-sample": (
+        "https://github.com/ROCm/rocprofiler-compute/blob/amd-mainline/sample/%s",
+        "%s",
+    ),
     "prod-page": (
         "https://www.amd.com/en/products/accelerators/instinct/%s.html",
         "%s",
