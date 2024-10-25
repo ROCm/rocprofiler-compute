@@ -1,6 +1,6 @@
 .. meta::
    :description: ROCm Compute Profiler performance model: Compute unit (CU)
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, GCN, compute, unit, pipeline, workgroup, wavefront,
+   :keywords: Omniperf, ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, GCN, compute, unit, pipeline, workgroup, wavefront,
               CDNA
 
 *****************

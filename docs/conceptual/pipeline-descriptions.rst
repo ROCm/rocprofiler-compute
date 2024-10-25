@@ -1,6 +1,6 @@
 .. meta::
    :description: ROCm Compute Profiler performance model: Shader engine (SE)
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, pipeline, VALU, SALU, VMEM, SMEM, LDS, branch,
+   :keywords: Omniperf, ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, pipeline, VALU, SALU, VMEM, SMEM, LDS, branch,
               scheduler, MFMA, AGPRs
 
 *********************

@@ -1,6 +1,6 @@
 .. meta::
    :description: ROCm Compute Profiler performance model: Pipeline metrics
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, pipeline, wavefront, metrics, launch, runtime
+   :keywords: Omniperf, ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, pipeline, wavefront, metrics, launch, runtime
               VALU, MFMA, instruction mix, FLOPs, arithmetic, operations
 
 ****************

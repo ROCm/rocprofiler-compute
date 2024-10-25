@@ -1,6 +1,6 @@
 .. meta::
    :description: ROCm Compute Profiler terminology and definitions
-   :keywords: ROCm Compute Profiler, ROCm, glossary, definitions, terms, profiler, tool,
+   :keywords: Omniperf, ROCm Compute Profiler, ROCm, glossary, definitions, terms, profiler, tool,
               Instinct, accelerator, AMD
 
 ***********

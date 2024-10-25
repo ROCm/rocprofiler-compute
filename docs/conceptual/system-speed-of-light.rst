@@ -1,6 +1,6 @@
 .. meta::
    :description: ROCm Compute Profiler performance model: System Speed-of-Light
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, AMD, system, speed of light
+   :keywords: Omniperf, ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, AMD, system, speed of light
 
 *********************
 System Speed-of-Light

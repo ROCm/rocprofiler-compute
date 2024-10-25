@@ -1,6 +1,6 @@
 .. meta::
    :description: ROCm Compute Profiler performance model: References
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, HIP, GCN, LLVM, docs, documentation, training
+   :keywords: Omniperf, ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, HIP, GCN, LLVM, docs, documentation, training
 
 **********
 References

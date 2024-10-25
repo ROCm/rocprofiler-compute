@@ -1,6 +1,6 @@
 .. meta::
    :description: ROCm Compute Profiler performance model: L2 cache (TCC)
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, L2, cache, infinity fabric, metrics
+   :keywords: Omniperf, ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, L2, cache, infinity fabric, metrics
 
 **************
 L2 cache (TCC)

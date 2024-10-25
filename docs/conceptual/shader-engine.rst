@@ -1,6 +1,6 @@
 .. meta::
    :description: ROCm Compute Profiler performance model: Shader engine (SE)
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, shader, engine, sL1D, L1I, workgroup manager, SPI
+   :keywords: Omniperf, ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, shader, engine, sL1D, L1I, workgroup manager, SPI
 
 ******************
 Shader engine (SE)

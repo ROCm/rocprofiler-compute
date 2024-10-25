@@ -1,6 +1,6 @@
 .. meta::
    :description: ROCm Compute Profiler performance model
-   :keywords: ROCm Compute Profiler, ROCm, performance, model, profiler, tool, Instinct,
+   :keywords: Omniperf, ROCm Compute Profiler, ROCm, performance, model, profiler, tool, Instinct,
               accelerator, AMD
 
 *****************

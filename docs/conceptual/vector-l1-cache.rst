@@ -1,6 +1,6 @@
 .. meta::
    :description: ROCm Compute Profiler performance model: Vector L1 cache (vL1D)
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, AMD, vector, l1, cache, vl1d
+   :keywords: Omniperf, ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, AMD, vector, l1, cache, vl1d
 
 **********************
 Vector L1 cache (vL1D)
