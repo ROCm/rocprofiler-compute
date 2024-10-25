@@ -26,7 +26,7 @@ application, launch, for example:
 
 .. code-block:: shell
 
-   $ omniperf profile -n vcopy_data -- ./vcopy -n 1048576 -b 256
+   $ rocprof-compute profile -n vcopy_data -- ./vcopy -n 1048576 -b 256
 
 This runs the app, launches each kernel, and generates profiling results. By
 default, results are written to a subdirectory with your accelerator's name;
@@ -67,7 +67,7 @@ argument:
 
 .. code-block:: shell
 
-   $ omniperf analyze --list-metrics <sys_arch>
+   $ rocprof-compute analyze --list-metrics <sys_arch>
 
 .. _basic-analyze-cli:
 
@@ -106,7 +106,7 @@ To interact with Grafana data, stored in the ROCm Compute Profiler database, ent
 
 .. code-block:: shell
 
-   $ omniperf database --import [CONNECTION OPTIONS]
+   $ rocprof-compute database --import [CONNECTION OPTIONS]
 
 See :doc:`/how-to/analyze/grafana-gui` for more detailed information.
 
@@ -133,7 +133,7 @@ Profile mode
 
    .. code-block:: shell
 
-      $ omniperf profile --help
+      $ rocprof-compute profile --help
 
 See :doc:`profile/mode` to learn about this mode in depth and to get started
 profiling with ROCm Compute Profiler.
@@ -158,7 +158,7 @@ Analyze mode
 
    .. code-block:: shell
 
-      $ omniperf analyze --help
+      $ rocprof-compute analyze --help
 
 See :doc:`analyze/mode` to learn about this mode in depth and to get started
 with analysis using ROCm Compute Profiler.
@@ -178,7 +178,7 @@ Database mode
 
    .. code-block:: shell
 
-      $ omniperf database --help
+      $ rocprof-compute database --help
 
 See :doc:`/install/grafana-setup` to learn about setting up a Grafana server and
 database instance to make your profiling data more digestible and shareable.
@@ -206,7 +206,7 @@ available across all modes.
 
 .. note::
 
-   ROCm Compute Profiler also recognizes the project variable, ``OMNIPERF_COLOR`` should you
+   ROCm Compute Profiler also recognizes the project variable, ``ROCPROFCOMPUTE_COLOR`` should you
    choose to disable colorful output. To disable default colorful behavior, set
    this variable to ``0``.
 

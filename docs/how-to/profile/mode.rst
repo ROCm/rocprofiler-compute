@@ -16,7 +16,7 @@ ROCm Compute Profiler's other modes, see :ref:`modes`.
 Profiling
 =========
 
-Use the ``omniperf`` executable to acquire all necessary performance monitoring
+Use the ``rocprof-compute`` executable to acquire all necessary performance monitoring
 data through analysis of compute workloads.
 
 Profiling with ROCm Compute Profiler yields the following benefits.
@@ -30,7 +30,7 @@ Profiling with ROCm Compute Profiler yields the following benefits.
 * :ref:`Standalone roofline <standalone-roofline>`: Isolate a subset of built-in
   metrics or build your own profiling configuration.
 
-Run ``omniperf profile -h`` for more details. See
+Run ``rocprof-compute profile -h`` for more details. See
 :ref:`Basic usage <modes-profile>`.
 
 .. _profile-example:
@@ -38,10 +38,10 @@ Run ``omniperf profile -h`` for more details. See
 Profiling example
 -----------------
 
-The `<https://github.com/ROCm/omniperf/blob/amd-mainline/sample/vcopy.cpp>`__ repository
+The `<https://github.com/ROCm/rocprofiler-compute/blob/amd-mainline/sample/vcopy.cpp>`__ repository
 includes source code for a sample GPU compute workload, ``vcopy.cpp``. A copy of
 this file is available in the ``share/sample`` subdirectory after a normal
-ROCm Compute Profiler installation, or via the ``$OMNIPERF_SHARE/sample`` directory when
+ROCm Compute Profiler installation, or via the ``$ROCPROFCOMPUTE_SHARE/sample`` directory when
 using the supplied modulefile.
 
 The examples in this section use a compiled version of the ``vcopy`` workload to
@@ -76,18 +76,18 @@ The following sample command profiles the ``vcopy`` workload.
 
 .. code-block:: shell
 
-   $ omniperf profile --name vcopy -- ./vcopy -n 1048576 -b 256
+   $ rocprof-compute profile --name vcopy -- ./vcopy -n 1048576 -b 256
 
-     ___                  _                  __ 
-    / _ \ _ __ ___  _ __ (_)_ __   ___ _ __ / _|
-   | | | | '_ ` _ \| '_ \| | '_ \ / _ \ '__| |_ 
-   | |_| | | | | | | | | | | |_) |  __/ |  |  _|
-    \___/|_| |_| |_|_| |_|_| .__/ \___|_|  |_|  
-                           |_|                  
+                                    __                                       _
+    _ __ ___   ___ _ __  _ __ ___  / _|       ___ ___  _ __ ___  _ __  _   _| |_ ___
+   | '__/ _ \ / __| '_ \| '__/ _ \| |_ _____ / __/ _ \| '_ ` _ \| '_ \| | | | __/ _ \
+   | | | (_) | (__| |_) | | | (_) |  _|_____| (_| (_) | | | | | | |_) | |_| | ||  __/
+   |_|  \___/ \___| .__/|_|  \___/|_|        \___\___/|_| |_| |_| .__/ \__,_|\__\___|
+                  |_|                                           |_|
 
-   ROCm Compute Profiler version: 2.0.0
+   Rocprofiler-compute version: 2.0.0
    Profiler choice: rocprofv1
-   Path: /home/auser/repos/omniperf/sample/workloads/vcopy/MI200
+   Path: /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200
    Target: MI200
    Command: ./vcopy -n 1048576 -b 256
    Kernel Selection: None
@@ -98,10 +98,10 @@ The following sample command profiles the ``vcopy`` workload.
    Collecting Performance Counters
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   [profiling] Current input file: /home/auser/repos/omniperf/sample/workloads/vcopy/MI200/perfmon/SQ_IFETCH_LEVEL.txt
-      |-> [rocprof] RPL: on '240312_174329' from '/opt/rocm-5.2.1' in '/home/auser/repos/omniperf/src/omniperf'
+   [profiling] Current input file: /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/perfmon/SQ_IFETCH_LEVEL.txt
+      |-> [rocprof] RPL: on '240312_174329' from '/opt/rocm-5.2.1' in '/home/auser/repos/rocprofiler-compute/src/rocprof-compute'
       |-> [rocprof] RPL: profiling '""./vcopy -n 1048576 -b 256""'
-      |-> [rocprof] RPL: input file '/home/auser/repos/omniperf/sample/workloads/vcopy/MI200/perfmon/SQ_IFETCH_LEVEL.txt'
+      |-> [rocprof] RPL: input file '/home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/perfmon/SQ_IFETCH_LEVEL.txt'
       |-> [rocprof] RPL: output dir '/tmp/rpl_data_240312_174329_692890'
       |-> [rocprof] RPL: result dir '/tmp/rpl_data_240312_174329_692890/input0_results_240312_174329'
       |-> [rocprof] ROCProfiler: input from "/tmp/rpl_data_240312_174329_692890/input0.xml"
@@ -123,13 +123,13 @@ The following sample command profiles the ``vcopy`` workload.
       |-> [rocprof] Releasing CPU memory
       |-> [rocprof] 
      |-> [rocprof] ROCPRofiler: 1 contexts collected, output directory /tmp/rpl_data_240312_174329_692890/input0_results_240312_174329
-       |-> [rocprof] File '/home/auser/repos/omniperf/sample/workloads/vcopy/MI200/SQ_IFETCH_LEVEL.csv' is generating
+       |-> [rocprof] File '/home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/SQ_IFETCH_LEVEL.csv' is generating
       |-> [rocprof] 
-   [profiling] Current input file: /home/auser/repos/omniperf/sample/workloads/vcopy/MI200/perfmon/SQ_INST_LEVEL_LDS.txt
+   [profiling] Current input file: /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/perfmon/SQ_INST_LEVEL_LDS.txt
 
    ...
 
-   [roofline] Checking for roofline.csv in /home/auser/repos/omniperf/sample/workloads/vcopy/MI200
+   [roofline] Checking for roofline.csv in /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200
    [roofline] No roofline data found. Generating...
    Empirical Roofline Calculation
    Copyright © 2022  Advanced Micro Devices, Inc. All rights reserved.
@@ -265,7 +265,7 @@ The following example only gathers hardware counters for the shader sequencer
 
 .. code-block:: shell
 
-   $ omniperf profile --name vcopy -b SQ TCC -- ./vcopy -n 1048576 -b 256
+   $ rocprof-compute profile --name vcopy -b SQ TCC -- ./vcopy -n 1048576 -b 256
 
      ___                  _                  __ 
     / _ \ _ __ ___  _ __ (_)_ __   ___ _ __ / _|
@@ -291,7 +291,7 @@ The following example only gathers hardware counters for the shader sequencer
    fname: pmc_sq_perf2: Added
    ROCm Compute Profiler version: 2.0.0
    Profiler choice: rocprofv1
-   Path: /home/auser/repos/omniperf/sample/workloads/vcopy/MI200
+   Path: /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200
    Target: MI200
    Command: ./vcopy -n 1048576 -b 256
    Kernel Selection: None
@@ -316,7 +316,7 @@ substring ``vecCopy``.
 
 .. code-block:: shell
 
-   $ omniperf profile --name vcopy -k vecCopy -- ./vcopy -n 1048576 -b 256
+   $ rocprof-compute profile --name vcopy -k vecCopy -- ./vcopy -n 1048576 -b 256
 
      ___                  _                  __ 
     / _ \ _ __ ___  _ __ (_)_ __   ___ _ __ / _|
@@ -327,7 +327,7 @@ substring ``vecCopy``.
 
    ROCm Compute Profiler version: 2.0.0
    Profiler choice: rocprofv1
-   Path: /home/auser/repos/omniperf/sample/workloads/vcopy/MI200
+   Path: /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200
    Target: MI200
    Command: ./vcopy -n 1048576 -b 256
    Kernel Selection: ['vecCopy']
@@ -351,7 +351,7 @@ of the application (note zero-based indexing).
 
 .. code-block:: shell
 
-   $ omniperf profile --name vcopy -d 0 -- ./vcopy -n 1048576 -b 256
+   $ rocprof-compute profile --name vcopy -d 0 -- ./vcopy -n 1048576 -b 256
 
      ___                  _                  __ 
     / _ \ _ __ ___  _ __ (_)_ __   ___ _ __ / _|
@@ -362,7 +362,7 @@ of the application (note zero-based indexing).
 
    ROCm Compute Profiler version: 2.0.0
    Profiler choice: rocprofv1
-   Path: /home/auser/repos/omniperf/sample/workloads/vcopy/MI200
+   Path: /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200
    Target: MI200
    Command: ./vcopy -n 1048576 -b 256
    Kernel Selection: None
@@ -410,12 +410,12 @@ The following example demonstrates profiling roofline data only:
 
 .. code-block:: shell
 
-   $ omniperf profile --name vcopy --roof-only -- ./vcopy -n 1048576 -b 256
+   $ rocprof-compute profile --name vcopy --roof-only -- ./vcopy -n 1048576 -b 256
 
    ...
-   [roofline] Checking for roofline.csv in /home/auser/repos/omniperf/sample/workloads/vcopy/MI200
+   [roofline] Checking for roofline.csv in /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200
    [roofline] No roofline data found. Generating...
-   Checking for roofline.csv in /home/auser/repos/omniperf/sample/workloads/vcopy/MI200
+   Checking for roofline.csv in /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200
    Empirical Roofline Calculation
    Copyright © 2022  Advanced Micro Devices, Inc. All rights reserved.
    Total detected GPU devices: 4
