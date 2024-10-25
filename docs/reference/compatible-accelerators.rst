@@ -1,6 +1,6 @@
 .. meta::
    :description: ROCm Compute Profiler support: compatible accelerators and GPUs
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, AMD, GPU
+   :keywords: Omniperf, compatible, cdna, gcn, gfx, rdna, radeon, hardware, architecture
 
 ***********************
 Compatible accelerators
@@ -18,19 +18,19 @@ GPU specifications.
    particular family of AMD accelerators.
 
 .. list-table::
-    :header-rows: 1
+   :header-rows: 1
 
-    * - Platform
-      - Status
+   * - Platform
+     - Status
 
-    * - AMD Instinct™ MI300
-      - Supported ✅
+   * - AMD Instinct™ MI300
+     - Supported ✅
 
-    * - AMD Instinct MI200
-      - Supported ✅
+   * - AMD Instinct MI200
+     - Supported ✅
 
-    * - AMD Instinct MI100
-      - Supported ✅
+   * - AMD Instinct MI100
+     - Supported ✅
 
-    * - AMD Instinct MI50, MI60 (Vega 20)
-      - No support ❌
+   * - AMD Instinct MI50, MI60 (Vega 20)
+     - No support ❌
