@@ -169,13 +169,13 @@ convention:
 
 .. code-block:: shell
 
-    omniperf_<team>_<database>_<soc>
+    rocprofiler-compute_<team>_<database>_<soc>
 
 For example:
 
 .. code-block:: shell
 
-   omniperf_asw_vcopy_mi200
+   rocprofiler-compute_asw_vcopy_mi200
 
 When using :ref:`database mode <modes-database>`, be sure to tailor the
 connection options to the machine hosting your
@@ -187,10 +187,10 @@ called ``dummybox``.
 
 .. code-block:: shell-session
 
-   $ omniperf database --help
+   $ rocprof-compute database --help
    usage:
 
-   omniperf database <interaction type> [connection options]
+   rocprof-compute database <interaction type> [connection options]
 
 
 
@@ -198,9 +198,9 @@ called ``dummybox``.
 
    Examples:
 
-           omniperf database --import -H pavii1 -u temp -t asw -w workloads/vcopy/mi200/
+           rocprof-compute database --import -H pavii1 -u temp -t asw -w workloads/vcopy/mi200/
 
-           omniperf database --remove -H pavii1 -u temp -w omniperf_asw_sample_mi200
+           rocprof-compute database --remove -H pavii1 -u temp -w rocprofiler-compute_asw_sample_mi200
 
    -------------------------------------------------------------------------------
 
@@ -229,21 +229,21 @@ called ``dummybox``.
 
 
 ROCm Compute Profiler import for vcopy:
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code-block:: shell
+.. code-block:: shell-session
 
-   $ omniperf database --import -H dummybox -u temp -t asw -w workloads/vcopy/mi200/
+   $ rocprof-compute database --import -H dummybox -u temp -t asw -w workloads/vcopy/mi200/
 
-     ___                  _                  __
-    / _ \ _ __ ___  _ __ (_)_ __   ___ _ __ / _|
-   | | | | '_ ` _ \| '_ \| | '_ \ / _ \ '__| |_
-   | |_| | | | | | | | | | | |_) |  __/ |  |  _|
-    \___/|_| |_| |_|_| |_|_| .__/ \___|_|  |_|
-                           |_|
+                                    __                                       _
+    _ __ ___   ___ _ __  _ __ ___  / _|       ___ ___  _ __ ___  _ __  _   _| |_ ___
+   | '__/ _ \ / __| '_ \| '__/ _ \| |_ _____ / __/ _ \| '_ ` _ \| '_ \| | | | __/ _ \
+   | | | (_) | (__| |_) | | | (_) |  _|_____| (_| (_) | | | | | | |_) | |_| | ||  __/
+   |_|  \___/ \___| .__/|_|  \___/|_|        \___\___/|_| |_| |_| .__/ \__,_|\__\___|
+                  |_|                                           |_|
 
 
-   Pulling data from  /home/auser/repos/omniperf/sample/workloads/vcopy/MI200
+   Pulling data from  /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200
    The directory exists
    Found sysinfo file
    KernelName shortening enabled
@@ -251,15 +251,15 @@ ROCm Compute Profiler import for vcopy:
    Password:
    Password received
    -- Conversion & Upload in Progress --
-     0%|                                                                                                                                                                                                             | 0/11 [00:00<?, ?it/s]/home/auser/repos/omniperf/sample/workloads/vcopy/MI200/SQ_IFETCH_LEVEL.csv
-     9%|█████████████████▉                                                                                                                                                                                   | 1/11 [00:00<00:01,  8.53it/s]/home/auser/repos/omniperf/sample/workloads/vcopy/MI200/pmc_perf.csv
-    18%|███████████████████████████████████▊                                                                                                                                                                 | 2/11 [00:00<00:01,  6.99it/s]/home/auser/repos/omniperf/sample/workloads/vcopy/MI200/SQ_INST_LEVEL_SMEM.csv
-    27%|█████████████████████████████████████████████████████▋                                                                                                                                               | 3/11 [00:00<00:01,  7.90it/s]/home/auser/repos/omniperf/sample/workloads/vcopy/MI200/SQ_LEVEL_WAVES.csv
-    36%|███████████████████████████████████████████████████████████████████████▋                                                                                                                             | 4/11 [00:00<00:00,  8.56it/s]/home/auser/repos/omniperf/sample/workloads/vcopy/MI200/SQ_INST_LEVEL_LDS.csv
-    45%|█████████████████████████████████████████████████████████████████████████████████████████▌                                                                                                           | 5/11 [00:00<00:00,  9.00it/s]/home/auser/repos/omniperf/sample/workloads/vcopy/MI200/SQ_INST_LEVEL_VMEM.csv
-    55%|███████████████████████████████████████████████████████████████████████████████████████████████████████████▍                                                                                         | 6/11 [00:00<00:00,  9.24it/s]/home/auser/repos/omniperf/sample/workloads/vcopy/MI200/sysinfo.csv
-    64%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▎                                                                       | 7/11 [00:00<00:00,  9.37it/s]/home/auser/repos/omniperf/sample/workloads/vcopy/MI200/roofline.csv
-    82%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▏                                   | 9/11 [00:00<00:00, 12.60it/s]/home/auser/repos/omniperf/sample/workloads/vcopy/MI200/timestamps.csv
+     0%|                                                                                                                                                                                                             | 0/11 [00:00<?, ?it/s]/home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/SQ_IFETCH_LEVEL.csv
+     9%|█████████████████▉                                                                                                                                                                                   | 1/11 [00:00<00:01,  8.53it/s]/home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/pmc_perf.csv
+    18%|███████████████████████████████████▊                                                                                                                                                                 | 2/11 [00:00<00:01,  6.99it/s]/home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/SQ_INST_LEVEL_SMEM.csv
+    27%|█████████████████████████████████████████████████████▋                                                                                                                                               | 3/11 [00:00<00:01,  7.90it/s]/home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/SQ_LEVEL_WAVES.csv
+    36%|███████████████████████████████████████████████████████████████████████▋                                                                                                                             | 4/11 [00:00<00:00,  8.56it/s]/home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/SQ_INST_LEVEL_LDS.csv
+    45%|█████████████████████████████████████████████████████████████████████████████████████████▌                                                                                                           | 5/11 [00:00<00:00,  9.00it/s]/home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/SQ_INST_LEVEL_VMEM.csv
+    55%|███████████████████████████████████████████████████████████████████████████████████████████████████████████▍                                                                                         | 6/11 [00:00<00:00,  9.24it/s]/home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/sysinfo.csv
+    64%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▎                                                                       | 7/11 [00:00<00:00,  9.37it/s]/home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/roofline.csv
+    82%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▏                                   | 9/11 [00:00<00:00, 12.60it/s]/home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/timestamps.csv
    100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 11/11 [00:00<00:00, 11.05it/s]
    9 collections added.
    Workload name uploaded

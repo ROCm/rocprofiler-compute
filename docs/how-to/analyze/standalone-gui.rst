@@ -34,7 +34,7 @@ desired analysis command. For example:
 
 .. code-block:: shell
 
-   $ omniperf analyze -p workloads/vcopy/MI200/ --gui
+   $ rocprof-compute analyze -p workloads/vcopy/MI200/ --gui
 
      ___                  _                  __ 
     / _ \ _ __ ___  _ __ (_)_ __   ___ _ __ / _|

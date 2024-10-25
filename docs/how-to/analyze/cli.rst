@@ -19,7 +19,7 @@ This section provides an overview of ROCm Compute Profiler's CLI analysis featur
 * :ref:`Filtering <cli-analysis-options>`: Hone in on a particular kernel,
   GPU ID, or dispatch ID via post-process filtering.
 
-Run ``omniperf analyze -h`` for more details.
+Run ``rocprof-compute analyze -h`` for more details.
 
 .. _cli-walkthrough:
 
@@ -28,16 +28,16 @@ Walkthrough
 
 1. To begin, generate a high-level analysis report using ROCm Compute Profiler's ``-b`` (or ``--block``) flag. 
 
-   .. code-block:: shell
+   .. code-block:: shell-session
 
-      $ omniperf analyze -p workloads/vcopy/MI200/ -b 2
+      $ rocprof-compute analyze -p workloads/vcopy/MI200/ -b 2
 
-        ___                  _                  __ 
-       / _ \ _ __ ___  _ __ (_)_ __   ___ _ __ / _|
-      | | | | '_ ` _ \| '_ \| | '_ \ / _ \ '__| |_ 
-      | |_| | | | | | | | | | | |_) |  __/ |  |  _|
-       \___/|_| |_| |_|_| |_|_| .__/ \___|_|  |_|  
-                              |_|                  
+                                       __                                       _
+       _ __ ___   ___ _ __  _ __ ___  / _|       ___ ___  _ __ ___  _ __  _   _| |_ ___
+      | '__/ _ \ / __| '_ \| '__/ _ \| |_ _____ / __/ _ \| '_ ` _ \| '_ \| | | | __/ _ \
+      | | | (_) | (__| |_) | | | (_) |  _|_____| (_| (_) | | | | | | |_) | |_| | ||  __/
+      |_|  \___/ \___| .__/|_|  \___/|_|        \___\___/|_| |_| |_| .__/ \__,_|\__\___|
+                     |_|                                           |_|
 
       Analysis mode = cli
       [analysis] deriving ROCm Compute Profiler metrics...
@@ -134,16 +134,16 @@ Walkthrough
 
 2. Use ``--list-metrics`` to generate a list of available metrics for inspection.
 
-   .. code-block:: shell
+   .. code-block:: shell-session
 
-      $ omniperf analyze -p workloads/vcopy/MI200/ --list-metrics gfx90a
+      $ rocprof-compute analyze -p workloads/vcopy/MI200/ --list-metrics gfx90a
 
-        ___                  _                  __ 
-       / _ \ _ __ ___  _ __ (_)_ __   ___ _ __ / _|
-      | | | | '_ ` _ \| '_ \| | '_ \ / _ \ '__| |_ 
-      | |_| | | | | | | | | | | |_) |  __/ |  |  _|
-       \___/|_| |_| |_|_| |_|_| .__/ \___|_|  |_|  
-                              |_|                  
+                                       __                                       _
+       _ __ ___   ___ _ __  _ __ ___  / _|       ___ ___  _ __ ___  _ __  _   _| |_ ___
+      | '__/ _ \ / __| '_ \| '__/ _ \| |_ _____ / __/ _ \| '_ ` _ \| '_ \| | | | __/ _ \
+      | | | (_) | (__| |_) | | | (_) |  _|_____| (_| (_) | | | | | | |_) | |_| | ||  __/
+      |_|  \___/ \___| .__/|_|  \___/|_|        \___\___/|_| |_| |_| .__/ \__,_|\__\___|
+                     |_|                                           |_|
 
       Analysis mode = cli
       [analysis] deriving ROCm Compute Profiler metrics...
@@ -186,13 +186,13 @@ Walkthrough
 
 3. Choose your own customized subset of metrics with the ``-b`` (or ``--block``)
    option. Or, build your own configuration following
-   `config_template <https://github.com/ROCm/omniperf/blob/amd-mainline/src/rocprof_compute_soc/analysis_configs/panel_config_template.yaml>`_.
+   `config_template <https://github.com/ROCm/rocprofiler-compute/blob/amd-mainline/src/rocprof_compute_soc/analysis_configs/panel_config_template.yaml>`_.
    The following snippet shows how to generate a report containing only metric 2
    (:doc:`System Speed-of-Light </conceptual/system-speed-of-light>`).
 
-   .. code-block:: shell
+   .. code-block:: shell-session
 
-      $ omniperf analyze -p workloads/vcopy/MI200/ -b 2
+      $ rocprof-compute analyze -p workloads/vcopy/MI200/ -b 2
 
       --------
       Analyze
@@ -291,22 +291,22 @@ More analysis options
 Single run
   .. code-block:: shell
 
-     $ omniperf analyze -p workloads/vcopy/MI200/
+     $ rocprof-compute analyze -p workloads/vcopy/MI200/
 
 List top kernels and dispatches
   .. code-block:: shell
 
-     $ omniperf analyze -p workloads/vcopy/MI200/  --list-stats
+     $ rocprof-compute analyze -p workloads/vcopy/MI200/  --list-stats
 
 List metrics
   .. code-block:: shell
 
-     $ omniperf analyze -p workloads/vcopy/MI200/  --list-metrics gfx90a
+     $ rocprof-compute analyze -p workloads/vcopy/MI200/  --list-metrics gfx90a
 
 Show System Speed-of-Light and CS_Busy blocks only
   .. code-block:: shell
 
-     $ omniperf analyze -p workloads/vcopy/MI200/  -b 2  5.1.0
+     $ rocprof-compute analyze -p workloads/vcopy/MI200/  -b 2  5.1.0
 
 .. note::
 
@@ -319,7 +319,7 @@ Filter kernels
 
   .. code-block::
 
-     $ omniperf analyze -p workloads/vcopy/MI200/ --list-stats
+     $ rocprof-compute analyze -p workloads/vcopy/MI200/ --list-stats
 
      Analysis mode = cli
      [analysis] deriving ROCm Compute Profiler metrics...
@@ -344,9 +344,9 @@ Filter kernels
   ``vecCopy(double*, double*, double*, int, int) [clone .kd]`` at index ``0``.
   Then, use this index to apply the filter via ``-k`` or ``--kernels``.
 
-  .. code-block:: shell
+  .. code-block:: shell-session
 
-     $ omniperf analyze -p workloads/vcopy/MI200/ -k 0
+     $ rocprof-compute analyze -p workloads/vcopy/MI200/ -k 0
 
      Analysis mode = cli
      [analysis] deriving ROCm Compute Profiler metrics...
@@ -369,10 +369,10 @@ Filter kernels
 Baseline comparison
   .. code-block:: shell
 
-     omniperf analyze -p workload1/path/  -p workload2/path/
+     rocprof-compute analyze -p workload1/path/  -p workload2/path/
 
   OR
 
   .. code-block:: shell
 
-     omniperf analyze -p workload1/path/ -k 0  -p workload2/path/ -k 1
+     rocprof-compute analyze -p workload1/path/ -k 0  -p workload2/path/ -k 1
