@@ -300,31 +300,7 @@ def v3_json_to_csv(json_file_path, csv_file_path):
 
     counter_info = v3_json_get_counters(data)
 
-    # CSV headers. If there are no dispatches we still end up with a valid CSV file.
-    csv_data = dict.fromkeys(
-        [
-            "Dispatch_ID",
-            "GPU_ID",
-            "Queue_ID",
-            "PID",
-            "TID",
-            "Grid_Size",
-            "Workgroup_Size",
-            "LDS_Per_Workgroup",
-            "Scratch_Per_Workitem",
-            "Arch_VGPR",
-            "Accum_VGPR",
-            "SGPR",
-            "Wave_Size",
-            "Kernel_Name",
-            "Start_Timestamp",
-            "End_Timestamp",
-            "Correlation_ID",
-        ]
-    )
-
-    for key in csv_data:
-        csv_data[key] = []
+    df = pd.DataFrame()
 
     for d in dispatches:
 
@@ -332,7 +308,29 @@ def v3_json_to_csv(json_file_path, csv_file_path):
 
         agent_id = dispatch_info["agent_id"]["handle"]
 
-        row = {}
+        index = [
+                "Dispatch_ID",
+                "GPU_ID",
+                "Queue_ID",
+                "PID",
+                "TID",
+                "Grid_Size",
+                "Workgroup_Size",
+                "LDS_Per_Workgroup",
+                "Scratch_Per_Workitem",
+                "Arch_VGPR",
+                "Accum_VGPR",
+                "SGPR",
+                "Wave_Size",
+                "Kernel_Name",
+                "Start_Timestamp",
+                "End_Timestamp",
+                "Correlation_ID",
+           ]
+        row = dict.fromkeys(index)
+
+        for key in row:
+           row[key] = []
 
         row["Dispatch_ID"] = dispatch_info["dispatch_id"]
         row["GPU_ID"] = agents[agent_id]["node_id"]
@@ -391,16 +389,11 @@ def v3_json_to_csv(json_file_path, csv_file_path):
 
         # Append counter values
         for ctr, value in ctrs.items():
+            index.append(ctr)
             row[ctr] = value
 
-        # Add row to CSV data
-        for col_name, value in row.items():
-            if col_name not in csv_data:
-                csv_data[col_name] = []
-
-            csv_data[col_name].append(value)
-
-    df = pd.DataFrame(csv_data)
+        df_current_line = pd.DataFrame(row, index=index)
+        df = pd.concat([df, df_current_line])
 
     df.to_csv(csv_file_path, index=False)
 

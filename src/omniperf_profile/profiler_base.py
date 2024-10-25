@@ -104,7 +104,10 @@ class OmniProfiler_Base:
                 # join by unique index of kernel
                 df = pd.merge(df, _df, how="inner", on="key", suffixes=("", f"_{i}"))
 
-        # TODO: check for any mismatch in joins
+        if df is None:
+            raise ValueError("df is NoneType and files' merge has failed")
+        
+        # TODO: check for any mismatch in joins        
         duplicate_cols = {
             "GPU_ID": [col for col in df.columns if col.startswith("GPU_ID")],
             "Grid_Size": [col for col in df.columns if col.startswith("Grid_Size")],
