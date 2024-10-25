@@ -6,7 +6,7 @@ defaults:
 root: index
 subtrees:
   - entries:
-    - file: what-is-omniperf.rst
+    - file: what-is-rocprof-compute.rst
 
   - caption: Install
     entries:

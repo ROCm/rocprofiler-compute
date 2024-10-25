@@ -1,17 +1,17 @@
 .. meta::
    :description: What is ROCm Compute Profiler?
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, AMD
+   :keywords: Omniperf, ROCm, profiler, tool, Instinct, accelerator, AMD
 
-*****************
+******************************
 What is ROCm Compute Profiler?
-*****************
+******************************
 
 ROCm Compute Profiler is a kernel-level profiling tool for machine learning and high
 performance computing (HPC) workloads running on AMD Instinct™ accelerators.
 
 AMD Instinct MI-series accelerators are data center-class GPUs designed for
-compute and have some graphics capabilities disabled or removed. ROCm Compute Profiler
-primarily targets use with
+compute and have some graphics capabilities disabled or removed.
+ROCm Compute Profiler primarily targets use with
 :doc:`accelerators in the MI300, MI200, and MI100 families <rocm:conceptual/gpu-arch>`.
 Development is in progress to support Radeon™ (RDNA) GPUs.
 
@@ -20,14 +20,14 @@ monitor hardware performance counters.
 
 .. _high-level-design:
 
-High-level design of ROCm Compute Profiler
-=============================
+High-level design
+=================
 
 The architecture of ROCm Compute Profiler consists of three major components shown in the
 following diagram.
 
-Core ROCm Compute Profiler profiler
-----------------------
+Core ROCm Compute Profiler
+--------------------------
 
 Acquires raw performance counters via application replay using ``rocprof``.
 Counters are stored in a comma-separated-values format for further
@@ -36,7 +36,7 @@ micro-benchmarks to acquire hierarchical roofline data. The roofline model is
 not available on accelerators pre-MI200.
 
 Grafana server for ROCm Compute Profiler
----------------------------
+----------------------------------------
 
 * **Grafana database import**: All raw performance counters are imported into
   a :ref:`backend MongoDB database <grafana-mongodb-setup>` to support
@@ -49,7 +49,7 @@ Grafana server for ROCm Compute Profiler
   performance metrics and visualization.
 
 ROCm Compute Profiler standalone GUI analyzer
---------------------------------
+---------------------------------------------
 
 ROCm Compute Profiler provides a :doc:`standalone GUI <how-to/analyze/standalone-gui>` to
 enable basic performance analysis without the need to import data into a
@@ -60,8 +60,8 @@ database instance. Find setup instructions in :doc:`install/grafana-setup`
    :alt: Architectural design of ROCm Compute Profiler
    :width: 800
 
-ROCm Compute Profiler features
-=================
+Features
+========
 
 ROCm Compute Profiler offers comprehensive profiling based on all available hardware counters
 for the target accelerator. It delivers advanced performance analysis features,
@@ -107,8 +107,8 @@ high level.
 
   * :ref:`Scalar L1D Cache panel <grafana-panel-sl1d-cache>`
 
-  * :ref:`L1 Address Processing Unit, or, Texture Addresser (TA) <grafana-panel-ta>`
-    and :ref:`L1 Backend Data Processing Unit, or, Texture Data (TD) <grafana-panel-td>` panels
+  * :ref:`L1 Address Processing Unit or Texture Addresser (TA) <grafana-panel-ta>`;
+    and :ref:`L1 Backend Data Processing Unit or Texture Data (TD) <grafana-panel-td>` panels
 
   * :ref:`Vector L1D Cache panel <grafana-panel-vl1d>`
 
@@ -127,3 +127,4 @@ high level.
 * :ref:`Baseline comparisons <analysis-baseline-comparison>`
 
 * :ref:`Multiple normalizations <normalization-units>`
+

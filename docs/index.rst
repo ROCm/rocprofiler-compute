@@ -1,10 +1,10 @@
 .. meta::
    :description: ROCm Compute Profiler documentation and reference
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, AMD
+   :keywords: Omniperf, ROCm, profiler, tool, Instinct, accelerator, AMD
 
-**********************
+***********************************
 ROCm Compute Profiler documentation
-**********************
+***********************************
 
 ROCm Compute Profiler documentation provides a comprehensive overview of ROCm Compute Profiler.
 In addition to a full deployment guide with installation instructions, this
@@ -13,7 +13,7 @@ its components.
 
 If you're new to ROCm Compute Profiler, familiarize yourself with the tool by reviewing the
 chapters that follow and gradually learn its more advanced features. To get
-started, see :doc:`What is ROCm Compute Profiler? <what-is-omniperf>`.
+started, see :doc:`What is ROCm Compute Profiler? <what-is-rocprof-compute>`.
 
 ROCm Compute Profiler is open source and hosted at `<https://github.com/ROCm/omniperf>`__.
 
