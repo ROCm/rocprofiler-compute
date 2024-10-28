@@ -67,14 +67,13 @@ class gfx942_soc(OmniSoC_Base):
                 "TCC_channels": 16,
             }
         )
-        # self.roofline_obj = Roofline(args, self._mspec)
+        self.roofline_obj = Roofline(args, self._mspec)
 
         # Workaround for broken --showmclkrange
-        # MI300X/MI300A/MI308X have 1300MHz mclk
-        if self._mspec.gpu_model == "MI300":
-            if self._mspec.max_mclk == None or self._mspec.cur_mclk == None:
-                self._mspec.max_mclk = 1300
-                self._mspec.cur_mclk = 1300
+        # MI300X/MI300A/MI308X all seem to have 1300MHz mclk
+        # if self._mspec.gpu_model in ["MI308X", "MI300X_A1", "MI300A_A1"]:
+        self._mspec.max_mclk = 1300
+        self._mspec.cur_mclk = 1300
 
         # Set arch specific specs
         self._mspec._l2_banks = 16
@@ -88,8 +87,6 @@ class gfx942_soc(OmniSoC_Base):
     def profiling_setup(self):
         """Perform any SoC-specific setup prior to profiling."""
         super().profiling_setup()
-        if self.get_args().roof_only:
-            console_error("Roofline temporarily disabled in MI300")
         # Performance counter filtering
         self.perfmon_filter(self.get_args().roof_only)
 
@@ -98,20 +95,20 @@ class gfx942_soc(OmniSoC_Base):
         """Perform any SoC-specific post profiling activities."""
         super().post_profiling()
 
-        console_log("roofline", "Roofline temporarily disabled in MI300")
-        # if not self.get_args().no_roof:
-        #     logging.info("[roofline] Checking for roofline.csv in " + str(self.get_args().path))
-        #     if not os.path.isfile(os.path.join(self.get_args().path, "roofline.csv")):
-        #         mibench(self.get_args())
-        #     self.roofline_obj.post_processing()
-        # else:
-        #     logging.info("[roofline] Skipping roofline")
+        if not self.get_args().no_roof:
+            console_log(
+                "roofline", "Checking for roofline.csv in " + str(self.get_args().path)
+            )
+            if not os.path.isfile(os.path.join(self.get_args().path, "roofline.csv")):
+                mibench(self.get_args(), self._mspec)
+            self.roofline_obj.post_processing()
+        else:
+            console_log("roofline", "Skipping roofline")
 
     @demarcate
     def analysis_setup(self, roofline_parameters=None):
         """Perform any SoC-specific setup prior to analysis."""
         super().analysis_setup()
-        console_log("roofline", "Roofline temporarily disabled in Mi300")
         # configure roofline for analysis
-        # if roofline_parameters:
-        #     self.roofline_obj = Roofline(self.get_args(), roofline_parameters)
+        if roofline_parameters:
+            self.roofline_obj = Roofline(self.get_args(), roofline_parameters)
