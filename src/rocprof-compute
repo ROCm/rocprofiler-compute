@@ -119,7 +119,7 @@ def verify_deps():
                     "Please verify all of the python dependencies called out "
                     "in the requirements file"
                 )
-                print("are installed locally prior to running rocprofiler-compute.")
+                print("are installed locally prior to running rocprof-compute.")
                 print("")
                 print(f"See: {checkFile}")
                 sys.exit(1)
