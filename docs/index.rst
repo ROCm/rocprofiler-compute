@@ -6,10 +6,10 @@
 ROCm Compute Profiler documentation
 ***********************************
 
-ROCm Compute Profiler documentation provides a comprehensive overview of ROCm Compute Profiler.
-In addition to a full deployment guide with installation instructions, this
-documentation also explains the ideas motivating the design behind the tool and
-its components.
+This documentation provides a comprehensive overview of the ROCm Compute
+Profiler tool. In addition to a full deployment guide with installation
+instructions, this documentation also explains the ideas motivating the design
+behind the tool and its components.
 
 If you're new to ROCm Compute Profiler, familiarize yourself with the tool by reviewing the
 chapters that follow and gradually learn its more advanced features. To get
@@ -22,7 +22,7 @@ ROCm Compute Profiler is open source and hosted at `<https://github.com/ROCm/omn
 
    .. grid-item-card:: Install
 
-      * :doc:`install/core-install`
+      * :doc:`Installation and deployment <install/core-install>`
       * :doc:`Grafana server for ROCm Compute Profiler <install/grafana-setup>`
 
    .. grid-item::
