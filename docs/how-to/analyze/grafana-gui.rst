@@ -1,6 +1,7 @@
 .. meta::
    :description: ROCm Compute Profiler analysis: Grafana GUI
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, Grafana, panels, GUI, import
+   :keywords: Omniperf, ROCm Compute Profiler, ROCm, profiler, tool,
+              Instinct, accelerator, Grafana, panels, GUI, import
 
 ********************
 Grafana GUI analysis
@@ -169,7 +170,7 @@ convention:
 
 .. code-block:: shell
 
-    rocprofiler-compute_<team>_<database>_<soc>
+   rocprofiler-compute_<team>_<database>_<soc>
 
 For example:
 
@@ -268,7 +269,7 @@ ROCm Compute Profiler import for vcopy:
 .. _panels:
 
 ROCm Compute Profiler panels
----------------
+----------------------------
 
 There are currently 18 main panel categories available for analyzing the compute
 workload performance. Each category contains several panels for close inspection

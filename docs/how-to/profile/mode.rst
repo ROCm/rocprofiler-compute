@@ -54,7 +54,7 @@ Workload compilation
 
 The following example demonstrates compilation of ``vcopy``.
 
-.. code-block:: shell
+.. code-block:: shell-session
 
    $ hipcc vcopy.cpp -o vcopy
    $ ls
@@ -74,7 +74,7 @@ The following example demonstrates compilation of ``vcopy``.
 
 The following sample command profiles the ``vcopy`` workload.
 
-.. code-block:: shell
+.. code-block:: shell-session
 
    $ rocprof-compute profile --name vcopy -- ./vcopy -n 1048576 -b 256
 
@@ -198,7 +198,7 @@ an Instinct MI210 vs an Instinct MI250.
    profiling output is stored in ``log.txt``. Roofline-specific benchmark
    results are stored in ``roofline.csv``.
 
-.. code-block:: shell
+.. code-block:: shell-session
 
    $ ls workloads/vcopy/MI200/
    total 112
@@ -263,7 +263,7 @@ enables incremental profiling and analysis.
 The following example only gathers hardware counters for the shader sequencer
 (SQ) and L2 cache (TCC) components, skipping all other hardware components.
 
-.. code-block:: shell
+.. code-block:: shell-session
 
    $ rocprof-compute profile --name vcopy -b SQ TCC -- ./vcopy -n 1048576 -b 256
 
@@ -314,7 +314,7 @@ kernel name substring list to isolate desired kernels.
 The following example demonstrates profiling isolating the kernel matching
 substring ``vecCopy``.
 
-.. code-block:: shell
+.. code-block:: shell-session
 
    $ rocprof-compute profile --name vcopy -k vecCopy -- ./vcopy -n 1048576 -b 256
 
@@ -349,7 +349,7 @@ Dispatch filtering is based on the *global* dispatch index of kernels in a run.
 The following example profiles only the first kernel dispatch in the execution
 of the application (note zero-based indexing).
 
-.. code-block:: shell
+.. code-block:: shell-session
 
    $ rocprof-compute profile --name vcopy -d 0 -- ./vcopy -n 1048576 -b 256
 
@@ -408,7 +408,7 @@ Roofline only
 
 The following example demonstrates profiling roofline data only:
 
-.. code-block:: shell
+.. code-block:: shell-session
 
    $ rocprof-compute profile --name vcopy --roof-only -- ./vcopy -n 1048576 -b 256
 
@@ -427,7 +427,7 @@ The following example demonstrates profiling roofline data only:
 An inspection of our workload output folder shows ``.pdf`` plots were generated
 successfully.
 
-.. code-block:: shell
+.. code-block:: shell-session
 
    $ ls workloads/vcopy/MI200/
    total 48

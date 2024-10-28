@@ -3,9 +3,9 @@
    :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, AMD,
               install, deploy, Grafana, server, configuration, GUI
 
-****************************************
-Setting up a Grafana server for ROCm Compute Profiler
-****************************************
+***************************************************
+Setting up Grafana server for ROCm Compute Profiler
+***************************************************
 
 A Grafana server is *not required* to profile or analyze performance data
 from the CLI. It's a supplementary mechanism to help you import performance
@@ -159,10 +159,10 @@ connection is successful.
 .. _grafana-import-dashboard-file:
 
 Import the ROCm Compute Profiler dashboard file
-----------------------------------
+-----------------------------------------------
 
 From the **Create** → **Import** page, upload the dashboard file,
-``/dashboards/ROCm Compute Profiler_v{__VERSION__}_pub.json`` from the
+``/dashboards/Omniperf_v{__VERSION__}_pub.json`` from the
 :doc:`ROCm Compute Profiler tarball <core-install>`.
 
 Edit both the dashboard **Name** and the **Unique identifier (UID)** fields to
@@ -178,7 +178,7 @@ uniquely identify the dashboard. Click **Import** to complete the process.
 .. _grafana-select-workload:
 
 Select and load the ROCm Compute Profiler workload
--------------------------------------
+--------------------------------------------------
 
 Once you have imported a dashboard you're ready to begin. Start by browsing
 available dashboards and selecting the dashboard you have just imported.

@@ -7,8 +7,6 @@
 Installing and deploying ROCm Compute Profiler
 **********************************************
 
-:doc:`HIP documentation <hip:index>`
-
 ROCm Compute Profiler consists of two installation components.
 
 * :ref:`ROCm Compute Profiler core installation <core-install>` (client-side)
