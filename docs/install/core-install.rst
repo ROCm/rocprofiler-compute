@@ -1,11 +1,13 @@
 .. meta::
    :description: ROCm Compute Profiler installation and deployment
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, AMD,
+   :keywords: Omniperf, ROCm Compute Profiler, ROCm, tool, Instinct, accelerator, AMD,
               install, deploy, Grafana, client, configuration, modulefiles
 
-*********************************
+**********************************************
 Installing and deploying ROCm Compute Profiler
-*********************************
+**********************************************
+
+:doc:`HIP documentation <hip:index>`
 
 ROCm Compute Profiler consists of two installation components.
 
@@ -80,7 +82,7 @@ shared location controlled by the ``INSTALL_DIR`` environment variable.
 
    .. code-block:: shell
 
-      alias omniperf-mypython="/usr/bin/python3.10 /opt/rocm/bin/omniperf"
+      alias rocprof-compute-mypython="/usr/bin/python3.10 /opt/rocm/bin/rocprof-compute"
 
 .. _core-install-cmake-vars:
 
@@ -111,7 +113,7 @@ Install from source
 -------------------
 
 #. A typical install begins by downloading the latest release tarball available
-   from `<https://github.com/ROCm/omniperf/releases>`__. From there, untar and
+   from `<https://github.com/ROCm/rocprofiler-compute/releases>`__. From there, untar and
    navigate into the top-level directory.
 
    ..
@@ -121,8 +123,8 @@ Install from source
 
       .. code-block:: shell
 
-         tar xfz omniperf-v{{ config.version }}.tar.gz
-         cd omniperf-v{{ config.version }}
+         tar xfz rocprofiler-compute-v{{ config.version }}.tar.gz
+         cd rocprofiler-compute-v{{ config.version }}
 
 #. Next, install Python dependencies and complete the ROCm Compute Profiler configuration and
    install process.
@@ -142,7 +144,7 @@ Install from source
          cd build
          cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}/{{ config.version }} \
                  -DPYTHON_DEPS=${INSTALL_DIR}/python-libs \
-                 -DMOD_INSTALL_PATH=${INSTALL_DIR}/modulefiles ..
+                 -DMOD_INSTALL_PATH=${INSTALL_DIR}/modulefiles/rocprofiler-compute ..
 
          # install
          make install
@@ -177,14 +179,14 @@ for execution of ROCm Compute Profiler as follows.
    .. code-block:: shell
 
       $ module use $INSTALL_DIR/modulefiles
-      $ module load omniperf
-      $ which omniperf
-      /opt/apps/omniperf/{{ config.version }}/bin/omniperf
+      $ module load rocprofiler-compute
+      $ which rocprof-compute
+      /opt/apps/rocprofiler-compute/{{ config.version }}/bin/rocprof-compute
 
-      $ omniperf --version
+      $ rocprof-compute --version
       ROC Profiler:   /opt/rocm-5.1.0/bin/rocprof
 
-      omniperf (v{{ config.version }})
+      rocprofiler-compute (v{{ config.version }})
 
 .. tip::
 
@@ -223,22 +225,31 @@ software stack.
 
       .. code-block:: shell
 
-         $ sudo apt install omniperf
-         $ pip install -r /opt/rocm/libexec/omniperf/requirements.txt
+         $ sudo apt install rocprofiler-compute
+         # Include rocprofiler-compute in your system PATH
+         $ sudo update-alternatives --install /usr/bin/rocprofiler-compute rocprof-compute /opt/rocm/bin/rocprofiler-compute 0
+         # Install Python dependencies
+         $ python3 -m pip install -r /opt/rocm/libexec/rocprofiler-compute/requirements.txt
 
    .. tab-item:: Red Hat Enterprise Linux
 
       .. code-block:: shell
 
-         $ sudo dnf install omniperf
-         $ pip install -r /opt/rocm/libexec/omniperf/requirements.txt
+         $ sudo dnf install rocprofiler-compute
+         # Include rocprofiler-compute in your system PATH
+         $ sudo update-alternatives --install /usr/bin/rocprofiler-compute rocprof-compute /opt/rocm/bin/rocprofiler-compute 0
+         # Install Python dependencies
+         $ python3 -m pip install -r /opt/rocm/libexec/rocprofiler-compute/requirements.txt
 
    .. tab-item:: SUSE Linux Enterprise Server
 
       .. code-block:: shell
 
-         $ sudo zypper install omniperf
-         $ pip install -r /opt/rocm/libexec/omniperf/requirements.txt
+         $ sudo zypper install rocprofiler-compute
+         # Include rocprofiler-compute in your system PATH
+         $ sudo update-alternatives --install /usr/bin/rocprofiler-compute rocprof-compute /opt/rocm/bin/rocprofiler-compute 0
+         # Install Python dependencies
+         $ python3 -m pip install -r /opt/rocm/libexec/rocprofiler-compute/requirements.txt
 
 .. _core-install-rocprof-var:
 
