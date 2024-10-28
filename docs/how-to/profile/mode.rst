@@ -85,7 +85,7 @@ The following sample command profiles the ``vcopy`` workload.
    |_|  \___/ \___| .__/|_|  \___/|_|        \___\___/|_| |_| |_| .__/ \__,_|\__\___|
                   |_|                                           |_|
 
-   Rocprofiler-compute version: 2.0.0
+   rocprofiler-compute version: 2.0.0
    Profiler choice: rocprofv1
    Path: /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200
    Target: MI200
@@ -267,12 +267,12 @@ The following example only gathers hardware counters for the shader sequencer
 
    $ rocprof-compute profile --name vcopy -b SQ TCC -- ./vcopy -n 1048576 -b 256
 
-     ___                  _                  __ 
-    / _ \ _ __ ___  _ __ (_)_ __   ___ _ __ / _|
-   | | | | '_ ` _ \| '_ \| | '_ \ / _ \ '__| |_ 
-   | |_| | | | | | | | | | | |_) |  __/ |  |  _|
-    \___/|_| |_| |_|_| |_|_| .__/ \___|_|  |_|  
-                           |_|                  
+                                    __                                       _
+    _ __ ___   ___ _ __  _ __ ___  / _|       ___ ___  _ __ ___  _ __  _   _| |_ ___
+   | '__/ _ \ / __| '_ \| '__/ _ \| |_ _____ / __/ _ \| '_ ` _ \| '_ \| | | | __/ _ \
+   | | | (_) | (__| |_) | | | (_) |  _|_____| (_| (_) | | | | | | |_) | |_| | ||  __/
+   |_|  \___/ \___| .__/|_|  \___/|_|        \___\___/|_| |_| |_| .__/ \__,_|\__\___|
+                  |_|                                           |_|
 
    fname: pmc_cpc_perf: Skipped
    fname: pmc_spi_perf: Skipped
@@ -289,7 +289,7 @@ The following example only gathers hardware counters for the shader sequencer
    fname: pmc_sqc_perf1: Skipped
    fname: pmc_sq_perf6: Added
    fname: pmc_sq_perf2: Added
-   ROCm Compute Profiler version: 2.0.0
+   rocprofiler-compute version: 2.0.0
    Profiler choice: rocprofv1
    Path: /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200
    Target: MI200
@@ -318,14 +318,14 @@ substring ``vecCopy``.
 
    $ rocprof-compute profile --name vcopy -k vecCopy -- ./vcopy -n 1048576 -b 256
 
-     ___                  _                  __ 
-    / _ \ _ __ ___  _ __ (_)_ __   ___ _ __ / _|
-   | | | | '_ ` _ \| '_ \| | '_ \ / _ \ '__| |_ 
-   | |_| | | | | | | | | | | |_) |  __/ |  |  _|
-    \___/|_| |_| |_|_| |_|_| .__/ \___|_|  |_|  
-                           |_|                  
+                                    __                                       _
+    _ __ ___   ___ _ __  _ __ ___  / _|       ___ ___  _ __ ___  _ __  _   _| |_ ___
+   | '__/ _ \ / __| '_ \| '__/ _ \| |_ _____ / __/ _ \| '_ ` _ \| '_ \| | | | __/ _ \
+   | | | (_) | (__| |_) | | | (_) |  _|_____| (_| (_) | | | | | | |_) | |_| | ||  __/
+   |_|  \___/ \___| .__/|_|  \___/|_|        \___\___/|_| |_| |_| .__/ \__,_|\__\___|
+                  |_|                                           |_|
 
-   ROCm Compute Profiler version: 2.0.0
+   rocprofiler-compute version: 2.0.0
    Profiler choice: rocprofv1
    Path: /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200
    Target: MI200
@@ -353,14 +353,14 @@ of the application (note zero-based indexing).
 
    $ rocprof-compute profile --name vcopy -d 0 -- ./vcopy -n 1048576 -b 256
 
-     ___                  _                  __ 
-    / _ \ _ __ ___  _ __ (_)_ __   ___ _ __ / _|
-   | | | | '_ ` _ \| '_ \| | '_ \ / _ \ '__| |_ 
-   | |_| | | | | | | | | | | |_) |  __/ |  |  _|
-    \___/|_| |_| |_|_| |_|_| .__/ \___|_|  |_|  
-                           |_|                  
+                                    __                                       _
+    _ __ ___   ___ _ __  _ __ ___  / _|       ___ ___  _ __ ___  _ __  _   _| |_ ___
+   | '__/ _ \ / __| '_ \| '__/ _ \| |_ _____ / __/ _ \| '_ ` _ \| '_ \| | | | __/ _ \
+   | | | (_) | (__| |_) | | | (_) |  _|_____| (_| (_) | | | | | | |_) | |_| | ||  __/
+   |_|  \___/ \___| .__/|_|  \___/|_|        \___\___/|_| |_| |_| .__/ \__,_|\__\___|
+                  |_|                                           |_|
 
-   ROCm Compute Profiler version: 2.0.0
+   rocprofiler-compute version: 2.0.0
    Profiler choice: rocprofv1
    Path: /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200
    Target: MI200
