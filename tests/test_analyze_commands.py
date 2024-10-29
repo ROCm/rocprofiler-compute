@@ -19,7 +19,6 @@ indirs = [
     "tests/workloads/vcopy/MI200",
     "tests/workloads/vcopy/MI300A_A1",
     "tests/workloads/vcopy/MI300X_A1",
-    "tests/workloads/vcopy/MI300X_A1",
 ]
 
 
@@ -1129,6 +1128,36 @@ def test_baseline():
         ):
             rocprof_compute.main()
     assert e.value.code == 0
+
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            [
+                "omniperf",
+                "analyze",
+                "--path",
+                "tests/workloads/vcopy/MI200",
+                "--path",
+                "tests/workloads/vcopy/MI200",
+            ],
+        ):
+            rocprof_compute.main()
+    assert e.value.code == 1
+
+    with pytest.raises(SystemExit) as e:
+        with patch(
+            "sys.argv",
+            [
+                "omniperf",
+                "analyze",
+                "--path",
+                "tests/workloads/vcopy/MI100",
+                "--path",
+                "tests/workloads/vcopy/MI100",
+            ],
+        ):
+            rocprof_compute.main()
+    assert e.value.code == 1
 
 
 @pytest.mark.misc
