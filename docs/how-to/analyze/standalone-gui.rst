@@ -1,6 +1,6 @@
 .. meta::
    :description: ROCm Compute Profiler analysis: Standalone GUI
-   :keywords: ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, GUI, standalone, filter
+   :keywords: Omniperf, ROCm, profiler, tool, Instinct, accelerator, GUI, standalone, filter
 
 ***********************
 Standalone GUI analysis
@@ -32,19 +32,19 @@ Launch the standalone GUI analyzer
 To launch the ROCm Compute Profiler GUI analyzer, include the ``--gui`` flag with your
 desired analysis command. For example:
 
-.. code-block:: shell
+.. code-block:: shell-session
 
    $ rocprof-compute analyze -p workloads/vcopy/MI200/ --gui
 
-     ___                  _                  __ 
-    / _ \ _ __ ___  _ __ (_)_ __   ___ _ __ / _|
-   | | | | '_ ` _ \| '_ \| | '_ \ / _ \ '__| |_ 
-   | |_| | | | | | | | | | | |_) |  __/ |  |  _|
-    \___/|_| |_| |_|_| |_|_| .__/ \___|_|  |_|  
-                           |_|                  
+                                    __                                       _
+    _ __ ___   ___ _ __  _ __ ___  / _|       ___ ___  _ __ ___  _ __  _   _| |_ ___
+   | '__/ _ \ / __| '_ \| '__/ _ \| |_ _____ / __/ _ \| '_ ` _ \| '_ \| | | | __/ _ \
+   | | | (_) | (__| |_) | | | (_) |  _|_____| (_| (_) | | | | | | |_) | |_| | ||  __/
+   |_|  \___/ \___| .__/|_|  \___/|_|        \___\___/|_| |_| |_| .__/ \__,_|\__\___|
+                  |_|                                           |_|
 
    Analysis mode = web_ui
-   [analysis] deriving ROCm Compute Profiler metrics...
+   [analysis] deriving rocprofiler-compute metrics...
    Dash is running on http://0.0.0.0:8050/
 
     * Serving Flask app 'rocprof_compute_analyze.analysis_webui' (lazy loading)
