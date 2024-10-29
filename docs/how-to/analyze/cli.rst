@@ -40,7 +40,7 @@ Walkthrough
                      |_|                                           |_|
 
       Analysis mode = cli
-      [analysis] deriving ROCm Compute Profiler metrics...
+      [analysis] deriving rocprofiler-compute metrics...
 
       --------------------------------------------------------------------------------
       0. Top Stats
@@ -146,7 +146,7 @@ Walkthrough
                      |_|                                           |_|
 
       Analysis mode = cli
-      [analysis] deriving ROCm Compute Profiler metrics...
+      [analysis] deriving rocprofiler-compute metrics...
       0 -> Top Stats
       1 -> System Info
       2 -> System Speed-of-Light
@@ -322,7 +322,7 @@ Filter kernels
      $ rocprof-compute analyze -p workloads/vcopy/MI200/ --list-stats
 
      Analysis mode = cli
-     [analysis] deriving ROCm Compute Profiler metrics...
+     [analysis] deriving rocprofiler-compute metrics...
 
      --------------------------------------------------------------------------------
      Detected Kernels (sorted descending by duration)
@@ -349,7 +349,7 @@ Filter kernels
      $ rocprof-compute analyze -p workloads/vcopy/MI200/ -k 0
 
      Analysis mode = cli
-     [analysis] deriving ROCm Compute Profiler metrics...
+     [analysis] deriving rocprofiler-compute metrics...
 
      --------------------------------------------------------------------------------
      0. Top Stats
