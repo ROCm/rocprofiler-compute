@@ -1130,6 +1130,7 @@ def test_baseline():
             rocprof_compute.main()
     assert e.value.code == 0
 
+
 @pytest.mark.misc
 def test_dependency_MI100():
     for dir in indirs:
