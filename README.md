@@ -50,7 +50,7 @@ style reference is provided below for convenience:
                   Keith Lowery and
                   Nicholas Curtis and
                   Cristian Di Pietrantonio},
-  title        = {AMDResearch/rocprofiler-compute: v2.1.0 (27 September 2024)},
+  title        = {ROCm/rocprofiler-compute: v2.1.0 (27 September 2024)},
   month        = september,
   year         = 2024,
   publisher    = {Zenodo},
