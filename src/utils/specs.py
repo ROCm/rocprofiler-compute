@@ -548,7 +548,7 @@ class MachineSpecs:
         return pd.DataFrame(data, index=[0])
 
     def __repr__(self):
-        topstr = "Machine Specifications: describing the state of the machine that rocprofiler-compute data was collected on.\n"
+        topstr = "Machine Specifications: describing the state of the machine that ROCm Compute Profiler data was collected on.\n"
         data = []
         for field in fields(self):
             name = field.name
