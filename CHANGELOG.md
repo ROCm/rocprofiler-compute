@@ -28,7 +28,7 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 ### Changes
 
-  * new option to force hardware target via `ROCPROFCOMPUTE_ARCH_OVERRIDE` global (#370)
+  * new option to force hardware target via `OMNIPERF_ARCH_OVERRIDE` global (#370)
   * CI/CD support for MI300 hardware (#373)
   * support for MI308X hardware (#375)
 
