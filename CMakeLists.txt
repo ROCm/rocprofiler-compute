@@ -31,7 +31,7 @@ project(
     VERSION ${ROCPROFCOMPUTE_VERSION}
     LANGUAGES C
     DESCRIPTION
-        "A system performance profiling tool for machine learning/HPC workloads running on AMD MI GPUs"
+        "A kernel-level profiling tool for machine learning/HPC workloads running on AMD MI GPUs"
     HOMEPAGE_URL "https://github.com/ROCm/rocprofiler-compute")
 
 set(PACKAGE_NAME "rocprofiler-compute")
