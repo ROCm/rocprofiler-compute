@@ -24,7 +24,7 @@
 
 import os
 import config
-from omniperf_soc.soc_base import OmniSoC_Base
+from rocprof_compute_soc.soc_base import OmniSoC_Base
 from utils.utils import demarcate, console_error
 
 
@@ -34,8 +34,8 @@ class gfx908_soc(OmniSoC_Base):
         self.set_arch("gfx908")
         self.set_perfmon_dir(
             os.path.join(
-                str(config.omniperf_home),
-                "omniperf_soc",
+                str(config.rocprof_compute_home),
+                "rocprof_compute_soc",
                 "profile_configs",
                 self.get_arch(),
             )

@@ -200,7 +200,7 @@ class OmniAnalyze_Base:
     def pre_processing(self):
         """Perform initialization prior to analysis."""
         console_debug("analysis", "prepping to do some analysis")
-        console_log("analysis", "deriving Omniperf metrics...")
+        console_log("analysis", "deriving rocprofiler-compute metrics...")
         # initalize output file
         self._output = (
             open(self.__args.output_file, "w+") if self.__args.output_file else sys.stdout
