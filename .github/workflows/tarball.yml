@@ -91,6 +91,7 @@ jobs:
           test -d $INSTALL_DIR/omniperf/libexec/omniperf/utils
           test -s $INSTALL_DIR/omniperf/share/omniperf/sample/vcopy.cpp
           test -d $INSTALL_DIR/omniperf/share/omniperf/modulefiles
+          test -s $INSTALL_DIR/omniperf/share/doc/omniperf/LICENSE
       - name: Query version (setting PYTHONPATH by hand)
         run: |
           export PYTHONPATH=${INSTALL_DIR}/python-libs:$PYTHONPATH

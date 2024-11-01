@@ -364,6 +364,11 @@ add_custom_target(
         "src/omniperf,cmake/Dockerfile,cmake/rocm_install.sh,docker/docker-entrypoint.sh,src/omniperf_analyze/convertor/mongodb/convert"
     )
 
+install(
+    FILES ${PROJECT_SOURCE_DIR}/LICENSE
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}
+    COMPONENT main)
+
 # TEST collateral
 option(INSTALL_TESTS "Build test suite" OFF)
 if(INSTALL_TESTS)
