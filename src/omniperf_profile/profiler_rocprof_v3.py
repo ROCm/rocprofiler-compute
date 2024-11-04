@@ -44,13 +44,16 @@ class rocprof_v3_profiler(OmniProfiler_Base):
     def get_profiler_options(self, fname):
         fbase = os.path.splitext(os.path.basename(fname))[0]
         app_cmd = shlex.split(self.get_args().remaining)
+        rocprof_out_format ="json"
+        if self.get_args().format_rocprof_output == "csv":
+            rocprof_out_format = "csv"
         args = [
             # v3 requires output directory argument
             "-d",
             self.get_args().path + "/" + "out",
             "--kernel-trace",
             "--output-format",
-            "json",
+            rocprof_out_format,
             "--",
         ]
         args.extend(app_cmd)

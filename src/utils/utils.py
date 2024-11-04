@@ -35,6 +35,8 @@ import subprocess
 import shutil
 import pandas as pd
 import glob
+import time
+from itertools import product
 from pathlib import Path as path
 import config
 from collections import OrderedDict
@@ -350,7 +352,7 @@ def v3_json_to_csv(json_file_path, csv_file_path):
         row["Scratch_Per_Workitem"] = 0
         row["Arch_VGPR"] = d["arch_vgpr_count"]
 
-        # TODO: Accum VGPR
+        # TODO: Accum VGPR 
         row["Accum_VGPR"] = 0
 
         row["SGPR"] = d["sgpr_count"]
@@ -397,9 +399,73 @@ def v3_json_to_csv(json_file_path, csv_file_path):
 
     df.to_csv(csv_file_path, index=False)
 
+def v3_csvs_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file):
+    pd_counter_colections = pd.read_csv(counter_file)
+    pd_agent_info = pd.read_csv(agent_info_filepath)
+    pd_counter_colections_converted = pd_counter_colections.pivot_table(index=['Correlation_Id', 'Dispatch_Id', 'Agent_Id', 'Queue_Id', 'Process_Id','Thread_Id','Grid_Size','Kernel_Id','Kernel_Name','Workgroup_Size', 'LDS_Block_Size', 'Scratch_Size', 'VGPR_Count', 'SGPR_Count', 'Start_Timestamp', 'End_Timestamp'], columns='Counter_Name', values='Counter_Value').reset_index()
+    
+    # Merge DataFrames on the matching columns
+    result = pd_counter_colections_converted.merge(
+        pd_agent_info[['Node_Id', 'Wave_Front_Size']],
+        left_on='Agent_Id',
+        right_on='Node_Id',
+        how='left'
+    )
 
-def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
+    # Drop the 'Node_Id' column if you don't need it in the final DataFrame
+    result.drop(columns='Node_Id', inplace=True)
+    result['Accum_VGPR'] = 0
+    
+    name_mapping = {
+                "Dispatch_Id":"Dispatch_ID",
+                "Agent_Id":"GPU_ID",
+                "Queue_Id":"Queue_ID",
+                "Process_Id":"PID",
+                "Thread_Id":"TID",
+                "Grid_Size":"Grid_Size",
+                "Workgroup_Size":"Workgroup_Size",
+                "LDS_Block_Size":"LDS_Per_Workgroup",
+                "Scratch_Size":"Scratch_Per_Workitem",
+                "VGPR_Count":"Arch_VGPR",
+                #"":"Accum_VGPR",
+                "SGPR_Count":"SGPR",
+                "Wave_Front_Size":"Wave_Size", # load from agent_info's csv file
+                "Kernel_Name":"Kernel_Name",
+                "Start_Timestamp":"Start_Timestamp",
+                "End_Timestamp":"End_Timestamp",
+                "Correlation_Id":"Correlation_ID",
+                "Kernel_Id":"Kernel_ID"
+    }
+    result.rename(columns=name_mapping, inplace=True)
+    
+    index = [
+                "Dispatch_ID",
+                "GPU_ID",
+                "Queue_ID",
+                "PID",
+                "TID",
+                "Grid_Size",
+                "Workgroup_Size",
+                "LDS_Per_Workgroup",
+                "Scratch_Per_Workitem",
+                "Arch_VGPR",
+                "Accum_VGPR",
+                "SGPR",
+                "Wave_Size",
+                "Kernel_Name",
+                "Start_Timestamp",
+                "End_Timestamp",
+                "Correlation_ID",
+                "Kernel_ID"
+           ]
 
+    remaining_column_names = [col for col in result.columns if col not in index]
+    index = index + remaining_column_names
+    result = result.reindex(columns=index)
+    result.to_csv(converted_csv_file, index=False)
+    
+def run_prof(fname, profiler_options, workload_dir, mspec, loglevel, format_rocprof_output):
+    time_0 = time.time()
     fbase = os.path.splitext(os.path.basename(fname))[0]
 
     console_debug("pmc file: %s" % str(os.path.basename(fname)))
@@ -425,6 +491,8 @@ def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
         new_env = os.environ.copy()
         new_env["ROCPROFILER_INDIVIDUAL_XCC_MODE"] = "1"
 
+    time_1 = time.time()
+
     # profile the app
     if new_env:
         success, output = capture_subprocess_output(
@@ -435,6 +503,9 @@ def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
             [rocprof_cmd] + options, profileMode=True
         )
 
+    time_2 = time.time()
+    console_debug("Finishing subprocess of fname {}, the time it takes was {} m {} sec ".format(fname, int((time_2 - time_1) / 60), str((time_2 - time_1) % 60)))
+    
     if not success:
         if loglevel > logging.INFO:
             for line in output.splitlines():
@@ -458,25 +529,62 @@ def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
         )
 
     if rocprof_cmd.endswith("v3"):
-        results_files_json = glob.glob(workload_dir + "/out/pmc_1/*/*.json")
+        time_3 = time.time()
+        if format_rocprof_output == "json":
+            results_files_json = glob.glob(workload_dir + "/out/pmc_1/*/*.json")
 
-        for json_file in results_files_json:
-            csv_file = pathlib.Path(json_file).with_suffix(".csv")
-            v3_json_to_csv(json_file, csv_file)
+            for json_file in results_files_json:
+                csv_file = pathlib.Path(json_file).with_suffix(".csv")
+                v3_json_to_csv(json_file, csv_file)
 
-        results_files_csv = glob.glob(workload_dir + "/out/pmc_1/*/*.csv")
+            results_files_csv = glob.glob(workload_dir + "/out/pmc_1/*/*.csv")
 
-        # Combine results into single CSV file
-        combined_results = pd.concat(
-            [pd.read_csv(f) for f in results_files_csv], ignore_index=True
-        )
+            # Combine results into single CSV file
+            combined_results = pd.concat(
+                [pd.read_csv(f) for f in results_files_csv], ignore_index=True
+            )
 
-        # Overwrite column to ensure unique IDs.
-        combined_results["Dispatch_ID"] = range(0, len(combined_results))
+            # Overwrite column to ensure unique IDs.
+            combined_results["Dispatch_ID"] = range(0, len(combined_results))
 
-        combined_results.to_csv(
-            workload_dir + "/out/pmc_1/results_" + fbase + ".csv", index=False
-        )
+            combined_results.to_csv(
+                workload_dir + "/out/pmc_1/results_" + fbase + ".csv", index=False
+            )
+            time_4 = time.time()
+            console_debug("Finishing json parsing to CSV of fname {}, the time it takes was {} m {} sec".format(fname, int((time_4 - time_3) / 60), str((time_4 - time_3) % 60)))
+            
+        elif format_rocprof_output == "csv":
+            time_3 = time.time()
+            counter_info_csvs = glob.glob(workload_dir + "/out/pmc_1/*/*_counter_collection.csv")
+            
+            for counter_file in counter_info_csvs:
+                current_dir = os.path.dirname(counter_file)
+                agent_info_filepath = os.path.join(current_dir ,os.path.basename(counter_file).replace("_counter_collection", "_agent_info"))
+                if not os.path.isfile(agent_info_filepath) :
+                    raise ValueError("{} has no coresponding \"agent info\" file".format(counter_file))
+                
+                converted_csv_file = os.path.join(current_dir , os.path.basename(counter_file).replace("_counter_collection", "_converted"))
+                v3_csvs_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file)
+                
+            results_files_csv = glob.glob(workload_dir + "/out/pmc_1/*/*_converted.csv")
+            
+            # Combine results into single CSV file
+            combined_results = pd.concat(
+                [pd.read_csv(f) for f in results_files_csv], ignore_index=True
+            )
+            
+            # Overwrite column to ensure unique IDs.
+            combined_results["Dispatch_ID"] = range(0, len(combined_results))
+
+            combined_results.to_csv(
+                workload_dir + "/out/pmc_1/results_" + fbase + ".csv", index=False
+            )
+            
+            time_4 = time.time()
+            console_debug("Finishing CSV parsing from v3 to format of v2 of fname {}, the time it takes was {} m {} sec".format(fname, int((time_4 - time_3) / 60), str((time_4 - time_3) % 60)))
+        else:
+            raise ValueError("The format of output files of Rocprof can only be either JSON or CSV!!!")
+            
 
     if new_env:
         # flatten tcc for applicable mi300 input

@@ -227,6 +227,16 @@ Examples:
         required=False,
         help="\t\t\tProvide Node ID and GPU number per node.",
     )
+    profile_group.add_argument(
+        "-f",
+        "--format-rocprof-output",
+        required=False,
+        metavar="",
+        dest="format_rocprof_output",
+        choices=["json", "csv"],
+        default="json",
+        help="\t\t\tSet the format of output file of rocprof."
+    )
 
     ## Roofline Command Line Options
     roofline_group.add_argument(
