@@ -124,7 +124,7 @@ Configure the MongoDB data source
 ---------------------------------
 
 You must configure your MongoDB data source in Grafana before first-time use.
-Navigate to Grafana's **Configuration** page to add the "ROCm Compute Profiler Data"
+Navigate to Grafana's **Configuration** page to add the "Omniperf Data"
 connection.
 
 .. figure:: ../data/install/datasource_config.jpg
