@@ -15,7 +15,7 @@ If you're new to ROCm Compute Profiler, familiarize yourself with the tool by re
 chapters that follow and gradually learn its more advanced features. To get
 started, see :doc:`What is ROCm Compute Profiler? <what-is-rocprof-compute>`.
 
-ROCm Compute Profiler is open source and hosted at `<https://github.com/ROCm/omniperf>`__.
+ROCm Compute Profiler is open source and hosted at `<https://github.com/ROCm/rocprofiler-compute>`__.
 
 .. grid:: 2
    :gutter: 3
