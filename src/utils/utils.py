@@ -356,6 +356,8 @@ def v3_json_to_csv(json_file_path, csv_file_path):
 
         agent_id = dispatch_info['agent_id']['handle']
 
+        kernel_id = dispatch_info['kernel_id']
+        
         row = {}
 
         row['Dispatch_ID'] = dispatch_info['dispatch_id']
@@ -374,8 +376,7 @@ def v3_json_to_csv(json_file_path, csv_file_path):
         
         row['LDS_Per_Workgroup'] = d['lds_block_size_v']
 
-        # TODO: Scratch per Work Item
-        row['Scratch_Per_Workitem'] = 0
+        row['Scratch_Per_Workitem'] = kernel_symbols[kernel_id]['private_segment_size']
         row['Arch_VGPR'] = d['arch_vgpr_count']
 
         # TODO: Accum VGPR
@@ -384,7 +385,6 @@ def v3_json_to_csv(json_file_path, csv_file_path):
         row['SGPR'] = d['sgpr_count']
         row['Wave_Size'] = agents[agent_id]['wave_front_size']
         
-        kernel_id = dispatch_info['kernel_id']
         row['Kernel_Name'] = kernel_symbols[kernel_id]['formatted_kernel_name']
 
         id = d['dispatch_data']['correlation_id']['internal']
