@@ -87,6 +87,7 @@ def load_panel_configs(dir):
 @demarcate
 def create_df_kernel_top_stats(
     raw_data_dir,
+    filter_kernel_ids,
     filter_gpu_ids,
     filter_dispatch_ids,
     time_unit,
@@ -105,6 +106,16 @@ def create_df_kernel_top_stats(
 
     # The logic below for filters are the same as in parser.apply_filters(),
     # which can be merged together if need it.
+    if filter_kernel_ids:
+        kernels = []
+        for kernel_id in filter_kernel_ids:
+            kernels.append(df.loc[kernel_id, "Kernel_Name"])
+
+        if all(type(kid) == int for kid in filter_kernel_ids):
+            df = df.loc[df["Kernel_Name"].isin(kernels)]
+        elif all(type(kid) == str for kid in filter_kernel_ids):
+            df = df.loc[df["Kernel_Name"].astype(str).isin(kernels)]
+
     if filter_gpu_ids:
         df = df.loc[df["GPU_ID"].astype(str).isin([filter_gpu_ids])]
 

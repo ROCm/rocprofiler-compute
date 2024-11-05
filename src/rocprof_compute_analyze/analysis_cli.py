@@ -41,6 +41,7 @@ class cli_analysis(OmniAnalyze_Base):
         for d in self.get_args().path:
             file_io.create_df_kernel_top_stats(
                 raw_data_dir=d[0],
+                filter_kernel_ids=self._runs[d[0]].filter_kernel_ids,
                 filter_gpu_ids=self._runs[d[0]].filter_gpu_ids,
                 filter_dispatch_ids=self._runs[d[0]].filter_dispatch_ids,
                 time_unit=self.get_args().time_unit,
