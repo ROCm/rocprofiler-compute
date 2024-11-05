@@ -65,13 +65,13 @@ Generate the profile for this example using the following command.
 
 .. code-block:: shell
 
-   $ omniperf profile -n instmix --no-roof -- ./instmix
+   $ rocprof-compute profile -n instmix --no-roof -- ./instmix
 
 Analyze the instruction mix section.
 
 .. code-block:: shell
 
-   $ omniperf analyze -p workloads/instmix/mi200/ -b 10.2
+   $ rocprof-compute analyze -p workloads/instmix/mi200/ -b 10.2
    <...>
    10. Compute Units - Instruction Mix
    10.2 VALU Arithmetic Instr Mix

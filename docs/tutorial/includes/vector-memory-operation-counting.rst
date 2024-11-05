@@ -34,11 +34,11 @@ We have also chosen to include the ``--save-temps`` flag to save the
 compiler temporary files, such as the generated CDNA assembly code, for
 inspection.
 
-Finally, we generate our ``omniperf profile`` as follows.
+Finally, we generate our ``rocprof-compute profile`` as follows.
 
 .. code-block:: shell-session
 
-   $ omniperf profile -n vmem --no-roof -- ./vmem
+   $ rocprof-compute profile -n vmem --no-roof -- ./vmem
 
 .. _flat-experiment-design:
 
@@ -94,7 +94,7 @@ First, we demonstrate our simple ``global_write`` kernel:
 
 .. code-block:: shell-session
 
-   $ omniperf analyze -p workloads/vmem/mi200/ --dispatch 1 -b 10.3 15.1.4 15.1.5 15.1.6 15.1.7 15.1.8 15.1.9 15.1.10 15.1.11  -n per_kernel
+   $ rocprof-compute analyze -p workloads/vmem/mi200/ --dispatch 1 -b 10.3 15.1.4 15.1.5 15.1.6 15.1.7 15.1.8 15.1.9 15.1.10 15.1.11  -n per_kernel
    <...>
    --------------------------------------------------------------------------------
    0. Top Stat
@@ -208,7 +208,7 @@ Examining this kernel in the VMEM Instruction Mix table yields:
 
 .. code-block:: shell-session
 
-   $ omniperf analyze -p workloads/vmem/mi200/ --dispatch 2 -b 10.3 -n per_kernel
+   $ rocprof-compute analyze -p workloads/vmem/mi200/ --dispatch 2 -b 10.3 -n per_kernel
    <...>
    0. Top Stat
    ╒════╤══════════════════════════════════════════╤═════════╤═══════════╤════════════╤══════════════╤════════╕
@@ -264,7 +264,7 @@ access.
 
 .. code-block:: shell-session
 
-   $ omniperf analyze -p workloads/vmem/mi200/ --dispatch 2 -b 12.2.0 -n per_kernel
+   $ rocprof-compute analyze -p workloads/vmem/mi200/ --dispatch 2 -b 12.2.0 -n per_kernel
    <...>
    12. Local Data Share (LDS)
    12.2 LDS Stats
@@ -308,7 +308,7 @@ Running ROCm Compute Profiler on this kernel yields:
 
 .. code-block:: shell-session
 
-   $ omniperf analyze -p workloads/vmem/mi200/ --dispatch 3 -b 10.3 -n per_kernel
+   $ rocprof-compute analyze -p workloads/vmem/mi200/ --dispatch 3 -b 10.3 -n per_kernel
    <...>
    0. Top Stat
    ╒════╤════════════════════════════════════╤═════════╤═══════════╤════════════╤══════════════╤════════╕
@@ -387,7 +387,7 @@ Running ROCm Compute Profiler on this kernel reports:
 
 .. code-block:: shell-session
 
-   $ omniperf analyze -p workloads/vmem/mi200/ --dispatch 4 -b 10.3 12.2.0 16.3.10 -n per_kernel
+   $ rocprof-compute analyze -p workloads/vmem/mi200/ --dispatch 4 -b 10.3 12.2.0 16.3.10 -n per_kernel
    <...>
    0. Top Stat
    ╒════╤══════════════════════════════════════════╤═════════╤═══════════╤════════════╤══════════════╤════════╕
@@ -472,7 +472,7 @@ Running ROCm Compute Profiler on this kernel yields:
 
 .. code-block:: shell-session
 
-   $ omniperf analyze -p workloads/vmem/mi200/ --dispatch 5 -b 10.3 16.3.12 -n per_kernel
+   $ rocprof-compute analyze -p workloads/vmem/mi200/ --dispatch 5 -b 10.3 16.3.12 -n per_kernel
    <...>
    0. Top Stat
    ╒════╤══════════════════════════════════════╤═════════╤═══════════╤════════════╤══════════════╤════════╕
@@ -541,7 +541,7 @@ Running this kernel through ROCm Compute Profiler shows:
 
 .. code-block:: shell-session
 
-   $ omniperf analyze -p workloads/vmem/mi200/ --dispatch 6 -b 10.3 12.2.0 16.3.12 -n per_kernel
+   $ rocprof-compute analyze -p workloads/vmem/mi200/ --dispatch 6 -b 10.3 12.2.0 16.3.12 -n per_kernel
    <...>
    0. Top Stat
    ╒════╤══════════════════════════════════════════╤═════════╤═══════════╤════════════╤══════════════╤════════╕
@@ -623,7 +623,7 @@ manner. See
 for further reading on this instruction type.
 
 We develop a `simple
-kernel <https://github.com/ROCm/omniperf/blob/amd-mainline/sample/stack.hip>`__
+kernel <https://github.com/ROCm/rocprofiler-compute/blob/amd-mainline/sample/stack.hip>`__
 that uses stack memory:
 
 .. code-block:: cpp
@@ -657,9 +657,9 @@ And profiled using ROCm Compute Profiler:
 
 .. code-block:: shell-session
 
-   $ omniperf profile -n stack --no-roof -- ./stack
+   $ rocprof-compute profile -n stack --no-roof -- ./stack
    <...>
-   $ omniperf analyze -p workloads/stack/mi200/  -b 10.3 16.3.11 -n per_kernel
+   $ rocprof-compute analyze -p workloads/stack/mi200/  -b 10.3 16.3.11 -n per_kernel
    <...>
    10. Compute Units - Instruction Mix
    10.3 VMEM Instr Mix

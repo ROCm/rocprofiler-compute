@@ -15,11 +15,11 @@ v5.6.0, and ROCm Compute Profiler v2.0.0.
 
    $ hipcc -O3 lds.hip -o lds
 
-Finally, we generate our ``omniperf profile`` as:
+Finally, we generate our ``rocprof-compute profile`` as:
 
 .. code-block:: shell-session
 
-   $ omniperf profile -n lds --no-roof -- ./lds
+   $ rocprof-compute profile -n lds --no-roof -- ./lds
 
 .. _lds-bandwidth:
 
@@ -71,7 +71,7 @@ Next, let’s analyze the first of our bandwidth kernel dispatches:
 
 .. code-block:: shell
 
-   $ omniperf analyze -p workloads/lds/mi200/ -b 12.2.1 --dispatch 0 -n per_kernel
+   $ rocprof-compute analyze -p workloads/lds/mi200/ -b 12.2.1 --dispatch 0 -n per_kernel
    <...>
    12. Local Data Share (LDS)
    12.2 LDS Stats
@@ -172,7 +172,7 @@ see:
 
 .. code-block:: shell
 
-   $ omniperf analyze -p workloads/lds/mi200/ -b 12.2.4 12.2.6 --dispatch 256 -n per_kernel
+   $ rocprof-compute analyze -p workloads/lds/mi200/ -b 12.2.4 12.2.6 --dispatch 256 -n per_kernel
    <...>
    --------------------------------------------------------------------------------
    12. Local Data Share (LDS)
@@ -196,7 +196,7 @@ Looking at the next ``conflicts`` dispatch (i.e., two work-items) yields:
 
 .. code-block:: shell
 
-   $ omniperf analyze -p workloads/lds/mi200/ -b 12.2.4 12.2.6 --dispatch 257 -n per_kernel
+   $ rocprof-compute analyze -p workloads/lds/mi200/ -b 12.2.4 12.2.6 --dispatch 257 -n per_kernel
    <...>
    --------------------------------------------------------------------------------
    12. Local Data Share (LDS)
