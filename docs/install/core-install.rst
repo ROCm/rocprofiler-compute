@@ -46,9 +46,9 @@ installation.
 
 .. note::
 
-   ROCm Compute Profiler will use the first version of ``Python3`` found in your system's
-   ``PATH``. If the default version of Python3 is older than 3.8, you may need to
-   update your system's ``PATH`` to point to a newer version of Python3.
+   ROCm Compute Profiler will use the first version of ``python3`` found in your system's
+   ``PATH``. If the default version of Python is older than 3.8, you may need to
+   update your system's ``PATH`` to point to a newer version.
 
 ROCm Compute Profiler depends on a number of Python packages documented in the top-level
 ``requirements.txt`` file. Install these *before* configuring ROCm Compute Profiler.
@@ -74,7 +74,7 @@ shared location controlled by the ``INSTALL_DIR`` environment variable.
 
 .. tip::
 
-   To always run ROCm Compute Profiler with a particular version of python, you can create a
+   To always run ROCm Compute Profiler with a particular version of Python, you can create a
    bash alias. For example, to run ROCm Compute Profiler with Python 3.10, you can run the
    following command:
 
