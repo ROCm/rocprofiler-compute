@@ -1,6 +1,6 @@
 .. meta::
-   :description: Omniperf performance model: Compute unit (CU)
-   :keywords: Omniperf, ROCm, profiler, tool, Instinct, accelerator, GCN, compute, unit, pipeline, workgroup, wavefront,
+   :description: ROCm Compute Profiler performance model: Compute unit (CU)
+   :keywords: Omniperf, ROCm Compute Profiler, ROCm, profiler, tool, Instinct, accelerator, GCN, compute, unit, pipeline, workgroup, wavefront,
               CDNA
 
 *****************
@@ -19,7 +19,7 @@ CDNA™-based accelerators. All :ref:`wavefronts <desc-wavefront>` of a
 The CU consists of several independent execution pipelines and functional units.
 The :doc:`/conceptual/pipeline-descriptions` section details the various
 execution pipelines -- VALU, SALU, LDS, scheduler, and so forth. The metrics
-presented by Omniperf for these pipelines are described in
+presented by ROCm Compute Profiler for these pipelines are described in
 :doc:`pipeline-metrics`. The :doc:`vL1D <vector-l1-cache>` cache and
 :doc:`LDS <local-data-share>` are described in their own sections.
 

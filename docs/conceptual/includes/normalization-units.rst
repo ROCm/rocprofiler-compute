@@ -34,7 +34,7 @@ include:
        that is, the total runtime of the kernel in seconds, as measured by the
        :doc:`command processor <command-processor>`.
 
-By default, Omniperf uses the ``per_wave`` normalization.
+By default, ROCm Compute Profiler uses the ``per_wave`` normalization.
 
 .. tip::
 
