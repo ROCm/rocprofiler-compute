@@ -29,8 +29,8 @@ jobs:
         if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
     - name: Run black formatter
       uses: psf/black@stable
-        with:
-          use_pyproject: true
+      with:
+        use_pyproject: true
     - name: Run isort formatter
       uses: isort/isort-action@master
 
