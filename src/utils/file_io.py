@@ -109,7 +109,11 @@ def create_df_kernel_top_stats(
     if filter_kernel_ids:
         kernels = []
         for kernel_id in filter_kernel_ids:
-            kernels.append(df.loc[kernel_id, "Kernel_Name"])
+            # Check kernel id validity
+            if kernel_id in df.index:
+                kernels.append(df.loc[kernel_id, "Kernel_Name"])
+            else:
+                console_error("{} is an invalid kernel id.".format(kernel_id))
 
         if all(type(kid) == int for kid in filter_kernel_ids):
             df = df.loc[df["Kernel_Name"].isin(kernels)]
