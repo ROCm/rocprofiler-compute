@@ -37,10 +37,15 @@ from dash import dcc
 from dash.dependencies import Input, Output, State
 
 
+PROJECT_NAME = "rocprofiler-compute"
+
+
 class webui_analysis(OmniAnalyze_Base):
     def __init__(self, args, supported_archs):
         super().__init__(args, supported_archs)
-        self.app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
+        self.app = dash.Dash(
+            __name__, title=PROJECT_NAME, external_stylesheets=[dbc.themes.CYBORG]
+        )
         self.dest_dir = os.path.abspath(args.path[0][0])
         self.arch = None
 
