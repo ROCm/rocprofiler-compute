@@ -87,7 +87,7 @@ def setup_workload_dir(input_dir, suffix="_tmp", clean_existing=True):
 
 
 def clean_output_dir(cleanup, output_dir):
-    """Remove output directory generated from omniperf execution
+    """Remove output directory generated from rocprofiler-compute execution
 
     Args:
         cleanup (boolean): flag to enable/disable directory cleanup
@@ -127,12 +127,12 @@ def check_csv_files(output_dir, num_devices, num_kernels):
     return file_dict
 
 
-def launch_omniperf(config, options, workload_dir, check_success=True):
-    """Launch Omniperf with command-line optoins
+def launch_rocprof_compute(config, options, workload_dir, check_success=True):
+    """Launch ROCm Compute Profiler with command-line optoins
 
     Args:
         config (list): runtime configuration settings
-        options (list): command line options to provide to omniperf
+        options (list): command line options to provide to rocprofiler-compute
         workload_dir (string): desired output directory
         check_success (bool, optional): Whether to verify successful exit condition. Defaults to True.
 

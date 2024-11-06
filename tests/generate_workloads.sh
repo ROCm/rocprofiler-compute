@@ -40,7 +40,7 @@ declare -A commands=(
     [mem_levels_vL1d_LDS]='--roof-only --mem-level vL1D LDS'
     [mem_levels_L2_vL1d_LDS]='--roof-only --mem-level L2 vL1D LDS'
     #########################################################
-    #           Attempt to break omniperf                   #
+    #         Attempt to break rocprofiler-compute          #
     #########################################################
     [dispatch_7]='--dispatch 7'
     [dispatch_6_8]='--dispatch 6:8'
