@@ -70,7 +70,7 @@ class gfx940_soc(OmniSoC_Base):
                 "TCC_channels": 32,
             }
         )
-        # self.roofline_obj = Roofline(args, self._mspec)
+        self.roofline_obj = Roofline(args, self._mspec)
 
         # Set arch specific specs
         self._mspec._l2_banks = 16
@@ -84,8 +84,6 @@ class gfx940_soc(OmniSoC_Base):
     def profiling_setup(self):
         """Perform any SoC-specific setup prior to profiling."""
         super().profiling_setup()
-        if self.get_args().roof_only:
-            console_error("Roofline temporarily disabled in MI300")
         # Performance counter filtering
         self.perfmon_filter(self.get_args().roof_only)
 
@@ -94,20 +92,20 @@ class gfx940_soc(OmniSoC_Base):
         """Perform any SoC-specific post profiling activities."""
         super().post_profiling()
 
-        console_log("roofline", "Roofline temporarily disabled in MI300")
-        # if not self.get_args().no_roof:
-        #     logging.info("[roofline] Checking for roofline.csv in " + str(self.get_args().path))
-        #     if not os.path.isfile(os.path.join(self.get_args().path, "roofline.csv")):
-        #         mibench(self.get_args())
-        #     self.roofline_obj.post_processing()
-        # else:
-        #     logging.info("[roofline] Skipping roofline")
+        if not self.get_args().no_roof:
+            console_log(
+                "roofline", "Checking for roofline.csv in " + str(self.get_args().path)
+            )
+            if not os.path.isfile(os.path.join(self.get_args().path, "roofline.csv")):
+                mibench(self.get_args(), self._mspec)
+            self.roofline_obj.post_processing()
+        else:
+            console_log("roofline", "Skipping roofline")
 
     @demarcate
     def analysis_setup(self, roofline_parameters=None):
         """Perform any SoC-specific setup prior to analysis."""
         super().analysis_setup()
-        console_log("roofline", "Roofline temporarily disabled in Mi300")
         # configure roofline for analysis
-        # if roofline_parameters:
-        #     self.roofline_obj = Roofline(self.get_args(), roofline_parameters)
+        if roofline_parameters:
+            self.roofline_obj = Roofline(self.get_args(), roofline_parameters)
