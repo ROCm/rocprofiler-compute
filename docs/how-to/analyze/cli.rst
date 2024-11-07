@@ -26,7 +26,7 @@ Run ``rocprof-compute analyze -h`` for more details.
 Walkthrough
 ===========
 
-1. To begin, generate a high-level analysis report using ROCm Compute Profiler's ``-b`` (or ``--block``) flag. 
+1. To begin, generate a high-level analysis report using ROCm Compute Profiler's ``-b`` (or ``--block``) flag.
 
    .. code-block:: shell-session
 

@@ -764,4 +764,3 @@ ROCm Compute Profiler reports the following vL1D data-return path metrics:
        :ref:`address processor <desc-ta>`.
 
      - Instructions per :ref:`normalization unit <normalization-units>`
-

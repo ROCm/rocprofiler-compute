@@ -32,7 +32,7 @@ right for you.
    :width: 800
 
 .. _core-install:
- 
+
 Core installation
 =================
 
@@ -258,4 +258,3 @@ ROCm Compute Profiler relies on :doc:`ROCProfiler <rocprofiler:index>`'s ``rocpr
 during the profiling process. Normally, the path to this binary is detected
 automatically, but you can override the path by the setting the optional
 ``ROCPROF`` environment variable.
-

@@ -127,4 +127,3 @@ high level.
 * :ref:`Baseline comparisons <analysis-baseline-comparison>`
 
 * :ref:`Multiple normalizations <normalization-units>`
-

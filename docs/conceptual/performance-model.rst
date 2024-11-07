@@ -46,4 +46,3 @@ key hardware blocks, each detailed in the following sections:
 * :doc:`command-processor`
 
 * :doc:`system-speed-of-light`
-

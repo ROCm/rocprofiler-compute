@@ -7,7 +7,7 @@
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
 #
@@ -26,11 +26,11 @@
         <!--Drop down menu for selecting query type-->
         <select class="gf-form-input" ng-model="ctrl.target.type" ng-options="f as f for f in ['table', 'timeseries']"></select>
       </div>
-  
+
       <div class="gf-form" ng-if="ctrl.target.rawQuery">
         <textarea class="gf-form-input" rows="5" cols="150" ng-model="ctrl.target.target" spellcheck="false" ng-blur="ctrl.onChangeInternal()" />
       </div>
-  
+
       <div ng-if="!ctrl.target.rawQuery">
         <div class="gf-form">
           <gf-form-dropdown model="ctrl.target.target"
@@ -46,4 +46,3 @@
       </div>
     </div>
   </query-editor-row>
-  

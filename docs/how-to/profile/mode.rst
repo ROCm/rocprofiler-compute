@@ -121,10 +121,10 @@ The following sample command profiles the ``vcopy`` workload.
       |-> [rocprof] Finished copying the output vector from the GPU to the CPU
       |-> [rocprof] Releasing GPU memory
       |-> [rocprof] Releasing CPU memory
-      |-> [rocprof] 
+      |-> [rocprof]
      |-> [rocprof] ROCPRofiler: 1 contexts collected, output directory /tmp/rpl_data_240312_174329_692890/input0_results_240312_174329
        |-> [rocprof] File '/home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/SQ_IFETCH_LEVEL.csv' is generating
-      |-> [rocprof] 
+      |-> [rocprof]
    [profiling] Current input file: /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200/perfmon/SQ_INST_LEVEL_LDS.txt
 
    ...
@@ -193,7 +193,7 @@ an Instinct MI210 vs an Instinct MI250.
 
 .. note::
 
-   Additionally, you will notice a few extra files. An SoC parameters file, 
+   Additionally, you will notice a few extra files. An SoC parameters file,
    ``sysinfo.csv``, is created to reflect the target device settings. All
    profiling output is stored in ``log.txt``. Roofline-specific benchmark
    results are stored in ``roofline.csv``.
@@ -344,7 +344,7 @@ substring ``vecCopy``.
 Dispatch filtering
 ^^^^^^^^^^^^^^^^^^
 
-Dispatch filtering is based on the *global* dispatch index of kernels in a run. 
+Dispatch filtering is based on the *global* dispatch index of kernels in a run.
 
 The following example profiles only the first kernel dispatch in the execution
 of the application (note zero-based indexing).
@@ -381,7 +381,7 @@ Standalone roofline
 
 If you are only interested in generating roofline analysis data try using
 ``--roof-only``. This will only collect counters relevant to roofline, as well
-as generate a standalone ``.pdf`` output of your roofline plot. 
+as generate a standalone ``.pdf`` output of your roofline plot.
 
 Roofline options
 ----------------
@@ -452,4 +452,3 @@ plot.
    :align: center
    :alt: Sample ROCm Compute Profiler roofline output
    :width: 800
-

@@ -21,4 +21,3 @@ ROCm Compute Profiler example exercises
 
 AMD Instinct™ tuning guides
   :doc:`rocm:how-to/tuning-guides/mi300x/workload`
-

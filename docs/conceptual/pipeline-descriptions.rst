@@ -296,4 +296,3 @@ math accumulation VGPRs (AGPRs). The AMD Instinct :ref:`MI2XX <mixxx-note>`
 (CDNA2) has a 512 KiB VGPR file per CU, where each wave can dynamically request
 up to 256 KiB of VGPRs and an additional 256 KiB of AGPRs. For more information,
 refer to `this comment <https://github.com/ROCm/ROCm/issues/1689#issuecomment-1553751913>`_.
-

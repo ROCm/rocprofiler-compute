@@ -906,4 +906,3 @@ not. For more detail on how operations are counted see the
        accelerators, the VALU has no native INT8 instructions.
 
      - IOPs per :ref:`normalization unit <normalization-units>`
-

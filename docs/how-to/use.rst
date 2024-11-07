@@ -189,7 +189,7 @@ Global options
 ==============
 
 The ROCm Compute Profiler command line tool has a set of *global* utility options that are
-available across all modes. 
+available across all modes.
 
 ``-v``, ``--version``
    Prints the ROCm Compute Profiler version and exits.
@@ -248,4 +248,3 @@ The following table lists ROCm Compute Profiler's basic operations, their
    * - :doc:`Interact with profiling results from CLI </how-to/analyze/cli>`
      - ``analyze``
      - ``--path``
-

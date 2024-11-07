@@ -704,4 +704,3 @@ such that improving occupancy further may not improve performance. See
        accelerators).
 
      - Percent
-

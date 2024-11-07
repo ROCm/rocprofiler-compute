@@ -315,4 +315,3 @@ of ROCm Compute Profiler’s profiling report.
        :doc:`CU <compute-unit>`.
 
      - Cycles
-

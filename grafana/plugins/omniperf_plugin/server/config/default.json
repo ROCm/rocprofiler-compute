@@ -1,5 +1,5 @@
 {
-    "server": 
+    "server":
     {
       "port": 3333,
       "logRequests": false,
@@ -7,4 +7,3 @@
       "logTimings": false
     }
 }
-  

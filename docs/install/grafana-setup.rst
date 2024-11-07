@@ -198,7 +198,7 @@ available dashboards and selecting the dashboard you have just imported.
    Opening your ROCm Compute Profiler profiling dashboard in Grafana.
 
 Remember that you need to upload workload data to the MongoDB backend before
-analyzing in your Grafana interface. See a detailed example of this in 
+analyzing in your Grafana interface. See a detailed example of this in
 :ref:`grafana-gui-import`.
 
 After a workload has been successfully uploaded, you should be able to select it
@@ -213,4 +213,3 @@ from the workload dropdown located at the top of your Grafana dashboard.
 
 For more information on how to use the Grafana interface for analysis see
 :doc:`/how-to/analyze/grafana-gui`.
-

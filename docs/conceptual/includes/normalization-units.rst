@@ -44,4 +44,3 @@ By default, ROCm Compute Profiler uses the ``per_wave`` normalization.
    (and what types) of instructions are used per wavefront. A ``per_kernel``
    normalization can be useful to get the total aggregate values of metrics for
    comparison between different configurations.
-

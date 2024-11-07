@@ -180,4 +180,3 @@ The LDS statistics panel gives a more detailed view of the hardware:
        expected to be zero in most configurations for modern CDNA™ accelerators.
 
      - Accesses per :ref:`normalization unit <normalization-units>`
-
