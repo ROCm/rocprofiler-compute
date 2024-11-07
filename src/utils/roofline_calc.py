@@ -22,11 +22,11 @@
 # SOFTWARE.
 ##############################################################################el
 
-import os
-
-from dataclasses import dataclass
-from utils.utils import console_debug
 import csv
+import os
+from dataclasses import dataclass
+
+from utils.utils import console_debug
 
 ################################################
 # Global vars

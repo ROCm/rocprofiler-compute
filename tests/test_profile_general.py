@@ -1,14 +1,15 @@
+import inspect
 import os.path
-from pathlib import Path
-from unittest.mock import patch
-import pytest
-from importlib.machinery import SourceFileLoader
-import pandas as pd
-import subprocess
 import re
 import shutil
-import inspect
+import subprocess
 import sys
+from importlib.machinery import SourceFileLoader
+from pathlib import Path
+from unittest.mock import patch
+
+import pandas as pd
+import pytest
 import test_utils
 
 # Globals

@@ -22,27 +22,29 @@
 # SOFTWARE.
 ##############################################################################el
 
-from abc import ABC, abstractmethod
-from tqdm import tqdm
 import glob
 import logging
-import sys
 import os
 import re
+import sys
+from abc import ABC, abstractmethod
+
+import pandas as pd
+from tqdm import tqdm
+
+import config
 from utils.utils import (
     capture_subprocess_output,
-    run_prof,
-    gen_sysinfo,
-    run_rocscope,
-    demarcate,
-    console_log,
     console_debug,
     console_error,
+    console_log,
     console_warning,
+    demarcate,
+    gen_sysinfo,
     print_status,
+    run_prof,
+    run_rocscope,
 )
-import config
-import pandas as pd
 
 
 class RocProfCompute_Base:

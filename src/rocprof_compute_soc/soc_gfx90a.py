@@ -23,10 +23,11 @@
 ##############################################################################el
 
 import os
+
 import config
 from rocprof_compute_soc.soc_base import OmniSoC_Base
-from utils.utils import demarcate, mibench, console_log
 from roofline import Roofline
+from utils.utils import console_log, demarcate, mibench
 
 
 class gfx90a_soc(OmniSoC_Base):

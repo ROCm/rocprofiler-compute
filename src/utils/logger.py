@@ -25,6 +25,7 @@
 import logging
 import os
 import sys
+
 from utils.utils import trace_logger
 
 # Define the colors

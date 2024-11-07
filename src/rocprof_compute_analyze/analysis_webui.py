@@ -22,20 +22,19 @@
 # SOFTWARE.
 ##############################################################################el
 
-from rocprof_compute_analyze.analysis_base import OmniAnalyze_Base
-from utils.utils import demarcate, console_debug, console_error
-from utils import file_io, parser
-from utils.gui import build_bar_chart, build_table_chart
-
+import copy
 import os
 import random
-import copy
+
 import dash
 import dash_bootstrap_components as dbc
-from dash import html
-from dash import dcc
+from dash import dcc, html
 from dash.dependencies import Input, Output, State
 
+from rocprof_compute_analyze.analysis_base import OmniAnalyze_Base
+from utils import file_io, parser
+from utils.gui import build_bar_chart, build_table_chart
+from utils.utils import console_debug, console_error, demarcate
 
 PROJECT_NAME = "rocprofiler-compute"
 
