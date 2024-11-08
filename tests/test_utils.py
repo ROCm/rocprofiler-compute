@@ -26,9 +26,10 @@
 import inspect
 import os
 import shutil
+from unittest.mock import patch
+
 import pandas as pd
 import pytest
-from unittest.mock import patch
 
 
 def check_resource_allocation():

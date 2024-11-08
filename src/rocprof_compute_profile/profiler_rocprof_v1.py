@@ -25,7 +25,7 @@
 import os
 
 from rocprof_compute_profile.profiler_base import RocProfCompute_Base
-from utils.utils import demarcate, replace_timestamps, console_log
+from utils.utils import console_log, demarcate, replace_timestamps
 
 
 class rocprof_v1_profiler(RocProfCompute_Base):

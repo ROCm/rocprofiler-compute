@@ -22,22 +22,23 @@
 # SOFTWARE.
 ##############################################################################el
 
+import getpass
+import os
 from abc import ABC, abstractmethod
+
+import pandas as pd
+from pymongo import MongoClient
+from tqdm import tqdm
+
+from utils.kernel_name_shortener import kernel_name_shortener
 from utils.utils import (
-    is_workload_empty,
-    demarcate,
+    console_debug,
     console_error,
     console_log,
     console_warning,
-    console_debug,
+    demarcate,
+    is_workload_empty,
 )
-from pymongo import MongoClient
-from tqdm import tqdm
-from utils.kernel_name_shortener import kernel_name_shortener
-
-import os
-import getpass
-import pandas as pd
 
 MAX_SERVER_SEL_DELAY = 5000  # 5 sec connection timeout
 

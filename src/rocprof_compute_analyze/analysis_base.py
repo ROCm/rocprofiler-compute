@@ -22,20 +22,21 @@
 # SOFTWARE.
 ##############################################################################el
 
-from abc import ABC, abstractmethod
+import copy
 import os
 import sys
-import copy
+from abc import ABC, abstractmethod
 from collections import OrderedDict
 from pathlib import Path
+
+from utils import file_io, parser, schema
 from utils.utils import (
-    demarcate,
-    is_workload_empty,
-    console_log,
     console_debug,
     console_error,
+    console_log,
+    demarcate,
+    is_workload_empty,
 )
-from utils import schema, file_io, parser
 
 
 class OmniAnalyze_Base:

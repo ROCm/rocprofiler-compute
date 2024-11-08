@@ -22,11 +22,11 @@
 # SOFTWARE.
 ##############################################################################el
 
-import os
-
-from dataclasses import dataclass
-from utils.utils import console_debug
 import csv
+import os
+from dataclasses import dataclass
+
+from utils.utils import console_debug
 
 ################################################
 # Global vars
@@ -34,7 +34,7 @@ import csv
 
 IMGNAME = "empirRoof"
 
-L2_BANKS = 32  # default assuming mi200
+L2_BANKS = 32  # default assuming mi200, mi300
 
 XMIN = 0.01
 XMAX = 1000
@@ -43,7 +43,7 @@ FONT_SIZE = 16
 FONT_COLOR = "black"
 FONT_WEIGHT = "bold"
 
-SUPPORTED_SOC = ["mi200"]
+SUPPORTED_SOC = ["mi200", "mi300"]
 
 TOP_N = 10
 
@@ -307,7 +307,7 @@ def calc_ai(sort_type, ret_df):
                 (df["SQ_LDS_IDX_ACTIVE"][idx] - df["SQ_LDS_BANK_CONFLICT"][idx])
                 * 4
                 * L2_BANKS
-            )  # L2_BANKS = 32 (since assuming mi200)
+            )  # L2_BANKS = 32 (since assuming mi200 or mi300)
         except KeyError:
             console_debug(
                 "roofline",
@@ -338,12 +338,38 @@ def calc_ai(sort_type, ret_df):
             )
             pass
         try:
-            hbm_data += (
-                (df["TCC_EA_RDREQ_32B_sum"][idx] * 32)
-                + ((df["TCC_EA_RDREQ_sum"][idx] - df["TCC_EA_RDREQ_32B_sum"][idx]) * 64)
-                + (df["TCC_EA_WRREQ_64B_sum"][idx] * 64)
-                + ((df["TCC_EA_WRREQ_sum"][idx] - df["TCC_EA_WRREQ_64B_sum"][idx]) * 32)
-            )
+            if df.keys().str.contains("TCC_BUBBLE").sum() > 0:
+                # MI300 uses TCC_BUBBLE_sum to calculate hbm_data
+                hbm_data += (
+                    (df["TCC_BUBBLE_sum"][idx] * 128)
+                    + (df["TCC_EA0_RDREQ_32B_sum"][idx] * 32)
+                    + (
+                        (
+                            df["TCC_EA0_RDREQ_sum"][idx]
+                            - df["TCC_BUBBLE_sum"][idx]
+                            - df["TCC_EA0_RDREQ_32B_sum"][idx]
+                        )
+                        * 64
+                    )
+                    + (
+                        (df["TCC_EA0_WRREQ_sum"][idx] - df["TCC_EA0_WRREQ_64B_sum"][idx])
+                        * 32
+                    )
+                    + (df["TCC_EA0_WRREQ_64B_sum"][idx] * 64)
+                )
+            else:
+                hbm_data += (
+                    (df["TCC_EA_RDREQ_32B_sum"][idx] * 32)
+                    + (
+                        (df["TCC_EA_RDREQ_sum"][idx] - df["TCC_EA_RDREQ_32B_sum"][idx])
+                        * 64
+                    )
+                    + (df["TCC_EA_WRREQ_64B_sum"][idx] * 64)
+                    + (
+                        (df["TCC_EA_WRREQ_sum"][idx] - df["TCC_EA_WRREQ_64B_sum"][idx])
+                        * 32
+                    )
+                )
         except KeyError:
             console_debug(
                 "roofline",

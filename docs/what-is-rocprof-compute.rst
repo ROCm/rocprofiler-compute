@@ -1,33 +1,33 @@
 .. meta::
-   :description: What is Omniperf?
+   :description: What is ROCm Compute Profiler?
    :keywords: Omniperf, ROCm, profiler, tool, Instinct, accelerator, AMD
 
-*****************
-What is Omniperf?
-*****************
+******************************
+What is ROCm Compute Profiler?
+******************************
 
-Omniperf is a kernel-level profiling tool for machine learning and high
+ROCm Compute Profiler is a kernel-level profiling tool for machine learning and high
 performance computing (HPC) workloads running on AMD Instinct™ accelerators.
 
 AMD Instinct MI-series accelerators are data center-class GPUs designed for
-compute and have some graphics capabilities disabled or removed. Omniperf
-primarily targets use with
+compute and have some graphics capabilities disabled or removed.
+ROCm Compute Profiler primarily targets use with
 :doc:`accelerators in the MI300, MI200, and MI100 families <rocm:conceptual/gpu-arch>`.
 Development is in progress to support Radeon™ (RDNA) GPUs.
 
-Omniperf is built on top of :doc:`ROCProfiler <rocprofiler:rocprofv1>` to
+ROCm Compute Profiler is built on top of :doc:`ROCProfiler <rocprofiler:rocprofv1>` to
 monitor hardware performance counters.
 
 .. _high-level-design:
 
-High-level design of Omniperf
-=============================
+High-level design
+=================
 
-The architecture of Omniperf consists of three major components shown in the
+The architecture of ROCm Compute Profiler consists of three major components shown in the
 following diagram.
 
-Core Omniperf profiler
-----------------------
+Core ROCm Compute Profiler
+--------------------------
 
 Acquires raw performance counters via application replay using ``rocprof``.
 Counters are stored in a comma-separated-values format for further
@@ -35,43 +35,43 @@ Counters are stored in a comma-separated-values format for further
 micro-benchmarks to acquire hierarchical roofline data. The roofline model is
 not available on accelerators pre-MI200.
 
-Grafana server for Omniperf
----------------------------
+Grafana server for ROCm Compute Profiler
+----------------------------------------
 
 * **Grafana database import**: All raw performance counters are imported into
   a :ref:`backend MongoDB database <grafana-mongodb-setup>` to support
   analysis and visualization in the Grafana GUI. Compatibility with
-  previously generated data using older Omniperf versions is not guaranteed.
+  previously generated data using older ROCm Compute Profiler versions is not guaranteed.
 
 * **Grafana analysis dashboard GUI**: The
   :doc:`Grafana dashboard <how-to/analyze/grafana-gui>` retrieves the raw
   counters information from the backend database. It displays the relevant
   performance metrics and visualization.
 
-Omniperf standalone GUI analyzer
---------------------------------
+ROCm Compute Profiler standalone GUI analyzer
+---------------------------------------------
 
-Omniperf provides a :doc:`standalone GUI <how-to/analyze/standalone-gui>` to
+ROCm Compute Profiler provides a :doc:`standalone GUI <how-to/analyze/standalone-gui>` to
 enable basic performance analysis without the need to import data into a
 database instance. Find setup instructions in :doc:`install/grafana-setup`
 
 .. image:: data/install/omniperf_server_vs_client_install.png
    :align: center
-   :alt: Architectural design of Omniperf
+   :alt: Architectural design of ROCm Compute Profiler
    :width: 800
 
-Omniperf features
-=================
+Features
+========
 
-Omniperf offers comprehensive profiling based on all available hardware counters
+ROCm Compute Profiler offers comprehensive profiling based on all available hardware counters
 for the target accelerator. It delivers advanced performance analysis features,
 such as system Speed-of-Light (SOL) and hardware block-level SOL evaluations.
-Additionally, Omniperf provides in-depth memory chart analysis, roofline
+Additionally, ROCm Compute Profiler provides in-depth memory chart analysis, roofline
 analysis, baseline comparisons, and more, ensuring a thorough understanding of
 system performance.
 
-Omniperf supports analysis through both the :doc:`command line </how-to/analyze/cli>` or a
-:doc:`GUI </how-to/analyze/grafana-gui>`. The following list describes Omniperf's features at a
+ROCm Compute Profiler supports analysis through both the :doc:`command line </how-to/analyze/cli>` or a
+:doc:`GUI </how-to/analyze/grafana-gui>`. The following list describes ROCm Compute Profiler's features at a
 high level.
 
 * :doc:`Support for AMD Instinct MI300, MI200, and MI100 accelerators <reference/compatible-accelerators>`
@@ -107,8 +107,8 @@ high level.
 
   * :ref:`Scalar L1D Cache panel <grafana-panel-sl1d-cache>`
 
-  * :ref:`L1 Address Processing Unit, or, Texture Addresser (TA) <grafana-panel-ta>`
-    and :ref:`L1 Backend Data Processing Unit, or, Texture Data (TD) <grafana-panel-td>` panels
+  * :ref:`L1 Address Processing Unit or Texture Addresser (TA) <grafana-panel-ta>`;
+    and :ref:`L1 Backend Data Processing Unit or Texture Data (TD) <grafana-panel-td>` panels
 
   * :ref:`Vector L1D Cache panel <grafana-panel-vl1d>`
 
