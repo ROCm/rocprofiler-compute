@@ -1,4 +1,4 @@
-* @coleramos425 @feizheng10 @dgaliffiAMD
+* @coleramos425 @feizheng10 @njobypet @dgaliffiAMD 
 
 # Documentation files
 docs/ @ROCm/rocm-documentation
@@ -9,5 +9,4 @@ docs/ @ROCm/rocm-documentation
 # Packaging
 cmake/ @koomie
 tests/ @koomie
-CMakeLists.txt @koomie
 utils/ @koomie
