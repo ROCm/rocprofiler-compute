@@ -92,12 +92,12 @@ def trace_logger(message, *args, **kwargs):
     logging.log(logging.TRACE, message, *args, **kwargs)
 
 
-def get_version(omniperf_home) -> dict:
-    """Return Omniperf versioning info"""
+def get_version(rocprof_compute_home) -> dict:
+    """Return ROCm Compute Profiler versioning info"""
 
     # symantic version info - note that version file(s) can reside in
     # two locations depending on development vs formal install
-    searchDirs = [omniperf_home, omniperf_home.parent]
+    searchDirs = [rocprof_compute_home, rocprof_compute_home.parent]
     found = False
     versionDir = None
 
@@ -115,7 +115,7 @@ def get_version(omniperf_home) -> dict:
         console_error("Cannot find VERSION file at {}".format(searchDirs))
 
     # git version info
-    gitDir = os.path.join(omniperf_home.parent, ".git")
+    gitDir = os.path.join(rocprof_compute_home.parent, ".git")
     if (shutil.which("git") is not None) and os.path.exists(gitDir):
         gitQuery = subprocess.run(
             ["git", "log", "--pretty=format:%h", "-n", "1"],
@@ -147,7 +147,7 @@ def get_version_display(version, sha, mode):
     """Pretty print versioning info"""
     buf = io.StringIO()
     print("-" * 40, file=buf)
-    print("Omniperf version: %s (%s)" % (version, mode), file=buf)
+    print("rocprofiler-compute version: %s (%s)" % (version, mode), file=buf)
     print("Git revision:     %s" % sha, file=buf)
     print("-" * 40, file=buf)
     return buf.getvalue()
@@ -246,6 +246,191 @@ def capture_subprocess_output(subprocess_args, new_env=None, profileMode=False):
     buf.close()
 
     return (success, output)
+
+# Create a dictionary that maps agent ID to agent objects
+def get_agent_dict(data):
+    agents = data['rocprofiler-sdk-tool'][0]['agents']
+
+    agent_map = {}
+
+    for agent in agents:
+        agent_id = agent['id']['handle']
+        agent_map[agent_id] = agent
+    
+    return agent_map
+
+# Returns a dictionary that maps agent ID to GPU ID
+# starting at 0.
+def get_gpuid_dict(data):
+    
+    agents = data['rocprofiler-sdk-tool'][0]['agents']
+
+    agent_list = []
+
+    # Get agent ID and node_id for GPU agents only
+    for agent in agents:
+
+        if agent['type'] == 2:
+            agent_id = agent['id']['handle']
+            node_id = agent['node_id']
+            agent_list.append((agent_id, node_id))
+
+    # Sort by node ID
+    agent_list.sort(key=lambda x: x[1])
+
+    # Map agent ID to node id
+    map = {}
+    gpu_id = 0
+    for agent in agent_list:
+        map[agent[0]] = gpu_id
+        gpu_id = gpu_id + 1
+
+    return map
+
+# Create a dictionary that maps counter ID to counter objects
+def v3_json_get_counters(data):
+    counters = data['rocprofiler-sdk-tool'][0]['counters']
+
+    counter_map = {}
+
+    for counter in counters:
+        counter_id = counter['id']['handle']
+        agent_id = counter['agent_id']['handle']
+
+        counter_map[(agent_id, counter_id)] = counter
+    
+    return counter_map
+
+def v3_json_get_dispatches(data):
+    records = data['rocprofiler-sdk-tool'][0]['buffer_records']
+
+    records_map = {}
+
+    for rec in records['kernel_dispatch']:
+        id = rec['correlation_id']['internal']
+
+        records_map[id] = rec
+
+    return records_map
+
+def v3_json_to_csv(json_file_path, csv_file_path):
+
+    f = open(json_file_path, 'rt')
+    data = json.load(f)
+
+    dispatch_records = v3_json_get_dispatches(data)
+    dispatches = data['rocprofiler-sdk-tool'][0]['callback_records']['counter_collection']
+    kernel_symbols = data['rocprofiler-sdk-tool'][0]['kernel_symbols']
+    agents = get_agent_dict(data)
+    pid = data['rocprofiler-sdk-tool'][0]['metadata']['pid']
+
+    gpuid_map = get_gpuid_dict(data)
+
+    counter_info = v3_json_get_counters(data)
+
+    # CSV headers. If there are no dispatches we still end up with a valid CSV file.
+    csv_data = dict.fromkeys([
+        'Dispatch_ID',
+        'GPU_ID',
+        'Queue_ID',
+        'PID',
+        'TID',
+        'Grid_Size',
+        'Workgroup_Size',
+        'LDS_Per_Workgroup',
+        'Scratch_Per_Workitem',
+        'Arch_VGPR',
+        'Accum_VGPR',
+        'SGPR',
+        'Wave_Size',
+        'Kernel_Name',
+        'Start_Timestamp',
+        'End_Timestamp',
+        'Correlation_ID',
+    ])
+
+    for key in csv_data:
+        csv_data[key] = []
+
+    for d in dispatches:
+
+        dispatch_info = d['dispatch_data']['dispatch_info']
+
+        agent_id = dispatch_info['agent_id']['handle']
+
+        kernel_id = dispatch_info['kernel_id']
+        
+        row = {}
+
+        row['Dispatch_ID'] = dispatch_info['dispatch_id']
+
+        row['GPU_ID'] = gpuid_map[agent_id]
+
+        row['Queue_ID'] = dispatch_info['queue_id']['handle']
+        row['PID'] = pid
+        row['TID'] = d['thread_id']
+        
+        grid_size = dispatch_info['grid_size']
+        row['Grid_Size'] = grid_size['x'] * grid_size['y'] * grid_size['z']
+        
+        wg = dispatch_info['workgroup_size']
+        row['Workgroup_Size'] = wg['x'] * wg['y'] * wg['z']
+        
+        row['LDS_Per_Workgroup'] = d['lds_block_size_v']
+
+        row['Scratch_Per_Workitem'] = kernel_symbols[kernel_id]['private_segment_size']
+        row['Arch_VGPR'] = d['arch_vgpr_count']
+
+        # TODO: Accum VGPR
+        row['Accum_VGPR'] = 0
+
+        row['SGPR'] = d['sgpr_count']
+        row['Wave_Size'] = agents[agent_id]['wave_front_size']
+        
+        row['Kernel_Name'] = kernel_symbols[kernel_id]['formatted_kernel_name']
+
+        id = d['dispatch_data']['correlation_id']['internal']
+        rec = dispatch_records[id]
+
+        row['Start_Timestamp'] = rec['start_timestamp']
+        row['End_Timestamp'] = rec['end_timestamp']
+        row['Correlation_ID'] = d['dispatch_data']['correlation_id']['external']
+
+        # Get counters
+        ctrs = {}
+ 
+        records = d['records']
+        for r in records:
+            ctr_id = r['counter_id']['handle']
+            value = r['value']
+
+            name = counter_info[(agent_id, ctr_id)]['name']
+
+            if name.endswith('_ACCUM'):
+                # It's an accumulate counter. Omniperf expects the accumulated value
+                # to be in SQ_ACCUM_PREV_HIRES.
+                name = 'SQ_ACCUM_PREV_HIRES'
+            
+            # Some counters appear multiple times and need to be summed
+            if name in ctrs:
+                ctrs[name] += value
+            else: 
+                ctrs[name] = value
+
+        # Append counter values
+        for ctr, value in ctrs.items():
+            row[ctr] = value
+        
+        # Add row to CSV data
+        for col_name, value in row.items():
+            if col_name not in csv_data:
+                csv_data[col_name] = []
+
+            csv_data[col_name].append(value)
+
+    df = pd.DataFrame(csv_data)
+
+    df.to_csv(csv_file_path, index=False)
 
 
 # Create a dictionary that maps agent ID to agent objects
@@ -684,7 +869,11 @@ def detect_roofline(mspec):
         rooflineBinary = os.environ["ROOFLINE_BIN"]
         if os.path.exists(rooflineBinary):
             console_warning("roofline", "Detected user-supplied binary")
-            return {"rocm_ver": "override", "distro": "override", "path": rooflineBinary}
+            return {
+                "rocm_ver": "override",
+                "distro": "override",
+                "path": rooflineBinary,
+            }
         else:
             msg = "user-supplied path to binary not accessible"
             msg += "--> ROOFLINE_BIN = %s\n" % target_binary
@@ -754,8 +943,8 @@ def mibench(args, mspec):
         # check two potential locations for roofline binaries due to differences in
         # development usage vs formal install
         potential_paths = [
-            "%s/utils/rooflines/roofline" % config.omniperf_home,
-            "%s/bin/roofline" % config.omniperf_home.parent.parent,
+            "%s/utils/rooflines/roofline" % config.rocprof_compute_home,
+            "%s/bin/roofline" % config.rocprof_compute_home.parent.parent,
         ]
 
         for dir in potential_paths:
