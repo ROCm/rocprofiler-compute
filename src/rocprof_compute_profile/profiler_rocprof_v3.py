@@ -28,6 +28,7 @@ from rocprof_compute_profile.profiler_base import RocProfCompute_Base
 from utils.utils import (
     demarcate,
     console_log,
+    console_error,
     replace_timestamps,
 )
 
@@ -42,15 +43,21 @@ class rocprof_v3_profiler(RocProfCompute_Base):
         )
 
     def get_profiler_options(self, fname):
-        fbase = os.path.splitext(os.path.basename(fname))[0]
         app_cmd = shlex.split(self.get_args().remaining)
+        output_format = "csv"
+        if "ROCPROF_OUTPUT_FORMAT" in os.environ.keys():
+            output_format = os.environ["ROCPROF_OUTPUT_FORMAT"].lower()
+
+        if output_format not in ["csv", "json"]:
+            console_error("Invalid rocprof output format", True)
+
         args = [
             # v3 requires output directory argument
             "-d",
             self.get_args().path + "/" + "out",
             "--kernel-trace",
             "--output-format",
-            "json",
+            output_format,
             "--"
         ]
         args.extend(app_cmd)

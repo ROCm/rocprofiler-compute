@@ -379,7 +379,7 @@ def v3_json_to_csv(json_file_path, csv_file_path):
         row['Scratch_Per_Workitem'] = kernel_symbols[kernel_id]['private_segment_size']
         row['Arch_VGPR'] = d['arch_vgpr_count']
 
-        # TODO: Accum VGPR
+        # TODO: Accum VGPR is missing from rocprofv3 output.
         row['Accum_VGPR'] = 0
 
         row['SGPR'] = d['sgpr_count']
@@ -430,6 +430,89 @@ def v3_json_to_csv(json_file_path, csv_file_path):
 
     df.to_csv(csv_file_path, index=False)
 
+def v3_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file):
+    pd_counter_collections = pd.read_csv(counter_file)
+    pd_agent_info = pd.read_csv(agent_info_filepath)
+    result = pd_counter_collections.pivot_table(index=['Correlation_Id', 'Dispatch_Id', 'Agent_Id', 'Queue_Id', 'Process_Id','Thread_Id','Grid_Size','Kernel_Id','Kernel_Name','Workgroup_Size', 'LDS_Block_Size', 'Scratch_Size', 'VGPR_Count', 'SGPR_Count', 'Start_Timestamp', 'End_Timestamp'], columns='Counter_Name', values='Counter_Value').reset_index()
+
+    # Grab the Wave_Front_Size column from agent info
+    result = result.merge(
+        pd_agent_info[['Node_Id', 'Wave_Front_Size']],
+        left_on='Agent_Id',
+        right_on='Node_Id',
+        how='left'
+    )
+
+    # Map agent ID (Node_Id) to GPU_ID
+    gpu_id_map = {}
+    gpu_id = 0
+    for idx, row in pd_agent_info.iterrows():
+        if row['Agent_Type'] == 'GPU':
+            agent_id = row['Node_Id']
+            gpu_id_map[agent_id] = gpu_id
+            gpu_id = gpu_id + 1
+
+    # Update Agent_Id for each record to match GPU ID
+    for idx, row in result['Agent_Id'].items():
+        agent_id = result.at[idx, 'Agent_Id']
+        result.at[idx, 'Agent_Id'] = gpu_id_map[agent_id]
+
+    # Accum_VGPR is currently missing in rocprofv3 output
+    result['Accum_VGPR'] = 0
+
+    name_mapping = {
+                "Dispatch_Id":"Dispatch_ID",
+                "Agent_Id":"GPU_ID",
+                "Queue_Id":"Queue_ID",
+                "Process_Id":"PID",
+                "Thread_Id":"TID",
+                "Grid_Size":"Grid_Size",
+                "Workgroup_Size":"Workgroup_Size",
+                "LDS_Block_Size":"LDS_Per_Workgroup",
+                "Scratch_Size":"Scratch_Per_Workitem",
+                "VGPR_Count":"Arch_VGPR",
+                #"":"Accum_VGPR",
+                "SGPR_Count":"SGPR",
+                "Wave_Front_Size":"Wave_Size",
+                "Kernel_Name":"Kernel_Name",
+                "Start_Timestamp":"Start_Timestamp",
+                "End_Timestamp":"End_Timestamp",
+                "Correlation_Id":"Correlation_ID",
+                "Kernel_Id":"Kernel_ID"
+    }
+    result.rename(columns=name_mapping, inplace=True)
+
+    index = [
+                "Dispatch_ID",
+                "GPU_ID",
+                "Queue_ID",
+                "PID",
+                "TID",
+                "Grid_Size",
+                "Workgroup_Size",
+                "LDS_Per_Workgroup",
+                "Scratch_Per_Workitem",
+                "Arch_VGPR",
+                "Accum_VGPR",
+                "SGPR",
+                "Wave_Size",
+                "Kernel_Name",
+                "Start_Timestamp",
+                "End_Timestamp",
+                "Correlation_ID",
+                "Kernel_ID"
+           ]
+
+    remaining_column_names = [col for col in result.columns if col not in index]
+    index = index + remaining_column_names
+    result = result.reindex(columns=index)
+
+    # Rename the accumulate counter to SQ_ACCUM_PREV_HIRES.
+    for col in result.columns:
+        if col.endswith('_ACCUM'):
+            result.rename(columns={col:"SQ_ACCUM_PREV_HIRES"}, inplace=True)
+
+    result.to_csv(converted_csv_file, index=False)
 
 def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
 
@@ -491,13 +574,33 @@ def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
         )
 
     if rocprof_cmd.endswith("v3"):
-        results_files_json = glob.glob(workload_dir + "/out/pmc_1/*/*.json")
+        output_format = "csv"
+        if "ROCPROF_OUTPUT_FORMAT" in os.environ.keys():
+            output_format = os.environ["ROCPROF_OUTPUT_FORMAT"].lower()
 
-        for json_file in results_files_json:
-            csv_file = pathlib.Path(json_file).with_suffix('.csv')
-            v3_json_to_csv(json_file, csv_file)
+        if output_format == "json":
+            results_files_json = glob.glob(workload_dir + "/out/pmc_1/*/*.json")
 
-        results_files_csv = glob.glob(workload_dir + "/out/pmc_1/*/*.csv")
+            for json_file in results_files_json:
+                csv_file = pathlib.Path(json_file).with_suffix('.csv')
+                v3_json_to_csv(json_file, csv_file)
+            results_files_csv = glob.glob(workload_dir + "/out/pmc_1/*/*.csv")
+        else:
+            counter_info_csvs = glob.glob(workload_dir + "/out/pmc_1/*/*_counter_collection.csv")
+
+            for counter_file in counter_info_csvs:
+                current_dir = os.path.dirname(counter_file)
+                agent_info_filepath = os.path.join(current_dir ,os.path.basename(counter_file).replace("_counter_collection", "_agent_info"))
+                if not os.path.isfile(agent_info_filepath) :
+                    raise ValueError("{} has no coresponding \"agent info\" file".format(counter_file))
+
+                converted_csv_file = os.path.join(current_dir , os.path.basename(counter_file).replace("_counter_collection", "_converted"))
+
+                v3_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file)
+
+            results_files_csv = glob.glob(workload_dir + "/out/pmc_1/*/*_converted.csv")
+
+
 
         # Combine results into single CSV file
         combined_results = pd.concat(
