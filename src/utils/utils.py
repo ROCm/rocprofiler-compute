@@ -187,7 +187,7 @@ def detect_rocprof():
 
 
 def capture_subprocess_output(subprocess_args, new_env=None, profileMode=False):
-    command = re.sub('["]', '', ' '.join(subprocess_args))
+    command = re.sub('["]', "", " ".join(subprocess_args))
     console_debug("subprocess", "Running: " + command)
     # Start subprocess
     # bufsize = 1 means output is line buffered
