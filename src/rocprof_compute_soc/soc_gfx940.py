@@ -109,4 +109,6 @@ class gfx940_soc(OmniSoC_Base):
         super().analysis_setup()
         # configure roofline for analysis
         if roofline_parameters:
-            self.roofline_obj = Roofline(self.get_args(), self._mspec, roofline_parameters)
+            self.roofline_obj = Roofline(
+                self.get_args(), self._mspec, roofline_parameters
+            )
