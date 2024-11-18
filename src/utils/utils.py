@@ -44,6 +44,7 @@ import pandas as pd
 import config
 
 rocprof_cmd = ""
+rocprof_args = ""
 
 
 def demarcate(function):
@@ -186,8 +187,15 @@ def detect_rocprof():
     return rocprof_cmd  # TODO: Do we still need to return this? It's not being used in the function call
 
 
+def store_app_cmd(args):
+    global rocprof_args
+    rocprof_args = args
+
+
 def capture_subprocess_output(subprocess_args, new_env=None, profileMode=False):
-    command = re.sub('["]', "", " ".join(subprocess_args))
+    global rocprof_args
+    # Format command for debug messages, formatting for rocprofv1 and rocprofv2
+    command = " ".join(rocprof_args)
     console_debug("subprocess", "Running: " + command)
     # Start subprocess
     # bufsize = 1 means output is line buffered
