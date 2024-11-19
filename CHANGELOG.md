@@ -2,7 +2,7 @@
 
 Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.amd.com/projects/rocprofiler-compute/en/latest/](https://rocm.docs.amd.com/projects/rocprofiler-compute/en/latest/).
 
-## Omniperf 3.0.0 for ROCm 6.3.0
+## ROCm Compute Profiler 3.0.0 for ROCm 6.3.0
 
 ### Changed
 
