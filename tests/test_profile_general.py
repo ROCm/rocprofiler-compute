@@ -23,11 +23,11 @@ SUPPORTED_ARCHS = {
     "gfx942": {"mi300": ["MI300A_A1", "MI300X_A1"]},
 }
 
-
-def check_arch_override():
-    if "ROCPROFCOMPUTE_ARCH_OVERRIDE" in os.environ.keys():
-        return os.environ["ROCPROFCOMPUTE_ARCH_OVERRIDE"]
-    return ""
+MI300_CHIP_IDS = {
+    "29856": "MI300A_A1",
+    "29857": "MI300X_A1",
+    "29858": "MI308X",
+}
 
 
 # --
@@ -299,32 +299,18 @@ def gpu_soc():
             else os.environ["CI_VISIBLE_DEVICES"]
         )
 
-    ## 2) Deduce gpu model name from arch
+    ## 2) Parse chip id from rocminfo
+    chip_id = re.compile(r"^\s*Chip ID:\s+ ([a-zA-Z0-9]+)\s*", re.MULTILINE)
+    ids = list(filter(chip_id.match, rocminfo))
+    for id in ids:
+        chip_id = re.match(r"^[^()]+", id.split()[2]).group(0)
+
+    ## 3) Deduce gpu model name from arch
     gpu_model = list(SUPPORTED_ARCHS[gpu_arch].keys())[0].upper()
     if gpu_model == "MI300":
-        gpu_model = list(SUPPORTED_ARCHS[gpu_arch].values())[0][0]
-    if gpu_arch == "gfx942":
-        soc_regex = re.compile(
-            r"^\s*Marketing Name\s*:\s+ ([ a-zA-Z0-9]+)\s*$", re.MULTILINE
-        )
-        names = list(filter(soc_regex.match, rocminfo))
-        gpu_model_2 = names[0].split()[-1]
-        print(
-            "The name of rocminfo is {} and gpu_model_2 is {}".format(
-                str(names), gpu_model_2
-            )
-        )
-        if "MI300A" in gpu_model_2 or "MI300A" in check_arch_override():
-            gpu_model = "MI300A_A1"
-        elif "MI300X" in gpu_model_2 or "MI300X" in check_arch_override():
-            gpu_model = "MI300X_A1"
-        else:
-            print(
-                "Cannot parse MI300 details from rocminfo. Please verify output or set the arch using (e.g.,) "
-                'export ROCPROFCOMPUTE_ARCH_OVERRIDE="MI300A"'
-            )
-            assert 0
-    print("the final GPU model selected is {}".format(str(gpu_model)))
+        if chip_id in MI300_CHIP_IDS:
+            gpu_model = MI300_CHIP_IDS[chip_id]
+
     return gpu_model
 
 
