@@ -315,6 +315,8 @@ def gpu_soc():
 
 
 soc = gpu_soc()
+print("SOC: ", soc)
+print(run(["ls", "/opt"]))
 
 # Set rocprofv2 as profiler if MI300
 if "MI300" in soc:
