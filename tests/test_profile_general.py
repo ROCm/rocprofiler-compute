@@ -320,7 +320,7 @@ print(run(["ls", "/opt"]))
 
 # Set rocprofv2 as profiler if MI300
 if "MI300" in soc:
-    os.environ["ROCPROF"] = "/opt/rocm/bin/rocprofv2"
+    os.environ["ROCPROF"] = "rocprofv2"
 
 Baseline_dir = os.path.realpath("tests/workloads/vcopy/" + soc)
 
