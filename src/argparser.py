@@ -105,7 +105,6 @@ Examples:
 
     add_general_group(profile_parser, rocprof_compute_version)
     profile_group = profile_parser.add_argument_group("Profile Options")
-    roofline_group = profile_parser.add_argument_group("Standalone Roofline Options")
 
     profile_group.add_argument(
         "-n",
@@ -220,61 +219,27 @@ Examples:
         help="\t\t\tProfile without collecting roofline data.",
     )
     profile_group.add_argument(
-        "remaining",
-        metavar="-- [ ...]",
-        default=None,
-        nargs=argparse.REMAINDER,
-        help="\t\t\tProvide command for profiling after double dash.",
-    )
-
-    ## Roofline Command Line Options
-    roofline_group.add_argument(
         "--roof-only",
         required=False,
         default=False,
         action="store_true",
         help="\t\t\tProfile roofline data only.",
     )
-    roofline_group.add_argument(
-        "--sort",
-        required=False,
-        metavar="",
-        type=str,
-        default="kernels",
-        choices=["kernels", "dispatches"],
-        help="\t\t\tOverlay top kernels or top dispatches: (DEFAULT: kernels)\n\t\t\t   kernels\n\t\t\t   dispatches",
+    profile_group.add_argument(
+        "remaining",
+        metavar="-- [ ...]",
+        default=None,
+        nargs=argparse.REMAINDER,
+        help="\t\t\tProvide command for profiling after double dash.",
     )
-    roofline_group.add_argument(
-        "-m",
-        "--mem-level",
-        required=False,
-        choices=["HBM", "L2", "vL1D", "LDS"],
-        metavar="",
-        nargs="+",
-        type=str,
-        default="ALL",
-        help="\t\t\tFilter by memory level: (DEFAULT: ALL)\n\t\t\t   HBM\n\t\t\t   L2\n\t\t\t   vL1D\n\t\t\t   LDS",
-    )
-    roofline_group.add_argument(
-        "--device",
+    profile_group.add_argument(
+        "--roofline-device",
         metavar="",
         required=False,
         default=-1,
         type=int,
         help="\t\t\tTarget GPU device ID. (DEFAULT: ALL)",
     )
-    roofline_group.add_argument(
-        "--kernel-names",
-        required=False,
-        default=False,
-        action="store_true",
-        help="\t\t\tInclude kernel names in roofline plot.",
-    )
-    # roofline_group.add_argument('-w', '--workgroups', required=False, default=-1, type=int, help="\t\t\tNumber of kernel workgroups (DEFAULT: 1024)")
-    # roofline_group.add_argument('--wsize', required=False, default=-1, type=int, help="\t\t\tWorkgroup size (DEFAULT: 256)")
-    # roofline_group.add_argument('--dataset', required=False, default = -1, type=int, help="\t\t\tDataset size (DEFAULT: 536M)")
-    # roofline_group.add_argument('-e', '--experiments', required=False, default=-1, type=int, help="\t\t\tNumber of experiments (DEFAULT: 100)")
-    # roofline_group.add_argument('--iter', required=False, default=-1, type=int, help="\t\t\tNumber of iterations (DEFAULT: 10)")
 
     ## Database Command Line Options
     ## ----------------------------
@@ -393,6 +358,7 @@ Examples:
 
     add_general_group(analyze_parser, rocprof_compute_version)
     analyze_group = analyze_parser.add_argument_group("Analyze Options")
+    roofline_group = analyze_parser.add_argument_group("Standalone Roofline Options")
     analyze_advanced_group = analyze_parser.add_argument_group("Advanced Options")
 
     analyze_group.add_argument(
@@ -464,6 +430,48 @@ Examples:
         const=8050,
         help="\t\tActivate a GUI to interate with rocprofiler-compute metrics.\n\t\tOptionally, specify port to launch application (DEFAULT: 8050)",
     )
+
+    ## Roofline Command Line Options
+    roofline_group.add_argument(
+        "--roofline",
+        required=False,
+        default=False,
+        action="store_true",
+        help="\t\t\tGenerate roofline plot as pdf.",
+    )
+    roofline_group.add_argument(
+        "--sort",
+        required=False,
+        metavar="",
+        type=str,
+        default="kernels",
+        choices=["kernels", "dispatches"],
+        help="\t\t\tOverlay top kernels or top dispatches: (DEFAULT: kernels)\n\t\t\t   kernels\n\t\t\t   dispatches",
+    )
+    roofline_group.add_argument(
+        "-m",
+        "--mem-level",
+        required=False,
+        choices=["HBM", "L2", "vL1D", "LDS"],
+        metavar="",
+        nargs="+",
+        type=str,
+        default="ALL",
+        help="\t\t\tFilter by memory level: (DEFAULT: ALL)\n\t\t\t   HBM\n\t\t\t   L2\n\t\t\t   vL1D\n\t\t\t   LDS",
+    )
+    roofline_group.add_argument(
+        "--kernel-names",
+        required=False,
+        default=False,
+        action="store_true",
+        help="\t\t\tInclude kernel names in roofline plot.",
+    )
+    # roofline_group.add_argument('-w', '--workgroups', required=False, default=-1, type=int, help="\t\t\tNumber of kernel workgroups (DEFAULT: 1024)")
+    # roofline_group.add_argument('--wsize', required=False, default=-1, type=int, help="\t\t\tWorkgroup size (DEFAULT: 256)")
+    # roofline_group.add_argument('--dataset', required=False, default = -1, type=int, help="\t\t\tDataset size (DEFAULT: 536M)")
+    # roofline_group.add_argument('-e', '--experiments', required=False, default=-1, type=int, help="\t\t\tNumber of experiments (DEFAULT: 100)")
+    # roofline_group.add_argument('--iter', required=False, default=-1, type=int, help="\t\t\tNumber of iterations (DEFAULT: 10)")
+
     analyze_advanced_group.add_argument(
         "--random-port",
         action="store_true",

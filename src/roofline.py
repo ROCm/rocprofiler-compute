@@ -56,7 +56,7 @@ class Roofline:
                 "sort_type": "kernels",
                 "mem_level": "ALL",
                 "include_kernel_names": False,
-                "is_standalone": False,
+                "roofline_cli": False,
             }
         )
         self.__ai_data = None
@@ -65,8 +65,8 @@ class Roofline:
         # Set roofline run parameters from args
         if hasattr(self.__args, "path") and not run_parameters:
             self.__run_parameters["workload_dir"] = self.__args.path
-        if hasattr(self.__args, "roof_only") and self.__args.roof_only == True:
-            self.__run_parameters["is_standalone"] = True
+        if hasattr(self.__args, "roofline") and self.__args.roofline == True:
+            self.__run_parameters["roofline_cli"] = True
         if hasattr(self.__args, "kernel_names") and self.__args.kernel_names == True:
             self.__run_parameters["include_kernel_names"] = True
         if hasattr(self.__args, "mem_level") and self.__args.mem_level != "ALL":
@@ -84,9 +84,14 @@ class Roofline:
 
     def validate_parameters(self):
         if self.__run_parameters["include_kernel_names"] and (
-            not self.__run_parameters["is_standalone"]
+            not self.__run_parameters["roofline_cli"]
         ):
-            console_error("--roof-only is required for --kernel-names")
+            console_error("--roofline is required for --kernel-names")
+
+        # Change vL1D to a interpretable str, if required
+        if "vL1D" in self.__run_parameters["mem_level"]:
+            self.__run_parameters["mem_level"].remove("vL1D")
+            self.__run_parameters["mem_level"].append("L1")
 
     def roof_setup(self):
         # set default workload path if not specified
@@ -115,7 +120,6 @@ class Roofline:
         msg = "AI at each mem level:"
         for i in self.__ai_data:
             msg += "\n\t%s -> %s" % (i, self.__ai_data[i])
-        console_debug(msg)
 
         # Generate a roofline figure for each data type
         fp32_fig = self.generate_plot(dtype="FP32")
@@ -145,8 +149,8 @@ class Roofline:
         )
         self.__figure.update_xaxes(dtick=1)
         # Output will be different depending on interaction type:
-        # Save PDFs if we're in "standalone roofline" mode, otherwise return HTML to be used in GUI output
-        if self.__run_parameters["is_standalone"]:
+        # Save PDFs if we're in "roofline cli" mode, otherwise return HTML to be used in GUI output
+        if self.__run_parameters["roofline_cli"]:
             dev_id = str(self.__run_parameters["device_id"])
 
             fp32_fig.write_image(
@@ -212,7 +216,7 @@ class Roofline:
         """Create graph object from ai_data (coordinate points) and ceiling_data (peak FLOP and BW) data."""
         if fig is None:
             fig = go.Figure()
-        plot_mode = "lines+text" if self.__run_parameters["is_standalone"] else "lines"
+        plot_mode = "lines+text" if self.__run_parameters["roofline_cli"] else "lines"
         self.__ceiling_data = constuct_roof(
             roofline_parameters=self.__run_parameters,
             dtype=dtype,
@@ -242,7 +246,7 @@ class Roofline:
                         ),
                         (
                             None
-                            if self.__run_parameters["is_standalone"]
+                            if self.__run_parameters["roofline_cli"]
                             else "{} GB/s".format(
                                 to_int(self.__ceiling_data[cache_level.lower()][2])
                             )
@@ -265,7 +269,7 @@ class Roofline:
                     text=[
                         (
                             None
-                            if self.__run_parameters["is_standalone"]
+                            if self.__run_parameters["roofline_cli"]
                             else "{} GFLOP/s".format(
                                 to_int(self.__ceiling_data["valu"][2])
                             )
@@ -291,7 +295,7 @@ class Roofline:
                 text=[
                     (
                         None
-                        if self.__run_parameters["is_standalone"]
+                        if self.__run_parameters["roofline_cli"]
                         else "{} GFLOP/s".format(to_int(self.__ceiling_data["mfma"][2]))
                     ),
                     "{} GFLOP/s".format(to_int(self.__ceiling_data["mfma"][2])),
@@ -354,25 +358,6 @@ class Roofline:
 
         return fig
 
-    @demarcate
-    def standalone_roofline(self):
-        from collections import OrderedDict
-
-        import pandas as pd
-
-        # Change vL1D to a interpretable str, if required
-        if "vL1D" in self.__run_parameters["mem_level"]:
-            self.__run_parameters["mem_level"].remove("vL1D")
-            self.__run_parameters["mem_level"].append("L1")
-
-        app_path = os.path.join(self.__run_parameters["workload_dir"], "pmc_perf.csv")
-        roofline_exists = os.path.isfile(app_path)
-        if not roofline_exists:
-            console_error("roofline", "{} does not exist".format(app_path))
-        t_df = OrderedDict()
-        t_df["pmc_perf"] = pd.read_csv(app_path)
-        self.empirical_roofline(ret_df=t_df)
-
     # Main methods
     @abstractmethod
     def pre_processing(self):
@@ -433,8 +418,7 @@ class Roofline:
     # we include pre_processing() and profile() methods for those who wish to borrow the roofline module
     @abstractmethod
     def post_processing(self):
-        if self.__run_parameters["is_standalone"]:
-            self.standalone_roofline()
+        return
 
 
 def to_int(a):
