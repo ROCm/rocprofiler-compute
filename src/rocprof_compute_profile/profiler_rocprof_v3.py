@@ -24,13 +24,9 @@
 
 import os
 import shlex
+
 from rocprof_compute_profile.profiler_base import RocProfCompute_Base
-from utils.utils import (
-    demarcate,
-    console_log,
-    console_error,
-    replace_timestamps,
-)
+from utils.utils import console_error, console_log, demarcate, replace_timestamps
 
 
 class rocprof_v3_profiler(RocProfCompute_Base):

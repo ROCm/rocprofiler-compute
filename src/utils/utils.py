@@ -24,22 +24,22 @@
 
 import glob
 import io
+import json
 import locale
 import logging
 import os
-import json
 import pathlib
 import re
 import selectors
 import shutil
 import subprocess
 import sys
+from collections import OrderedDict
 from pathlib import Path as path
 
 import pandas as pd
 
 import config
-from collections import OrderedDict
 
 rocprof_cmd = ""
 
