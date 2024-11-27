@@ -22,19 +22,19 @@
 # SOFTWARE.
 ##############################################################################el
 
-from abc import ABC, abstractmethod
-import os
-import math
-import shutil
 import glob
+import math
+import os
 import re
-import numpy as np
-from utils.utils import demarcate, console_debug, console_log, console_error
-from pathlib import Path
+import shutil
+from abc import ABC, abstractmethod
 from collections import OrderedDict
+from pathlib import Path
 
-from rocprof_compute_base import SUPPORTED_ARCHS
-from rocprof_compute_base import MI300_CHIP_IDS
+import numpy as np
+
+from rocprof_compute_base import MI300_CHIP_IDS, SUPPORTED_ARCHS
+from utils.utils import console_debug, console_error, console_log, demarcate
 
 
 class OmniSoC_Base:
@@ -103,7 +103,7 @@ class OmniSoC_Base:
 
     @demarcate
     def populate_mspec(self):
-        from utils.specs import search, run, total_sqc, total_xcds
+        from utils.specs import run, search, total_sqc, total_xcds
 
         if not hasattr(self._mspec, "_rocminfo") or self._mspec._rocminfo is None:
             return

@@ -27,10 +27,11 @@
 # predifned dict and global functions.
 #
 
-import pandas as pd
-from typing import Dict, List, Mapping, Generator
-from dataclasses import dataclass, field
 from collections import OrderedDict
+from dataclasses import dataclass, field
+from typing import Dict, Generator, List, Mapping
+
+import pandas as pd
 
 
 @dataclass

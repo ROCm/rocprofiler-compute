@@ -6,7 +6,6 @@
 import argparse
 import os
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--tag", type=str, required=True, help="tagname to check")
 args = parser.parse_args()

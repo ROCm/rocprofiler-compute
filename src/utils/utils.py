@@ -22,20 +22,22 @@
 # SOFTWARE.
 ##############################################################################el
 
+import glob
+import io
 import locale
 import logging
-import sys
 import os
-import io
 import json
 import pathlib
 import re
 import selectors
-import subprocess
 import shutil
-import pandas as pd
-import glob
+import subprocess
+import sys
 from pathlib import Path as path
+
+import pandas as pd
+
 import config
 from collections import OrderedDict
 
