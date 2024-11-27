@@ -58,7 +58,7 @@ class rocprof_v3_profiler(RocProfCompute_Base):
             "--kernel-trace",
             "--output-format",
             output_format,
-            "--"
+            "--",
         ]
         args.extend(app_cmd)
         return args
@@ -93,4 +93,4 @@ class rocprof_v3_profiler(RocProfCompute_Base):
             # Manually join each pmc_perf*.csv output
             self.join_prof()
             # Replace timestamp data to solve a known rocprof bug
-            #replace_timestamps(self.get_args().path)
+            # replace_timestamps(self.get_args().path)

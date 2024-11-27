@@ -298,9 +298,11 @@ class CounterFile:
 
         return self.blocks[block].add(counter)
 
+
 # TODO: This is a HACK
 def using_v3():
     return "ROCPROF" in os.environ.keys() and os.environ["ROCPROF"] == "rocprofv3"
+
 
 @demarcate
 def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
@@ -416,7 +418,6 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
         for block_name in f.blocks.keys():
             for ctr in f.blocks[block_name].elements:
                 pmc.append(ctr)
-
 
         stext = "pmc: " + " ".join(pmc)
 

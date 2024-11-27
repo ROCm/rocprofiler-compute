@@ -360,7 +360,11 @@ class RocProfCompute_Base:
             # Fetch any SoC/profiler specific profiling options
             options = self._soc.get_profiler_options()
             options += self.get_profiler_options(fname)
-            if self.__profiler == "rocprofv1" or self.__profiler == "rocprofv2" or self.__profiler == "rocprofv3":
+            if (
+                self.__profiler == "rocprofv1"
+                or self.__profiler == "rocprofv2"
+                or self.__profiler == "rocprofv3"
+            ):
                 run_prof(
                     fname=fname,
                     profiler_options=options,
