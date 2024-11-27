@@ -277,6 +277,7 @@ def run(cmd):
 
 
 def gpu_soc():
+    global num_devices
     ## 1) Parse arch details from rocminfo
     rocminfo = str(
         # decode with utf-8 to account for rocm-smi changes in latest rocm
