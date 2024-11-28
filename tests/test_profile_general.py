@@ -308,6 +308,7 @@ def gpu_soc():
         )
         names = list(filter(soc_regex.match, rocminfo))
         gpu_model_2 = names[0].split()[-1]
+        print("The name of rocminfo is {} and gpu_model_2 is {}".format(str(names),gpu_model_2))
         if "MI300A" in gpu_model_2 or "MI300A" in check_arch_override():
             gpu_model = "MI300A_A1"
         elif "MI300X" in gpu_model_2 or "MI300X" in check_arch_override():
@@ -318,6 +319,7 @@ def gpu_soc():
                 'export ROCPROFCOMPUTE_ARCH_OVERRIDE="MI300A"'
             )
             assert 0
+    print("the final GPU modol selected is {}".format(str(gpu_model)))
     return gpu_model
 
 
