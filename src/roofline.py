@@ -110,7 +110,7 @@ class Roofline:
         """Generate a set of empirical roofline plots given a directory containing required profiling and benchmarking data"""
         # Create arithmetic intensity data that will populate the roofline model
         console_debug("roofline", "Path: %s" % self.__run_parameters["workload_dir"])
-        self.__ai_data = calc_ai(self.__run_parameters["sort_type"], ret_df)
+        self.__ai_data = calc_ai(self.__mspec, self.__run_parameters["sort_type"], ret_df)
 
         msg = "AI at each mem level:"
         for i in self.__ai_data:

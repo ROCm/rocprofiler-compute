@@ -130,7 +130,7 @@ def verify_deps():
 
 
 def main():
-    """Main function for omniperf"""
+    '''Main function for rocprofiler-compute'''
 
     # verify required python dependencies
     verify_deps()

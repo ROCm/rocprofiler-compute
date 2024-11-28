@@ -34,8 +34,6 @@ from utils.utils import console_debug
 
 IMGNAME = "empirRoof"
 
-L2_BANKS = 32  # default assuming mi200, mi300
-
 XMIN = 0.01
 XMAX = 1000
 
@@ -188,7 +186,7 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
 #                              Overlay application performance
 # -------------------------------------------------------------------------------------
 # Calculate relevant metrics for ai calculation
-def calc_ai(sort_type, ret_df):
+def calc_ai(mspec, sort_type, ret_df):
     """Given counter data, calculate arithmetic intensity for each kernel in the application."""
     df = ret_df["pmc_perf"]
     # Sort by top kernels or top dispatches?
@@ -306,8 +304,8 @@ def calc_ai(sort_type, ret_df):
             lds_data += (
                 (df["SQ_LDS_IDX_ACTIVE"][idx] - df["SQ_LDS_BANK_CONFLICT"][idx])
                 * 4
-                * L2_BANKS
-            )  # L2_BANKS = 32 (since assuming mi200 or mi300)
+                * (mspec.lds_banks_per_cu)
+            )
         except KeyError:
             console_debug(
                 "roofline",
@@ -338,8 +336,22 @@ def calc_ai(sort_type, ret_df):
             )
             pass
         try:
-            if df.keys().str.contains("TCC_BUBBLE").sum() > 0:
-                # MI300 uses TCC_BUBBLE_sum to calculate hbm_data
+            if mspec.gpu_model == "MI200":
+                hbm_data += (
+                    (df["TCC_EA_RDREQ_32B_sum"][idx] * 32)
+                    + (
+                        (df["TCC_EA_RDREQ_sum"][idx] - df["TCC_EA_RDREQ_32B_sum"][idx])
+                        * 64
+                    )
+                    + (df["TCC_EA_WRREQ_64B_sum"][idx] * 64)
+                    + (
+                        (df["TCC_EA_WRREQ_sum"][idx] - df["TCC_EA_WRREQ_64B_sum"][idx])
+                        * 32
+                    )
+                )
+
+            else:
+                # Use TCC_BUBBLE_sum to calculate hbm_data
                 hbm_data += (
                     (df["TCC_BUBBLE_sum"][idx] * 128)
                     + (df["TCC_EA0_RDREQ_32B_sum"][idx] * 32)
@@ -356,19 +368,6 @@ def calc_ai(sort_type, ret_df):
                         * 32
                     )
                     + (df["TCC_EA0_WRREQ_64B_sum"][idx] * 64)
-                )
-            else:
-                hbm_data += (
-                    (df["TCC_EA_RDREQ_32B_sum"][idx] * 32)
-                    + (
-                        (df["TCC_EA_RDREQ_sum"][idx] - df["TCC_EA_RDREQ_32B_sum"][idx])
-                        * 64
-                    )
-                    + (df["TCC_EA_WRREQ_64B_sum"][idx] * 64)
-                    + (
-                        (df["TCC_EA_WRREQ_sum"][idx] - df["TCC_EA_WRREQ_64B_sum"][idx])
-                        * 32
-                    )
                 )
         except KeyError:
             console_debug(
