@@ -127,7 +127,7 @@ def check_csv_files(output_dir, num_devices, num_kernels):
     return file_dict
 
 
-def launch_omniperf(config, options, workload_dir, check_success=True):
+def launch_rocprof_compute(config, options, workload_dir, check_success=True):
     """Launch Omniperf with command-line optoins
 
     Args:
