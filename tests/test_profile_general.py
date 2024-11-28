@@ -307,7 +307,7 @@ def gpu_soc():
             r"^\s*Marketing Name\s*:\s+ ([ a-zA-Z0-9]+)\s*$", re.MULTILINE
         )
         names = list(filter(soc_regex.match, rocminfo))
-        gpu_model_2 = names[0].split()[4]
+        gpu_model_2 = names[0].split()[-1]
         if "MI300A" in gpu_model_2 or "MI300A" in check_arch_override():
             gpu_model = "MI300A_A1"
         elif "MI300X" in gpu_model_2 or "MI300X" in check_arch_override():
