@@ -179,7 +179,7 @@ def detect_rocprof():
         # Resolve any sym links in file path
         rocprof_path = os.path.realpath(rocprof_path.rstrip("\n"))
         console_debug("ROC Profiler: " + str(rocprof_path))
-    
+
     console_debug("rocprof_cmd is {}".format(str(rocprof_cmd)))
     return rocprof_cmd  # TODO: Do we still need to return this? It's not being used in the function call
 
