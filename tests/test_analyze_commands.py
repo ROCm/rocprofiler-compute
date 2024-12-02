@@ -1134,7 +1134,7 @@ def test_baseline():
         with patch(
             "sys.argv",
             [
-                "omniperf",
+                "rocprof-compute",
                 "analyze",
                 "--path",
                 "tests/workloads/vcopy/MI200",
@@ -1149,7 +1149,7 @@ def test_baseline():
         with patch(
             "sys.argv",
             [
-                "omniperf",
+                "rocprof-compute",
                 "analyze",
                 "--path",
                 "tests/workloads/vcopy/MI100",
