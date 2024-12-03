@@ -242,7 +242,7 @@ Examples:
         metavar="",
         dest="format_rocprof_output",
         choices=["json", "csv"],
-        default="json",
+        default="csv",
         help="\t\t\tSet the format of output file of rocprof.",
     )
 
