@@ -227,11 +227,11 @@ Examples:
         help="\t\t\tProvide command for profiling after double dash.",
     )
     profile_group.add_argument(
-        "--multiplexing",
+        "--spatial-multiplexing",
         type=int,
         metavar="",
         nargs="+",
-        dest="multiplexing",
+        dest="spatial_multiplexing",
         required=False,
         help="\t\t\tProvide Node ID and GPU number per node.",
     )

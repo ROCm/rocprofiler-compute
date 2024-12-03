@@ -243,7 +243,7 @@ class OmniSoC_Base:
             pmc_files_list,
             self.__perfmon_config,
             self.__workload_dir,
-            self.get_args().multiplexing,
+            self.get_args().spatial_multiplexing,
         )
 
     # ----------------------------------------------------
@@ -310,7 +310,7 @@ def using_v3():
 
 
 @demarcate
-def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, multiplexing):
+def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, spatial_multiplexing):
     """Sort and bucket all related performance counters to minimize required application passes"""
     workload_perfmon_dir = workload_dir + "/perfmon"
 
@@ -419,18 +419,18 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, multiplexing)
 
     console_debug("profiling", "perfmon_coalesce file_count %s" % file_count)
 
-    # TODO: rewrite the above logic for multiplexing later
-    if multiplexing:
+    # TODO: rewrite the above logic for spatial_multiplexing later
+    if spatial_multiplexing:
 
         # TODO: more error checking
-        if len(multiplexing) != 3:
+        if len(spatial_multiplexing) != 3:
             console_error(
                 "profiling", "multiplexing need provide node_idx node_count and gpu_count"
             )
 
-        node_idx = int(multiplexing[0])
-        node_count = int(multiplexing[1])
-        gpu_count = int(multiplexing[2])
+        node_idx = int(spatial_multiplexing[0])
+        node_count = int(spatial_multiplexing[1])
+        gpu_count = int(spatial_multiplexing[2])
 
         old_group_num = file_count + accu_file_count
         new_bucket_count = node_count * gpu_count
@@ -444,7 +444,7 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, multiplexing)
 
         console_debug(
             "profiling",
-            "multiplexing node_idx %s, node_count %s, gpu_count: %s, old_group_num %s, "
+            "spatial_multiplexing node_idx %s, node_count %s, gpu_count: %s, old_group_num %s, "
             "new_bucket_count %s, groups_per_bucket %s, max_groups_per_node %s, "
             "group_start %s, group_end %s"
             % (
