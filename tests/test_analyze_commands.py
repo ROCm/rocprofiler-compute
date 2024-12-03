@@ -1,10 +1,11 @@
 import os.path
+import shutil
+from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from unittest.mock import patch
-import pytest
-from importlib.machinery import SourceFileLoader
-import shutil
+
 import pandas as pd
+import pytest
 import test_utils
 
 rocprof_compute = SourceFileLoader("rocprof-compute", "src/rocprof-compute").load_module()
@@ -1133,7 +1134,7 @@ def test_baseline():
         with patch(
             "sys.argv",
             [
-                "omniperf",
+                "rocprof-compute",
                 "analyze",
                 "--path",
                 "tests/workloads/vcopy/MI200",
@@ -1148,7 +1149,7 @@ def test_baseline():
         with patch(
             "sys.argv",
             [
-                "omniperf",
+                "rocprof-compute",
                 "analyze",
                 "--path",
                 "tests/workloads/vcopy/MI100",

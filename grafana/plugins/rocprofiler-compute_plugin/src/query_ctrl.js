@@ -7,7 +7,7 @@
 // # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // # copies of the Software, and to permit persons to whom the Software is
 // # furnished to do so, subject to the following conditions:
-// # 
+// #
 // # The above copyright notice and this permission notice shall be included in all
 // # copies or substantial portions of the Software.
 // #
@@ -20,22 +20,31 @@
 // # SOFTWARE.
 // ################################################################################
 
-import {GenericDatasource} from './datasource';
-import {GenericDatasourceQueryCtrl} from './query_ctrl';
+import {QueryCtrl} from 'app/plugins/sdk';
+import './css/query-editor.css!'
 
-class GenericConfigCtrl {}
-GenericConfigCtrl.templateUrl = 'html/config.html';
+export class GenericDatasourceQueryCtrl extends QueryCtrl {
 
-class GenericQueryOptionsCtrl {}
-GenericQueryOptionsCtrl.templateUrl = 'html/query.options.html';
+  constructor($scope, $injector)  {
+    super($scope, $injector);
 
-class GenericAnnotationsQueryCtrl {}
-GenericAnnotationsQueryCtrl.templateUrl = 'html/annotations.editor.html'
+    this.scope = $scope;
+    this.target.target = this.target.target || 'select metric';
+    this.target.type = this.target.type || 'timeserie';
+    this.target.rawQuery = true;
+  }
 
-export {
-  GenericDatasource as Datasource,
-  GenericDatasourceQueryCtrl as QueryCtrl,
-  GenericConfigCtrl as ConfigCtrl,
-  GenericQueryOptionsCtrl as QueryOptionsCtrl,
-  GenericAnnotationsQueryCtrl as AnnotationsQueryCtrl
-};
+  getOptions(query) {
+    return this.datasource.metricFindQuery(query || '');
+  }
+
+  toggleEditorMode() {
+    this.target.rawQuery = !this.target.rawQuery;
+  }
+
+  onChangeInternal() {
+    this.panelCtrl.refresh(); // Asks the panel to refresh data.
+  }
+}
+
+GenericDatasourceQueryCtrl.templateUrl = 'html/query.editor.html';

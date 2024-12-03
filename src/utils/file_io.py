@@ -22,20 +22,21 @@
 # SOFTWARE.
 ##############################################################################el
 
-import os
-import sys
-import pandas as pd
-import re
-import yaml
-
-import glob
 import collections
+import glob
+import os
+import re
+import sys
 from collections import OrderedDict
 from pathlib import Path
-from utils import schema
-from utils.utils import console_debug, console_error, demarcate
-from utils.kernel_name_shortener import kernel_name_shortener
+
+import pandas as pd
+import yaml
+
 import config
+from utils import schema
+from utils.kernel_name_shortener import kernel_name_shortener
+from utils.utils import console_debug, console_error, demarcate
 
 # TODO: use pandas chunksize or dask to read really large csv file
 # from dask import dataframe as dd

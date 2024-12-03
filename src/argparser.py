@@ -23,8 +23,8 @@
 ##############################################################################el
 
 import argparse
-import shutil
 import os
+import shutil
 
 
 def print_avail_arch(avail_arch: list):

@@ -23,9 +23,10 @@
 ##############################################################################el
 
 import os
+
 import config
 from rocprof_compute_soc.soc_base import OmniSoC_Base
-from utils.utils import demarcate, console_error
+from utils.utils import console_error, demarcate
 
 
 class gfx906_soc(OmniSoC_Base):

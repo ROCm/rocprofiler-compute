@@ -4,7 +4,7 @@ This plugin allows users of ROCm Compute Profiler to connect their MongoDB datab
 
 ## Info
 
-This backend exposes the endpoints Grafana requires to create a custom data source. 
+This backend exposes the endpoints Grafana requires to create a custom data source.
 
 An express server, located in the `server` folder exposes these endpoints and makes the proxy to the MongoDB.
 
@@ -13,7 +13,7 @@ An express server, located in the `server` folder exposes these endpoints and ma
 - Node.js
 
 `sudo apt-get install -y npm`
-   
+
 ## Useage
 
 <img src="src/img/sample.PNG" alt="Sample Data Source" style="width: 500px;"/>

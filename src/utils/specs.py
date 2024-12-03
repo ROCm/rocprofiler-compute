@@ -24,26 +24,27 @@
 # SOFTWARE.
 ##############################################################################el
 
+import importlib
 import os
 import re
 import socket
 import subprocess
-import importlib
-import config
-import pandas as pd
-
+from dataclasses import dataclass, field, fields
 from datetime import datetime
 from math import ceil
-from dataclasses import dataclass, field, fields
 from pathlib import Path as path
-from utils.utils import (
-    total_xcds,
-    get_version,
-    console_error,
-    console_warning,
-    console_log,
-)
+
+import pandas as pd
+
+import config
 from utils.tty import get_table_string
+from utils.utils import (
+    console_error,
+    console_log,
+    console_warning,
+    get_version,
+    total_xcds,
+)
 
 VERSION_LOC = [
     "version",

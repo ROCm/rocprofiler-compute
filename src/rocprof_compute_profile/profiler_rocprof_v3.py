@@ -24,12 +24,9 @@
 
 import os
 import shlex
+
 from rocprof_compute_profile.profiler_base import RocProfCompute_Base
-from utils.utils import (
-    demarcate,
-    console_log,
-    replace_timestamps,
-)
+from utils.utils import console_error, console_log, demarcate, replace_timestamps
 
 
 class rocprof_v3_profiler(RocProfCompute_Base):
@@ -42,7 +39,6 @@ class rocprof_v3_profiler(RocProfCompute_Base):
         )
 
     def get_profiler_options(self, fname):
-        fbase = os.path.splitext(os.path.basename(fname))[0]
         app_cmd = shlex.split(self.get_args().remaining)
         rocprof_out_format ="json"
         if self.get_args().format_rocprof_output == "csv":
@@ -89,4 +85,4 @@ class rocprof_v3_profiler(RocProfCompute_Base):
             # Manually join each pmc_perf*.csv output
             self.join_prof()
             # Replace timestamp data to solve a known rocprof bug
-            #replace_timestamps(self.get_args().path)
+            # replace_timestamps(self.get_args().path)
