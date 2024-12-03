@@ -460,12 +460,12 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, multiplexing)
             ),
         )
 
-        for f_idx in range(groups_per_bucket):    
+        for f_idx in range(groups_per_bucket):
             file_name = os.path.join(
                 workload_perfmon_dir,
                 "pmc_perf_" + "node_" + str(node_idx) + "_" + str(f_idx) + ".txt",
             )
-            
+
             pmc = []
             for g_idx in range(
                 group_start + f_idx * gpu_count,

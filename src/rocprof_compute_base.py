@@ -27,8 +27,8 @@ import importlib
 import logging
 import os
 import shutil
-import time
 import sys
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -248,14 +248,24 @@ class RocProfCompute:
         setup_file_handler(self.__args.loglevel, self.__args.path)
 
         profiler.pre_processing()
-        console_debug("starting \"run_profiling\" and about to start rocprof's workload")
+        console_debug('starting "run_profiling" and about to start rocprof\'s workload')
         time_start_prof = time.time()
         profiler.run_profiling(self.__version["ver"], config.prog)
         time_end_prof = time.time()
-        console_debug("finished \"run_profiling\" and finished rocprof's workload, time taken was {} m {} sec".format(int((time_end_prof - time_start_prof) / 60), str((time_end_prof - time_start_prof) % 60)))
+        console_debug(
+            'finished "run_profiling" and finished rocprof\'s workload, time taken was {} m {} sec'.format(
+                int((time_end_prof - time_start_prof) / 60),
+                str((time_end_prof - time_start_prof) % 60),
+            )
+        )
         profiler.post_processing()
         time_end_post = time.time()
-        console_debug("time taken for \"post_processing\" was {} seconds".format(int((time_end_post - time_end_prof) / 60), str((time_end_post - time_end_prof) % 60)))
+        console_debug(
+            'time taken for "post_processing" was {} seconds'.format(
+                int((time_end_post - time_end_prof) / 60),
+                str((time_end_post - time_end_prof) % 60),
+            )
+        )
         self.__soc[self.__mspec.gpu_arch].post_profiling()
 
         return

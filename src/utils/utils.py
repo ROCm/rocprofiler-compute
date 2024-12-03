@@ -34,8 +34,8 @@ import selectors
 import shutil
 import subprocess
 import sys
-from collections import OrderedDict
 import time
+from collections import OrderedDict
 from itertools import product
 from pathlib import Path as path
 
@@ -496,9 +496,9 @@ def v3_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file):
     result["Accum_VGPR"] = 0
 
     # Drop the 'Node_Id' column if you don't need it in the final DataFrame
-    result.drop(columns='Node_Id', inplace=True)
-    result['Accum_VGPR'] = 0
-    
+    result.drop(columns="Node_Id", inplace=True)
+    result["Accum_VGPR"] = 0
+
     name_mapping = {
         "Dispatch_Id": "Dispatch_ID",
         "Agent_Id": "GPU_ID",
@@ -552,8 +552,11 @@ def v3_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file):
             result.rename(columns={col: "SQ_ACCUM_PREV_HIRES"}, inplace=True)
 
     result.to_csv(converted_csv_file, index=False)
-    
-def run_prof(fname, profiler_options, workload_dir, mspec, loglevel, format_rocprof_output):
+
+
+def run_prof(
+    fname, profiler_options, workload_dir, mspec, loglevel, format_rocprof_output
+):
     time_0 = time.time()
     fbase = os.path.splitext(os.path.basename(fname))[0]
 
@@ -593,8 +596,12 @@ def run_prof(fname, profiler_options, workload_dir, mspec, loglevel, format_rocp
         )
 
     time_2 = time.time()
-    console_debug("Finishing subprocess of fname {}, the time it takes was {} m {} sec ".format(fname, int((time_2 - time_1) / 60), str((time_2 - time_1) % 60)))
-    
+    console_debug(
+        "Finishing subprocess of fname {}, the time it takes was {} m {} sec ".format(
+            fname, int((time_2 - time_1) / 60), str((time_2 - time_1) % 60)
+        )
+    )
+
     if not success:
         if loglevel > logging.INFO:
             for line in output.splitlines():

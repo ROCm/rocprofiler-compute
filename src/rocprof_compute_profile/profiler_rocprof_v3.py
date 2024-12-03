@@ -40,7 +40,7 @@ class rocprof_v3_profiler(RocProfCompute_Base):
 
     def get_profiler_options(self, fname):
         app_cmd = shlex.split(self.get_args().remaining)
-        rocprof_out_format ="json"
+        rocprof_out_format = "json"
         if self.get_args().format_rocprof_output == "csv":
             rocprof_out_format = "csv"
         args = [

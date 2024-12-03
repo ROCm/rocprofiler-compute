@@ -243,7 +243,7 @@ Examples:
         dest="format_rocprof_output",
         choices=["json", "csv"],
         default="json",
-        help="\t\t\tSet the format of output file of rocprof."
+        help="\t\t\tSet the format of output file of rocprof.",
     )
 
     ## Roofline Command Line Options

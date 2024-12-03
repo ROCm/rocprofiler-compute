@@ -26,8 +26,8 @@ import glob
 import logging
 import os
 import re
-import time
 import sys
+import time
 from abc import ABC, abstractmethod
 
 import pandas as pd
@@ -109,8 +109,8 @@ class RocProfCompute_Base:
 
         if df is None:
             raise ValueError("df is NoneType and files' merge has failed")
-        
-        # TODO: check for any mismatch in joins        
+
+        # TODO: check for any mismatch in joins
         duplicate_cols = {
             "GPU_ID": [col for col in df.columns if col.startswith("GPU_ID")],
             "Grid_Size": [col for col in df.columns if col.startswith("Grid_Size")],
@@ -376,10 +376,16 @@ class RocProfCompute_Base:
                     workload_dir=self.get_args().path,
                     mspec=self._soc._mspec,
                     loglevel=self.get_args().loglevel,
-                    format_rocprof_output=self.get_args().format_rocprof_output
+                    format_rocprof_output=self.get_args().format_rocprof_output,
                 )
                 end_run_prof = time.time()
-                console_debug("The time of run_prof of {} is {} m {} sec".format(fname, int((end_run_prof - start_run_prof) / 60), str((end_run_prof - start_run_prof) % 60)))
+                console_debug(
+                    "The time of run_prof of {} is {} m {} sec".format(
+                        fname,
+                        int((end_run_prof - start_run_prof) / 60),
+                        str((end_run_prof - start_run_prof) % 60),
+                    )
+                )
 
             elif self.__profiler == "rocscope":
                 run_rocscope(self.__args, fname)
