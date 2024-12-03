@@ -444,7 +444,7 @@ def v3_json_to_csv(json_file_path, csv_file_path):
     df.to_csv(csv_file_path, index=False)
 
 
-def v3_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file):
+def v3_counter_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file):
     pd_counter_collections = pd.read_csv(counter_file)
     pd_agent_info = pd.read_csv(agent_info_filepath)
     result = pd_counter_collections.pivot_table(
@@ -553,7 +553,6 @@ def v3_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file):
 
     result.to_csv(converted_csv_file, index=False)
 
-
 def run_prof(
     fname, profiler_options, workload_dir, mspec, loglevel, format_rocprof_output
 ):
@@ -625,6 +624,7 @@ def run_prof(
         )
 
     if rocprof_cmd.endswith("v3"):
+        results_files_csv = {}
         if format_rocprof_output == "json":
             results_files_json = glob.glob(workload_dir + "/out/pmc_1/*/*.json")
 
@@ -632,34 +632,43 @@ def run_prof(
                 csv_file = pathlib.Path(json_file).with_suffix(".csv")
                 v3_json_to_csv(json_file, csv_file)
             results_files_csv = glob.glob(workload_dir + "/out/pmc_1/*/*.csv")
-        else:
+        elif format_rocprof_output == "csv":
             counter_info_csvs = glob.glob(
                 workload_dir + "/out/pmc_1/*/*_counter_collection.csv"
             )
+            existing_counter_files_csv = [d for d in counter_info_csvs if os.path.isfile(d)]
 
-            for counter_file in counter_info_csvs:
-                current_dir = os.path.dirname(counter_file)
-                agent_info_filepath = os.path.join(
-                    current_dir,
-                    os.path.basename(counter_file).replace(
-                        "_counter_collection", "_agent_info"
-                    ),
-                )
-                if not os.path.isfile(agent_info_filepath):
-                    raise ValueError(
-                        '{} has no coresponding "agent info" file'.format(counter_file)
+            if len(existing_counter_files_csv) > 0:
+                for counter_file in existing_counter_files_csv:
+                    current_dir = os.path.dirname(counter_file)
+                    agent_info_filepath = os.path.join(
+                        current_dir,
+                        os.path.basename(counter_file).replace(
+                            "_counter_collection", "_agent_info"
+                        ),
+                    )
+                    if not os.path.isfile(agent_info_filepath):
+                        raise ValueError(
+                            '{} has no coresponding "agent info" file'.format(counter_file)
+                        )
+
+                    converted_csv_file = os.path.join(
+                        current_dir,
+                        os.path.basename(counter_file).replace(
+                            "_counter_collection", "_converted"
+                        ),
                     )
 
-                converted_csv_file = os.path.join(
-                    current_dir,
-                    os.path.basename(counter_file).replace(
-                        "_counter_collection", "_converted"
-                    ),
+                    v3_counter_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file)
+
+                results_files_csv = glob.glob(workload_dir + "/out/pmc_1/*/*_converted.csv")
+            else:
+                results_files_csv = glob.glob(
+                    workload_dir + "/out/pmc_1/*/*_kernel_trace.csv"
                 )
-
-                v3_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file)
-
-            results_files_csv = glob.glob(workload_dir + "/out/pmc_1/*/*_converted.csv")
+                
+        else:
+            raise ValueError("The output file of rocprofv3 can only support json or csv!!!")
 
         # Combine results into single CSV file
         combined_results = pd.concat(
