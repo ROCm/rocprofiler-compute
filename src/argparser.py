@@ -136,7 +136,7 @@ Examples:
         dest="subpath",
         default="gpu",
         required=False,
-        help="\t\t\tSpecify the type of subpath to save workload: gpu, node.",
+        help="\t\t\tSpecify the type of subpath to save workload: node_name, gpu_model.",
     )
     profile_group.add_argument(
         "-k",
