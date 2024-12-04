@@ -27,6 +27,7 @@ import importlib
 import logging
 import os
 import shutil
+import socket
 import sys
 from pathlib import Path
 
@@ -202,8 +203,23 @@ class RocProfCompute:
         self.print_graphic()
         self.load_soc_specs()
 
+        # FIXME:
+        #     Changing default path should be done at the end of arg parsing stage,
+        #     unless there is a specific reason to do here.
+
         # Update default path
         if self.__args.path == os.path.join(os.getcwd(), "workloads"):
+            self.__args.path = os.path.join(
+                self.__args.path, self.__args.name, self.__mspec.gpu_model
+            )
+
+        # FIXME:
+        #     Might want to get host name from detected spec
+        if self.__args.subpath == "node":
+            self.__args.path = os.path.join(
+                self.__args.path, self.__args.name, socket.gethostname()
+            )
+        elif self.__args.subpath == "gpu":
             self.__args.path = os.path.join(
                 self.__args.path, self.__args.name, self.__mspec.gpu_model
             )

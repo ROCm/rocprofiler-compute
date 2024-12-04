@@ -154,7 +154,16 @@ class OmniAnalyze_Base:
 
         for d in self.__args.path:
             w = schema.Workload()
-            w.sys_info = file_io.load_sys_info(Path(d[0], "sysinfo.csv"))
+            # FIXME:
+            #    For regular single node case, load sysinfo.csv directly
+            #    For multi-node, either the default "all", or specified some,
+            #    pick up the one in the 1st sub_dir. We could fix it properly later.
+            sysinfo_path = (
+                Path(d[0])
+                if self.__args.nodes is None
+                else file_io.find_1st_sub_dir(d[0])
+            )
+            w.sys_info = file_io.load_sys_info(sysinfo_path.joinpath("sysinfo.csv"))
             arch = w.sys_info.iloc[0]["gpu_arch"]
             mspec = self.get_socs()[arch]._mspec
             if self.__args.specs_correction:
@@ -226,6 +235,12 @@ class OmniAnalyze_Base:
                     self.__args.gpu_dispatch_id.extend(self.__args.gpu_dispatch_id)
             for d, gd in zip(self.__args.path, self.__args.gpu_dispatch_id):
                 self._runs[d[0]].filter_dispatch_ids = gd
+        if self.__args.nodes:
+            if len(self.__args.nodes) == 1 and len(self.__args.path) != 1:
+                for i in range(len(self.__args.path) - 1):
+                    self.__args.nodes.extend(self.__args.nodes)
+            for d, gd in zip(self.__args.path, self.__args.nodes):
+                self._runs[d[0]].nodes = gd
 
     @abstractmethod
     def run_analysis(self):

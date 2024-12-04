@@ -110,7 +110,10 @@ class webui_analysis(OmniAnalyze_Base):
             panel_configs = copy.deepcopy(arch_configs.panel_configs)
             # Generate original raw df
             base_data[base_run].raw_pmc = file_io.create_df_pmc(
-                self.dest_dir, self.get_args().kernel_verbose, self.get_args().verbose
+                self.dest_dir,
+                self.get_args().nodes,
+                self.get_args().kernel_verbose,
+                self.get_args().verbose,
             )
             console_debug("analysis", "gui dispatch filter is %s" % disp_filt)
             console_debug("analysis", "gui kernel filter is %s" % kernel_filter)
@@ -286,7 +289,10 @@ class webui_analysis(OmniAnalyze_Base):
             )
             # create 'mega dataframe'
             self._runs[self.dest_dir].raw_pmc = file_io.create_df_pmc(
-                self.dest_dir, self.get_args().kernel_verbose, args.verbose
+                self.dest_dir,
+                self.get_args().nodes,
+                self.get_args().kernel_verbose,
+                args.verbose,
             )
             # create the loaded kernel stats
             parser.load_kernel_top(self._runs[self.dest_dir], self.dest_dir)
