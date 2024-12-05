@@ -166,7 +166,7 @@ def create_df_pmc(raw_data_root_dir, nodes, kernel_verbose, verbose):
     Load all raw pmc counters and join into one df.
     """
 
-    def create_single_df_pmc(raw_data_dir, nodes, kernel_verbose, verbose):
+    def create_single_df_pmc(raw_data_dir, kernel_verbose, verbose):
         dfs = []
         coll_levels = []
 
@@ -190,14 +190,14 @@ def create_df_pmc(raw_data_root_dir, nodes, kernel_verbose, verbose):
 
     # regular single node case
     if nodes is None:
-        return create_single_df_pmc(raw_data_root_dir)
+        return create_single_df_pmc(raw_data_root_dir, kernel_verbose, verbose)
 
     # "empty list" means all nodes
     elif not nodes:
         df = pd.DataFrame()
         # todo: more err check
         for subdir in Path(raw_data_root_dir).iterdir():
-            new_df = create_single_df_pmc()
+            new_df = create_single_df_pmc(subdir, kernel_verbose, verbose)
             new_df.insert(0, "Node", str(subdir))
             df = pd.concat([df, new_df])
         return df
@@ -208,7 +208,7 @@ def create_df_pmc(raw_data_root_dir, nodes, kernel_verbose, verbose):
         # todo: more err check
         for subdir in nodes:
             p = Path(raw_data_root_dir)
-            new_df = create_single_df_pmc(p.joinpath(subdir))
+            new_df = create_single_df_pmc(p.joinpath(subdir), kernel_verbose, verbose)
             new_df.insert(0, "Node", subdir)
             df = pd.concat([df, new_df])
         return df

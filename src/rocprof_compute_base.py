@@ -188,25 +188,6 @@ class RocProfCompute:
         )
         self.__args = parser.parse_args()
 
-        # FIXME:
-        #     Might want to get host name from detected spec
-        if self.__args.subpath == "node_name":
-            self.__args.path = os.path.join(
-                self.__args.path, socket.gethostname()
-            )
-        elif self.__args.subpath == "gpu_model":
-            self.__args.path = os.path.join(
-                self.__args.path, self.__mspec.gpu_model
-            )
-
-        p = Path(self.__args.path)
-        if not p.exists():
-            try:
-                p.mkdir(parents=True, exist_ok=False)
-            except FileExistsError:
-                console_error("Directory already exists.")
-
-
         if self.__args.mode == None:
             if self.__args.specs:
                 print(generate_machine_specs(self.__args))
@@ -215,6 +196,21 @@ class RocProfCompute:
             console_error(
                 "rocprof-compute requires you pass a valid mode. Detected None."
             )
+        elif self.__args.mode == "profile":
+
+            # FIXME:
+            #     Might want to get host name from detected spec
+            if self.__args.subpath == "node_name":
+                self.__args.path = os.path.join(self.__args.path, socket.gethostname())
+            elif self.__args.subpath == "gpu_model":
+                self.__args.path = os.path.join(self.__args.path, self.__mspec.gpu_model)
+
+            p = Path(self.__args.path)
+            if not p.exists():
+                try:
+                    p.mkdir(parents=True, exist_ok=False)
+                except FileExistsError:
+                    console_error("Directory already exists.")
         return
 
     @demarcate
