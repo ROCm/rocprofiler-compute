@@ -4,13 +4,13 @@
 # -------------------------------------------------------------------------------
 
 import argparse
-import logging
-import glob
-import os
-import sys
-import re
 import filecmp
+import glob
+import logging
+import os
+import re
 import shutil
+import sys
 
 begDelim = "######bl$"
 endDelim = "######el$"

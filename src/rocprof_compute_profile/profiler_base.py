@@ -22,27 +22,29 @@
 # SOFTWARE.
 ##############################################################################el
 
-from abc import ABC, abstractmethod
-from tqdm import tqdm
 import glob
 import logging
-import sys
 import os
 import re
+import sys
+from abc import ABC, abstractmethod
+
+import pandas as pd
+from tqdm import tqdm
+
+import config
 from utils.utils import (
     capture_subprocess_output,
-    run_prof,
-    gen_sysinfo,
-    run_rocscope,
-    demarcate,
-    console_log,
     console_debug,
     console_error,
+    console_log,
     console_warning,
+    demarcate,
+    gen_sysinfo,
     print_status,
+    run_prof,
+    run_rocscope,
 )
-import config
-import pandas as pd
 
 
 class RocProfCompute_Base:
@@ -167,6 +169,8 @@ class RocProfCompute_Base:
                         "TID",
                         "SIG",
                         "OBJ",
+                        "Correlation_ID_",
+                        "Wave_Size_",
                         # rocscope specific merged counters, keep original
                         "dispatch_",
                         # extras
@@ -356,7 +360,11 @@ class RocProfCompute_Base:
             # Fetch any SoC/profiler specific profiling options
             options = self._soc.get_profiler_options()
             options += self.get_profiler_options(fname)
-            if self.__profiler == "rocprofv1" or self.__profiler == "rocprofv2":
+            if (
+                self.__profiler == "rocprofv1"
+                or self.__profiler == "rocprofv2"
+                or self.__profiler == "rocprofv3"
+            ):
                 run_prof(
                     fname=fname,
                     profiler_options=options,

@@ -23,10 +23,11 @@
 ##############################################################################el
 
 import os
+
 import config
 from rocprof_compute_soc.soc_base import OmniSoC_Base
-from utils.utils import demarcate, mibench, console_log, console_error
 from roofline import Roofline
+from utils.utils import console_error, console_log, demarcate, mibench
 
 
 class gfx942_soc(OmniSoC_Base):
@@ -53,7 +54,7 @@ class gfx942_soc(OmniSoC_Base):
                     "gfx940",
                 )
             )
-        self.set_compatible_profilers(["rocprofv1", "rocprofv2"])
+        self.set_compatible_profilers(["rocprofv1", "rocprofv2", "rocprofv3"])
         # Per IP block max number of simultaneous counters. GFX IP Blocks
         self.set_perfmon_config(
             {
@@ -70,7 +71,7 @@ class gfx942_soc(OmniSoC_Base):
                 "TCC_channels": 16,
             }
         )
-        # self.roofline_obj = Roofline(args, self._mspec)
+        self.roofline_obj = Roofline(args, self._mspec)
 
         # --showmclkrange is broken in MI308X, hardcode freq
         if self._mspec.gpu_model == "MI308X":
@@ -89,8 +90,6 @@ class gfx942_soc(OmniSoC_Base):
     def profiling_setup(self):
         """Perform any SoC-specific setup prior to profiling."""
         super().profiling_setup()
-        if self.get_args().roof_only:
-            console_error("Roofline temporarily disabled in MI300")
         # Performance counter filtering
         self.perfmon_filter(self.get_args().roof_only)
 
@@ -99,20 +98,22 @@ class gfx942_soc(OmniSoC_Base):
         """Perform any SoC-specific post profiling activities."""
         super().post_profiling()
 
-        console_log("roofline", "Roofline temporarily disabled in MI300")
-        # if not self.get_args().no_roof:
-        #     logging.info("[roofline] Checking for roofline.csv in " + str(self.get_args().path))
-        #     if not os.path.isfile(os.path.join(self.get_args().path, "roofline.csv")):
-        #         mibench(self.get_args())
-        #     self.roofline_obj.post_processing()
-        # else:
-        #     logging.info("[roofline] Skipping roofline")
+        if not self.get_args().no_roof:
+            console_log(
+                "roofline", "Checking for roofline.csv in " + str(self.get_args().path)
+            )
+            if not os.path.isfile(os.path.join(self.get_args().path, "roofline.csv")):
+                mibench(self.get_args(), self._mspec)
+            self.roofline_obj.post_processing()
+        else:
+            console_log("roofline", "Skipping roofline")
 
     @demarcate
     def analysis_setup(self, roofline_parameters=None):
         """Perform any SoC-specific setup prior to analysis."""
         super().analysis_setup()
-        console_log("roofline", "Roofline temporarily disabled in Mi300")
         # configure roofline for analysis
-        # if roofline_parameters:
-        #     self.roofline_obj = Roofline(self.get_args(), roofline_parameters)
+        if roofline_parameters:
+            self.roofline_obj = Roofline(
+                self.get_args(), self._mspec, roofline_parameters
+            )

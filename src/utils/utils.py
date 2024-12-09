@@ -22,18 +22,23 @@
 # SOFTWARE.
 ##############################################################################el
 
+import glob
+import io
+import json
 import locale
 import logging
-import sys
 import os
-import io
+import pathlib
 import re
 import selectors
-import subprocess
 import shutil
-import pandas as pd
-import glob
+import subprocess
+import sys
+from collections import OrderedDict
 from pathlib import Path as path
+
+import pandas as pd
+
 import config
 
 rocprof_cmd = ""
@@ -174,7 +179,9 @@ def detect_rocprof():
         # Resolve any sym links in file path
         rocprof_path = os.path.realpath(rocprof_path.rstrip("\n"))
         console_debug("ROC Profiler: " + str(rocprof_path))
-        return rocprof_cmd  # TODO: Do we still need to return this? It's not being used in the function call
+
+    console_debug("rocprof_cmd is {}".format(str(rocprof_cmd)))
+    return rocprof_cmd  # TODO: Do we still need to return this? It's not being used in the function call
 
 
 def capture_subprocess_output(subprocess_args, new_env=None, profileMode=False):
@@ -243,6 +250,304 @@ def capture_subprocess_output(subprocess_args, new_env=None, profileMode=False):
     return (success, output)
 
 
+# Create a dictionary that maps agent ID to agent objects
+def get_agent_dict(data):
+    agents = data["rocprofiler-sdk-tool"][0]["agents"]
+
+    agent_map = {}
+
+    for agent in agents:
+        agent_id = agent["id"]["handle"]
+        agent_map[agent_id] = agent
+
+    return agent_map
+
+
+# Returns a dictionary that maps agent ID to GPU ID
+# starting at 0.
+def get_gpuid_dict(data):
+
+    agents = data["rocprofiler-sdk-tool"][0]["agents"]
+
+    agent_list = []
+
+    # Get agent ID and node_id for GPU agents only
+    for agent in agents:
+
+        if agent["type"] == 2:
+            agent_id = agent["id"]["handle"]
+            node_id = agent["node_id"]
+            agent_list.append((agent_id, node_id))
+
+    # Sort by node ID
+    agent_list.sort(key=lambda x: x[1])
+
+    # Map agent ID to node id
+    map = {}
+    gpu_id = 0
+    for agent in agent_list:
+        map[agent[0]] = gpu_id
+        gpu_id = gpu_id + 1
+
+    return map
+
+
+# Create a dictionary that maps counter ID to counter objects
+def v3_json_get_counters(data):
+    counters = data["rocprofiler-sdk-tool"][0]["counters"]
+
+    counter_map = {}
+
+    for counter in counters:
+        counter_id = counter["id"]["handle"]
+        agent_id = counter["agent_id"]["handle"]
+
+        counter_map[(agent_id, counter_id)] = counter
+
+    return counter_map
+
+
+def v3_json_get_dispatches(data):
+    records = data["rocprofiler-sdk-tool"][0]["buffer_records"]
+
+    records_map = {}
+
+    for rec in records["kernel_dispatch"]:
+        id = rec["correlation_id"]["internal"]
+
+        records_map[id] = rec
+
+    return records_map
+
+
+def v3_json_to_csv(json_file_path, csv_file_path):
+
+    f = open(json_file_path, "rt")
+    data = json.load(f)
+
+    dispatch_records = v3_json_get_dispatches(data)
+    dispatches = data["rocprofiler-sdk-tool"][0]["callback_records"]["counter_collection"]
+    kernel_symbols = data["rocprofiler-sdk-tool"][0]["kernel_symbols"]
+    agents = get_agent_dict(data)
+    pid = data["rocprofiler-sdk-tool"][0]["metadata"]["pid"]
+
+    gpuid_map = get_gpuid_dict(data)
+
+    counter_info = v3_json_get_counters(data)
+
+    # CSV headers. If there are no dispatches we still end up with a valid CSV file.
+    csv_data = dict.fromkeys(
+        [
+            "Dispatch_ID",
+            "GPU_ID",
+            "Queue_ID",
+            "PID",
+            "TID",
+            "Grid_Size",
+            "Workgroup_Size",
+            "LDS_Per_Workgroup",
+            "Scratch_Per_Workitem",
+            "Arch_VGPR",
+            "Accum_VGPR",
+            "SGPR",
+            "Wave_Size",
+            "Kernel_Name",
+            "Start_Timestamp",
+            "End_Timestamp",
+            "Correlation_ID",
+        ]
+    )
+
+    for key in csv_data:
+        csv_data[key] = []
+
+    for d in dispatches:
+
+        dispatch_info = d["dispatch_data"]["dispatch_info"]
+
+        agent_id = dispatch_info["agent_id"]["handle"]
+
+        kernel_id = dispatch_info["kernel_id"]
+
+        row = {}
+
+        row["Dispatch_ID"] = dispatch_info["dispatch_id"]
+
+        row["GPU_ID"] = gpuid_map[agent_id]
+
+        row["Queue_ID"] = dispatch_info["queue_id"]["handle"]
+        row["PID"] = pid
+        row["TID"] = d["thread_id"]
+
+        grid_size = dispatch_info["grid_size"]
+        row["Grid_Size"] = grid_size["x"] * grid_size["y"] * grid_size["z"]
+
+        wg = dispatch_info["workgroup_size"]
+        row["Workgroup_Size"] = wg["x"] * wg["y"] * wg["z"]
+
+        row["LDS_Per_Workgroup"] = d["lds_block_size_v"]
+
+        row["Scratch_Per_Workitem"] = kernel_symbols[kernel_id]["private_segment_size"]
+        row["Arch_VGPR"] = d["arch_vgpr_count"]
+
+        # TODO: Accum VGPR is missing from rocprofv3 output.
+        row["Accum_VGPR"] = 0
+
+        row["SGPR"] = d["sgpr_count"]
+        row["Wave_Size"] = agents[agent_id]["wave_front_size"]
+
+        row["Kernel_Name"] = kernel_symbols[kernel_id]["formatted_kernel_name"]
+
+        id = d["dispatch_data"]["correlation_id"]["internal"]
+        rec = dispatch_records[id]
+
+        row["Start_Timestamp"] = rec["start_timestamp"]
+        row["End_Timestamp"] = rec["end_timestamp"]
+        row["Correlation_ID"] = d["dispatch_data"]["correlation_id"]["external"]
+
+        # Get counters
+        ctrs = {}
+
+        records = d["records"]
+        for r in records:
+            ctr_id = r["counter_id"]["handle"]
+            value = r["value"]
+
+            name = counter_info[(agent_id, ctr_id)]["name"]
+
+            if name.endswith("_ACCUM"):
+                # It's an accumulate counter. Omniperf expects the accumulated value
+                # to be in SQ_ACCUM_PREV_HIRES.
+                name = "SQ_ACCUM_PREV_HIRES"
+
+            # Some counters appear multiple times and need to be summed
+            if name in ctrs:
+                ctrs[name] += value
+            else:
+                ctrs[name] = value
+
+        # Append counter values
+        for ctr, value in ctrs.items():
+            row[ctr] = value
+
+        # Add row to CSV data
+        for col_name, value in row.items():
+            if col_name not in csv_data:
+                csv_data[col_name] = []
+
+            csv_data[col_name].append(value)
+
+    df = pd.DataFrame(csv_data)
+
+    df.to_csv(csv_file_path, index=False)
+
+
+def v3_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file):
+    pd_counter_collections = pd.read_csv(counter_file)
+    pd_agent_info = pd.read_csv(agent_info_filepath)
+    result = pd_counter_collections.pivot_table(
+        index=[
+            "Correlation_Id",
+            "Dispatch_Id",
+            "Agent_Id",
+            "Queue_Id",
+            "Process_Id",
+            "Thread_Id",
+            "Grid_Size",
+            "Kernel_Id",
+            "Kernel_Name",
+            "Workgroup_Size",
+            "LDS_Block_Size",
+            "Scratch_Size",
+            "VGPR_Count",
+            "SGPR_Count",
+            "Start_Timestamp",
+            "End_Timestamp",
+        ],
+        columns="Counter_Name",
+        values="Counter_Value",
+    ).reset_index()
+
+    # Grab the Wave_Front_Size column from agent info
+    result = result.merge(
+        pd_agent_info[["Node_Id", "Wave_Front_Size"]],
+        left_on="Agent_Id",
+        right_on="Node_Id",
+        how="left",
+    )
+
+    # Map agent ID (Node_Id) to GPU_ID
+    gpu_id_map = {}
+    gpu_id = 0
+    for idx, row in pd_agent_info.iterrows():
+        if row["Agent_Type"] == "GPU":
+            agent_id = row["Node_Id"]
+            gpu_id_map[agent_id] = gpu_id
+            gpu_id = gpu_id + 1
+
+    # Update Agent_Id for each record to match GPU ID
+    for idx, row in result["Agent_Id"].items():
+        agent_id = result.at[idx, "Agent_Id"]
+        result.at[idx, "Agent_Id"] = gpu_id_map[agent_id]
+
+    # Accum_VGPR is currently missing in rocprofv3 output
+    result["Accum_VGPR"] = 0
+
+    name_mapping = {
+        "Dispatch_Id": "Dispatch_ID",
+        "Agent_Id": "GPU_ID",
+        "Queue_Id": "Queue_ID",
+        "Process_Id": "PID",
+        "Thread_Id": "TID",
+        "Grid_Size": "Grid_Size",
+        "Workgroup_Size": "Workgroup_Size",
+        "LDS_Block_Size": "LDS_Per_Workgroup",
+        "Scratch_Size": "Scratch_Per_Workitem",
+        "VGPR_Count": "Arch_VGPR",
+        # "":"Accum_VGPR",
+        "SGPR_Count": "SGPR",
+        "Wave_Front_Size": "Wave_Size",
+        "Kernel_Name": "Kernel_Name",
+        "Start_Timestamp": "Start_Timestamp",
+        "End_Timestamp": "End_Timestamp",
+        "Correlation_Id": "Correlation_ID",
+        "Kernel_Id": "Kernel_ID",
+    }
+    result.rename(columns=name_mapping, inplace=True)
+
+    index = [
+        "Dispatch_ID",
+        "GPU_ID",
+        "Queue_ID",
+        "PID",
+        "TID",
+        "Grid_Size",
+        "Workgroup_Size",
+        "LDS_Per_Workgroup",
+        "Scratch_Per_Workitem",
+        "Arch_VGPR",
+        "Accum_VGPR",
+        "SGPR",
+        "Wave_Size",
+        "Kernel_Name",
+        "Start_Timestamp",
+        "End_Timestamp",
+        "Correlation_ID",
+        "Kernel_ID",
+    ]
+
+    remaining_column_names = [col for col in result.columns if col not in index]
+    index = index + remaining_column_names
+    result = result.reindex(columns=index)
+
+    # Rename the accumulate counter to SQ_ACCUM_PREV_HIRES.
+    for col in result.columns:
+        if col.endswith("_ACCUM"):
+            result.rename(columns={col: "SQ_ACCUM_PREV_HIRES"}, inplace=True)
+
+    result.to_csv(converted_csv_file, index=False)
+
+
 def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
 
     fbase = os.path.splitext(os.path.basename(fname))[0]
@@ -293,6 +598,74 @@ def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
         # Combine results into single CSV file
         combined_results = pd.concat(
             [pd.read_csv(f) for f in results_files], ignore_index=True
+        )
+
+        # Overwrite column to ensure unique IDs.
+        combined_results["Dispatch_ID"] = range(0, len(combined_results))
+
+        combined_results.to_csv(
+            workload_dir + "/out/pmc_1/results_" + fbase + ".csv", index=False
+        )
+
+    if rocprof_cmd.endswith("v3"):
+        output_format = "csv"
+        if "ROCPROF_OUTPUT_FORMAT" in os.environ.keys():
+            output_format = os.environ["ROCPROF_OUTPUT_FORMAT"].lower()
+
+        if output_format == "json":
+            results_files_json = glob.glob(workload_dir + "/out/pmc_1/*/*.json")
+
+            for json_file in results_files_json:
+                csv_file = pathlib.Path(json_file).with_suffix(".csv")
+                v3_json_to_csv(json_file, csv_file)
+            results_files_csv = glob.glob(workload_dir + "/out/pmc_1/*/*.csv")
+        else:
+            counter_info_csvs = glob.glob(
+                workload_dir + "/out/pmc_1/*/*_counter_collection.csv"
+            )
+
+            existing_counter_files_csv = [
+                d for d in counter_info_csvs if os.path.isfile(d)
+            ]
+
+            if len(existing_counter_files_csv) > 0:
+                for counter_file in existing_counter_files_csv:
+                    current_dir = os.path.dirname(counter_file)
+                    agent_info_filepath = os.path.join(
+                        current_dir,
+                        os.path.basename(counter_file).replace(
+                            "_counter_collection", "_agent_info"
+                        ),
+                    )
+                    if not os.path.isfile(agent_info_filepath):
+                        raise ValueError(
+                            '{} has no coresponding "agent info" file'.format(
+                                counter_file
+                            )
+                        )
+
+                    converted_csv_file = os.path.join(
+                        current_dir,
+                        os.path.basename(counter_file).replace(
+                            "_counter_collection", "_converted"
+                        ),
+                    )
+
+                    v3_csv_to_v2_csv(
+                        counter_file, agent_info_filepath, converted_csv_file
+                    )
+
+                results_files_csv = glob.glob(
+                    workload_dir + "/out/pmc_1/*/*_converted.csv"
+                )
+            else:
+                results_files_csv = glob.glob(
+                    workload_dir + "/out/pmc_1/*/*_kernel_trace.csv"
+                )
+
+        # Combine results into single CSV file
+        combined_results = pd.concat(
+            [pd.read_csv(f) for f in results_files_csv], ignore_index=True
         )
 
         # Overwrite column to ensure unique IDs.

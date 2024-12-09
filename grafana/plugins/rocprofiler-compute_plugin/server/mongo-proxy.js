@@ -7,7 +7,7 @@
 // # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // # copies of the Software, and to permit persons to whom the Software is
 // # furnished to do so, subject to the following conditions:
-// # 
+// #
 // # The above copyright notice and this permission notice shall be included in all
 // # copies or substantial portions of the Software.
 // #
@@ -33,7 +33,7 @@ const serverConfig = require('./config/default.json').server;
 app.use(bodyParser.json({ limit: '5mb' }));
 
 // Called via required 'testDataSource'
-app.all('/', function(req, res, next) 
+app.all('/', function(req, res, next)
 {
   console.log("Entered /")
   logRequest(req.body, "/")
@@ -43,14 +43,14 @@ app.all('/', function(req, res, next)
   {
     if ( err != null )
     {
-      res.send({ status : "error", 
-                 display_status : "Error", 
+      res.send({ status : "error",
+                 display_status : "Error",
                  message : 'MongoDB Connection Error: ' + err.message });
     }
     else
     {
-      res.send( { status : "success", 
-                  display_status : "Success", 
+      res.send( { status : "success",
+                  display_status : "Success",
                   message : 'MongoDB Connection test OK' });
     }
     next()
@@ -65,7 +65,7 @@ app.all('/search', function(req, res, next)
   setCORSHeaders(res);
 
   // Generate an id to track requests
-  const requestId = ++requestIdCounter                 
+  const requestId = ++requestIdCounter
   // Add state for the queries in this request
   var queryStates = []
   requestsPending[requestId] = queryStates
@@ -121,12 +121,12 @@ function queryFinished(requestId, queryId, results, res, next)
         break
       }
     }
-  
+
     // If query done, send back results
     if (done)
     {
       // Concatenate results
-      output = []    
+      output = []
       for ( var i = 0; i < queryStatus.length; i++)
       {
         var queryResults = queryStatus[i].results
@@ -159,7 +159,7 @@ app.all('/query', function(req, res, next)
                      }
 
     // Generate an id to track requests
-    const requestId = ++requestIdCounter                 
+    const requestId = ++requestIdCounter
     // Add state for the queries in this request
     var queryStates = []
     requestsPending[requestId] = queryStates
@@ -188,7 +188,7 @@ app.all('/query', function(req, res, next)
   }
 );
 
-app.use(function(error, req, res, next) 
+app.use(function(error, req, res, next)
 {
   // Any request to this server will get here, and will send an HTTP
   // response with the error message
@@ -199,17 +199,17 @@ app.listen(serverConfig.port);
 
 console.log("Server is listening on port " + serverConfig.port);
 
-function setCORSHeaders(res) 
+function setCORSHeaders(res)
 {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST");
-  res.setHeader("Access-Control-Allow-Headers", "accept, content-type");  
+  res.setHeader("Access-Control-Allow-Headers", "accept, content-type");
 }
 
 function forIn(obj, processFunc)
 {
     var key;
-    for (key in obj) 
+    for (key in obj)
     {
         var value = obj[key]
         processFunc(obj, key, value)
@@ -245,7 +245,7 @@ function parseQuery(query, substitutions)
     chosenDB = query.substring(0, firstDotIndex)
   }
   doc.db = chosenDB
-  
+
 
   // Query is of the form db.<collection>.aggregate or db.<collection>.find
   // Split on the first ( after db.
@@ -264,13 +264,13 @@ function parseQuery(query, substitutions)
     if (parts.length >= 2)
     {
       doc.operation = parts.pop().trim()
-      doc.collection = parts.join('.')       
+      doc.collection = parts.join('.')
     }
     else
     {
       queryErrors.push("Invalid collection and operation syntax")
     }
-  
+
     // Args is the rest up to the last bracket
     const potentialPipelineEnding =  ['])', '],'];
 
@@ -297,11 +297,11 @@ function parseQuery(query, substitutions)
             return null;
           }
         })(args);
-        
+
         if(!docs) {
           queryErrors.push("Invalid query syntax");
         }
-        
+
         // First Arg is pipeline
         doc.pipeline = docs[0]
         // If we have 2 top level args, second is agg options
@@ -331,7 +331,7 @@ function parseQuery(query, substitutions)
       }
     }
   }
-  
+
   if (queryErrors.length > 0 )
   {
     doc.err = new Error('Failed to parse query - ' + queryErrors.join(':'))
@@ -341,7 +341,7 @@ function parseQuery(query, substitutions)
   if (chosenDB == null){
     console.log("Chosen DB is DEFAULT");
   }
-  else{  
+  else{
     console.log("chosenDB is " + doc.db);
   }
   console.log("Collection is "+ doc.collection);
@@ -354,7 +354,7 @@ function parseQuery(query, substitutions)
 
 function runAggregateQuery( requestId, queryId, body, queryArgs, res, next )
 {
-  MongoClient.connect(body.db.url, function(err, client) 
+  MongoClient.connect(body.db.url, function(err, client)
   {
     if ( err != null )
     {
@@ -369,19 +369,19 @@ function runAggregateQuery( requestId, queryId, body, queryArgs, res, next )
       //   assignedName = body.db.db
       // }
       // else{
-      //   assignedName = queryArgs.db 
+      //   assignedName = queryArgs.db
       // }
       // console.log("Assigned DB name is " + assignedName)
       // const db = client.db(assignedName);
       var secondDb = client.db(queryArgs.db)
-  
+
       // Get the documents collection
       const collection = secondDb.collection(queryArgs.collection);
       logQuery(queryArgs.pipeline, queryArgs.agg_options)
       // Track how long it takes to complete query
       var stopwatch = new Stopwatch(true)
 
-      collection.aggregate(queryArgs.pipeline, {allowDiskUse:true}).toArray(function(err, docs) 
+      collection.aggregate(queryArgs.pipeline, {allowDiskUse:true}).toArray(function(err, docs)
         {
           if ( err != null )
           {
@@ -403,7 +403,7 @@ function runAggregateQuery( requestId, queryId, body, queryArgs, res, next )
               {
                 results = getTableResults(docs)
               }
-      
+
               client.close();
               var elapsedTimeMs = stopwatch.stop()
               logTiming(body, elapsedTimeMs)
@@ -423,7 +423,7 @@ function runAggregateQuery( requestId, queryId, body, queryArgs, res, next )
 function getTableResults(docs)
 {
   var columns = {}
-  
+
   // Build superset of columns
   for ( var i = 0; i < docs.length; i++)
   {
@@ -434,7 +434,7 @@ function getTableResults(docs)
       // See if we need to add a new column
       if ( !(propName in columns) )
       {
-        columns[propName] = 
+        columns[propName] =
         {
           text : propName,
           type : "text"
@@ -442,7 +442,7 @@ function getTableResults(docs)
       }
     }
   }
-  
+
   // Build return rows
   rows = []
   for ( var i = 0; i < docs.length; i++)
@@ -464,7 +464,7 @@ function getTableResults(docs)
     }
     rows.push(row)
   }
-  
+
   var results = {}
   results["table"] = {
     columns :  Object.values(columns),
@@ -491,7 +491,7 @@ function getTimeseriesResults(docs)
       dp = { 'target' : tg, 'datapoints' : [] }
       results[tg] = dp
     }
-    
+
     results[tg].datapoints.push([doc['value'], doc['ts'].getTime()])
   }
   return results
@@ -504,9 +504,9 @@ function doTemplateQuery(requestId, queryArgs, db, res, next)
  if ( queryArgs.err == null)
   {
     if(queryArgs.db != null){ //We're looking at a custom dbName.aggregate
-      
+
       // Use connect method to connect to the server
-      MongoClient.connect(db.url, function(err, client) 
+      MongoClient.connect(db.url, function(err, client)
       {
         if ( err != null )
         {
@@ -522,11 +522,11 @@ function doTemplateQuery(requestId, queryArgs, db, res, next)
           var secondDb = client.db(queryArgs.db);
           // Get the documents collection
           const collection = secondDb.collection(queryArgs.collection);
-            
-          collection.aggregate(queryArgs.pipeline).toArray(function(err, result) 
+
+          collection.aggregate(queryArgs.pipeline).toArray(function(err, result)
             {
               assert.equal(err, null)
-      
+
               output = []
               for ( var i = 0; i < result.length; i++)
               {
@@ -543,9 +543,9 @@ function doTemplateQuery(requestId, queryArgs, db, res, next)
     else{ //Then we're just looking at the default db.aggregate
       // Database Name
       const dbName = db.db
-      
+
       // Use connect method to connect to the server
-      MongoClient.connect(db.url, function(err, client) 
+      MongoClient.connect(db.url, function(err, client)
       {
         if ( err != null )
         {
@@ -561,11 +561,11 @@ function doTemplateQuery(requestId, queryArgs, db, res, next)
           const db = client.db(dbName);
           // Get the documents collection
           const collection = db.collection(queryArgs.collection);
-            
-          collection.aggregate(queryArgs.pipeline).toArray(function(err, result) 
+
+          collection.aggregate(queryArgs.pipeline).toArray(function(err, result)
             {
               assert.equal(err, null)
-      
+
               output = []
               for ( var i = 0; i < result.length; i++)
               {
@@ -614,14 +614,14 @@ function logTiming(body, elapsedTimeMs)
   {
     var range = new Date(body.range.to) - new Date(body.range.from)
     var diff = moment.duration(range)
-    
+
     console.log("Request: " + intervalCount(diff, body.interval, body.intervalMs) + " - Returned in " + elapsedTimeMs.toFixed(2) + "ms")
   }
 }
 
 // Take a range as a moment.duration and a grafana interval like 30s, 1m etc
 // And return the number of intervals that represents
-function intervalCount(range, intervalString, intervalMs) 
+function intervalCount(range, intervalString, intervalMs)
 {
   // Convert everything to seconds
   var rangeSeconds = range.asSeconds()
