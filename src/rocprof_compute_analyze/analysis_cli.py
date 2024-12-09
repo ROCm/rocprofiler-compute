@@ -22,6 +22,8 @@
 # SOFTWARE.
 ##############################################################################el
 
+import os
+
 from rocprof_compute_analyze.analysis_base import OmniAnalyze_Base
 from utils import file_io, parser, tty
 from utils.kernel_name_shortener import kernel_name_shortener
@@ -87,3 +89,34 @@ class cli_analysis(OmniAnalyze_Base):
                 ],
                 self._output,
             )
+
+            if self.get_args().roofline:
+                self.generate_roofline()
+
+    @demarcate
+    def generate_roofline(self):
+        workload_dir = self.get_args().path[0][0]
+        arch = self._runs[workload_dir].sys_info.iloc[0]["gpu_arch"]
+        has_roofline = os.path.isfile(os.path.join(workload_dir, "roofline.csv"))
+        if has_roofline and hasattr(self.get_socs()[arch], "roofline_obj"):
+            self.get_socs()[arch].analysis_setup(
+                roofline_parameters={
+                    "workload_dir": workload_dir,
+                    "device_id": 0,
+                    "sort_type": "kernels",
+                    "mem_level": "ALL",
+                    "include_kernel_names": False,
+                    "roofline_cli": True,
+                }
+            )
+            roof_obj = self.get_socs()[arch].roofline_obj
+            roof_obj.empirical_roofline(
+                ret_df=parser.apply_filters(
+                    workload=self._runs[workload_dir],
+                    dir=workload_dir,
+                    is_gui=True,
+                    debug=self.get_args().debug,
+                )
+            )
+        else:
+            console_error("Roofline unsupported for gpu or roofline.csv is missing.")

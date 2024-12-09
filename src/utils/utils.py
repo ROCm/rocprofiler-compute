@@ -879,7 +879,7 @@ def mibench(args, mspec):
         "-o",
         args.path + "/" + "roofline.csv",
         "-d",
-        str(args.device),
+        str(args.roofline_device),
     ]
     if args.quiet:
         my_args += "--quiet"
