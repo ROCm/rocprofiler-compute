@@ -87,6 +87,7 @@ def load_panel_configs(dir):
 
 @demarcate
 def create_df_kernel_top_stats(
+    df_in,
     raw_data_dir,
     filter_gpu_ids,
     filter_dispatch_ids,
@@ -100,9 +101,19 @@ def create_df_kernel_top_stats(
     """
     # NB:
     #   We even don't have to create pmc_kernel_top.csv explictly
-    df = pd.read_csv(os.path.join(raw_data_dir, schema.pmc_perf_file_prefix + ".csv"))
+    # df = pd.read_csv(os.path.join(raw_data_dir, schema.pmc_perf_file_prefix + ".csv"))
     # Demangle original KernelNames
+
+    # print(df_in.info)
+    # print(df_in.columns)
+    # print("######################################")
+
+    df = df_in["pmc_perf"]
     kernel_name_shortener(df, kernel_verbose)
+
+    # print(df.info)
+    # print(df.columns)
+    # print("######################################")
 
     # The logic below for filters are the same as in parser.apply_filters(),
     # which can be merged together if need it.
@@ -119,7 +130,11 @@ def create_df_kernel_top_stats(
             df = df.loc[df["Dispatch_ID"].astype(str).isin(filter_dispatch_ids)]
 
     # First, create a dispatches file used to populate global vars
-    dispatch_info = df.loc[:, ["Dispatch_ID", "Kernel_Name", "GPU_ID"]]
+    dispatch_info = (
+        df.loc[:, ["Node", "Dispatch_ID", "Kernel_Name", "GPU_ID"]]
+        if "Node" in df.columns
+        else df.loc[:, ["Dispatch_ID", "Kernel_Name", "GPU_ID"]]
+    )
     dispatch_info.to_csv(os.path.join(raw_data_dir, "pmc_dispatch_info.csv"), index=False)
 
     time_stats = pd.concat(
@@ -183,6 +198,7 @@ def create_df_pmc(raw_data_root_dir, nodes, kernel_verbose, verbose):
                     kernel_name_shortener(tmp_df, kernel_verbose)
                     dfs.append(tmp_df)
                     coll_levels.append(f[:-4])
+
         final_df = pd.concat(dfs, keys=coll_levels, axis=1, copy=False)
         if verbose >= 2:
             console_debug("pmc_raw_data final_single_df %s" % final_df.info)
@@ -197,9 +213,10 @@ def create_df_pmc(raw_data_root_dir, nodes, kernel_verbose, verbose):
         df = pd.DataFrame()
         # todo: more err check
         for subdir in Path(raw_data_root_dir).iterdir():
-            new_df = create_single_df_pmc(subdir, kernel_verbose, verbose)
-            new_df.insert(0, "Node", str(subdir))
-            df = pd.concat([df, new_df])
+            if subdir.is_dir():
+                new_df = create_single_df_pmc(subdir, kernel_verbose, verbose)
+                new_df.insert(0, "Node", str(subdir.name))
+                df = pd.concat([df, new_df])
         return df
 
     # specified node list

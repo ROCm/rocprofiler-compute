@@ -139,7 +139,12 @@ class OmniAnalyze_Base:
 
         # load required configs
         for d in self.__args.path:
-            sys_info = file_io.load_sys_info(Path(d[0], "sysinfo.csv"))
+            sysinfo_path = (
+                Path(d[0])
+                if self.__args.nodes is None
+                else file_io.find_1st_sub_dir(d[0])
+            )
+            sys_info = file_io.load_sys_info(sysinfo_path.joinpath("sysinfo.csv"))
             arch = sys_info.iloc[0]["gpu_arch"]
             args = self.__args
             self.generate_configs(
@@ -192,7 +197,10 @@ class OmniAnalyze_Base:
             if not os.path.isdir(dir[0]):
                 console_error("Invalid directory {}\nPlease try again.".format(dir[0]))
             # validate profiling data
-            is_workload_empty(dir[0])
+            if self.__args.nodes is None:
+                is_workload_empty(dir[0])
+            # Todo: more err check
+            # else:
 
         # no using same paths
         occurances = set()
