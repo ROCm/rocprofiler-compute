@@ -22,22 +22,23 @@
 # SOFTWARE.
 ##############################################################################el
 
-from abc import ABC, abstractmethod
 import os
 import time
-from dash import dcc
+from abc import ABC, abstractmethod
+
+import numpy as np
+import plotly.graph_objects as go
+from dash import dcc, html
+
+from utils.roofline_calc import calc_ai, constuct_roof
 from utils.utils import (
-    mibench,
-    gen_sysinfo,
-    demarcate,
+    console_debug,
     console_error,
     console_log,
-    console_debug,
+    demarcate,
+    gen_sysinfo,
+    mibench,
 )
-from dash import html
-import plotly.graph_objects as go
-from utils.roofline_calc import calc_ai, constuct_roof
-import numpy as np
 
 SYMBOLS = [0, 1, 2, 3, 4, 5, 13, 17, 18, 20]
 
@@ -109,7 +110,7 @@ class Roofline:
         """Generate a set of empirical roofline plots given a directory containing required profiling and benchmarking data"""
         # Create arithmetic intensity data that will populate the roofline model
         console_debug("roofline", "Path: %s" % self.__run_parameters["workload_dir"])
-        self.__ai_data = calc_ai(self.__run_parameters["sort_type"], ret_df)
+        self.__ai_data = calc_ai(self.__mspec, self.__run_parameters["sort_type"], ret_df)
 
         msg = "AI at each mem level:"
         for i in self.__ai_data:
@@ -355,8 +356,9 @@ class Roofline:
 
     @demarcate
     def standalone_roofline(self):
-        import pandas as pd
         from collections import OrderedDict
+
+        import pandas as pd
 
         # Change vL1D to a interpretable str, if required
         if "vL1D" in self.__run_parameters["mem_level"]:

@@ -23,32 +23,34 @@
 ##############################################################################el
 
 import argparse
+import importlib
 import logging
-import sys
 import os
-from pathlib import Path
 import shutil
-from utils.specs import MachineSpecs, generate_machine_specs
-from utils.utils import (
-    demarcate,
-    get_version,
-    get_version_display,
-    detect_rocprof,
-    get_submodules,
-    console_debug,
-    console_log,
-    console_error,
-    set_locale_encoding,
-)
+import sys
+from pathlib import Path
+
+import pandas as pd
+
+import config
+from argparser import omniarg_parser
 from utils.logger import (
     setup_console_handler,
-    setup_logging_priority,
     setup_file_handler,
+    setup_logging_priority,
 )
-from argparser import omniarg_parser
-import config
-import pandas as pd
-import importlib
+from utils.specs import MachineSpecs, generate_machine_specs
+from utils.utils import (
+    console_debug,
+    console_error,
+    console_log,
+    demarcate,
+    detect_rocprof,
+    get_submodules,
+    get_version,
+    get_version_display,
+    set_locale_encoding,
+)
 
 SUPPORTED_ARCHS = {
     "gfx906": {"mi50": ["MI50", "MI60"]},
@@ -107,7 +109,7 @@ class RocProfCompute:
 | '__/ _ \ / __| '_ \| '__/ _ \| |_ _____ / __/ _ \| '_ ` _ \| '_ \| | | | __/ _ \
 | | | (_) | (__| |_) | | | (_) |  _|_____| (_| (_) | | | | | | |_) | |_| | ||  __/
 |_|  \___/ \___| .__/|_|  \___/|_|        \___\___/|_| |_| |_| .__/ \__,_|\__\___|
-               |_|                                           |_|                  
+               |_|                                           |_|
 """
         print(ascii_art)
 
@@ -138,6 +140,8 @@ class RocProfCompute:
                 self.__profiler_mode = "rocprofv1"
             elif str(rocprof_cmd).endswith("rocprofv2"):
                 self.__profiler_mode = "rocprofv2"
+            elif str(rocprof_cmd).endswith("rocprofv3"):
+                self.__profiler_mode = "rocprofv3"
             else:
                 console_error(
                     "Incompatible profiler: %s. Supported profilers include: %s"
@@ -217,6 +221,12 @@ class RocProfCompute:
             from rocprof_compute_profile.profiler_rocprof_v2 import rocprof_v2_profiler
 
             profiler = rocprof_v2_profiler(
+                self.__args, self.__profiler_mode, self.__soc[self.__mspec.gpu_arch]
+            )
+        elif self.__profiler_mode == "rocprofv3":
+            from rocprof_compute_profile.profiler_rocprof_v3 import rocprof_v3_profiler
+
+            profiler = rocprof_v3_profiler(
                 self.__args, self.__profiler_mode, self.__soc[self.__mspec.gpu_arch]
             )
         elif self.__profiler_mode == "rocscope":

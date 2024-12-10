@@ -1,14 +1,14 @@
 module.exports = function(grunt) {
 
     require('load-grunt-tasks')(grunt);
-  
+
     grunt.loadNpmTasks('grunt-execute');
     grunt.loadNpmTasks('grunt-contrib-clean');
-  
+
     grunt.initConfig({
-  
+
       clean: ["dist"],
-  
+
       copy: {
         src_to_dist: {
           cwd: 'src',
@@ -28,7 +28,7 @@ module.exports = function(grunt) {
           dest: 'dist'
         }
       },
-  
+
       watch: {
         rebuild_all: {
           files: ['src/**/*'],
@@ -36,7 +36,7 @@ module.exports = function(grunt) {
           options: {spawn: false}
         }
       },
-  
+
       babel: {
         options: {
           sourceMap: true,
@@ -73,7 +73,7 @@ module.exports = function(grunt) {
           }]
         }
       },
-  
+
       mochaTest: {
         test: {
           options: {
@@ -83,6 +83,6 @@ module.exports = function(grunt) {
         }
       }
     });
-  
+
     grunt.registerTask('default', ['clean', 'copy:src_to_dist', 'copy:server_to_dist', 'copy:pluginDef', 'babel', 'mochaTest']);
   };
