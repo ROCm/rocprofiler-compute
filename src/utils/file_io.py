@@ -56,6 +56,7 @@ top_stats_build_in_config = {
 }
 
 time_units = {"s": 10**9, "ms": 10**6, "us": 10**3, "ns": 1}
+key_list = ["Sum", "Mean", "Median"]
 
 
 def load_sys_info(f):
@@ -88,6 +89,7 @@ def load_panel_configs(dir):
 @demarcate
 def create_df_kernel_top_stats(
     raw_data_dir,
+    filter_kernel_ids,
     filter_gpu_ids,
     filter_dispatch_ids,
     time_unit,
@@ -106,6 +108,20 @@ def create_df_kernel_top_stats(
 
     # The logic below for filters are the same as in parser.apply_filters(),
     # which can be merged together if need it.
+    if filter_kernel_ids:
+        kernels = []
+        for kernel_id in filter_kernel_ids:
+            # Check kernel id validity
+            if kernel_id in df.index:
+                kernels.append(df.loc[kernel_id, "Kernel_Name"])
+            else:
+                console_error("{} is an invalid kernel id.".format(kernel_id))
+
+        if all(type(kid) == int for kid in filter_kernel_ids):
+            df = df.loc[df["Kernel_Name"].isin(kernels)]
+        elif all(type(kid) == str for kid in filter_kernel_ids):
+            df = df.loc[df["Kernel_Name"].astype(str).isin(kernels)]
+
     if filter_gpu_ids:
         df = df.loc[df["GPU_ID"].astype(str).isin([filter_gpu_ids])]
 
@@ -126,7 +142,7 @@ def create_df_kernel_top_stats(
         [df["Kernel_Name"], (df["End_Timestamp"] - df["Start_Timestamp"])],
         keys=["Kernel_Name", "ExeTime"],
         axis=1,
-    )
+    ).reset_index()
 
     grouped = time_stats.groupby(by=["Kernel_Name"]).agg(
         {"ExeTime": ["count", "sum", "mean", "median"]}
@@ -138,14 +154,17 @@ def create_df_kernel_top_stats(
         for x in grouped.columns.get_level_values(1)
     ]
 
-    key = "Sum" + time_unit_str
-    grouped[key] = grouped[key].div(time_units[time_unit])
-    key = "Mean" + time_unit_str
-    grouped[key] = grouped[key].div(time_units[time_unit])
-    key = "Median" + time_unit_str
-    grouped[key] = grouped[key].div(time_units[time_unit])
+    for key in key_list:
+        key_with_unit = key + time_unit_str
+        grouped[key_with_unit] = grouped[key_with_unit].div(time_units[time_unit])
 
     grouped = grouped.reset_index()  # Remove special group indexing
+
+    # Preserve kernel indices for kernel filtering varification
+    grouped = pd.merge(
+        grouped, time_stats[["Kernel_Name", "index"]], on="Kernel_Name", how="left"
+    ).sort_values(by="index")
+    grouped = grouped.drop_duplicates(subset="Kernel_Name", keep="first")
 
     key = "Sum" + time_unit_str
     grouped["Pct"] = grouped[key] / grouped[key].sum() * 100
@@ -154,10 +173,9 @@ def create_df_kernel_top_stats(
     #   Sort by total time as default.
     if sortby == "sum":
         grouped = grouped.sort_values(by=("Sum" + time_unit_str), ascending=False)
-        grouped.to_csv(os.path.join(raw_data_dir, "pmc_kernel_top.csv"), index=False)
     elif sortby == "kernel":
         grouped = grouped.sort_values("Kernel_Name")
-        grouped.to_csv(os.path.join(raw_data_dir, "pmc_kernel_top.csv"), index=False)
+    grouped.to_csv(os.path.join(raw_data_dir, "pmc_kernel_top.csv"), index=False)
 
 
 @demarcate

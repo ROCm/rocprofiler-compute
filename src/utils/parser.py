@@ -866,27 +866,23 @@ def apply_filters(workload, dir, is_gui, debug):
             # Verify valid kernel filter
             kernels_df = pd.read_csv(os.path.join(dir, "pmc_kernel_top.csv"))
             for kernel_id in workload.filter_kernel_ids:
-                if kernel_id >= len(kernels_df["Kernel_Name"]):
-                    console_error(
-                        "{} is an invalid kernel id. Please enter an id between 0-{}".format(
-                            kernel_id, len(kernels_df["Kernel_Name"]) - 1
-                        )
-                    )
+                if kernel_id not in kernels_df["index"].tolist():
+                    console_error("{} is an invalid kernel id.")
             kernels = []
-            # NB: mark selected kernels with "*"
-            #    Todo: fix it for unaligned comparison
-            kernel_top_df = workload.dfs[pmc_kernel_top_table_id]
-            kernel_top_df["S"] = ""
             for kernel_id in workload.filter_kernel_ids:
-                # print("------- ", kernel_id)
-                kernels.append(kernel_top_df.loc[kernel_id, "Kernel_Name"])
-                kernel_top_df.loc[kernel_id, "S"] = "*"
-
+                # print("[apply_filter] ------- ", kernel_id)
+                kernels.append(
+                    kernels_df.loc[
+                        kernels_df["index"] == kernel_id, "Kernel_Name"
+                    ].values[0]
+                )
             if kernels:
                 # print("fitlered df:", len(df.index))
+                # print("[apply_filter] ------- before: ", ret_df)
                 ret_df = ret_df.loc[
                     ret_df[schema.pmc_perf_file_prefix]["Kernel_Name"].isin(kernels)
                 ]
+                # print("[apply_filter] ------- after: ", ret_df)
         elif all(type(kid) == str for kid in workload.filter_kernel_ids):
             df_cleaned = ret_df[schema.pmc_perf_file_prefix]["Kernel_Name"].apply(
                 lambda x: x.strip() if isinstance(x, str) else x
