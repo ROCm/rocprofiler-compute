@@ -53,6 +53,7 @@ class cli_analysis(OmniAnalyze_Base):
                 raw_data_dir=d[0],
                 filter_gpu_ids=self._runs[d[0]].filter_gpu_ids,
                 filter_dispatch_ids=self._runs[d[0]].filter_dispatch_ids,
+                filter_nodes=self._runs[d[0]].filter_nodes,
                 time_unit=self.get_args().time_unit,
                 max_stat_num=self.get_args().max_stat_num,
                 kernel_verbose=self.get_args().kernel_verbose,

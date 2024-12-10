@@ -91,6 +91,7 @@ def create_df_kernel_top_stats(
     raw_data_dir,
     filter_gpu_ids,
     filter_dispatch_ids,
+    filter_nodes,
     time_unit,
     max_stat_num,
     kernel_verbose,
@@ -117,6 +118,10 @@ def create_df_kernel_top_stats(
 
     # The logic below for filters are the same as in parser.apply_filters(),
     # which can be merged together if need it.
+
+    if filter_nodes:
+        df = df.loc[df["Node"].astype(str).isin([filter_gpu_ids])]
+
     if filter_gpu_ids:
         df = df.loc[df["GPU_ID"].astype(str).isin([filter_gpu_ids])]
 
@@ -203,7 +208,7 @@ def create_df_pmc(raw_data_root_dir, nodes, kernel_verbose, verbose):
                     #   as it is the main sub-df which can be handled easily
                     #   later.
                     if f == "pmc_perf.csv" and node_name != None:
-                        tmp_df.insert(0, "Node", str(subdir.name))
+                        tmp_df.insert(0, "Node", node_name)
                     dfs.append(tmp_df)
                     coll_levels.append(f[:-4])
 
