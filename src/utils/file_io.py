@@ -181,7 +181,7 @@ def create_df_pmc(raw_data_root_dir, nodes, kernel_verbose, verbose):
     Load all raw pmc counters and join into one df.
     """
 
-    def create_single_df_pmc(raw_data_dir, kernel_verbose, verbose):
+    def create_single_df_pmc(raw_data_dir, node_name, kernel_verbose, verbose):
         dfs = []
         coll_levels = []
 
@@ -196,6 +196,14 @@ def create_df_pmc(raw_data_root_dir, nodes, kernel_verbose, verbose):
                     tmp_df = pd.read_csv(os.path.join(root, f))
                     # Demangle original KernelNames
                     kernel_name_shortener(tmp_df, kernel_verbose)
+
+                    # NB:
+                    #   Idealy, the Node column should be added out of
+                    #   multiindexing level. Here, we add it into pmc_perf
+                    #   as it is the main sub-df which can be handled easily
+                    #   later.
+                    if f == "pmc_perf.csv" and node_name != None:
+                        tmp_df.insert(0, "Node", str(subdir.name))
                     dfs.append(tmp_df)
                     coll_levels.append(f[:-4])
 
@@ -206,7 +214,7 @@ def create_df_pmc(raw_data_root_dir, nodes, kernel_verbose, verbose):
 
     # regular single node case
     if nodes is None:
-        return create_single_df_pmc(raw_data_root_dir, kernel_verbose, verbose)
+        return create_single_df_pmc(raw_data_root_dir, None, kernel_verbose, verbose)
 
     # "empty list" means all nodes
     elif not nodes:
@@ -214,8 +222,9 @@ def create_df_pmc(raw_data_root_dir, nodes, kernel_verbose, verbose):
         # todo: more err check
         for subdir in Path(raw_data_root_dir).iterdir():
             if subdir.is_dir():
-                new_df = create_single_df_pmc(subdir, kernel_verbose, verbose)
-                new_df.insert(0, "Node", str(subdir.name))
+                new_df = create_single_df_pmc(
+                    subdir, str(subdir.name), kernel_verbose, verbose
+                )
                 df = pd.concat([df, new_df])
         return df
 
@@ -225,8 +234,9 @@ def create_df_pmc(raw_data_root_dir, nodes, kernel_verbose, verbose):
         # todo: more err check
         for subdir in nodes:
             p = Path(raw_data_root_dir)
-            new_df = create_single_df_pmc(p.joinpath(subdir), kernel_verbose, verbose)
-            new_df.insert(0, "Node", subdir)
+            new_df = create_single_df_pmc(
+                p.joinpath(subdir), subdir, kernel_verbose, verbose
+            )
             df = pd.concat([df, new_df])
         return df
 
