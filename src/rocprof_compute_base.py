@@ -27,6 +27,7 @@ import importlib
 import logging
 import os
 import shutil
+import socket
 import sys
 import time
 from pathlib import Path
@@ -35,6 +36,7 @@ import pandas as pd
 
 import config
 from argparser import omniarg_parser
+from utils import file_io
 from utils.logger import (
     setup_console_handler,
     setup_file_handler,
@@ -198,12 +200,31 @@ class RocProfCompute:
             console_error(
                 "rocprof-compute requires you pass a valid mode. Detected None."
             )
+        elif self.__args.mode == "profile":
+
+            # FIXME:
+            #     Might want to get host name from detected spec
+            if self.__args.subpath == "node_name":
+                self.__args.path = os.path.join(self.__args.path, socket.gethostname())
+            elif self.__args.subpath == "gpu_model":
+                self.__args.path = os.path.join(self.__args.path, self.__mspec.gpu_model)
+
+            p = Path(self.__args.path)
+            if not p.exists():
+                try:
+                    p.mkdir(parents=True, exist_ok=False)
+                except FileExistsError:
+                    console_error("Directory already exists.")
         return
 
     @demarcate
     def run_profiler(self):
         self.print_graphic()
         self.load_soc_specs()
+
+        # FIXME:
+        #     Changing default path should be done at the end of arg parsing stage,
+        #     unless there is a specific reason to do here.
 
         # Update default path
         if self.__args.path == os.path.join(os.getcwd(), "workloads"):
@@ -312,7 +333,15 @@ class RocProfCompute:
 
         # Load required SoC(s) from input
         for d in analyzer.get_args().path:
-            sys_info = pd.read_csv(Path(d[0], "sysinfo.csv"))
+            # FIXME
+            # sys_info = pd.read_csv(Path(d[0], "sysinfo.csv"))
+            sysinfo_path = (
+                Path(d[0])
+                if analyzer.get_args().nodes is None
+                else file_io.find_1st_sub_dir(d[0])
+            )
+            sys_info = file_io.load_sys_info(sysinfo_path.joinpath("sysinfo.csv"))
+
             sys_info = sys_info.to_dict("list")
             sys_info = {key: value[0] for key, value in sys_info.items()}
             self.load_soc_specs(sys_info)

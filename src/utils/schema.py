@@ -66,6 +66,7 @@ class Workload:
     filter_kernel_ids: List[int] = field(default_factory=list)
     filter_gpu_ids: List[int] = field(default_factory=list)
     filter_dispatch_ids: List[int] = field(default_factory=list)
+    filter_nodes: List[str] = field(default_factory=list)
     avail_ips: List[int] = field(default_factory=list)
 
 

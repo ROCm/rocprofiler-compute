@@ -846,6 +846,15 @@ def apply_filters(workload, dir, is_gui, debug):
     # TODO: error out properly if filters out of bound
     ret_df = workload.raw_pmc
 
+    if workload.filter_nodes:
+        ret_df = ret_df.loc[
+            ret_df[schema.pmc_perf_file_prefix]["Node"]
+            .astype(str)
+            .isin([workload.filter_gpu_ids])
+        ]
+        if ret_df.empty:
+            console_error("analysis", "{} is invalid".format(workload.filter_nodes))
+
     if workload.filter_gpu_ids:
         ret_df = ret_df.loc[
             ret_df[schema.pmc_perf_file_prefix]["GPU_ID"]
