@@ -38,7 +38,7 @@ config = {}
 config["rocprofiler-compute"] = SourceFileLoader(
     "rocprofiler-compute", "src/rocprof-compute"
 ).load_module()
-config["kernel_name_1"] = "vecCopy(double*, double*, double*, int, int) [clone .kd]"
+config["kernel_name_1"] = "vecCopy"
 config["app_1"] = ["./tests/vcopy", "-n", "1048576", "-b", "256", "-i", "3"]
 config["cleanup"] = True
 config["COUNTER_LOGGING"] = False
