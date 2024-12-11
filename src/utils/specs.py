@@ -187,7 +187,7 @@ def generate_machine_specs(args, sysinfo: dict = None):
     specs.total_l2_chan: str = total_l2_banks(
         specs.gpu_model, int(specs._l2_banks), specs.compute_partition
     )
-    specs.hbm_bw: str = str(int(2000000) / 1000 * 32 * specs.get_hbm_channels())
+    specs.hbm_bw: str = str(int(specs.max_mclk) / 1000 * 32 * specs.get_hbm_channels())
     return specs
 
 

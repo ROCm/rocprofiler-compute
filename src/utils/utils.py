@@ -445,6 +445,10 @@ def v3_json_to_csv(json_file_path, csv_file_path):
 
 
 def v3_counter_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file):
+    """
+    Convert the counter file of csv output for a certain csv from rocprofv3 format to rocprfv2 format.
+    This function is not for use of other csv out file such as kernel trace file.
+    """
     pd_counter_collections = pd.read_csv(counter_file)
     pd_agent_info = pd.read_csv(agent_info_filepath)
     result = pd_counter_collections.pivot_table(
@@ -677,9 +681,7 @@ def run_prof(
                 )
 
         else:
-            raise ValueError(
-                "The output file of rocprofv3 can only support json or csv!!!"
-            )
+            console_error("The output file of rocprofv3 can only support json or csv!!!")
 
         # Combine results into single CSV file
         combined_results = pd.concat(

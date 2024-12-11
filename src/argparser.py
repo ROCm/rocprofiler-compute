@@ -236,7 +236,6 @@ Examples:
         help="\t\t\tProvide Node ID and GPU number per node.",
     )
     profile_group.add_argument(
-        "-f",
         "--format-rocprof-output",
         required=False,
         metavar="",
