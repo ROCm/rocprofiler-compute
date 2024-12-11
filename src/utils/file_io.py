@@ -55,7 +55,7 @@ top_stats_build_in_config = {
     },
 }
 
-time_units = {"s": 10 ** 9, "ms": 10 ** 6, "us": 10 ** 3, "ns": 1}
+time_units = {"s": 10**9, "ms": 10**6, "us": 10**3, "ns": 1}
 
 
 def load_sys_info(f):
