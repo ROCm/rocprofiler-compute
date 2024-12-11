@@ -100,12 +100,9 @@ def create_df_kernel_top_stats(
     """
     Create top stats info by grouping kernels with user's filters.
     """
-    # NB:
-    #   We even don't have to create pmc_kernel_top.csv explictly
-    # df = pd.read_csv(os.path.join(raw_data_dir, schema.pmc_perf_file_prefix + ".csv"))
-    # Demangle original KernelNames
 
     df = df_in["pmc_perf"]
+    # Demangle original KernelNames
     kernel_name_shortener(df, kernel_verbose)
 
     # The logic below for filters are the same as in parser.apply_filters(),
