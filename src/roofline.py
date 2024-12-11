@@ -119,8 +119,12 @@ class Roofline:
 
         # Generate a roofline figure for each data type
         fp32_fig = self.generate_plot(dtype="FP32")
+        ml_combo_fig_fp32_fp64 = self.generate_plot(
+            dtype="FP64",
+            fig=fp32_fig,
+        )
         fp16_fig = self.generate_plot(dtype="FP16")
-        ml_combo_fig = self.generate_plot(
+        ml_combo_fig_int8_fp16 = self.generate_plot(
             dtype="I8",
             fig=fp16_fig,
         )
@@ -149,11 +153,11 @@ class Roofline:
         if self.__run_parameters["is_standalone"]:
             dev_id = str(self.__run_parameters["device_id"])
 
-            fp32_fig.write_image(
+            ml_combo_fig_fp32_fp64.write_image(
                 self.__run_parameters["workload_dir"]
                 + "/empirRoof_gpu-{}_fp32_fp64.pdf".format(dev_id)
             )
-            ml_combo_fig.write_image(
+            ml_combo_fig_int8_fp16.write_image(
                 self.__run_parameters["workload_dir"]
                 + "/empirRoof_gpu-{}_int8_fp16.pdf".format(dev_id)
             )
@@ -164,11 +168,11 @@ class Roofline:
                 )
             time.sleep(1)
             # Re-save to remove loading MathJax pop up
-            fp32_fig.write_image(
+            ml_combo_fig_fp32_fp64.write_image(
                 self.__run_parameters["workload_dir"]
                 + "/empirRoof_gpu-{}_fp32_fp64.pdf".format(dev_id)
             )
-            ml_combo_fig.write_image(
+            ml_combo_fig_int8_fp16.write_image(
                 self.__run_parameters["workload_dir"]
                 + "/empirRoof_gpu-{}_int8_fp16.pdf".format(dev_id)
             )
@@ -190,7 +194,7 @@ class Roofline:
                                     html.H3(
                                         children="Empirical Roofline Analysis (FP32/FP64)"
                                     ),
-                                    dcc.Graph(figure=fp32_fig),
+                                    dcc.Graph(figure=ml_combo_fig_fp32_fp64),
                                 ],
                             ),
                             html.Div(
@@ -199,7 +203,7 @@ class Roofline:
                                     html.H3(
                                         children="Empirical Roofline Analysis (FP16/INT8)"
                                     ),
-                                    dcc.Graph(figure=ml_combo_fig),
+                                    dcc.Graph(figure=ml_combo_fig_int8_fp16),
                                 ],
                             ),
                         ],
