@@ -197,9 +197,10 @@ class OmniAnalyze_Base:
             if not os.path.isdir(dir[0]):
                 console_error("Invalid directory {}\nPlease try again.".format(dir[0]))
             # validate profiling data
-            if self.__args.nodes is None:
-                is_workload_empty(dir[0])
+
             # Todo: more err check
+            if not (self.__args.nodes != None or self.__args.list_nodes):
+                is_workload_empty(dir[0])
             # else:
 
         # no using same paths
@@ -210,6 +211,24 @@ class OmniAnalyze_Base:
                 console_error("You cannot provide the same path twice.")
             else:
                 occurances.add(dir)
+
+        # FIXME:
+        #   The proper location of this func should be in pre_processing().
+        #   However, because of reading soc depends on sys spec, and sys
+        #   spec depends on sys_info. And we read sys_info too early so we
+        # . can not do it now. There should be a way to make it simpler.
+        if self.__args.list_nodes:
+            nodes = []
+            # NB:
+            #   There are 2 ways to do it: one is doing like the below, checking
+            #   sub dirs only as we assume the profiling stage generate sub dirs
+            #   with node name. The 2nd way would be checkign host name in each
+            #   sub dir and very those.
+            for subdir in Path(self.__args.path[0][0]).iterdir():
+                if subdir.is_dir():
+                    nodes.append(str(subdir.name))
+            print("Node list:", "  ".join(nodes))
+            sys.exit(0)
 
     # ----------------------------------------------------
     # Required methods to be implemented by child classes

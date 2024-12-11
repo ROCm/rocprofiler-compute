@@ -568,5 +568,5 @@ Examples:
         type=str,
         dest="nodes",
         nargs="*",
-        help="\t\tMulti-node option: filter with node names. Enable it without node list means ALL.",
+        help="\t\tMulti-node option: filter with node names. Enable it without node names means ALL.",
     )
