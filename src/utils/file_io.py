@@ -55,7 +55,7 @@ top_stats_build_in_config = {
     },
 }
 
-time_units = {"s": 10**9, "ms": 10**6, "us": 10**3, "ns": 1}
+time_units = {"s": 10 ** 9, "ms": 10 ** 6, "us": 10 ** 3, "ns": 1}
 
 
 def load_sys_info(f):
@@ -105,22 +105,14 @@ def create_df_kernel_top_stats(
     # df = pd.read_csv(os.path.join(raw_data_dir, schema.pmc_perf_file_prefix + ".csv"))
     # Demangle original KernelNames
 
-    # print(df_in.info)
-    # print(df_in.columns)
-    # print("######################################")
-
     df = df_in["pmc_perf"]
     kernel_name_shortener(df, kernel_verbose)
-
-    # print(df.info)
-    # print(df.columns)
-    # print("######################################")
 
     # The logic below for filters are the same as in parser.apply_filters(),
     # which can be merged together if need it.
 
     if filter_nodes:
-        df = df.loc[df["Node"].astype(str).isin([filter_gpu_ids])]
+        df = df.loc[df["Node"].astype(str).isin([filter_nodes])]
 
     if filter_gpu_ids:
         df = df.loc[df["GPU_ID"].astype(str).isin([filter_gpu_ids])]
