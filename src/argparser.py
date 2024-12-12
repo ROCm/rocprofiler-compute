@@ -130,6 +130,15 @@ Examples:
         ),
     )
     profile_group.add_argument(
+        "--subpath",
+        metavar="",
+        type=str,
+        dest="subpath",
+        default="gpu",
+        required=False,
+        help="\t\t\tSpecify the type of subpath to save workload: node_name, gpu_model.",
+    )
+    profile_group.add_argument(
         "-k",
         "--kernel",
         type=str,
@@ -547,4 +556,17 @@ Examples:
         type=str,
         metavar="",
         help="\t\tSpecify the specs to correct.",
+    )
+    analyze_advanced_group.add_argument(
+        "--list-nodes",
+        action="store_true",
+        help="\t\tMulti-node option: list all node names.",
+    )
+    analyze_advanced_group.add_argument(
+        "--nodes",
+        metavar="",
+        type=str,
+        dest="nodes",
+        nargs="*",
+        help="\t\tMulti-node option: filter with node names. Enable it without node names means ALL.",
     )
