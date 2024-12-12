@@ -242,6 +242,7 @@ Examples:
         nargs="+",
         dest="spatial_multiplexing",
         required=False,
+        default=None,
         help="\t\t\tProvide Node ID and GPU number per node.",
     )
     profile_group.add_argument(
