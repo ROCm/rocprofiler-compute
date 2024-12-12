@@ -306,7 +306,7 @@ class Roofline:
         #######################
         # Plot Application AI
         #######################
-        if dtype != "I8":
+        if dtype != "I8" and dtype != "FP64":
             # Plot the arithmetic intensity points for each cache level
             # Omitting I8 AIs to clean up graph. FP16 tends to be higher.
             fig.add_trace(
