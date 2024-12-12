@@ -495,13 +495,13 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, spatial_multi
 
             stext = "pmc: " + " ".join(pmc)
 
-        # Write counters to file
-        fd = open(file_name, "w")
-        fd.write(stext + "\n\n")
-        fd.write("gpu:\n")
-        fd.write("range:\n")
-        fd.write("kernel:\n")
-        fd.close()
+            # Write counters to file
+            fd = open(file_name, "w")
+            fd.write(stext + "\n\n")
+            fd.write("gpu:\n")
+            fd.write("range:\n")
+            fd.write("kernel:\n")
+            fd.close()
 
     # Add a timestamp file
     # TODO: Does v3 need this?
