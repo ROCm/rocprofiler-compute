@@ -408,7 +408,7 @@ class MachineSpecs:
     chip_id: str = field(
         default=None,
         metadata={
-            "doc": "<>",
+            "doc": "The Chip ID of the accelerators/GPUs in the system.",
             "name": "Chip ID",
         },
     )
