@@ -27,6 +27,7 @@ import logging
 import os
 import re
 import sys
+import time
 from abc import ABC, abstractmethod
 
 import pandas as pd
@@ -365,12 +366,22 @@ class RocProfCompute_Base:
                 or self.__profiler == "rocprofv2"
                 or self.__profiler == "rocprofv3"
             ):
+                start_run_prof = time.time()
                 run_prof(
                     fname=fname,
                     profiler_options=options,
                     workload_dir=self.get_args().path,
                     mspec=self._soc._mspec,
                     loglevel=self.get_args().loglevel,
+                    format_rocprof_output=self.get_args().format_rocprof_output,
+                )
+                end_run_prof = time.time()
+                console_debug(
+                    "The time of run_prof of {} is {} m {} sec".format(
+                        fname,
+                        int((end_run_prof - start_run_prof) / 60),
+                        str((end_run_prof - start_run_prof) % 60),
+                    )
                 )
 
             elif self.__profiler == "rocscope":

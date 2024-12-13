@@ -239,7 +239,12 @@ class OmniSoC_Base:
             pmc_files_list = ref_pmc_files_list
 
         # Coalesce and writeback workload specific perfmon
-        perfmon_coalesce(pmc_files_list, self.__perfmon_config, self.__workload_dir)
+        perfmon_coalesce(
+            pmc_files_list,
+            self.__perfmon_config,
+            self.__workload_dir,
+            self.get_args().spatial_multiplexing,
+        )
 
     # ----------------------------------------------------
     # Required methods to be implemented by child classes
@@ -305,7 +310,7 @@ def using_v3():
 
 
 @demarcate
-def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
+def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, spatial_multiplexing):
     """Sort and bucket all related performance counters to minimize required application passes"""
     workload_perfmon_dir = workload_dir + "/perfmon"
 
@@ -372,6 +377,7 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
 
     output_files = []
 
+    accu_file_count = 0
     # Each accumulate counter is in a different file
     for ctrs in accumulate_counters:
 
@@ -391,6 +397,7 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
         output_files.append(CounterFile(ctr_name + ".txt", perfmon_config))
         for ctr in ctrs:
             output_files[-1].add(ctr)
+        accu_file_count += 1
 
     file_count = 0
     for ctr in normal_counters.keys():
@@ -410,24 +417,91 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir):
             file_count += 1
             output_files[-1].add(ctr)
 
-    # Output to files
-    for f in output_files:
-        file_name = os.path.join(workload_perfmon_dir, f.file_name)
+    console_debug("profiling", "perfmon_coalesce file_count %s" % file_count)
 
-        pmc = []
-        for block_name in f.blocks.keys():
-            for ctr in f.blocks[block_name].elements:
-                pmc.append(ctr)
+    # TODO: rewrite the above logic for spatial_multiplexing later
+    if spatial_multiplexing:
 
-        stext = "pmc: " + " ".join(pmc)
+        # TODO: more error checking
+        if len(spatial_multiplexing) != 3:
+            console_error(
+                "profiling", "multiplexing need provide node_idx node_count and gpu_count"
+            )
 
-        # Write counters to file
-        fd = open(file_name, "w")
-        fd.write(stext + "\n\n")
-        fd.write("gpu:\n")
-        fd.write("range:\n")
-        fd.write("kernel:\n")
-        fd.close()
+        node_idx = int(spatial_multiplexing[0])
+        node_count = int(spatial_multiplexing[1])
+        gpu_count = int(spatial_multiplexing[2])
+
+        old_group_num = file_count + accu_file_count
+        new_bucket_count = node_count * gpu_count
+        groups_per_bucket = math.ceil(
+            old_group_num / new_bucket_count
+        )  # It equals to file num per node
+        max_groups_per_node = groups_per_bucket * gpu_count
+
+        group_start = node_idx * max_groups_per_node
+        group_end = min((node_idx + 1) * max_groups_per_node, old_group_num)
+
+        console_debug(
+            "profiling",
+            "spatial_multiplexing node_idx %s, node_count %s, gpu_count: %s, old_group_num %s, "
+            "new_bucket_count %s, groups_per_bucket %s, max_groups_per_node %s, "
+            "group_start %s, group_end %s"
+            % (
+                node_idx,
+                node_count,
+                gpu_count,
+                old_group_num,
+                new_bucket_count,
+                groups_per_bucket,
+                max_groups_per_node,
+                group_start,
+                group_end,
+            ),
+        )
+
+        for f_idx in range(groups_per_bucket):
+            file_name = os.path.join(
+                workload_perfmon_dir,
+                "pmc_perf_" + "node_" + str(node_idx) + "_" + str(f_idx) + ".txt",
+            )
+
+            pmc = []
+            for g_idx in range(
+                group_start + f_idx * gpu_count,
+                min(group_end, group_start + (f_idx + 1) * gpu_count),
+            ):
+                gpu_idx = g_idx % gpu_count
+                for block_name in output_files[g_idx].blocks.keys():
+                    for ctr in output_files[g_idx].blocks[block_name].elements:
+                        pmc.append(ctr + ":device=" + str(gpu_idx))
+
+            stext = "pmc: " + " ".join(pmc)
+
+            # Write counters to file
+            fd = open(file_name, "w")
+            fd.write(stext + "\n\n")
+            fd.close()
+
+    else:
+        # Output to files
+        for f in output_files:
+            file_name = os.path.join(workload_perfmon_dir, f.file_name)
+
+            pmc = []
+            for block_name in f.blocks.keys():
+                for ctr in f.blocks[block_name].elements:
+                    pmc.append(ctr)
+
+            stext = "pmc: " + " ".join(pmc)
+
+            # Write counters to file
+            fd = open(file_name, "w")
+            fd.write(stext + "\n\n")
+            fd.write("gpu:\n")
+            fd.write("range:\n")
+            fd.write("kernel:\n")
+            fd.close()
 
     # Add a timestamp file
     # TODO: Does v3 need this?

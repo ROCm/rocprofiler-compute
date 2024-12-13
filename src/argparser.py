@@ -235,6 +235,25 @@ Examples:
         nargs=argparse.REMAINDER,
         help="\t\t\tProvide command for profiling after double dash.",
     )
+    profile_group.add_argument(
+        "--spatial-multiplexing",
+        type=int,
+        metavar="",
+        nargs="+",
+        dest="spatial_multiplexing",
+        required=False,
+        default=None,
+        help="\t\t\tProvide Node ID and GPU number per node.",
+    )
+    profile_group.add_argument(
+        "--format-rocprof-output",
+        required=False,
+        metavar="",
+        dest="format_rocprof_output",
+        choices=["json", "csv"],
+        default="csv",
+        help="\t\t\tSet the format of output file of rocprof.",
+    )
 
     ## Roofline Command Line Options
     roofline_group.add_argument(

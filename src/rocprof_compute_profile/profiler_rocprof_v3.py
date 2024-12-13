@@ -40,20 +40,16 @@ class rocprof_v3_profiler(RocProfCompute_Base):
 
     def get_profiler_options(self, fname):
         app_cmd = shlex.split(self.get_args().remaining)
-        output_format = "csv"
-        if "ROCPROF_OUTPUT_FORMAT" in os.environ.keys():
-            output_format = os.environ["ROCPROF_OUTPUT_FORMAT"].lower()
-
-        if output_format not in ["csv", "json"]:
-            console_error("Invalid rocprof output format", True)
-
+        rocprof_out_format = "json"
+        if self.get_args().format_rocprof_output == "csv":
+            rocprof_out_format = "csv"
         args = [
             # v3 requires output directory argument
             "-d",
             self.get_args().path + "/" + "out",
             "--kernel-trace",
             "--output-format",
-            output_format,
+            rocprof_out_format,
             "--",
         ]
         args.extend(app_cmd)

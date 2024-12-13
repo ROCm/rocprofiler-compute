@@ -34,7 +34,9 @@ import selectors
 import shutil
 import subprocess
 import sys
+import time
 from collections import OrderedDict
+from itertools import product
 from pathlib import Path as path
 
 import pandas as pd
@@ -442,7 +444,11 @@ def v3_json_to_csv(json_file_path, csv_file_path):
     df.to_csv(csv_file_path, index=False)
 
 
-def v3_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file):
+def v3_counter_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file):
+    """
+    Convert the counter file of csv output for a certain csv from rocprofv3 format to rocprfv2 format.
+    This function is not for use of other csv out file such as kernel trace file.
+    """
     pd_counter_collections = pd.read_csv(counter_file)
     pd_agent_info = pd.read_csv(agent_info_filepath)
     result = pd_counter_collections.pivot_table(
@@ -491,6 +497,10 @@ def v3_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file):
         result.at[idx, "Agent_Id"] = gpu_id_map[agent_id]
 
     # Accum_VGPR is currently missing in rocprofv3 output
+    result["Accum_VGPR"] = 0
+
+    # Drop the 'Node_Id' column if you don't need it in the final DataFrame
+    result.drop(columns="Node_Id", inplace=True)
     result["Accum_VGPR"] = 0
 
     name_mapping = {
@@ -548,8 +558,10 @@ def v3_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_file):
     result.to_csv(converted_csv_file, index=False)
 
 
-def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
-
+def run_prof(
+    fname, profiler_options, workload_dir, mspec, loglevel, format_rocprof_output
+):
+    time_0 = time.time()
     fbase = os.path.splitext(os.path.basename(fname))[0]
 
     console_debug("pmc file: %s" % str(os.path.basename(fname)))
@@ -575,6 +587,8 @@ def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
         new_env = os.environ.copy()
         new_env["ROCPROFILER_INDIVIDUAL_XCC_MODE"] = "1"
 
+    time_1 = time.time()
+
     # profile the app
     if new_env:
         success, output = capture_subprocess_output(
@@ -584,6 +598,13 @@ def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
         success, output = capture_subprocess_output(
             [rocprof_cmd] + options, profileMode=True
         )
+
+    time_2 = time.time()
+    console_debug(
+        "Finishing subprocess of fname {}, the time it takes was {} m {} sec ".format(
+            fname, int((time_2 - time_1) / 60), str((time_2 - time_1) % 60)
+        )
+    )
 
     if not success:
         if loglevel > logging.INFO:
@@ -608,22 +629,18 @@ def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
         )
 
     if rocprof_cmd.endswith("v3"):
-        output_format = "csv"
-        if "ROCPROF_OUTPUT_FORMAT" in os.environ.keys():
-            output_format = os.environ["ROCPROF_OUTPUT_FORMAT"].lower()
-
-        if output_format == "json":
+        results_files_csv = {}
+        if format_rocprof_output == "json":
             results_files_json = glob.glob(workload_dir + "/out/pmc_1/*/*.json")
 
             for json_file in results_files_json:
                 csv_file = pathlib.Path(json_file).with_suffix(".csv")
                 v3_json_to_csv(json_file, csv_file)
             results_files_csv = glob.glob(workload_dir + "/out/pmc_1/*/*.csv")
-        else:
+        elif format_rocprof_output == "csv":
             counter_info_csvs = glob.glob(
                 workload_dir + "/out/pmc_1/*/*_counter_collection.csv"
             )
-
             existing_counter_files_csv = [
                 d for d in counter_info_csvs if os.path.isfile(d)
             ]
@@ -651,7 +668,7 @@ def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
                         ),
                     )
 
-                    v3_csv_to_v2_csv(
+                    v3_counter_csv_to_v2_csv(
                         counter_file, agent_info_filepath, converted_csv_file
                     )
 
@@ -662,6 +679,9 @@ def run_prof(fname, profiler_options, workload_dir, mspec, loglevel):
                 results_files_csv = glob.glob(
                     workload_dir + "/out/pmc_1/*/*_kernel_trace.csv"
                 )
+
+        else:
+            console_error("The output file of rocprofv3 can only support json or csv!!!")
 
         # Combine results into single CSV file
         combined_results = pd.concat(
