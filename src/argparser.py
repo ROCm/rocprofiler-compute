@@ -24,6 +24,7 @@
 
 import argparse
 import os
+from pathlib import Path
 import shutil
 
 
@@ -123,7 +124,7 @@ Examples:
         metavar="",
         type=str,
         dest="path",
-        default=os.path.join(os.getcwd(), "workloads"),
+        default=str(Path(os.getcwd()).joinpath("workloads")),
         required=False,
         help="\t\t\tSpecify path to save workload.\n\t\t\t(DEFAULT: {}/workloads/<name>)".format(
             os.getcwd()

@@ -73,7 +73,7 @@ def load_panel_configs(dir):
     for root, dirs, files in os.walk(dir):
         for f in files:
             if f.endswith(".yaml"):
-                with open(os.path.join(root, f)) as file:
+                with open(str(Path(root).joinpath(f))) as file:
                     config = yaml.safe_load(file)
                     d[config["Panel Config"]["id"]] = config["Panel Config"]
 
@@ -129,7 +129,9 @@ def create_df_kernel_top_stats(
         if "Node" in df.columns
         else df.loc[:, ["Dispatch_ID", "Kernel_Name", "GPU_ID"]]
     )
-    dispatch_info.to_csv(os.path.join(raw_data_dir, "pmc_dispatch_info.csv"), index=False)
+    dispatch_info.to_csv(
+        str(Path(raw_data_dir).joinpath("pmc_dispatch_info.csv")), index=False
+    )
 
     time_stats = pd.concat(
         [df["Kernel_Name"], (df["End_Timestamp"] - df["Start_Timestamp"])],
@@ -163,10 +165,14 @@ def create_df_kernel_top_stats(
     #   Sort by total time as default.
     if sortby == "sum":
         grouped = grouped.sort_values(by=("Sum" + time_unit_str), ascending=False)
-        grouped.to_csv(os.path.join(raw_data_dir, "pmc_kernel_top.csv"), index=False)
+        grouped.to_csv(
+            str(Path(raw_data_dir).joinpath("pmc_kernel_top.csv")), index=False
+        )
     elif sortby == "kernel":
         grouped = grouped.sort_values("Kernel_Name")
-        grouped.to_csv(os.path.join(raw_data_dir, "pmc_kernel_top.csv"), index=False)
+        grouped.to_csv(
+            str(Path(raw_data_dir).joinpath("pmc_kernel_top.csv")), index=False
+        )
 
 
 @demarcate
@@ -187,7 +193,7 @@ def create_df_pmc(raw_data_root_dir, nodes, kernel_verbose, verbose):
                 if (f.endswith(".csv") and f.startswith("SQ")) or (
                     f == schema.pmc_perf_file_prefix + ".csv"
                 ):
-                    tmp_df = pd.read_csv(os.path.join(root, f))
+                    tmp_df = pd.read_csv(str(Path(root).joinpath(f)))
                     # Demangle original KernelNames
                     kernel_name_shortener(tmp_df, kernel_verbose)
 

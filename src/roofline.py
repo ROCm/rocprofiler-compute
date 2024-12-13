@@ -23,6 +23,7 @@
 ##############################################################################el
 
 import os
+from pathlib import Path
 import time
 from abc import ABC, abstractmethod
 
@@ -90,16 +91,17 @@ class Roofline:
 
     def roof_setup(self):
         # set default workload path if not specified
-        if self.__run_parameters["workload_dir"] == os.path.join(
-            os.getcwd(), "workloads"
+        if self.__run_parameters["workload_dir"] == str(
+            Path(os.getcwd()).joinpath("workloads")
         ):
-            self.__run_parameters["workload_dir"] = os.path.join(
-                self.__run_parameters["workload_dir"],
-                self.__args.name,
-                self.__mspec.gpu_model,
+            self.__run_parameters["workload_dir"] = str(
+                Path(self.__run_parameters["workload_dir"]).joinpath(
+                    self.__args.name,
+                    self.__mspec.gpu_model,
+                )
             )
         # create new directory for roofline if it doesn't exist
-        if not os.path.isdir(self.__run_parameters["workload_dir"]):
+        if not Path(self.__run_parameters["workload_dir"]).is_dir():
             os.makedirs(self.__run_parameters["workload_dir"])
 
     @demarcate
@@ -369,8 +371,10 @@ class Roofline:
             self.__run_parameters["mem_level"].remove("vL1D")
             self.__run_parameters["mem_level"].append("L1")
 
-        app_path = os.path.join(self.__run_parameters["workload_dir"], "pmc_perf.csv")
-        roofline_exists = os.path.isfile(app_path)
+        app_path = str(
+            Path(self.__run_parameters["workload_dir"]).joinpath("pmc_perf.csv")
+        )
+        roofline_exists = Path(app_path).is_file()
         if not roofline_exists:
             console_error("roofline", "{} does not exist".format(app_path))
         t_df = OrderedDict()
@@ -385,8 +389,8 @@ class Roofline:
             console_log(
                 "roofline", "Checking for sysinfo.csv in " + str(self.__args.path)
             )
-            sysinfo_path = os.path.join(self.__args.path, "sysinfo.csv")
-            if not os.path.isfile(sysinfo_path):
+            sysinfo_path = str(Path(self.__args.path).joinpath("sysinfo.csv"))
+            if not Path(sysinfo_path).is_file():
                 console_log("roofline", "sysinfo.csv not found. Generating...")
 
                 class Dummy_SoC:
@@ -410,16 +414,16 @@ class Roofline:
             console_log(
                 "roofline", "Checking for roofline.csv in " + str(self.__args.path)
             )
-            roof_path = os.path.join(self.__args.path, "roofline.csv")
-            if not os.path.isfile(roof_path):
+            roof_path = str(Path(self.__args.path).joinpath("roofline.csv"))
+            if not Path(roof_path).is_file():
                 mibench(self.__args, self.__mspec)
 
             # check for profiling data
             console_log(
                 "roofline", "Checking for pmc_perf.csv in " + str(self.__args.path)
             )
-            app_path = os.path.join(self.__args.path, "pmc_perf.csv")
-            if not os.path.isfile(app_path):
+            app_path = str(Path(self.__args.path).joinpath("pmc_perf.csv"))
+            if not Path(app_path).is_file():
                 console_log("roofline", "pmc_perf.csv not found. Generating...")
                 if not self.__args.remaining:
                     console_error(

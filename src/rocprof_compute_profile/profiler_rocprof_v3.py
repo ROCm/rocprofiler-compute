@@ -23,6 +23,7 @@
 ##############################################################################el
 
 import os
+from pathlib import Path
 import shlex
 
 from rocprof_compute_profile.profiler_base import RocProfCompute_Base
@@ -34,7 +35,7 @@ class rocprof_v3_profiler(RocProfCompute_Base):
         super().__init__(profiling_args, profiler_mode, soc)
         self.ready_to_profile = (
             self.get_args().roof_only
-            and not os.path.isfile(os.path.join(self.get_args().path, "pmc_perf.csv"))
+            and not Path(self.get_args().path).joinpath("pmc_perf.csv").is_file()
             or not self.get_args().roof_only
         )
 

@@ -25,6 +25,7 @@
 import glob
 import logging
 import os
+from pathlib import Path
 import re
 import sys
 import time
@@ -53,8 +54,10 @@ class RocProfCompute_Base:
         self.__args = args
         self.__profiler = profiler_mode
         self._soc = soc  # OmniSoC obj
-        self.__perfmon_dir = os.path.join(
-            str(config.rocprof_compute_home), "rocprof_compute_soc", "profile_configs"
+        self.__perfmon_dir = str(
+            Path(str(config.rocprof_compute_home)).joinpath(
+                "rocprof_compute_soc", "profile_configs"
+            )
         )
 
     def get_args(self):
@@ -263,7 +266,7 @@ class RocProfCompute_Base:
         # verify correct formatting for application binary
         self.__args.remaining = self.__args.remaining[1:]
         if self.__args.remaining:
-            if not os.path.isfile(self.__args.remaining[0]):
+            if not Path(self.__args.remaining[0]).is_file():
                 console_error(
                     "Your command %s doesn't point to a executable. Please verify."
                     % self.__args.remaining[0]
@@ -290,7 +293,7 @@ class RocProfCompute_Base:
         # log basic info
         console_log(str(prog).title() + " version: " + str(version))
         console_log("Profiler choice: %s" % self.__profiler)
-        console_log("Path: " + str(os.path.abspath(self.__args.path)))
+        console_log("Path: " + str(Path(self.__args.path).absolute().resolve()))
         console_log("Target: " + str(self._soc._mspec.gpu_model))
         console_log("Command: " + str(self.__args.remaining))
         console_log("Kernel Selection: " + str(self.__args.kernel))

@@ -22,7 +22,7 @@
 # SOFTWARE.
 ##############################################################################el
 
-import os
+from pathlib import Path
 import re
 import subprocess
 
@@ -119,8 +119,8 @@ def kernel_name_shortener(df, level):
 
     # Only shorten if valid shortening level
     if level < 5:
-        cpp_filt = os.path.join("/usr", "bin", "c++filt")
-        if not os.path.isfile(cpp_filt):
+        cpp_filt = str(Path("/usr").joinpath("bin", "c++filt"))
+        if not Path(cpp_filt).is_file():
             console_error(
                 "Could not resolve c++filt in expected directory: %s" % cpp_filt
             )

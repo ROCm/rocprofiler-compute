@@ -192,9 +192,9 @@ class OmniAnalyze_Base:
             )
         # ensure absolute path
         for dir in self.__args.path:
-            full_path = os.path.abspath(dir[0])
+            full_path = str(Path(dir[0]).absolute().resolve())
             dir[0] = full_path
-            if not os.path.isdir(dir[0]):
+            if not Path(dir[0]).is_dir():
                 console_error("Invalid directory {}\nPlease try again.".format(dir[0]))
             # validate profiling data
 

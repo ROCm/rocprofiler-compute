@@ -205,9 +205,13 @@ class RocProfCompute:
             # FIXME:
             #     Might want to get host name from detected spec
             if self.__args.subpath == "node_name":
-                self.__args.path = os.path.join(self.__args.path, socket.gethostname())
+                self.__args.path = str(
+                    Path(self.__args.path).joinpath(socket.gethostname())
+                )
             elif self.__args.subpath == "gpu_model":
-                self.__args.path = os.path.join(self.__args.path, self.__mspec.gpu_model)
+                self.__args.path = str(
+                    Path(self.__args.path).joinpath(self.__mspec.gpu_model)
+                )
 
             p = Path(self.__args.path)
             if not p.exists():
@@ -227,9 +231,9 @@ class RocProfCompute:
         #     unless there is a specific reason to do here.
 
         # Update default path
-        if self.__args.path == os.path.join(os.getcwd(), "workloads"):
-            self.__args.path = os.path.join(
-                self.__args.path, self.__args.name, self.__mspec.gpu_model
+        if self.__args.path == str(Path(os.getcwd()).joinpath("workloads")):
+            self.__args.path = str(
+                Path(self.__args.path).joinpath(self.__args.name, self.__mspec.gpu_model)
             )
 
         # instantiate desired profiler

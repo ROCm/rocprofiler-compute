@@ -1,11 +1,9 @@
 import inspect
-import os.path
 import re
 import shutil
 import subprocess
 import sys
 from importlib.machinery import SourceFileLoader
-from pathlib import Path
 from unittest.mock import patch
 
 import pandas as pd

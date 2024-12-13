@@ -105,7 +105,7 @@ def get_version(rocprof_compute_home) -> dict:
     versionDir = None
 
     for dir in searchDirs:
-        version = os.path.join(dir, "VERSION")
+        version = str(path(dir).joinpath("VERSION"))
         try:
             with open(version, "r") as file:
                 VER = file.read().replace("\n", "")
@@ -118,8 +118,8 @@ def get_version(rocprof_compute_home) -> dict:
         console_error("Cannot find VERSION file at {}".format(searchDirs))
 
     # git version info
-    gitDir = os.path.join(rocprof_compute_home.parent, ".git")
-    if (shutil.which("git") is not None) and os.path.exists(gitDir):
+    gitDir = str(path(rocprof_compute_home.parent).joinpath(".git"))
+    if (shutil.which("git") is not None) and path(gitDir).exists():
         gitQuery = subprocess.run(
             ["git", "log", "--pretty=format:%h", "-n", "1"],
             stdout=subprocess.PIPE,
@@ -132,7 +132,7 @@ def get_version(rocprof_compute_home) -> dict:
             SHA = gitQuery.stdout.decode("utf-8")
             MODE = "dev"
     else:
-        shaFile = os.path.join(versionDir, "VERSION.sha")
+        shaFile = str(path(versionDir).joinpath("VERSION.sha"))
         try:
             with open(shaFile, "r") as file:
                 SHA = file.read().replace("\n", "")
@@ -180,7 +180,7 @@ def detect_rocprof():
             )
     else:
         # Resolve any sym links in file path
-        rocprof_path = os.path.realpath(rocprof_path.rstrip("\n"))
+        rocprof_path = str(path(rocprof_path.rstrip("\n")).resolve())
         console_debug("ROC Profiler: " + str(rocprof_path))
 
     console_debug("rocprof_cmd is {}".format(str(rocprof_cmd)))
@@ -571,9 +571,9 @@ def run_prof(
     fname, profiler_options, workload_dir, mspec, loglevel, format_rocprof_output
 ):
     time_0 = time.time()
-    fbase = os.path.splitext(os.path.basename(fname))[0]
+    fbase = path(fname).stem
 
-    console_debug("pmc file: %s" % str(os.path.basename(fname)))
+    console_debug("pmc file: %s" % path(fname).name)
 
     # standard rocprof options
     default_options = ["-i", fname]
@@ -587,11 +587,11 @@ def run_prof(
         or mspec.gpu_model.lower() == "mi300a_a0"
         or mspec.gpu_model.lower() == "mi300a_a1"
     ) and (
-        os.path.basename(fname) == "pmc_perf_13.txt"
-        or os.path.basename(fname) == "pmc_perf_14.txt"
-        or os.path.basename(fname) == "pmc_perf_15.txt"
-        or os.path.basename(fname) == "pmc_perf_16.txt"
-        or os.path.basename(fname) == "pmc_perf_17.txt"
+        path(fname).name == "pmc_perf_13.txt"
+        or path(fname).name == "pmc_perf_14.txt"
+        or path(fname).name == "pmc_perf_15.txt"
+        or path(fname).name == "pmc_perf_16.txt"
+        or path(fname).name == "pmc_perf_17.txt"
     ):
         new_env = os.environ.copy()
         new_env["ROCPROFILER_INDIVIDUAL_XCC_MODE"] = "1"
@@ -651,30 +651,32 @@ def run_prof(
                 workload_dir + "/out/pmc_1/*/*_counter_collection.csv"
             )
             existing_counter_files_csv = [
-                d for d in counter_info_csvs if os.path.isfile(d)
+                d for d in counter_info_csvs if path(d).is_file()
             ]
 
             if len(existing_counter_files_csv) > 0:
                 for counter_file in existing_counter_files_csv:
-                    current_dir = os.path.dirname(counter_file)
-                    agent_info_filepath = os.path.join(
-                        current_dir,
-                        os.path.basename(counter_file).replace(
-                            "_counter_collection", "_agent_info"
-                        ),
+                    current_dir = str(path(counter_file).parent)
+                    agent_info_filepath = str(
+                        path(current_dir).joinpath(
+                            path(counter_file).name.replace(
+                                "_counter_collection", "_agent_info"
+                            )
+                        )
                     )
-                    if not os.path.isfile(agent_info_filepath):
+                    if not path(agent_info_filepath).is_file():
                         raise ValueError(
                             '{} has no coresponding "agent info" file'.format(
                                 counter_file
                             )
                         )
 
-                    converted_csv_file = os.path.join(
-                        current_dir,
-                        os.path.basename(counter_file).replace(
-                            "_counter_collection", "_converted"
-                        ),
+                    converted_csv_file = str(
+                        path(current_dir).joinpath(
+                            path(counter_file).name.replace(
+                                "_counter_collection", "_converted"
+                            )
+                        )
                     )
 
                     v3_counter_csv_to_v2_csv(
@@ -711,7 +713,7 @@ def run_prof(
         df = flatten_tcc_info_across_xcds(f, xcds, int(mspec._l2_banks))
         df.to_csv(f, index=False)
 
-    if os.path.exists(workload_dir + "/out"):
+    if path(workload_dir + "/out").exists():
         # copy and remove out directory if needed
         shutil.copyfile(
             workload_dir + "/out/pmc_1/results_" + fbase + ".csv",
@@ -800,7 +802,7 @@ def detect_roofline(mspec):
 
     if "ROOFLINE_BIN" in os.environ.keys():
         rooflineBinary = os.environ["ROOFLINE_BIN"]
-        if os.path.exists(rooflineBinary):
+        if path(rooflineBinary).exists():
             console_warning("roofline", "Detected user-supplied binary")
             return {
                 "rocm_ver": "override",
@@ -895,7 +897,7 @@ def mibench(args, mspec):
     # Distro is valid but cant find rocm ver
     found = False
     for path in binary_paths:
-        if os.path.exists(path):
+        if pathlib.Path(path).exists():
             found = True
             path_to_binary = path
             break
@@ -1049,7 +1051,7 @@ def get_submodules(package_name):
 def is_workload_empty(path):
     """Peek workload directory to verify valid profiling output"""
     pmc_perf_path = path + "/pmc_perf.csv"
-    if os.path.isfile(pmc_perf_path):
+    if pathlib.Path(pmc_perf_path).is_file():
         temp_df = pd.read_csv(pmc_perf_path)
         if temp_df.dropna().empty:
             console_error(

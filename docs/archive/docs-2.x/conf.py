@@ -10,17 +10,17 @@
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
+# documentation root, use str(Path(<rel_path>).absolute().resolve()) to make it absolute, like shown here.
 #
-import os
+from pathlib import Path
 import subprocess as sp
 import sys
 
-sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, str(Path("..").absolute().resolve()))
 
 repo_version = "unknown"
 # Determine short version by file in repo
-if os.path.isfile("./VERSION"):
+if Path("./VERSION").is_file():
     with open("./VERSION") as f:
         repo_version = f.readline().strip()
 

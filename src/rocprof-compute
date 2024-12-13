@@ -27,13 +27,12 @@
 ##############################################################################el
 
 # import logging
-import os
+from pathlib import Path
 import re
 import sys
 
 try:
     from importlib import metadata
-    from pathlib import Path
 
     from rocprof_compute_base import RocProfCompute
     from utils.utils import console_error
@@ -73,12 +72,12 @@ def verify_deps():
         )
         sys.exit(1)
 
-    bindir = Path(__file__).resolve().parent
+    bindir = str(Path(__file__).resolve().parent)
     depsLocation = ["requirements.txt", "../requirements.txt"]
 
     for location in depsLocation:
-        checkFile = os.path.join(bindir, location)
-        if os.path.exists(checkFile):
+        checkFile = str(Path(bindir).joinpath(location))
+        if Path(checkFile).exists():
             with open(checkFile, "r", encoding="utf-8") as file_in:
                 dependencies = file_in.read().splitlines()
 

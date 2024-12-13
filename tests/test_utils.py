@@ -25,6 +25,7 @@
 
 import inspect
 import os
+from pathlib import Path
 import shutil
 from unittest.mock import patch
 
@@ -62,7 +63,7 @@ def get_output_dir(suffix="_output", clean_existing=True):
 
     output_dir = inspect.stack()[1].function + suffix
     if clean_existing:
-        if os.path.exists(output_dir):
+        if Path(output_dir).exists():
             shutil.rmtree(output_dir)
     return output_dir
 
@@ -79,7 +80,7 @@ def setup_workload_dir(input_dir, suffix="_tmp", clean_existing=True):
 
     output_dir = inspect.stack()[1].function + suffix
     if clean_existing:
-        if os.path.exists(output_dir):
+        if Path(output_dir).exists():
             shutil.rmtree(output_dir)
 
     shutil.copytree(input_dir, output_dir)
@@ -94,7 +95,7 @@ def clean_output_dir(cleanup, output_dir):
         output_dir (string): name of directory to remove
     """
     if cleanup:
-        if os.path.exists(output_dir):
+        if Path(output_dir).exists():
             try:
                 shutil.rmtree(output_dir)
             except OSError as e:

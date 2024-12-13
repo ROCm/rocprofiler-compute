@@ -594,8 +594,8 @@ class MachineSpecs:
 def get_rocm_ver():
     rocm_found = False
     for itr in VERSION_LOC:
-        _path = os.path.join(os.getenv("ROCM_PATH", "/opt/rocm"), ".info", itr)
-        if os.path.exists(_path):
+        _path = str(path(os.getenv("ROCM_PATH", "/opt/rocm")).joinpath(".info", itr))
+        if path(_path).exists():
             rocm_ver = path(_path).read_text()
             rocm_found = True
         break

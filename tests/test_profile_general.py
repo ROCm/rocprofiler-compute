@@ -1,5 +1,5 @@
 import inspect
-import os.path
+import os
 import re
 import shutil
 import subprocess
@@ -321,7 +321,7 @@ soc = gpu_soc()
 if "MI300" in soc:
     os.environ["ROCPROF"] = "rocprofv2"
 
-Baseline_dir = os.path.realpath("tests/workloads/vcopy/" + soc)
+Baseline_dir = str(Path("tests/workloads/vcopy/" + soc).resolve())
 
 
 def log_counter(file_dict, test_name):
@@ -334,9 +334,9 @@ def log_counter(file_dict, test_name):
 
             errors = counter_compare(test_name, pd.DataFrame(), df_1, df_2, 5)
             if not errors.empty:
-                if os.path.exists(
+                if Path(
                     Baseline_dir + "/" + file.split(".")[0] + "_error_log.csv"
-                ):
+                ).exists():
                     error_log = pd.read_csv(
                         Baseline_dir + "/" + file.split(".")[0] + "_error_log.csv",
                         index_col=0,
@@ -376,7 +376,7 @@ def baseline_compare_metric(test_name, workload_dir, args=[]):
 
     if "DEBUG ERROR" in captured_output:
         error_df = pd.DataFrame()
-        if os.path.exists(Baseline_dir + "/metric_error_log.csv"):
+        if Path(Baseline_dir + "/metric_error_log.csv").exists():
             error_df = pd.read_csv(
                 Baseline_dir + "/metric_error_log.csv",
                 index_col=0,

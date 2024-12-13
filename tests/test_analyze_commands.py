@@ -1,7 +1,6 @@
-import os.path
+import os
 import shutil
 from importlib.machinery import SourceFileLoader
-from pathlib import Path
 from unittest.mock import patch
 
 import pandas as pd

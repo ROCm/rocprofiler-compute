@@ -22,7 +22,7 @@
 # SOFTWARE.
 ##############################################################################el
 
-import os
+from pathlib import Path
 
 import config
 from rocprof_compute_soc.soc_base import OmniSoC_Base
@@ -36,22 +36,24 @@ class gfx940_soc(OmniSoC_Base):
         self.set_arch("gfx940")
         if hasattr(self.get_args(), "roof_only") and self.get_args().roof_only:
             self.set_perfmon_dir(
-                os.path.join(
-                    str(config.rocprof_compute_home),
-                    "rocprof_compute_soc",
-                    "profile_configs",
-                    "gfx940",
-                    "roofline",
+                str(
+                    Path(str(config.rocprof_compute_home)).joinpath(
+                        "rocprof_compute_soc",
+                        "profile_configs",
+                        "gfx940",
+                        "roofline",
+                    )
                 )
             )
         else:
             # NB: We're using generalized Mi300 perfmon configs
             self.set_perfmon_dir(
-                os.path.join(
-                    str(config.rocprof_compute_home),
-                    "rocprof_compute_soc",
-                    "profile_configs",
-                    "gfx940",
+                set(
+                    Path(str(config.rocprof_compute_home)).joinpath(
+                        "rocprof_compute_soc",
+                        "profile_configs",
+                        "gfx940",
+                    )
                 )
             )
         self.set_compatible_profilers(["rocprofv1", "rocprofv2"])
@@ -97,7 +99,7 @@ class gfx940_soc(OmniSoC_Base):
             console_log(
                 "roofline", "Checking for roofline.csv in " + str(self.get_args().path)
             )
-            if not os.path.isfile(os.path.join(self.get_args().path, "roofline.csv")):
+            if not Path(self.get_args().path).joinpath("roofline.csv").is_file():
                 mibench(self.get_args(), self._mspec)
             self.roofline_obj.post_processing()
         else:

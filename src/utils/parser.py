@@ -23,7 +23,6 @@
 ##############################################################################el
 
 import ast
-import os
 import re
 import warnings
 from pathlib import Path
@@ -873,7 +872,7 @@ def apply_filters(workload, dir, is_gui, debug):
     if workload.filter_kernel_ids:
         if all(type(kid) == int for kid in workload.filter_kernel_ids):
             # Verify valid kernel filter
-            kernels_df = pd.read_csv(os.path.join(dir, "pmc_kernel_top.csv"))
+            kernels_df = pd.read_csv(str(Path(dir).joinpath("pmc_kernel_top.csv")))
             for kernel_id in workload.filter_kernel_ids:
                 if kernel_id >= len(kernels_df["Kernel_Name"]):
                     console_error(

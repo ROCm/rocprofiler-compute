@@ -53,9 +53,11 @@ class OmniSoC_Base:
         self.populate_mspec()
         # In some cases (i.e. --specs) path will not be given
         if hasattr(self.__args, "path"):
-            if self.__args.path == os.path.join(os.getcwd(), "workloads"):
-                self.__workload_dir = os.path.join(
-                    self.__args.path, self.__args.name, self._mspec.gpu_model
+            if self.__args.path == str(Path(os.getcwd()).joinpath("workloads")):
+                self.__workload_dir = str(
+                    Path(self.__args.path).joinpath(
+                        self.__args.name, self._mspec.gpu_model
+                    )
                 )
             else:
                 self.__workload_dir = self.__args.path
@@ -196,16 +198,17 @@ class OmniSoC_Base:
     @demarcate
     def perfmon_filter(self, roofline_perfmon_only: bool):
         """Filter default performance counter set based on user arguments"""
-        if roofline_perfmon_only and os.path.isfile(
-            os.path.join(self.get_args().path, "pmc_perf.csv")
+        if (
+            roofline_perfmon_only
+            and Path(self.get_args().path).joinpath("pmc_perf.csv").is_file()
         ):
             return
         workload_perfmon_dir = self.__workload_dir + "/perfmon"
 
         # Initialize directories
-        if not os.path.isdir(self.__workload_dir):
+        if not Path(self.__workload_dir).is_dir():
             os.makedirs(self.__workload_dir)
-        elif not os.path.islink(self.__workload_dir):
+        elif not Path(self.__workload_dir).is_symlink():
             shutil.rmtree(self.__workload_dir)
         else:
             os.unlink(self.__workload_dir)
@@ -226,7 +229,7 @@ class OmniSoC_Base:
 
                 pmc_files_list = []
                 for fname in ref_pmc_files_list:
-                    fbase = os.path.splitext(os.path.basename(fname))[0]
+                    fbase = Path(fname).stem
                     ip = re.match(mpattern, fbase).group(1)
                     if ip in self.__args.ipblocks:
                         pmc_files_list.append(fname)
@@ -469,9 +472,10 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, spatial_multi
         )
 
         for f_idx in range(groups_per_bucket):
-            file_name = os.path.join(
-                workload_perfmon_dir,
-                "pmc_perf_" + "node_" + str(node_idx) + "_" + str(f_idx) + ".txt",
+            file_name = str(
+                Path(workload_perfmon_dir).joinpath(
+                    "pmc_perf_" + "node_" + str(node_idx) + "_" + str(f_idx) + ".txt"
+                )
             )
 
             pmc = []
@@ -494,7 +498,7 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, spatial_multi
     else:
         # Output to files
         for f in output_files:
-            file_name = os.path.join(workload_perfmon_dir, f.file_name)
+            file_name = str(Path(workload_perfmon_dir).joinpath(f.file_name))
 
             pmc = []
             for block_name in f.blocks.keys():
@@ -529,7 +533,7 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, spatial_multi
     # Add a timestamp file
     # TODO: Does v3 need this?
     if not using_v3():
-        fd = open(os.path.join(workload_perfmon_dir, "timestamps.txt"), "w")
+        fd = open(str(Path(workload_perfmon_dir).joinpath("timestamps.txt")), "w")
         fd.write("pmc:\n\n")
         fd.write("gpu:\n")
         fd.write("range:\n")
