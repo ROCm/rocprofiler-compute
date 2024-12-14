@@ -490,8 +490,24 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, spatial_multi
 
             pmc = []
             for block_name in f.blocks.keys():
-                for ctr in f.blocks[block_name].elements:
-                    pmc.append(ctr)
+
+                if not using_v3() and block_name == "TCC":
+                    # Expand and interleve the TCC channel counters
+                    # e.g.  TCC_HIT[0] TCC_ATOMIC[0] ... TCC_HIT[1] TCC_ATOMIC[1] ...
+                    channel_counters = []
+                    for ctr in f.blocks[block_name].elements:
+                        if "_expand" in ctr:
+                            channel_counters.append(ctr.split("_expand")[0])
+                    for i in range(0, perfmon_config["TCC_channels"]):
+                        for c in channel_counters:
+                            pmc.append("{}[{}]".format(c, i))
+                    # Handle the rest of the TCC counters
+                    for ctr in f.blocks[block_name].elements:
+                        if "_expand" not in ctr:
+                            pmc.append(ctr)
+                else:
+                    for ctr in f.blocks[block_name].elements:
+                        pmc.append(ctr)
 
             stext = "pmc: " + " ".join(pmc)
 
