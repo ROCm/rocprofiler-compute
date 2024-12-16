@@ -877,7 +877,7 @@ def mibench(args, mspec):
                 + "-"
                 + distro_map[target_binary["distro"]]
                 + "-"
-                + mspec.gpu_model.lower()
+                + mspec.gpu_series.lower()
                 + "-rocm"
                 + target_binary["rocm_ver"]
             )

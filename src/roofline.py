@@ -96,7 +96,7 @@ class Roofline:
             self.__run_parameters["workload_dir"] = os.path.join(
                 self.__run_parameters["workload_dir"],
                 self.__args.name,
-                self.__mspec.gpu_model,
+                self.__mspec.gpu_series,
             )
         # create new directory for roofline if it doesn't exist
         if not os.path.isdir(self.__run_parameters["workload_dir"]):

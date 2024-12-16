@@ -336,7 +336,7 @@ def calc_ai(mspec, sort_type, ret_df):
             )
             pass
         try:
-            if mspec.gpu_model == "MI200":
+            if mspec.gpu_series == "MI200":
                 hbm_data += (
                     (df["TCC_EA_RDREQ_32B_sum"][idx] * 32)
                     + (
