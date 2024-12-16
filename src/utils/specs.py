@@ -337,6 +337,13 @@ class MachineSpecs:
     ##########################################
     ## B. SoC Specs
     ##########################################
+    gpu_series: str = field(
+        default=None,
+        metadata={
+            "doc": "The series of the accelerators/GPUs in the system.",
+            "name": "GPU Series",
+        },
+    )
     gpu_model: str = field(
         default=None,
         metadata={

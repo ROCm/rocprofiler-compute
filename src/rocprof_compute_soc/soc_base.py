@@ -177,6 +177,9 @@ class OmniSoC_Base:
         self._mspec.cur_sclk = self._mspec.max_sclk
         self._mspec.cur_mclk = self._mspec.max_mclk
 
+        self._mspec.gpu_series = list(SUPPORTED_ARCHS[self._mspec.gpu_arch].keys())[
+            0
+        ].upper()
         # specify gpu name for gfx942 hardware
         self._mspec.gpu_model = list(SUPPORTED_ARCHS[self._mspec.gpu_arch].keys())[
             0
