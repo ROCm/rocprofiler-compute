@@ -445,10 +445,10 @@ successfully.
    clutter. One chart plots FP32/FP64 performance while the other plots I8/FP16
    performance.
 
-The following image is a sample ``empirRoof_gpu-ALL_fp32_fp64.pdf`` roofline
+The following image is a sample ``empirRoof_gpu-0_int8_fp16.pdf`` roofline
 plot.
 
-.. image:: ../../data/profile/sample-roof-plot.png
+.. image:: ../../data/profile/sample-roof-plot.jpg
    :align: center
    :alt: Sample ROCm Compute Profiler roofline output
    :width: 800
