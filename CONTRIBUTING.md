@@ -51,3 +51,9 @@ Now, when you commit code to the repository you should see something like this:
 ![A screen capture showing terminal output from a pre-commit hook](docs/data/contributing/pre-commit-hook.png)
 
 Please see the [pre-commit documentation](https://pre-commit.com/#quick-start) for additional information.
+
+## Coding guidelines
+
+Below are some repository specific guidelines which are followed througout the repository.
+Any future contributions should adhere to these guidelines:
+* Use pathlib library functions instead of os.path for manipulating file paths
