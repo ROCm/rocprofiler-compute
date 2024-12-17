@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    security_opt:
+      - seccomp:unconfined

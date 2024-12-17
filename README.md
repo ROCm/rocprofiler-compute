@@ -34,6 +34,10 @@ from the `amd-mainline` branch, while new features are developed in our
 
 Users may checkout `amd-staging` to preview upcoming features.
 
+## Testing
+
+To quickly get the environment for building and testing in a bash shell, you can run `docker compose run app`
+
 ## How to Cite
 
 This software can be cited using a Zenodo
