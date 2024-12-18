@@ -126,6 +126,7 @@ class webui_analysis(OmniAnalyze_Base):
 
             # Reload the pmc_kernel_top.csv for Top Stats panel
             file_io.create_df_kernel_top_stats(
+                df_in=base_data[base_run].raw_pmc,
                 raw_data_dir=str(self.dest_dir),
                 filter_gpu_ids=base_data[base_run].filter_gpu_ids,
                 filter_dispatch_ids=base_data[base_run].filter_dispatch_ids,
@@ -280,21 +281,23 @@ class webui_analysis(OmniAnalyze_Base):
         super().pre_processing()
         if len(self._runs) == 1:
             args = self.get_args()
-            file_io.create_df_kernel_top_stats(
-                raw_data_dir=self.dest_dir,
-                filter_gpu_ids=self._runs[self.dest_dir].filter_gpu_ids,
-                filter_dispatch_ids=self._runs[self.dest_dir].filter_dispatch_ids,
-                filter_nodes=self._runs[d[0]].filter_nodes,
-                time_unit=args.time_unit,
-                max_stat_num=args.max_stat_num,
-                kernel_verbose=self.get_args().kernel_verbose,
-            )
+
             # create 'mega dataframe'
             self._runs[self.dest_dir].raw_pmc = file_io.create_df_pmc(
                 self.dest_dir,
                 self.get_args().nodes,
                 self.get_args().kernel_verbose,
                 args.verbose,
+            )
+            file_io.create_df_kernel_top_stats(
+                df_in=self._runs[self.dest_dir].raw_pmc,
+                raw_data_dir=self.dest_dir,
+                filter_gpu_ids=self._runs[self.dest_dir].filter_gpu_ids,
+                filter_dispatch_ids=self._runs[self.dest_dir].filter_dispatch_ids,
+                filter_nodes=self._runs[self.dest_dir].filter_nodes,
+                time_unit=args.time_unit,
+                max_stat_num=args.max_stat_num,
+                kernel_verbose=self.get_args().kernel_verbose,
             )
             # create the loaded kernel stats
             parser.load_kernel_top(self._runs[self.dest_dir], self.dest_dir)
