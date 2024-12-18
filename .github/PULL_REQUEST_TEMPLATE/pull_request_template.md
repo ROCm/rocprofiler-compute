@@ -1,6 +1,6 @@
 ## Describe your changes
 
-## Issue refernce (**Jira or GitHub** link)
+## Issue reference (**Jira or GitHub** link)
 
 ## Checklist before requesting a review
 - [ ] I have performed a self-review of my code.
