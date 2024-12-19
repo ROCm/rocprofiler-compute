@@ -36,7 +36,11 @@ Users may checkout `amd-staging` to preview upcoming features.
 
 ## Testing
 
-To quickly get the environment for building and testing in a bash shell, you can run `docker compose run app`
+To quickly get the environment (bash shell) for building and testing, run the following commands:
+* `cd utils/docker_env`
+* `docker compose run app`
+
+NOTE: This Dockerfile uses `rocm/dev-ubuntu-22.04` as the base image
 
 ## How to Cite
 

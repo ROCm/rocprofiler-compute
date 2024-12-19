@@ -1,6 +1,8 @@
 services:
   app:
-    build: .
+    build:
+      context: ../../
+      dockerfile: utils/docker_env/Dockerfile
     devices:
       - /dev/kfd
       - /dev/dri
