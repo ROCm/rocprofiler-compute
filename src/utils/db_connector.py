@@ -24,8 +24,8 @@
 
 import getpass
 import os
-from pathlib import Path
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 import pandas as pd
 from pymongo import MongoClient

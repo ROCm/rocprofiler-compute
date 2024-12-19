@@ -8,10 +8,10 @@ import filecmp
 import glob
 import logging
 import os
-from pathlib import Path
 import re
 import shutil
 import sys
+from pathlib import Path
 
 begDelim = "######bl$"
 endDelim = "######el$"

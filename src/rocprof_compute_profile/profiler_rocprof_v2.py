@@ -23,8 +23,8 @@
 ##############################################################################el
 
 import os
-from pathlib import Path
 import shlex
+from pathlib import Path
 
 from rocprof_compute_profile.profiler_base import RocProfCompute_Base
 from utils.utils import console_log, demarcate, replace_timestamps, store_app_cmd

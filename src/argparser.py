@@ -24,8 +24,8 @@
 
 import argparse
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 
 def print_avail_arch(avail_arch: list):

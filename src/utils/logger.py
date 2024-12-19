@@ -24,8 +24,8 @@
 
 import logging
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from utils.utils import trace_logger
 

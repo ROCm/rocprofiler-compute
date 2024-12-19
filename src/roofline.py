@@ -23,9 +23,9 @@
 ##############################################################################el
 
 import os
-from pathlib import Path
 import time
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 import numpy as np
 import plotly.graph_objects as go

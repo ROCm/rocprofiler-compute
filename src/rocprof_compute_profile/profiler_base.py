@@ -25,11 +25,11 @@
 import glob
 import logging
 import os
-from pathlib import Path
 import re
 import sys
 import time
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 import pandas as pd
 from tqdm import tqdm

@@ -26,10 +26,11 @@
 # SOFTWARE.
 ##############################################################################el
 
-# import logging
-from pathlib import Path
 import re
 import sys
+
+# import logging
+from pathlib import Path
 
 try:
     from importlib import metadata

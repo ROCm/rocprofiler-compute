@@ -24,8 +24,8 @@
 
 import copy
 import os
-from pathlib import Path
 import random
+from pathlib import Path
 
 import dash
 import dash_bootstrap_components as dbc

@@ -8,13 +8,14 @@
 
 # -- Path setup --------------------------------------------------------------
 
+import subprocess as sp
+import sys
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use str(Path(<rel_path>).absolute().resolve()) to make it absolute, like shown here.
 #
 from pathlib import Path
-import subprocess as sp
-import sys
 
 sys.path.insert(0, str(Path("..").absolute().resolve()))
 

@@ -23,8 +23,8 @@
 ##############################################################################el
 
 import csv
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
 
 from utils.utils import console_debug
 
