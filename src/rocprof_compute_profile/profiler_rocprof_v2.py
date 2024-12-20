@@ -26,7 +26,7 @@ import os
 import shlex
 
 from rocprof_compute_profile.profiler_base import RocProfCompute_Base
-from utils.utils import console_log, demarcate, replace_timestamps
+from utils.utils import console_log, demarcate, replace_timestamps, store_app_cmd
 
 
 class rocprof_v2_profiler(RocProfCompute_Base):
@@ -47,6 +47,8 @@ class rocprof_v2_profiler(RocProfCompute_Base):
             self.get_args().path + "/" + "out",
         ]
         args.extend(app_cmd)
+        # store args for debug message
+        store_app_cmd(args)
         return args
 
     # -----------------------
