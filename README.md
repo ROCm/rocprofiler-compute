@@ -56,6 +56,23 @@ For manual testing, you can find the executable at `install/bin/rocprof-compute`
 
 NOTE: This Dockerfile uses `rocm/dev-ubuntu-22.04` as the base image
 
+## Standalone binary
+
+To create a standalone binary, run the following commands:
+* `cd utils/docker_env`
+* `docker compose -f docker-compose.standalone.yml run app`
+
+You should find the rocprof-compute.bin standalone binary inside the `build` folder in the root directory of the project.
+
+To build the binary we follow these steps:
+* Use RHEL 8 image used to build ROCm as the base image
+* Install python3.8
+* Install dependencies for runtime and for making standalone binary
+* Call the make target which uses Nuitka to build the standalone binary
+
+Since RHEL 8 ships with glibc version 2.28, this standalone binary can only be run on environment with glibc version greater than 2.28.
+glibc version can be checked using `ldd --version` command.
+
 ## How to Cite
 
 This software can be cited using a Zenodo
