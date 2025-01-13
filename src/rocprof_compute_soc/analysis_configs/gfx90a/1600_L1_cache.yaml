@@ -2,6 +2,56 @@
 # Add description/tips for each metric in this section.
 # So it could be shown in hover.
 Metric Description:
+  Vector L1 Data Cache:
+    Speed-of-Light:
+      Hit Rate:
+        The ratio of the number of vL1D cache line requests that hit in vL1D cache over the total
+        number of cache line requests to the vL1D Cache RAM.
+      Bandwidth:
+      Utilization:
+      Coalescing:
+    L1D Cache Stalls (%):
+      Stalled on L2 Data:
+      Stalled on L2 Req:
+      Tag RAM Stall (Read):
+      Tag RAM Stall (Write):
+      Tag RAM Stall (Atomic):
+    L1D Cache Accesses:
+      Total Req:
+      Read Req:
+      Write Req:
+      Atomic Req:
+      Cache BW:
+      Cache Hit Rate:
+      Cache Accesses:
+      Cache Hits:
+      Invalidations:
+      L1-L2 BW:
+      L1-L2 Read:
+      L1-L2 Write:
+      L1-L2 Atomic:
+      L1 Access Latency:
+      L1-L2 Read Latency:
+      L1-L2 Write Latency:
+    L1D - L2 Transactions:
+      NC - Read:
+      UC - Read:
+      CC - Read:
+      RW - Read:
+      RW - Write:
+      NC - Write:
+      UC - Write:
+      CC - Write:
+      NC - Atomic:
+      UC - Atomic:
+      CC - Atomic:
+      RW - Atomic:
+    L1D Addr Translation:
+      Req:
+      Hit Ratio:
+      Hits:
+      Translation Misses:
+      Permission Misses:
 
 # Define the panel properties and properties of each metric in the panel.
 Panel Config:

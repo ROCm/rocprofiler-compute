@@ -2,6 +2,104 @@
 # Add description/tips for each metric in this section.
 # So it could be shown in hover.
 Metric Description:
+  Speed-of-Light:
+    VALU FLOPs: &SoL_VALU_FLOPs_desc >-
+      The total floating-point operations executed per second on the VALU. This is also presented as
+      a percent of the peak theoretical FLOPs achievable on the specific accelerator. Note: this
+      does not include any floating-point operations from MFMA instructions.
+    VALU IOPs: &SoL_VALU_IOPs_desc >-
+      The total integer operations executed per second on the VALU. This is also presented as a
+      percent of the peak theoretical IOPs achievable on the specific accelerator. Note: this does
+      not include any integer operations from MFMA instructions.
+    MFMA FLOPs (BF16): &SoL_MFMA_FLOPs_BF16_desc >-
+      The total number of 16-bit brain floating point MFMA operations executed per second. Note:
+      this does not include any 16-bit brain floating point operations from VALU instructions. This
+      is also presented as a percent of the peak theoretical BF16 MFMA operations achievable on the
+      specific accelerator.
+    MFMA FLOPs (F16): &SoL_MFMA_FLOPs_F16_desc >-
+      The total number of 16-bit floating point MFMA operations executed per second. Note: this does
+      not include any 16-bit floating point operations from VALU instructions. This is also
+      presented as a percent of the peak theoretical F16 MFMA operations achievable on the specific
+      accelerator.
+    MFMA FLOPs (F32): &SoL_MFMA_FLOPs_F32_desc >-
+      The total number of 32-bit floating point MFMA operations executed per second. Note: this does
+      not include any 32-bit floating point operations from VALU instructions. This is also
+      presented as a percent of the peak theoretical F32 MFMA operations achievable on the specific
+      accelerator.
+    MFMA FLOPs (F64): &SoL_MFMA_FLOPs_F64_desc >-
+      The total number of 64-bit floating point MFMA operations executed per second. Note: this does
+      not include any 64-bit floating point operations from VALU instructions. This is also
+      presented as a percent of the peak theoretical F64 MFMA operations achievable on the specific
+      accelerator.
+    MFMA IOPs (INT8): &SoL_MFMA_IOPs_INT8_desc >-
+      The total number of 8-bit integer MFMA operations executed per second. Note: this does not
+      include any 8-bit integer operations from VALU instructions. This is also presented as a
+      percent of the peak theoretical INT8 MFMA operations achievable on the specific accelerator.
+  Pipeline Stats:
+    IPC: &IPC_desc >-
+      The ratio of the total number of instructions executed on the CU over the total active CU
+      cycles.
+    IPC (Issued): &IPC_Issued_desc >-
+      The ratio of the total number of (non-internal) instructions issued over the number of cycles
+      where the scheduler was actively working on issuing instructions.
+    SALU Utilization: &SALU_Utilization_desc >-
+      Indicates what percent of the kernel's duration the SALU was busy executing instructions.
+      Computed as the ratio of the total number of cycles spent by the scheduler issuing SALU / SMEM
+      instructions over the total CU cycles.
+    VALU Utilization: &VALU_Utilization_desc >-
+      Indicates what percent of the kernel's duration the VALU was busy executing instructions. Does
+      not include VMEM operations. Computed as the ratio of the total number of cycles spent by the
+      scheduler issuing VALU instructions over the total CU cycles.
+    VMEM Utilization: &VMEM_Utilization_desc >-
+      Indicates what percent of the kernel's duration the VMEM unit was busy executing instructions,
+      including both global/generic and spill/scratch operations (see the VMEM instruction count
+      metrics for more detail). Does not include VALU operations. Computed as the ratio of the total
+      number of cycles spent by the scheduler issuing VMEM instructions over the total CU cycles.
+    Branch Utilization: &Branch_Utilization_desc >-
+      Indicates what percent of the kernel's duration the branch unit was busy executing
+      instructions. Computed as the ratio of the total number of cycles spent by the scheduler
+      issuing branch instructions over the total CU cycles.
+    VALU Active Threads: &VALU_Active_Threads_desc >-
+      Indicates the average level of divergence within a wavefront over the lifetime of the kernel.
+      The number of work-items that were active in a wavefront during execution of each VALU
+      instruction, time-averaged over all VALU instructions run on all wavefronts in the kernel.
+    MFMA Utilization: &MFMA_Utilization_desc >-
+      Indicates what percent of the kernel's duration the MFMA unit was busy executing instructions.
+      Computed as the ratio of the total number of cycles spent by the MFMA was busy over the total
+      CU cycles.
+    MFMA Instruction Cycles: &MFMA_Instruction_Cycles_desc >-
+      The average duration of MFMA instructions in this kernel in cycles. Computed as the ratio of
+      the total number of cycles the MFMA unit was busy over the total number of MFMA instructions.
+    VMEM Latency: &VMEM_Latency_desc >-
+      The average number of round-trip cycles (that is, from issue to data return / acknowledgment)
+      required for a VMEM instruction to complete.
+    SMEM Latency: &SMEM_Latency_desc >-
+      The average number of round-trip cycles (that is, from issue to data return / acknowledgment)
+      required for a SMEM instruction to complete.
+  Arithmetic Operations:
+    FLOPs (Total): &FLOPs_Total_desc >-
+      The total number of floating-point operations executed on either the VALU or MFMA units, per
+      normalization unit.
+    IOPs (Total): &IOPs_Total_desc >-
+      The total number of integer operations executed on either the VALU or MFMA units, per
+      normalization unit.
+    F16 OPs: &F16_OPs_desc >-
+      The total number of 16-bit floating-point operations executed on either the VALU or MFMA
+      units, per normalization unit.
+    BF16 OPs: &BF16_OPs_desc >-
+      The total number of 16-bit brain floating-point operations executed on either the VALU or MFMA
+      units, per normalization unit. Note: on current CDNA accelerators, the VALU has no native BF16
+      instructions.
+    F32 OPs: &F32_OPs_desc >-
+      The total number of 32-bit floating-point operations executed on either the VALU or MFMA
+      units, per normalization unit.
+    F64 OPs: &F64_OPs_desc >-
+      The total number of 64-bit floating-point operations executed on either the VALU or MFMA
+      units, per normalization unit.
+    INT8 OPs: &INT8_OPs_desc >-
+      The total number of 8-bit integer operations executed on either the VALU or MFMA units, per
+      normalization unit. Note: on current CDNA accelerators, the VALU has no native INT8
+      instructions.
 
 # Define the panel properties and properties of each metric in the panel.
 Panel Config:
@@ -33,49 +131,49 @@ Panel Config:
               + (64 * (((SQ_INSTS_VALU_ADD_F64 + SQ_INSTS_VALU_MUL_F64) + SQ_INSTS_VALU_TRANS_F64)
               + (2 * SQ_INSTS_VALU_FMA_F64)))) / (End_Timestamp - Start_Timestamp)))) / (((($max_sclk
               * $cu_per_gpu) * 64) * 2) / 1000))
-            tips:
+            tips: *SoL_VALU_FLOPs_desc
           VALU IOPs:
             value: AVG(((64 * (SQ_INSTS_VALU_INT32 + SQ_INSTS_VALU_INT64)) / (End_Timestamp - Start_Timestamp)))
             unit: GIOP
             peak: (((($max_sclk * $cu_per_gpu) * 64) * 2) / 1000)
             pop: ((100 * AVG(((64 * (SQ_INSTS_VALU_INT32 + SQ_INSTS_VALU_INT64)) / (End_Timestamp
               - Start_Timestamp)))) / (((($max_sclk * $cu_per_gpu) * 64) * 2) / 1000))
-            tips:
+            tips: *SoL_VALU_IOPs_desc
           MFMA FLOPs (BF16):
             value: AVG(((SQ_INSTS_VALU_MFMA_MOPS_BF16 * 512) / (End_Timestamp - Start_Timestamp)))
             unit: GFLOP
             peak: ((($max_sclk * $cu_per_gpu) * 1024) / 1000)
             pop: ((100 * AVG(((SQ_INSTS_VALU_MFMA_MOPS_BF16 * 512) / (End_Timestamp - Start_Timestamp))))
               / ((($max_sclk * $cu_per_gpu) * 1024) / 1000))
-            tips:
+            tips: *SoL_MFMA_FLOPs_BF16_desc
           MFMA FLOPs (F16):
             value: AVG(((SQ_INSTS_VALU_MFMA_MOPS_F16 * 512) / (End_Timestamp - Start_Timestamp)))
             unit: GFLOP
             peak: ((($max_sclk * $cu_per_gpu) * 1024) / 1000)
             pop: ((100 * AVG(((SQ_INSTS_VALU_MFMA_MOPS_F16 * 512) / (End_Timestamp - Start_Timestamp))))
               / ((($max_sclk * $cu_per_gpu) * 1024) / 1000))
-            tips:
+            tips: *SoL_MFMA_FLOPs_F16_desc
           MFMA FLOPs (F32):
             value: AVG(((SQ_INSTS_VALU_MFMA_MOPS_F32 * 512) / (End_Timestamp - Start_Timestamp)))
             unit: GFLOP
             peak: ((($max_sclk * $cu_per_gpu) * 256) / 1000)
             pop: ((100 * AVG(((SQ_INSTS_VALU_MFMA_MOPS_F32 * 512) / (End_Timestamp - Start_Timestamp))))
               / ((($max_sclk * $cu_per_gpu) * 256) / 1000))
-            tips:
+            tips: *SoL_MFMA_FLOPs_F32_desc
           MFMA FLOPs (F64):
             value: AVG(((SQ_INSTS_VALU_MFMA_MOPS_F64 * 512) / (End_Timestamp - Start_Timestamp)))
             unit: GFLOP
             peak: ((($max_sclk * $cu_per_gpu) * 256) / 1000)
             pop: ((100 * AVG(((SQ_INSTS_VALU_MFMA_MOPS_F64 * 512) / (End_Timestamp - Start_Timestamp))))
               / ((($max_sclk * $cu_per_gpu) * 256) / 1000))
-            tips:
+            tips: *SoL_MFMA_FLOPs_F64_desc
           MFMA IOPs (INT8):
             value: AVG(((SQ_INSTS_VALU_MFMA_MOPS_I8 * 512) / (End_Timestamp - Start_Timestamp)))
             unit: GIOP
             peak: ((($max_sclk * $cu_per_gpu) * 1024) / 1000)
             pop: ((100 * AVG(((SQ_INSTS_VALU_MFMA_MOPS_I8 * 512) / (End_Timestamp - Start_Timestamp))))
               / ((($max_sclk * $cu_per_gpu) * 1024) / 1000))
-            tips:
+            tips: *SoL_MFMA_IOPs_INT8_desc
 
     - metric_table:
         id: 1102
@@ -93,7 +191,7 @@ Panel Config:
             min: MIN((SQ_INSTS / SQ_BUSY_CU_CYCLES))
             max: MAX((SQ_INSTS / SQ_BUSY_CU_CYCLES))
             unit: Instr/cycle
-            tips:
+            tips: *IPC_desc
           IPC (Issued):
             avg: AVG(((((((((SQ_INSTS_VALU + SQ_INSTS_VMEM) + SQ_INSTS_SALU) + SQ_INSTS_SMEM))
               + SQ_INSTS_BRANCH) + SQ_INSTS_SENDMSG) + SQ_INSTS_VSKIPPED  + SQ_INSTS_LDS)
@@ -105,31 +203,31 @@ Panel Config:
               + SQ_INSTS_BRANCH) + SQ_INSTS_SENDMSG) + SQ_INSTS_VSKIPPED  + SQ_INSTS_LDS)
               / SQ_ACTIVE_INST_ANY))
             unit: Instr/cycle
-            tips:
+            tips: *IPC_Issued_desc
           SALU Utilization:
             avg: AVG((((100 * SQ_ACTIVE_INST_SCA) / $GRBM_GUI_ACTIVE_PER_XCD) / $cu_per_gpu))
             min: MIN((((100 * SQ_ACTIVE_INST_SCA) / $GRBM_GUI_ACTIVE_PER_XCD) / $cu_per_gpu))
             max: MAX((((100 * SQ_ACTIVE_INST_SCA) / $GRBM_GUI_ACTIVE_PER_XCD) / $cu_per_gpu))
             unit: pct
-            tips:
+            tips: *SALU_Utilization_desc
           VALU Utilization:
             avg: AVG((((100 * SQ_ACTIVE_INST_VALU) / $GRBM_GUI_ACTIVE_PER_XCD) / $cu_per_gpu))
             min: MIN((((100 * SQ_ACTIVE_INST_VALU) / $GRBM_GUI_ACTIVE_PER_XCD) / $cu_per_gpu))
             max: MAX((((100 * SQ_ACTIVE_INST_VALU) / $GRBM_GUI_ACTIVE_PER_XCD) / $cu_per_gpu))
             unit: pct
-            tips:
+            tips: *VALU_Utilization_desc
           VMEM Utilization:
             avg: AVG((((100 * (SQ_ACTIVE_INST_FLAT+SQ_ACTIVE_INST_VMEM)) / $GRBM_GUI_ACTIVE_PER_XCD) / $cu_per_gpu))
             min: MIN((((100 * (SQ_ACTIVE_INST_FLAT+SQ_ACTIVE_INST_VMEM)) / $GRBM_GUI_ACTIVE_PER_XCD) / $cu_per_gpu))
             max: MAX((((100 * (SQ_ACTIVE_INST_FLAT+SQ_ACTIVE_INST_VMEM)) / $GRBM_GUI_ACTIVE_PER_XCD) / $cu_per_gpu))
             unit: pct
-            tips:
+            tips: *VMEM_Utilization_desc
           Branch Utilization:
             avg: AVG((((100 * SQ_ACTIVE_INST_MISC) / $GRBM_GUI_ACTIVE_PER_XCD) / $cu_per_gpu))
             min: MIN((((100 * SQ_ACTIVE_INST_MISC) / $GRBM_GUI_ACTIVE_PER_XCD) / $cu_per_gpu))
             max: MAX((((100 * SQ_ACTIVE_INST_MISC) / $GRBM_GUI_ACTIVE_PER_XCD) / $cu_per_gpu))
             unit: pct
-            tips:
+            tips: *Branch_Utilization_desc
           VALU Active Threads:
             avg: AVG(((SQ_THREAD_CYCLES_VALU / SQ_ACTIVE_INST_VALU) if (SQ_ACTIVE_INST_VALU
               != 0) else None))
@@ -138,13 +236,13 @@ Panel Config:
             max: MAX(((SQ_THREAD_CYCLES_VALU / SQ_ACTIVE_INST_VALU) if (SQ_ACTIVE_INST_VALU
               != 0) else None))
             unit: Threads
-            tips:
+            tips: *VALU_Active_Threads_desc
           MFMA Utilization:
             avg: AVG(((100 * SQ_VALU_MFMA_BUSY_CYCLES) / ((4 * $cu_per_gpu) * $GRBM_GUI_ACTIVE_PER_XCD)))
             min: MIN(((100 * SQ_VALU_MFMA_BUSY_CYCLES) / ((4 * $cu_per_gpu) * $GRBM_GUI_ACTIVE_PER_XCD)))
             max: MAX(((100 * SQ_VALU_MFMA_BUSY_CYCLES) / ((4 * $cu_per_gpu) * $GRBM_GUI_ACTIVE_PER_XCD)))
             unit: pct
-            tips:
+            tips: *MFMA_Utilization_desc
           MFMA Instr Cycles:
             avg: AVG(((SQ_VALU_MFMA_BUSY_CYCLES / SQ_INSTS_MFMA) if (SQ_INSTS_MFMA != 0)
               else None))
@@ -153,7 +251,7 @@ Panel Config:
             max: MAX(((SQ_VALU_MFMA_BUSY_CYCLES / SQ_INSTS_MFMA) if (SQ_INSTS_MFMA != 0)
               else None))
             unit: cycles/instr
-            tips:
+            tips: *MFMA_Instruction_Cycles_desc
           VMEM Latency:
             avg: AVG(((SQ_ACCUM_PREV_HIRES / SQ_INSTS_VMEM) if (SQ_INSTS_VMEM != 0)
               else None))
@@ -163,7 +261,7 @@ Panel Config:
               else None))
             unit: Cycles
             coll_level: SQ_INST_LEVEL_VMEM
-            tips:
+            tips: *VMEM_Latency_desc
           SMEM Latency:
             avg: AVG(((SQ_ACCUM_PREV_HIRES / SQ_INSTS_SMEM) if (SQ_INSTS_SMEM != 0)
               else None))
@@ -173,7 +271,7 @@ Panel Config:
               else None))
             unit: Cycles
             coll_level: SQ_INST_LEVEL_SMEM
-            tips:
+            tips: *SMEM_Latency_desc
 
     - metric_table:
         id: 1103
@@ -209,13 +307,13 @@ Panel Config:
               + (SQ_INSTS_VALU_FMA_F64 * 2)))) + (512 * SQ_INSTS_VALU_MFMA_MOPS_F64)) /
               $denom))
             unit: (OPs  + $normUnit)
-            tips:
+            tips: *FLOPs_Total_desc
           IOPs (Total):
             avg: AVG(((64 * (SQ_INSTS_VALU_INT32 + SQ_INSTS_VALU_INT64)) + (SQ_INSTS_VALU_MFMA_MOPS_I8 * 512)) / $denom)
             min: MIN(((64 * (SQ_INSTS_VALU_INT32 + SQ_INSTS_VALU_INT64)) + (SQ_INSTS_VALU_MFMA_MOPS_I8 * 512)) / $denom)
             max: MAX(((64 * (SQ_INSTS_VALU_INT32 + SQ_INSTS_VALU_INT64)) + (SQ_INSTS_VALU_MFMA_MOPS_I8 * 512)) / $denom)
             unit: (OPs  + $normUnit)
-            tips:
+            tips: *IOPs_Total_desc
           F16 OPs:
             avg: AVG(((((((64 * SQ_INSTS_VALU_ADD_F16) + (64 * SQ_INSTS_VALU_MUL_F16)) +
               (64 * SQ_INSTS_VALU_TRANS_F16)) + (128 * SQ_INSTS_VALU_FMA_F16)) + (512 *
@@ -227,13 +325,13 @@ Panel Config:
               (64 * SQ_INSTS_VALU_TRANS_F16)) + (128 * SQ_INSTS_VALU_FMA_F16)) + (512 *
               SQ_INSTS_VALU_MFMA_MOPS_F16)) / $denom))
             unit: (OPs  + $normUnit)
-            tips:
+            tips: *F16_OPs_desc
           BF16 OPs:
             avg: AVG(((512 * SQ_INSTS_VALU_MFMA_MOPS_BF16) / $denom))
             min: MIN(((512 * SQ_INSTS_VALU_MFMA_MOPS_BF16) / $denom))
             max: MAX(((512 * SQ_INSTS_VALU_MFMA_MOPS_BF16) / $denom))
             unit: (OPs  + $normUnit)
-            tips:
+            tips: *BF16_OPs_desc
           F32 OPs:
             avg: AVG((((64 * (((SQ_INSTS_VALU_ADD_F32 + SQ_INSTS_VALU_MUL_F32) + SQ_INSTS_VALU_TRANS_F32)
               + (SQ_INSTS_VALU_FMA_F32 * 2))) + (512 * SQ_INSTS_VALU_MFMA_MOPS_F32)) / $denom))
@@ -242,7 +340,7 @@ Panel Config:
             max: MAX((((64 * (((SQ_INSTS_VALU_ADD_F32 + SQ_INSTS_VALU_MUL_F32) + SQ_INSTS_VALU_TRANS_F32)
               + (SQ_INSTS_VALU_FMA_F32 * 2))) + (512 * SQ_INSTS_VALU_MFMA_MOPS_F32)) / $denom))
             unit: (OPs  + $normUnit)
-            tips:
+            tips: *F32_OPs_desc
           F64 OPs:
             avg: AVG((((64 * (((SQ_INSTS_VALU_ADD_F64 + SQ_INSTS_VALU_MUL_F64) + SQ_INSTS_VALU_TRANS_F64)
               + (SQ_INSTS_VALU_FMA_F64 * 2))) + (512 * SQ_INSTS_VALU_MFMA_MOPS_F64)) / $denom))
@@ -251,10 +349,10 @@ Panel Config:
             max: MAX((((64 * (((SQ_INSTS_VALU_ADD_F64 + SQ_INSTS_VALU_MUL_F64) + SQ_INSTS_VALU_TRANS_F64)
               + (SQ_INSTS_VALU_FMA_F64 * 2))) + (512 * SQ_INSTS_VALU_MFMA_MOPS_F64)) / $denom))
             unit: (OPs  + $normUnit)
-            tips:
+            tips: *F64_OPs_desc
           INT8 OPs:
             avg: AVG(((SQ_INSTS_VALU_MFMA_MOPS_I8 * 512) / $denom))
             min: MIN(((SQ_INSTS_VALU_MFMA_MOPS_I8 * 512) / $denom))
             max: MAX(((SQ_INSTS_VALU_MFMA_MOPS_I8 * 512) / $denom))
             unit: (OPs  + $normUnit)
-            tips:
+            tips: *INT8_OPs_desc

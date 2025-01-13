@@ -2,6 +2,115 @@
 # Add description/tips for each metric in this section.
 # So it could be shown in hover.
 Metric Description:
+  Overall Instruction Mix:
+    VALU Instructions: &VALU_Instructions_desc >-
+      The total number of vector arithmetic logic unit (VALU) operations issued. These are the
+      workhorses of the compute unit, and are used to execute a wide range of instruction types
+      including floating point operations, non-uniform address calculations, transcendental
+      operations, integer operations, shifts, conditional evaluation, and so on.
+    VMEM Instructions: &VMEM_Instructions_desc >-
+      The total number of vector memory operations issued. These include most loads, stores and
+      atomic operations and all accesses to generic, global, private and texture memory.
+    LDS Instructions: &LDS_Instructions_desc >-
+      The total number of LDS (also known as shared memory) operations issued. These include loads,
+      stores, atomics, and HIP's ``__shfl`` operations.
+    MFMA Instructions: &MFMA_Instructions_desc >-
+      The total number of matrix fused multiply-add instructions issued.
+    SALU Instructions: &SALU_Instructions_desc >-
+      The total number of scalar arithmetic logic unit (SALU) operations issued. Typically these are
+      used for address calculations, literal constants, and other operations that are provably
+      uniform across a wavefront. Although scalar memory (SMEM) operations are issued by the SALU,
+      they are counted separately in this section.
+    SMEM Instructions: &SMEM_Instructions_desc >-
+      The total number of scalar memory (SMEM) operations issued. These are typically used for
+      loading kernel arguments, base-pointers and loads from HIP's ``__constant__`` memory.
+    Branch Instructions: &Branch_Instructions_desc >-
+      The total number of branch operations issued. These typically consist of jump or branch
+      operations and are used to implement control flow.
+  VALU Arithmetic Instruction Mix:
+    INT32 Instructions: &INT32_Instructions_desc >-
+      The total number of instructions operating on 32-bit integer operands issued to the VALU per
+      normalization unit.
+    INT64 Instructions: &INT64_Instructions_desc >-
+      The total number of instructions operating on 64-bit integer operands issued to the VALU per
+      normalization unit.
+    F16-ADD Instructions: &F16-ADD_Instructions_desc >-
+      The total number of addition instructions operating on 16-bit floating-point operands issued
+      to the VALU per normalization unit.
+    F16-MUL Instructions: &F16-MUL_Instructions_desc >-
+      The total number of multiplication instructions operating on 16-bit floating-point operands
+      issued to the VALU per normalization unit.
+    F16-FMA Instructions: &F16-FMA_Instructions_desc >-
+      The total number of fused multiply-add instructions operating on 16-bit floating-point
+      operands issued to the VALU per normalization unit.
+    F16-Trans Instructions: &F16-Trans_Instructions_desc >-
+      The total number of transcendental instructions (such as ``sqrt``) operating on 16-bit
+      floating-point operands issued to the VALU per normalization unit.
+    F32-ADD Instructions: &F32-ADD_Instructions_desc >-
+      The total number of addition instructions operating on 32-bit floating-point operands issued
+      to the VALU per normalization unit.
+    F32-MUL Instructions: &F32-MUL_Instructions_desc >-
+      The total number of multiplication instructions operating on 32-bit floating-point operands
+      issued to the VALU per normalization unit.
+    F32-FMA Instructions: &F32-FMA_Instructions_desc >-
+      The total number of fused multiply-add instructions operating on 32-bit floating-point
+      operands issued to the VALU per normalization unit.
+    F32-Trans Instructions: &F32-Trans_Instructions_desc >-
+      The total number of transcendental instructions (such as ``sqrt``) operating on 32-bit
+      floating-point operands issued to the VALU per normalization unit.
+    F64-ADD Instructions: &F64-ADD_Instructions_desc >-
+      The total number of addition instructions operating on 64-bit floating-point operands issued
+      to the VALU per normalization unit.
+    F64-MUL Instructions: &F64-MUL_Instructions_desc >-
+      The total number of multiplication instructions operating on 64-bit floating-point operands
+      issued to the VALU per normalization unit.
+    F64-FMA Instructions: &F64-FMA_Instructions_desc >-
+      The total number of fused multiply-add instructions operating on 64-bit floating-point
+      operands issued to the VALU per normalization unit.
+    F64-Trans Instructions: &F64-Trans_Instructions_desc >-
+      The total number of transcendental instructions (such as ``sqrt``) operating on 64-bit
+      floating-point operands issued to the VALU per normalization unit.
+    Conversion: &Conversion_Instructions_desc >-
+      The total number of type conversion instructions (such as converting data to or from F32↔F64)
+      issued to the VALU per normalization unit.
+  VMEM Instruction Mix:
+    Global/Generic Instructions: &Global_Generic_Instructions_desc >-
+      The total number of global and generic memory instructions executed on all compute units on
+      the accelerator, per normalization unit.
+    Global/Generic Read: &Global_Generic_Read_desc >-
+      The total number of global and generic memory read instructions executed on all compute units
+      on the accelerator, per normalization unit.
+    Global/Generic Write: &Global_Generic_Write_desc >-
+      The total number of global and generic memory write instructions executed on all compute units
+      on the accelerator, per normalization unit.
+    Global/Generic Atomic: &Global_Generic_Atomic_desc >-
+      The total number of global and generic memory atomic (with and without return) instructions
+      executed on all compute units on the accelerator, per normalization unit.
+    Spill/Stack Instructions: &Spill_Stack_Instructions_desc >-
+      The total number of spill/stack memory instructions executed on all compute units on the
+      accelerator, per normalization unit.
+    Spill/Stack Read: &Spill_Stack_Read_desc >-
+      The total number of spill/stack memory read instructions executed on all compute units on the
+      accelerator, per normalization unit.
+    Spill/Stack Write: &Spill_Stack_Write_desc >-
+      The total number of spill/stack memory write instructions executed on all compute units on the
+      accelerator, per normalization unit.
+    Spill/Stack Atomic: &Spill_Stack_Atomic_desc >-
+      The total number of spill/stack memory atomic (with and without return) instructions executed
+      on all compute units on the accelerator, per normalization unit. Typically unused as these
+      memory operations are typically used to implement thread-local storage.
+  MFMA Arithmetic Instruction Mix:
+    MFMA-I8 Instructions: &MFMA-I8_Instructions_desc >-
+      The total number of 8-bit integer MFMA instructions issued per normalization unit.
+    MFMA-F16 Instructions: &MFMA-F16_Instructions_desc >-
+      The total number of 16-bit floating point MFMA instructions issued per normalization unit.
+    MFMA-BF16 Instructions: &MFMA-BF16_Instructions_desc >-
+      The total number of 16-bit brain floating point MFMA instructions issued per normalization
+      unit.
+    MFMA-F32 Instructions: &MFMA-F32_Instructions_desc >-
+      The total number of 32-bit floating-point MFMA instructions issued per normalization unit.
+    MFMA-F64 Instructions: &MFMA-F64_Instructions_desc >-
+      The total number of 64-bit floating-point MFMA instructions issued per normalization unit.
 
 # Define the panel properties and properties of each metric in the panel.
 Panel Config:
@@ -24,43 +133,43 @@ Panel Config:
             min: MIN(((SQ_INSTS_VALU - SQ_INSTS_MFMA) / $denom))
             max: MAX(((SQ_INSTS_VALU - SQ_INSTS_MFMA) / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *VALU_Instructions_desc
           VMEM:
             avg: AVG(((SQ_INSTS_VMEM - SQ_INSTS_FLAT_LDS_ONLY) / $denom))
             min: MIN(((SQ_INSTS_VMEM - SQ_INSTS_FLAT_LDS_ONLY) / $denom))
             max: MAX(((SQ_INSTS_VMEM - SQ_INSTS_FLAT_LDS_ONLY) / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *VMEM_Instructions_desc
           LDS:
             avg: AVG((SQ_INSTS_LDS / $denom))
             min: MIN((SQ_INSTS_LDS / $denom))
             max: MAX((SQ_INSTS_LDS / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *LDS_Instructions_desc
           MFMA:
             avg: AVG((SQ_INSTS_MFMA / $denom))
             min: MIN((SQ_INSTS_MFMA / $denom))
             max: MAX((SQ_INSTS_MFMA / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *MFMA_Instructions_desc
           SALU:
             avg: AVG((SQ_INSTS_SALU / $denom))
             min: MIN((SQ_INSTS_SALU / $denom))
             max: MAX((SQ_INSTS_SALU / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *SALU_Instructions_desc
           SMEM:
             avg: AVG((SQ_INSTS_SMEM / $denom))
             min: MIN((SQ_INSTS_SMEM / $denom))
             max: MAX((SQ_INSTS_SMEM / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *SMEM_Instructions_desc
           Branch:
             avg: AVG((SQ_INSTS_BRANCH / $denom))
             min: MIN((SQ_INSTS_BRANCH / $denom))
             max: MAX((SQ_INSTS_BRANCH / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *Branch_Instructions_desc
 
     - metric_table:
         id: 1002
@@ -78,91 +187,91 @@ Panel Config:
             min: MIN((SQ_INSTS_VALU_INT32 / $denom))
             max: MAX((SQ_INSTS_VALU_INT32 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *INT32_Instructions_desc
           INT64:
             avg: AVG((SQ_INSTS_VALU_INT64 / $denom))
             min: MIN((SQ_INSTS_VALU_INT64 / $denom))
             max: MAX((SQ_INSTS_VALU_INT64 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *INT64_Instructions_desc
           F16-ADD:
             avg: AVG((SQ_INSTS_VALU_ADD_F16 / $denom))
             min: MIN((SQ_INSTS_VALU_ADD_F16 / $denom))
             max: MAX((SQ_INSTS_VALU_ADD_F16 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *F16-ADD_Instructions_desc
           F16-MUL:
             avg: AVG((SQ_INSTS_VALU_MUL_F16 / $denom))
             min: MIN((SQ_INSTS_VALU_MUL_F16 / $denom))
             max: MAX((SQ_INSTS_VALU_MUL_F16 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *F16-MUL_Instructions_desc
           F16-FMA:
             avg: AVG((SQ_INSTS_VALU_FMA_F16 / $denom))
             min: MIN((SQ_INSTS_VALU_FMA_F16 / $denom))
             max: MAX((SQ_INSTS_VALU_FMA_F16 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *F16-FMA_Instructions_desc
           F16-Trans:
             avg: AVG((SQ_INSTS_VALU_TRANS_F16 / $denom))
             min: MIN((SQ_INSTS_VALU_TRANS_F16 / $denom))
             max: MAX((SQ_INSTS_VALU_TRANS_F16 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *F16-Trans_Instructions_desc
           F32-ADD:
             avg: AVG((SQ_INSTS_VALU_ADD_F32 / $denom))
             min: MIN((SQ_INSTS_VALU_ADD_F32 / $denom))
             max: MAX((SQ_INSTS_VALU_ADD_F32 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *F32-ADD_Instructions_desc
           F32-MUL:
             avg: AVG((SQ_INSTS_VALU_MUL_F32 / $denom))
             min: MIN((SQ_INSTS_VALU_MUL_F32 / $denom))
             max: MAX((SQ_INSTS_VALU_MUL_F32 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *F32-MUL_Instructions_desc
           F32-FMA:
             avg: AVG((SQ_INSTS_VALU_FMA_F32 / $denom))
             min: MIN((SQ_INSTS_VALU_FMA_F32 / $denom))
             max: MAX((SQ_INSTS_VALU_FMA_F32 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *F32-FMA_Instructions_desc
           F32-Trans:
             avg: AVG((SQ_INSTS_VALU_TRANS_F32 / $denom))
             min: MIN((SQ_INSTS_VALU_TRANS_F32 / $denom))
             max: MAX((SQ_INSTS_VALU_TRANS_F32 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *F32-Trans_Instructions_desc
           F64-ADD:
             avg: AVG((SQ_INSTS_VALU_ADD_F64 / $denom))
             min: MIN((SQ_INSTS_VALU_ADD_F64 / $denom))
             max: MAX((SQ_INSTS_VALU_ADD_F64 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *F64-ADD_Instructions_desc
           F64-MUL:
             avg: AVG((SQ_INSTS_VALU_MUL_F64 / $denom))
             min: MIN((SQ_INSTS_VALU_MUL_F64 / $denom))
             max: MAX((SQ_INSTS_VALU_MUL_F64 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *F64-MUL_Instructions_desc
           F64-FMA:
             avg: AVG((SQ_INSTS_VALU_FMA_F64 / $denom))
             min: MIN((SQ_INSTS_VALU_FMA_F64 / $denom))
             max: MAX((SQ_INSTS_VALU_FMA_F64 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *F64-FMA_Instructions_desc
           F64-Trans:
             avg: AVG((SQ_INSTS_VALU_TRANS_F64 / $denom))
             min: MIN((SQ_INSTS_VALU_TRANS_F64 / $denom))
             max: MAX((SQ_INSTS_VALU_TRANS_F64 / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *F64-Trans_Instructions_desc
           Conversion:
             avg: AVG((SQ_INSTS_VALU_CVT / $denom))
             min: MIN((SQ_INSTS_VALU_CVT / $denom))
             max: MAX((SQ_INSTS_VALU_CVT / $denom))
             unit: (instr + $normUnit)
-            tips:
+            tips: *Conversions_Instructions_desc
 
     - metric_table:
         id: 1003
