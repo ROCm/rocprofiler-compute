@@ -2,9 +2,8 @@
 
 {% for data_source in data["Panel Config"]["data source"] %}
 
-## Anchor for internal linking.
-## For example, :ref:`command-processor-fetcher-metrics`.
-.. _{{data_source.metric_table.title|lower|replace(" ", "-") }}-metrics:
+{# Anchor for internal linking. For example, :ref:`command-processor-fetcher-metrics`. #}
+{# .. _{{data_source.metric_table.title|lower|replace(" ", "-") }}-metrics: #}
 
 {{ data_source.metric_table.title }}
 -------------------------------------------------------------------------------

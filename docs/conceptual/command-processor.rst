@@ -48,17 +48,17 @@ Command processor fetcher (CPF)
 
 .. tab-set::
 
-   .. tab-item:: MI300X
+   .. tab-item:: MI300
 
       .. datatemplate:yaml:: ../../src/rocprof_compute_soc/analysis_configs/gfx90a/0500_command-processor.yaml
          :template: ../_templates/performance-metrics-table.jinja
 
-   .. tab-item:: MI300X
+   .. tab-item:: MI200
 
       .. datatemplate:yaml:: ../../src/rocprof_compute_soc/analysis_configs/gfx90a/0500_command-processor.yaml
          :template: ../_templates/performance-metrics-table.jinja
 
-   .. tab-item:: MI300X
+   .. tab-item:: MI100
 
       .. datatemplate:yaml:: ../../src/rocprof_compute_soc/analysis_configs/gfx90a/0500_command-processor.yaml
          :template: ../_templates/performance-metrics-table.jinja
