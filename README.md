@@ -54,7 +54,7 @@ ctest
 
 For manual testing, you can find the executable at `install/bin/rocprof-compute`
 
-NOTE: This Dockerfile uses `rocm/dev-ubuntu-22.04` as the base image
+NOTE: This Dockerfile uses `rocm/dev-ubuntu-22.04` as the base image.
 
 ## How to Cite
 
