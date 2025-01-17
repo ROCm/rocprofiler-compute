@@ -867,6 +867,7 @@ def mibench(args, mspec):
         "15.3": "sles15sp5",
         "20.04": "ubuntu20_04",
         "22.04": "ubuntu20_04",
+        "24.04": "ubuntu20_04",
     }
 
     binary_paths = []
