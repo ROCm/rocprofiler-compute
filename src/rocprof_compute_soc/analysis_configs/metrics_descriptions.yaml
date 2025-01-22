@@ -1,0 +1,129 @@
+# Baseline analysis metrics descriptions
+units:
+  pct: Percent
+  Requests per normalization unit: &requests_per_normalization_unit >-
+    rst: Requests per :ref:`normalization unit <normalization-units>`
+---
+panels:
+  - System Speed-of-Light:
+    id: 200
+    metric_tables:
+      - id: 201
+        title: Speed-of-Light
+        metrics:
+          - VALU FLOPs:
+              plain: &0201_valu_flops_tip >-
+                The total floating-point operations executed per second on the VALU. This is also presented as a percent of
+                the peak theoretical FLOPs achievable on the specific accelerator. Note that this does not include any
+                floating-point operations from MFMA instructions.
+              rst:
+                The total floating-point operations executed per second on the :ref:`VALU <desc-valu>`. This is also
+                presented as a percent of the peak theoretical FLOPs achievable on the specific accelerator. Note that this
+                does not include any floating-point operations from :ref:`MFMA <desc-mfma>` instructions.
+          - VALU IOPs:
+              plain: &0201_valu_iops_tip >-
+                The total integer operations executed per second on the VALU. This is also presented as a percent of the
+                peak theoretical IOPs achievable on the specific accelerator. Note that this does not include any integer
+                operations from MFMA instructions.
+  - Command processor (CPC/CPF):
+    id: 500
+    metric_tables:
+      - id: 501
+        title: Command processor fetcher (CPF)
+        metrics:
+          - CPF utilization:
+              plain: &0501_cpf_utilization_tip >-
+                Percent of total cycles where the CPF was busy actively doing any work. The ratio of CPF busy cycles over
+                total cycles counted by the CPF.
+          - CPF stall:
+              plain: &0501_cpf_stall_rate_tip >-
+                Percent of CPF busy cycles where the CPF was stalled for any reason.
+          - CPF-L2 utilization:
+              plain: &0501_cpf-l2_utilization_tip >-
+                Percent of total cycles counted by the CPF-L2 interface where the CPF-L2 interface was active doing any
+                work. The ratio of CPF-L2 busy cycles over total cycles counted by the CPF-L2.
+              rst:
+                Percent of total cycles counted by the CPF-:doc:`L2 <l2-cache>` interface where the CPF-L2 interface was
+                active doing any work. The ratio of CPF-L2 busy cycles over total cycles counted by the CPF-L2.
+          - CPF-L2 stall:
+              plain: &0501_cpf-l2_stall_rate_tip >-
+                Percent of CPF-L2 busy cycles where the CPF-L2 interface was stalled for any reason.
+              rst:
+                Percent of CPF-:doc:`L2 <l2-cache>` L2 busy cycles where the CPF-L2 interface was stalled for any reason.
+          - CPF-UTCL1 stall:
+              plain: &0501_cpf-utcl1-stall_rate_tip >-
+                Percent of CPF busy cycles where the CPF was stalled by address translation.
+      - id: 502
+        title: Packet processor (CPC)
+        metrics:
+          - CPC utilization:
+              plain: &0502_cpc_utilization_tip >-
+                Percent of total cycles where the CPC was busy actively doing any work. The ratio of CPC busy cycles over
+                total cycles counted by the CPC.
+          - CPC stall rate:
+              plain: &0502_cpc_stall_rate_tip >-
+                Percent of CPC busy cycles where the CPC was stalled for any reason.
+          - CPC packet decoding utilization:
+              plain: &0502_cpc_packet_decoding_utilization_tip >-
+                Percent of CPC busy cycles spent decoding commands for processing.
+          - CPC-Workgroup Manager utilization:
+              plain: &0502_cpc-workgroup_manager_utilization_tip >-
+                Percent of CPC busy cycles spent dispatching workgroups to the workgroup manager.
+              rst:
+                Percent of CPC busy cycles spent dispatching workgroups to the :ref:`workgroup manager <desc-spi>`.
+          - CPC-L2 utilization:
+              plain: &0502_cpc-l2_utilization_tip >-
+                Percent of total cycles counted by the CPC-L2 interface where the CPC-L2 interface was active doing any
+                work.
+              rst:
+                Percent of total cycles counted by the CPC-:doc:`L2 <l2-cache>` interface where the CPC-L2 interface was
+                active doing any work.
+          - CPC-UTCL1 stall rate:
+              plain: &0502_cpc-utcl1_stall_rate_tip >-
+                Percent of CPC busy cycles where the CPC was stalled by address translation.
+          - CPC-UTCL2 utilization:
+              plain: &0502_cpc-utcl2_utilization_tip >-
+                Percent of total cycles counted by the CPC's L2 address translation interface where the CPC was busy doing
+                address translation work.
+              rst:
+                Percent of total cycles counted by the CPC's :doc:`L2 <l2-cache>` address translation interface where the
+                CPC was busy doing address translation work.
+
+  Memory chart:
+    id: 300
+
+  Roofline chart:
+    id: 300
+
+  Shader processor input:
+    id: 600
+
+  Wavefront launch:
+    id: 700
+
+  Compute unit instruction mix:
+    id: 1000
+
+  Compute unit compute pipeline:
+    id: 1100
+
+  LDS:
+    id: 1200
+
+  Instruction cache:
+    id: 1300
+
+  Constant cache:
+    id: 1400
+
+  TA and TD:
+    id: 1500
+
+  L1 cache:
+    id: 1600
+
+  L2 cache:
+    id: 1700
+
+  L2 cache per channel:
+    id: 1800
