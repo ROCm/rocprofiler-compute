@@ -640,6 +640,8 @@ latencies of read/write memory operations to the :doc:`L2 cache <l2-cache>`.
 
      - Cycles
 
+.. _l1-cache-line-size:
+
 .. note::
 
    All cache accesses in vL1D are for a single cache line's worth of data.

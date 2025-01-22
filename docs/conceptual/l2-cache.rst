@@ -13,8 +13,8 @@ on the device. Besides serving requests from the
 for servicing requests from the :ref:`L1 instruction caches <desc-l1i>`, the
 :ref:`scalar L1 data caches <desc-sL1D>` and the
 :doc:`command processor <command-processor>`. The L2 cache is composed of a
-number of distinct channels (16 on :ref:`MI300 <mixxx-note>` and 32 on
-:ref:`MI200 <mixxx-note>` and MI100 series CDNA accelerators at 256B address
+number of distinct channels (16 per XCC on :ref:`MI300 <mixxx-note>`, and 32 on
+:ref:`MI200 <mixxx-note>` and older CDNA accelerators at 256B address
 interleaving) which can largely operate independently. Mapping of incoming
 requests to a specific L2 channel is determined by a hashing mechanism that
 attempts to evenly distribute requests across the L2 channels. Requests that
