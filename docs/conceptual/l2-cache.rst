@@ -19,7 +19,7 @@ interleaving) which can largely operate independently. Mapping of incoming
 requests to a specific L2 channel is determined by a hashing mechanism that
 attempts to evenly distribute requests across the L2 channels. Requests that
 miss in the L2 cache are passed out to :ref:`Infinity Fabric™ <l2-fabric>` to
-be routed to the appropriate memory location. See :cdna3-white-paper:`<9>` for
+be routed to the appropriate memory location. See :cdna3-white-paper:`9` for
 more information.
 
 The L2 cache metrics reported by ROCm Compute Profiler are broken down into four

@@ -34,6 +34,19 @@ to use ROCm Compute Profiler to optimize your code.
    For a comparison of AMD Instinct accelerator specifications, refer to
    :doc:`Hardware specifications <rocm:reference/gpu-arch-specs>`.
 
+Supported features
+==================
+
+.. list-table::
+   :header-rows: 1
+
+   * - Feature
+     - Support
+
+   * - Infinity Cache
+     - Support
+
+
 In this chapter, the AMD Instinct performance model used by ROCm Compute Profiler is divided into a handful of
 key hardware blocks, each detailed in the following sections:
 
