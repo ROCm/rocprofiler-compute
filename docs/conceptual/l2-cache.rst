@@ -281,12 +281,14 @@ This section details the incoming requests to the L2 cache from the
 
      - Requests per :ref:`normalization unit <normalization-units>`.
 
+.. _l2-cache-line-size:
+
 .. note::
 
    All requests to the L2 are for a single cache line's worth of data. The size
-   of a cache line may vary depending on the accelerator, however on an AMD
-   Instinct CDNA2 :ref:`MI200 <mixxx-note>` accelerator, it is 128B, while on
-   an MI100, it is 64B.
+   of a cache line may vary depending on the accelerator. The L2 cache line
+   size is 128B on :ref:`MI300 and MI200 <mixxx-note>` accelerators, while on
+   MI100, it is 64B.
 
 .. _l2-fabric:
 
