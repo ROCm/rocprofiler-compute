@@ -41,8 +41,10 @@ The Scalar L1 Data cache (sL1D) can cache data accessed from scalar load
 instructions (and scalar store instructions on architectures where they exist)
 from wavefronts in the :doc:`CUs <compute-unit>`. The sL1D is shared between
 multiple CUs (:gcn-crash-course:`36`) -- the exact number of CUs depends on the
-architecture in question (3 CUs in GCN™ GPUs and MI100, 2 CUs in
-:ref:`MI200 <mixxx-note>`) -- and is backed by the :doc:`L2 cache <l2-cache>`.
+architecture in question (2 CUs in :ref:`MI300 <mixxx-note>`, 2 CUs in
+:ref:`MI200 <mixxx-note>`, and 3 CUs in MI100 and GCN™ GPUs) -- and is
+backed by the :doc:`L2 cache <l2-cache>`. See :doc:`Accelerator and GPU
+hardware specifications <rocm:reference/gpu-arch-specs>` for more information.
 
 In typical usage, the data in the sL1D is comprised of:
 
