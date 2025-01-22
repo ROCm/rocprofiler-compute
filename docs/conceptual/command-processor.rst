@@ -43,25 +43,32 @@ processor’s metrics therefore are focused on reporting, for example:
 
 .. _cpf-metrics:
 
+.. datatemplate:yaml:: ../../src/rocprof_compute_soc/analysis_configs/metrics_descriptions.yaml
+
+   {% set panel_name = "Command processor (CPF/CPC)" %}
+   {% set metric_tables = data.panels[panel_name].metric_tables %}
+   {% for metric_table in metric_tables %}
+
+   {{ metric_table.title }}
+   ============================================================================================
+
+   .. list-table::
+      :header-rows: 1
+
+      * - Metric
+        - Description
+        - Unit
+
+      {% for metric, desc in metric_table.metrics.items() %}
+      * - {{ metric }}
+        - {{ desc.rst | default(desc.plain) }}
+        - pct?
+
+      {% endfor %}
+   {% endfor %}
+
 Command processor fetcher (CPF)
 ===============================
-
-.. tab-set::
-
-   .. tab-item:: MI300
-
-      .. datatemplate:yaml:: ../../src/rocprof_compute_soc/analysis_configs/gfx90a/0500_command-processor.yaml
-         :template: ../_templates/performance-metrics-table.jinja
-
-   .. tab-item:: MI200
-
-      .. datatemplate:yaml:: ../../src/rocprof_compute_soc/analysis_configs/gfx90a/0500_command-processor.yaml
-         :template: ../_templates/performance-metrics-table.jinja
-
-   .. tab-item:: MI100
-
-      .. datatemplate:yaml:: ../../src/rocprof_compute_soc/analysis_configs/gfx90a/0500_command-processor.yaml
-         :template: ../_templates/performance-metrics-table.jinja
 
 .. list-table::
    :header-rows: 1
