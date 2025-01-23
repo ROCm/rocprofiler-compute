@@ -2,7 +2,7 @@ name: Sync Staging with Develop
 on:
     workflow_dispatch:
     schedule:
-      - cron: 0 5 * * sun
+      - cron: 0 0 * * *
 
 jobs:
   promote-dev-to-stg:
