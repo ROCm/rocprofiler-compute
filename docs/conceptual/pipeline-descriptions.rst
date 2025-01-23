@@ -289,11 +289,11 @@ instructions (``v_accvgpr_*``). These data movement instructions may be
 used by the compiler to implement lower-cost register-spill/fills on
 architectures with AGPRs.
 
-AGPRs are not available on all AMD Instinct™ accelerators. GCN GPUs,
-such as the AMD Instinct MI50 had a 256 KiB VGPR file. The AMD
-Instinct MI100 (CDNA) has a 2x256 KiB register file, where one half
-is available as general-purpose VGPRs, and the other half is for matrix
-math accumulation VGPRs (AGPRs). The AMD Instinct :ref:`MI200 <mixxx-note>`
-(CDNA2) has a 512 KiB VGPR file per CU, where each wave can dynamically request
-up to 256 KiB of VGPRs and an additional 256 KiB of AGPRs. For more information,
-refer to `this comment <https://github.com/ROCm/ROCm/issues/1689#issuecomment-1553751913>`_.
+AGPRs are not available on all AMD Instinct™ accelerators. GCN GPUs, such as
+the AMD Instinct MI50 had a 256 KiB VGPR file. The AMD Instinct MI100 (CDNA)
+has a 2x256 KiB register file, where one half is available as general-purpose
+VGPRs, and the other half is for matrix math accumulation VGPRs (AGPRs). The
+AMD Instinct :ref:`MI300 and MI200 <mixxx-note>` have a 512 KiB VGPR
+file per CU, where each wave can dynamically request up to 256 KiB of VGPRs and
+an additional 256 KiB of AGPRs. For more information, refer to `this comment
+<https://github.com/ROCm/ROCm/issues/1689#issuecomment-1553751913>`_.
