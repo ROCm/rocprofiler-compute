@@ -22,8 +22,8 @@ capacity of 256KB and also utilizing 256B address interleaving, allowing for a
 total of up to *eight* instances. Incoming requests are mapped to specific L2
 channels using a hashing mechanism designed to evenly distribute the requests
 across the available channels. Requests that do not find a match in the L2
-cache are forwarded to the :ref:`Infinity Fabric™ <l2-fabric>` to be routed
-to the appropriate memory location. For more details, see :cdna3-white-paper:9.
+cache are forwarded to the :ref:`Infinity Fabric™ <l2-fabric>` to be routed to
+the appropriate memory location. For more details, see :cdna3-white-paper:`9`.
 
 The L2 cache metrics reported by ROCm Compute Profiler are broken down into four
 categories:
@@ -298,7 +298,7 @@ This section details the incoming requests to the L2 cache from the
 L2-Fabric transactions
 ======================
 
-Requests and data that miss in the L2 must be routed to memory in order to
+Requests/data that miss in the L2 must be routed to memory in order to
 service them. The backing memory for a request may be local to this
 accelerator (i.e., in the local high-bandwidth memory), in a remote
 accelerator’s memory, or even in the CPU’s memory. Infinity Fabric
