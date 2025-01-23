@@ -17,13 +17,13 @@ The L2 cache consists of several distinct channels (32 channels for the
 :ref:`MI200 <mixxx-note>` and older CDNA accelerators, each utilizing 256B
 address interleaving. These channels can operate largely independently, but the
 system supports a maximum of two instances. In contrast, the CDNA3-based
-:ref:`MI300 <mixxx-note>` features 16 channels per XCD, each with a capacity of
-256KB and also utilizing 256B address interleaving, allowing for a total of up
-to *eight* instances. Incoming requests are mapped to specific L2 channels
-using a hashing mechanism designed to evenly distribute the requests across the
-available channels. Requests that do not find a match in the L2 cache are
-forwarded to the :ref:Infinity Fabric™ <l2-fabric>, which routes them to the
-appropriate memory location. For more details, see :cdna3-white-paper:9.
+:ref:`MI300 <mixxx-note>` accelerator features 16 channels per XCD, each with a
+capacity of 256KB and also utilizing 256B address interleaving, allowing for a
+total of up to *eight* instances. Incoming requests are mapped to specific L2
+channels using a hashing mechanism designed to evenly distribute the requests
+across the available channels. Requests that do not find a match in the L2
+cache are forwarded to the :ref:`Infinity Fabric™ <l2-fabric>` to be routed
+to the appropriate memory location. For more details, see :cdna3-white-paper:9.
 
 The L2 cache metrics reported by ROCm Compute Profiler are broken down into four
 categories:
@@ -298,7 +298,7 @@ This section details the incoming requests to the L2 cache from the
 L2-Fabric transactions
 ======================
 
-Requests/data that miss in the L2 must be routed to memory in order to
+Requests and data that miss in the L2 must be routed to memory in order to
 service them. The backing memory for a request may be local to this
 accelerator (i.e., in the local high-bandwidth memory), in a remote
 accelerator’s memory, or even in the CPU’s memory. Infinity Fabric
@@ -346,7 +346,8 @@ In addition, the read and write requests can be further categorized as:
   * On MI300 accelerators, all atomic requests are counted as such since they
     bypass the L2 cache and are routed directly to the Infinity Cache (MALL).
 
-  * On MI200 accelerators, these involve atomic updates to :ref:`fine-grained memory <memory-type>`.
+  * On MI200 accelerators, these are requests targeted at non-write-cacheable
+    memory, such as :ref:`fine-grained memory <memory-type>`.
 
 * HBM or remote read/write requests: These are for requests to the
   accelerator’s local high-bandwidth memory -- or for requests to a remote
@@ -690,11 +691,10 @@ transaction breakdown table:
      - The total number of L2 requests to Infinity Fabric to atomically update
        32B or 64B of data in any memory location, per
        :ref:`normalization unit <normalization-units>`. See
-       :ref:`l2-request-flow` for more detail. Note that on current CDNA
-       accelerators, such as the :ref:`MI200 <mixxx-note>`, requests are only
-       considered *atomic* by Infinity Fabric if they are targeted at
-       non-write-cacheable memory, such as
-       :ref:`fine-grained memory <memory-type>` allocations or
+       :ref:`l2-request-flow` for more detail. Note that on :ref:`MI200
+       <mixxx-note>` accelerators, requests are only considered *atomic* by
+       Infinity Fabric if they are targeted at non-write-cacheable memory, such
+       as :ref:`fine-grained memory <memory-type>` allocations or
        :ref:`uncached memory <memory-type>` allocations on the MI200.
 
      - Requests per :ref:`normalization unit <normalization-units>`.
