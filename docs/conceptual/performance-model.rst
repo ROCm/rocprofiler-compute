@@ -7,11 +7,11 @@
 Performance model
 *****************
 
-ROCm Compute Profiler makes available an extensive list of metrics to better understand
-achieved application performance on AMD Instinct™ MI-series accelerators
-including Graphics Core Next™ (GCN) GPUs like the AMD Instinct MI50, CDNA™
-accelerators like the MI100, and CDNA2 accelerators such as the MI250X, MI250,
-and MI210.
+ROCm Compute Profiler makes available an extensive list of metrics to better
+understand achieved application performance on AMD Instinct™ MI-series
+accelerators including CDNA™ 3 accelerators like the MI300, CDNA 2 accelerators
+like the MI250X, MI250, and MI210, CDNA accelerators like the MI100, and
+Graphics Core Next™ (GCN) GPUs like the MI50.
 
 To best use profiling data, it's important to understand the role of various
 hardware blocks of AMD Instinct accelerators. This section describes each
@@ -44,8 +44,7 @@ Supported features
      - Support
 
    * - Infinity Cache
-     - Support
-
+     - MI300
 
 In this chapter, the AMD Instinct performance model used by ROCm Compute Profiler is divided into a handful of
 key hardware blocks, each detailed in the following sections:
