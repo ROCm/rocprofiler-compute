@@ -7,20 +7,23 @@ L2 cache (TCC)
 **************
 
 The L2 cache is the coherence point for current AMD Instinct™ MI-series GCN™
-GPUs and CDNA™ accelerators, and is shared by all :doc:`CUs <compute-unit>`
-on the device. Besides serving requests from the
-:doc:`vector L1 data caches <vector-l1-cache>`, the L2 cache also is responsible
-for servicing requests from the :ref:`L1 instruction caches <desc-l1i>`, the
-:ref:`scalar L1 data caches <desc-sL1D>` and the
-:doc:`command processor <command-processor>`. The L2 cache is composed of a
-number of distinct channels (16 per XCC on :ref:`MI300 <mixxx-note>`, and 32 on
-:ref:`MI200 <mixxx-note>` and older CDNA accelerators at 256B address
-interleaving) which can largely operate independently. Mapping of incoming
-requests to a specific L2 channel is determined by a hashing mechanism that
-attempts to evenly distribute requests across the L2 channels. Requests that
-miss in the L2 cache are passed out to :ref:`Infinity Fabric™ <l2-fabric>` to
-be routed to the appropriate memory location. See :cdna3-white-paper:`9` for
-more information.
+GPUs and CDNA™ accelerators, and is shared by all :doc:`CUs <compute-unit>` on
+the device. Besides serving requests from the :doc:`vector L1 data caches
+<vector-l1-cache>`, the L2 cache also is responsible for servicing requests
+from the :ref:`L1 instruction caches <desc-l1i>`, the :ref:`scalar L1 data
+caches <desc-sL1D>` and the :doc:`command processor <command-processor>`. 
+
+The L2 cache consists of several distinct channels (32 channels for the
+:ref:`MI200 <mixxx-note>` and older CDNA accelerators, each utilizing 256B
+address interleaving. These channels can operate largely independently, but the
+system supports a maximum of two instances. In contrast, the CDNA3-based
+:ref:`MI300 <mixxx-note>` features 16 channels per XCD, each with a capacity of
+256KB and also utilizing 256B address interleaving, allowing for a total of up
+to *eight* instances. Incoming requests are mapped to specific L2 channels
+using a hashing mechanism designed to evenly distribute the requests across the
+available channels. Requests that do not find a match in the L2 cache are
+forwarded to the :ref:Infinity Fabric™ <l2-fabric>, which routes them to the
+appropriate memory location. For more details, see :cdna3-white-paper:9.
 
 The L2 cache metrics reported by ROCm Compute Profiler are broken down into four
 categories:
