@@ -323,7 +323,6 @@ by ROCm Compute Profiler:
 
    L2↔Fabric transaction flow on AMD Instinct MI-series accelerators.
 
-
 Requests from the L2 Cache are broken down into two major categories, read
 requests and write requests (at this granularity, atomic requests are treated
 as writes).
@@ -344,6 +343,7 @@ In addition, the read and write requests can be further categorized as:
 
 * Atomic requests, for instance: for atomic updates to
   :ref:`fine-grained memory <memory-type>`
+
 
 * HBM read/write requests OR remote read/write requests, for instance: for
   requests to the accelerator’s local HBM OR requests to a remote accelerator’s
@@ -596,6 +596,15 @@ transaction breakdown table:
    * - 64B Read Requests
 
      - The total number of L2 requests to Infinity Fabric to read 64B of data
+       from any memory location, per
+       :ref:`normalization unit <normalization-units>`. See
+       :ref:`l2-request-flow` for more detail.
+
+     - Requests per :ref:`normalization unit <normalization-units>`.
+
+   * - 128B Read Requests
+
+     - The total number of L2 requests to Infinity Fabric to read 128B of data
        from any memory location, per
        :ref:`normalization unit <normalization-units>`. See
        :ref:`l2-request-flow` for more detail.
