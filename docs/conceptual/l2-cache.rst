@@ -329,7 +329,7 @@ as writes).
 
 From there, these requests can additionally subdivided in a number of ways.
 First, these requests may be sent across Infinity Fabric as different
-transaction sizes, 32B or 64B on current CDNA accelerators.
+transaction sizes: 32B, 64B, or 128B.
 
 .. note::
 
@@ -338,16 +338,19 @@ transaction sizes, 32B or 64B on current CDNA accelerators.
 
 In addition, the read and write requests can be further categorized as:
 
-* Uncached read/write requests, for instance: for access to
-  :ref:`fine-grained memory <memory-type>`
+* Uncached read/write requests: These occur, for instance, when accessing
+  :ref:`fine-grained memory <memory-type>`.
 
-* Atomic requests, for instance: for atomic updates to
-  :ref:`fine-grained memory <memory-type>`
+* Atomic requests:
 
+  * On MI300 accelerators, all atomic requests are counted as such since they
+    bypass the L2 cache and are routed directly to the Infinity Cache (MALL).
 
-* HBM read/write requests OR remote read/write requests, for instance: for
-  requests to the accelerator’s local HBM OR requests to a remote accelerator’s
-  HBM or the CPU’s DRAM
+  * On MI200 accelerators, these involve atomic updates to :ref:`fine-grained memory <memory-type>`.
+
+* HBM or remote read/write requests: These are for requests to the
+  accelerator’s local high-bandwidth memory -- or for requests to a remote
+  accelerator’s HBM or the CPU’s DRAM.
 
 These classifications are not necessarily *exclusive*. For example, a
 write request can be classified as an atomic request to the
@@ -446,15 +449,16 @@ Metrics
 
    * - L2-Fabric Write and Atomic Bandwidth
 
-     - The total number of bytes written by the L2 over Infinity Fabric by write
-       and atomic operations per
-       :ref:`normalization unit <normalization-units>`. Note that on current
-       CDNA accelerators, such as the :ref:`MI200 <mixxx-note>`, requests are
-       only considered *atomic* by Infinity Fabric if they are targeted at
-       non-write-cacheable memory, for example,
-       :ref:`fine-grained memory <memory-type>` allocations or
-       :ref:`uncached memory <memory-type>` allocations on the
-       MI200.
+     - The total number of bytes written by the L2 over Infinity Fabric by
+       write and atomic operations per :ref:`normalization unit
+       <normalization-units>`. Note that on :ref:`MI200 <mixxx-note>`
+       accelerators, requests are only considered *atomic* by Infinity Fabric
+       if they are targeted at non-write-cacheable memory, for example,
+       :ref:`fine-grained memory <memory-type>` allocations or :ref:`uncached
+       memory <memory-type>` allocations on the MI200. However, on the MI300,
+       all atomic requests are counted as such because they are not cached in
+       L2 and must be directed to the Infinity Cache (MALL), regardless of the
+       memory type.
 
      - Bytes per :ref:`normalization unit <normalization-units>`.
 
@@ -465,11 +469,13 @@ Metrics
        breakdown does not consider the *size* of the request (meaning that 32B
        and 64B requests are both counted as a single request), so this metric
        only *approximates* the percent of the L2-Fabric Write and Atomic
-       bandwidth directed to the local HBM. Note that on current CDNA
-       accelerators, such as the :ref:`MI200 <mixxx-note>`, requests are only
-       considered *atomic* by Infinity Fabric if they are targeted at
-       :ref:`fine-grained memory <memory-type>` allocations or
-       :ref:`uncached memory <memory-type>` allocations.
+       bandwidth directed to the local HBM. Note that on :ref:`MI200
+       <mixxx-note>` accelerators, requests are only considered *atomic* by
+       Infinity Fabric if they are targeted at :ref:`fine-grained memory
+       <memory-type>` allocations or :ref:`uncached memory <memory-type>`
+       allocations. However, on the MI300, all atomic requests are counted as
+       such because they are not cached in L2 and must be directed to the
+       Infinity Cache (MALL), regardless of the memory type.
 
      - Percent
 
@@ -481,11 +487,13 @@ Metrics
        HBM. This breakdown does not consider the *size* of the request (meaning
        that 32B and 64B requests are both counted as a single request), so this
        metric only *approximates* the percent of the L2-Fabric Read bandwidth
-       directed to a remote location. Note that on current CDNA
-       accelerators, such as the :ref:`MI200 <mixxx-note>`, requests are only
-       considered *atomic* by Infinity Fabric if they are targeted at
-       :ref:`fine-grained memory <memory-type>` allocations or
-       :ref:`uncached memory <memory-type>` allocations.
+       directed to a remote location. Note that on :ref:`MI200 <mixxx-note>`
+       accelerators, requests are only considered *atomic* by Infinity Fabric
+       if they are targeted at :ref:`fine-grained memory <memory-type>`
+       allocations or :ref:`uncached memory <memory-type>` allocations.
+       However, on the MI300, all atomic requests are counted as such because
+       they are not cached in L2 and must be directed to the Infinity Cache
+       (MALL), regardless of the memory type.
 
      - Percent
 
@@ -496,10 +504,12 @@ Metrics
        *size* of the request (meaning that 32B and 64B requests are both counted
        as a single request), so this metric only *approximates* the percent of
        the L2-Fabric Read bandwidth directed to a remote location. Note that on
-       current CDNA accelerators, such as the :ref:`MI200 <mixxx-note>`,
-       requests are only considered *atomic* by Infinity Fabric if they are
-       targeted at :ref:`fine-grained memory <memory-type>` allocations or
-       :ref:`uncached memory <memory-type>` allocations.
+       :ref:`MI200 <mixxx-note>` accelerators, requests are only considered
+       *atomic* by Infinity Fabric if they are targeted at :ref:`fine-grained
+       memory <memory-type>` allocations or :ref:`uncached memory
+       <memory-type>` allocations. However, on the MI300, all atomic requests
+       are counted as such because they are not cached in L2 and must be
+       directed to the Infinity Cache (MALL), regardless of the memory type.
 
      - Percent
 
