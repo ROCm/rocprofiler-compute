@@ -314,8 +314,8 @@ individual metrics.
 Request flow
 ------------
 
-The following is a diagram that illustrates how L2↔Fabric requests are reported
-by ROCm Compute Profiler:
+The following diagram illustrates how L2↔Fabric requests are reported by ROCm
+Compute Profiler:
 
 .. figure:: ../data/performance-model/fabric.png
    :align: center
@@ -394,7 +394,7 @@ counted as *two* uncached read requests (that is, the request is split):
 Metrics
 -------
 
- The following metrics are reported for the L2-Fabric interface:
+The following metrics are reported for the L2-Fabric interface:
 
 .. list-table::
    :header-rows: 1
