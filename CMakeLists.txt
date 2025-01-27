@@ -442,9 +442,25 @@ set(CPACK_DEB_COMPONENT_INSTALL ON)
 set(CPACK_DEBIAN_FILE_NAME "DEB-DEFAULT")
 
 # Dependencies
+# Python Dependencies pointing to requirements.txt file
+set(REQUIREMNTS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt")
 set(PACKAGE_REQUIRES
     "rocprofiler"
     CACHE STRING "Package dependencies")
+
+if(EXISTS ${REQUIREMNTS_FILE})
+    file(READ ${REQUIREMNTS_FILE} REQUIREMENTS_CONTENT)
+    # replace newlines with commas
+    STRING(REPLACE "\n" "," REQUIREMENTS_LIST ${REQUIREMENTS_CONTENT})
+    # remove trailing commas
+    STRING(REGEX REPLACE ", $|,$" "" REQUIREMENTS_LIST ${REQUIREMENTS_LIST})
+    # append to PACKAGE_REQUIRES
+    set(PACKAGE_REQUIRES
+        "${PACKAGE_REQUIRES},
+        ${REQUIREMENTS_LIST}"
+        CACHE STRING "Updated PACKAGE_REQUIRES to include requirements.txt" FORCE)
+endif()
+
 set(CPACK_RPM_PACKAGE_REQUIRES ${PACKAGE_REQUIRES})
 set(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_REQUIRES})
 
