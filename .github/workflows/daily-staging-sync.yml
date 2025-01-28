@@ -13,24 +13,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-            ref: amd-staging
-            fetch-depth: '0'
+          ref: develop
+          fetch-depth: '0'
 
       - name: Merge - Fast Forward Only
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_EXISTS=$(gh pr list --base amd-staging --head promote-develop-$(date +%F) --json number --jq '.[0].number')
-          if [ -z "$PR_EXISTS" ]; then
-            git checkout amd-staging
-            git checkout -b promote-develop-$(date +%F)
-            git merge --ff-only origin/develop
-            git push -u origin HEAD
-            gh pr create --base amd-staging --title "Promote \`develop\` to \`amd-staging\`" --fill --label "automerge"
-
-            PR_NUMBER=$(gh pr list --base amd-staging --label automerge --json number --jq '.[0].number')
-            if [ -n "$PR_NUMBER" ]; then
-              gh pr merge $PR_NUMBER --rebase
-          else
-            echo "Pull request already exists: #$PR_EXISTS"
-          fi
+          git checkout amd-staging
+          git merge origin/develop --ff-only
+          git push origin HEAD
