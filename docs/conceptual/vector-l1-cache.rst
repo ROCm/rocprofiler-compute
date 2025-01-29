@@ -429,7 +429,7 @@ ROCm Compute Profiler reports the following L1 TLB metrics:
 
 .. note::
 
-   On :ref:`MI200 <mixxx-note>` (CDNA2) accelerators, the UTCL1 does *not*
+   On :ref:`MI200 <mixxx-note>` (CDNA2) and earlier accelerators, the UTCL1 does *not*
    count hit-on-miss requests.
 
 .. _desc-tc:

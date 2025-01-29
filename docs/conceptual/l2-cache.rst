@@ -13,17 +13,17 @@ the device. Besides serving requests from the :doc:`vector L1 data caches
 from the :ref:`L1 instruction caches <desc-l1i>`, the :ref:`scalar L1 data
 caches <desc-sL1D>` and the :doc:`command processor <command-processor>`. 
 
-The L2 cache consists of several distinct channels (32 channels for the
-:ref:`MI200 <mixxx-note>` and older CDNA accelerators, each utilizing 256B
-address interleaving. These channels can operate largely independently, but the
-system supports a maximum of two instances. In contrast, the CDNA3-based
-:ref:`MI300 <mixxx-note>` accelerator features 16 channels per XCD, each with a
-capacity of 256KB and also utilizing 256B address interleaving, allowing for a
-total of up to *eight* instances. Incoming requests are mapped to specific L2
-channels using a hashing mechanism designed to evenly distribute the requests
-across the available channels. Requests that do not find a match in the L2
-cache are forwarded to the :ref:`Infinity Fabric™ <l2-fabric>` to be routed to
-the appropriate memory location. For more details, see :cdna3-white-paper:`9`.
+The L2 cache consists of several distinct channels (16 channels for the
+CDNA3-based :ref:`MI300 <mixxx-note>` accelerator), each with a capacity of
+256KB and utilizing 256B address interleaving. These channels can operate
+largely independently and the system supports up to 8 instances (one per XCD).
+In constrast, the :ref:`MI200 <mixxx-note>` and earlier CDNA accelerators have
+32 L2 cache channels each using 256B address interleaving, but only supports a
+maximum of 2 instances. Incoming requests are mapped to specific L2 channels
+using a hashing mechanism designed to evenly distribute the requests across the
+available channels. Requests that do not find a match in the L2 cache are
+forwarded to the :ref:`Infinity Fabric™ <l2-fabric>` to be routed to the
+appropriate memory location. For more details, see :cdna3-white-paper:`9`.
 
 The L2 cache metrics reported by ROCm Compute Profiler are broken down into four
 categories:
