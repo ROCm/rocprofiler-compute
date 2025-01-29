@@ -329,7 +329,8 @@ as writes).
 
 From there, these requests can additionally subdivided in a number of ways.
 First, these requests may be sent across Infinity Fabric as different
-transaction sizes: 32B, 64B, or 128B.
+transaction sizes: 32B, 64B, or 128B. Not all transaction sizes are supported
+on all CDNA accelerators and GCN GPUs.
 
 .. note::
 
