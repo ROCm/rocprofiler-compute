@@ -1,0 +1,29 @@
+.. -*- mode: rst -*-
+
+{% for data_source in data["Panel Config"]["data source"] %}
+
+{# Anchor for internal linking. For example, :ref:`command-processor-fetcher-metrics`. #}
+{# .. _{{data_source.metric_table.title|lower|replace(" ", "-") }}-metrics: #}
+
+{{ data_source.metric_table.title }}
+-------------------------------------------------------------------------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Metric
+     - Description
+     - Unit
+
+  {% for name, desc in data_source.metric_table.metric.items() %}
+   * - {{ name }}
+     - {{ desc.tips }}
+     - {{ desc.unit }}
+
+  {% endfor %}
+{% endfor %}
+
+.. note::
+
+   END
+

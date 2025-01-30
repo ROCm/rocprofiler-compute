@@ -2,6 +2,78 @@
 # Add description/tips for each metric in this section.
 # So it could be shown in hover.
 Metric Description:
+  Address Processing Unit:
+    Busy: &TA_Busy_desc >-
+      Percent of the total CU cycles the address processor was busy.
+    Address Stall: &TA_Address_Stall_desc >-
+      Percent of the total CU cycles the address processor was stalled from sending address requests
+      further into the vL1D pipeline.
+    Data Stall: &TA_Data_Stall_desc >-
+      Percent of the total CU cycles the address processor was stalled from sending write/atomic
+      data further into the vL1D pipeline.
+    Data-Processor → Address Stall: &TA_Data-Processor_Address_Stall_desc >-
+      Percent of total CU cycles the address processor was stalled waiting to send command data to
+      the data processor.
+    Total Instructions: &TA_Total_Instructions_desc >-
+    Global/Generic Instructions: &TA_Global_Generic_Instructions_desc >-
+      The total number of global and generic memory instructions executed on all compute units on
+      the accelerator, per normalization unit.
+    Global/Generic Read Instructions: &TA_Global_Generic_Read_desc >-
+      The total number of global and generic memory read instructions executed on all compute units
+      on the accelerator, per normalization unit.
+    Global/Generic Write Instructions: &TA_Global_Generic_Write_desc >-
+      The total number of global and generic memory write instructions executed on all compute units
+      on the accelerator, per normalization unit.
+    Global/Generic Atomic Instructions: &TA_Global_Generic_Atomic_desc >-
+      The total number of global and generic memory atomic (with and without return) instructions
+      executed on all compute units on the accelerator, per normalization unit.
+    Spill/Stack Instructions: &TA_Spill_Stack_Instructions_desc >-
+      The total number of spill/stack memory instructions executed on all compute units on the
+      accelerator, per normalization unit.
+    Spill/Stack Read Instructions: &TA_Spill_Stack_Read_desc >-
+      The total number of spill/stack memory read instructions executed on all compute units on the
+      accelerator, per normalization unit.
+    Spill/Stack Write Instructions: &TA_Spill_Stack_Write_desc >-
+      The total number of spill/stack memory write instructions executed on all compute units on the
+      accelerator, per normalization unit.
+    Spill/Stack Atomic Instructions: &TA_Spill_Stack_Atomic_desc >-
+      The total number of spill/stack memory atomic (with and without return) instructions executed
+      on all compute units on the accelerator, per normalization unit. Typically unused as these
+      memory operations are typically used to implement thread-local storage.
+    Spill/Stack Total Cycles: &TA_Spill_Stack_Total_Cycles_desc >-
+      The number of cycles the address processing unit spent working on spill/stack instructions,
+      per normalization unit.
+    Spill/Stack Coalesced Read: &TA_Spill_Stack_Coalesced_Read_desc >-
+      The number of cycles the address processing unit spent working on coalesced spill/stack read
+      instructions, per normalization unit.
+    Spill/Stack Coalesced Write: &TA_Spill_Stack_Coalesced_Write_desc >-
+      The number of cycles the address processing unit spent working on coalesced spill/stack write
+      instructions, per normalization unit.
+  Data-Return Path:
+    Data-Return Busy: &TD_Busy_desc >-
+      Percent of the total CU cycles the data-return unit was busy processing or waiting on data to
+      return to the CU.
+    Cache RAM → Data-Return Stall: &TD_Cache_RAM_Data-Return_Stall_desc >-
+      Percent of the total CU cycles the data-return unit was stalled on data to be returned from
+      the vL1D Cache RAM.
+    Workgroup Manager → Data-Return Stall: &TD_Workgroup_Manager_Data-Return_Stall_desc >-
+      Percent of the total CU cycles the data-return unit was stalled by the workgroup manager due
+      to initialization of registers as a part of launching new workgroups.
+    Coalescable Instructions: &TD_Coalescable_Instructions_desc >-
+      The number of instructions submitted to the data-return unit by the address processor that
+      were found to be coalescable, per normalization unit.
+    Read Instructions: &TD_Read_desc >-
+      The number of read instructions submitted to the data-return unit by the address processor
+      summed over all compute units on the accelerator, per normalization unit. This is expected to
+      be the sum of global/generic and spill/stack reads in the address processor.
+    Write Instructions: &TD_Write_desc >-
+      The number of store instructions submitted to the data-return unit by the address processor
+      summed over all compute units on the accelerator, per normalization unit. This is expected to
+      be the sum of global/generic and spill/stack stores counted by the vL1D cache-front-end.
+    Atomic Instructions: &TD_Atomic_desc >-
+      The number of atomic instructions submitted to the data-return unit by the address processor
+      summed over all compute units on the accelerator, per normalization unit. This is expected to
+      be the sum of global/generic and spill/stack atomics in the address processor.
 
 # Define the panel properties and properties of each metric in the panel.
 Panel Config:

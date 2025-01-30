@@ -2,6 +2,96 @@
 # Add description/tips for each metric in this section.
 # So it could be shown in hover.
 Metric Description:
+  Vector L1 Data Cache:
+    Speed-of-Light:
+      Hit Rate: &SoL_Hit_Rate_desc >-
+        The ratio of the number of vL1D cache line requests that hit in vL1D cache over the total
+        number of cache line requests to the vL1D Cache RAM.
+      Bandwidth: &SoL_Bandwidth_desc >-
+        The number of bytes looked up in the vL1D cache as a result of VMEM instructions, as a
+        percent of the peak theoretical bandwidth achievable on the specific accelerator. The number
+        of bytes is calculated as the number of cache lines requested multiplied by the cache line
+        size. This value does not consider partial requests, so for instance, if only a single value
+        is requested in a cache line, the data movement will still be counted as a full cache line.
+      Utilization: &SoL_Utilization_desc >-
+        Indicates how busy the vL1D Cache RAM was during the kernel execution. The number of cycles
+        where the vL1D Cache RAM is actively processing any request divided by the number of cycles
+        where the vL1D is active.
+      Coalescing: &SoL_Coalescing_desc >-
+        Indicates how well memory instructions were coalesced by the address processing unit,
+        ranging from uncoalesced (25%) to fully coalesced (100%). Calculated as the average number
+        of thread-requests generated per instruction divided by the ideal number of thread-requests
+        per instruction.
+    L1D Cache Stalls (%):
+      Stalled on L2 Data:
+        description: &Stalled_on_L2_Data_desc >-
+          The ratio of the number of cycles where the vL1D is stalled waiting for requested data to
+          return from the L2 cache divided by the number of cycles where the vL1D is active.
+        footnote: *vL1D_Activity_footnote
+      Stalled on L2 Requests:
+        description: &Stalled_on_L2_Requests_desc >-
+          The ratio of the number of cycles where the vL1D is stalled waiting to issue a request for
+          data to the L2 cache divided by the number of cycles where the vL1D is active.
+        footnote: *vL1D_Activity_footnote
+      Tag RAM Stall (Read):
+        description: &Tag_RAM_Stall_Read_desc >-
+          The ratio of the number of cycles where the vL1D is stalled due to read requests with
+          conflicting tags being looked up concurrently, divided by the number of cycles where the
+          vL1D is active.
+        footnote: *vL1D_Activity_footnote
+      Tag RAM Stall (Write):
+        description: &Tag_RAM_Stall_Write_desc >-
+          The ratio of the number of cycles where the vL1D is stalled due to write requests with
+          conflicting tags being looked up concurrently, divided by the number of cycles where the
+          vL1D is active.
+        footnote: *vL1D_Activity_footnote
+      Tag RAM Stall (Atomic):
+        description: &Tag_RAM_Stall_Atomic_desc >-
+          The ratio of the number of cycles where the vL1D is stalled due to atomic requests with
+          conflicting tags being looked up concurrently, divided by the number of cycles where the
+          vL1D is active.
+        footnote: *vL1D_Activity_footnote
+    L1D Cache Accesses:
+      Total Req:
+      Read Req:
+      Write Req:
+      Atomic Req:
+      Cache BW:
+      Cache Hit Rate:
+      Cache Accesses:
+      Cache Hits:
+      Invalidations:
+      L1-L2 BW:
+      L1-L2 Read:
+      L1-L2 Write:
+      L1-L2 Atomic:
+      L1 Access Latency:
+      L1-L2 Read Latency:
+      L1-L2 Write Latency:
+    L1D - L2 Transactions:
+      NC - Read:
+      UC - Read:
+      CC - Read:
+      RW - Read:
+      RW - Write:
+      NC - Write:
+      UC - Write:
+      CC - Write:
+      NC - Atomic:
+      UC - Atomic:
+      CC - Atomic:
+      RW - Atomic:
+    L1D Addr Translation:
+      Req:
+      Hit Ratio:
+      Hits:
+      Translation Misses:
+      Permission Misses:
+  Footnotes:
+    vL1D Activity: &vL1D_Activity_footnote >-
+      ROCm Compute Profiler considers the vL1D to be active when any part of the vL1D (excluding the
+      address processor and data return units) are active, for example, when performing a
+      translation, waiting for data, accessing the Tag or Cache RAMs, etc.
 
 # Define the panel properties and properties of each metric in the panel.
 Panel Config:

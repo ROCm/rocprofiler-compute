@@ -49,6 +49,7 @@ html_theme_options = {"flavor": "rocm"}
 html_title = f"{project} {version_number} documentation"
 exclude_patterns = ["archive", "*/includes"]
 
+templates_path = ["_templates"]
 html_static_path = ["sphinx/static/css"]
 html_css_files = ["o_custom.css"]
 
