@@ -1,0 +1,18 @@
+FROM compute-artifactory.amd.com:5000/rocm-base-images/rhel-8.x-bld:2024112501
+
+WORKDIR /app
+
+RUN yum install -y jq curl
+
+RUN yum install -y python38 python38-devel && \
+    yum clean all && \
+    rm -rf /var/cache/yum && \
+    curl -sS https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
+    python3.8 get-pip.py
+
+CMD ["/bin/bash", "-c", "\
+    python3.8 -m pip install -r requirements.txt -r requirements-standalonebinary.txt \
+    && rm -rf build \
+    && cmake -B build -S . \
+    && make -C build standalonebinary \
+"]

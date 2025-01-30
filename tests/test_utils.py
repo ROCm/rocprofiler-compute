@@ -28,6 +28,7 @@ import os
 import shutil
 from pathlib import Path
 from unittest.mock import patch
+import subprocess
 
 import pandas as pd
 import pytest
@@ -151,3 +152,24 @@ def launch_rocprof_compute(config, options, workload_dir, check_success=True):
         assert e.value.code == 0
 
     return e
+
+def launch_binary_rocprof_compute(config, options, workload_dir, check_success=True):
+    """Launch ROCm Compute Profiler with command-line optoins
+
+    Args:
+        config (list): runtime configuration settings
+        options (list): command line options to provide to rocprofiler-compute
+        workload_dir (string): desired output directory
+        check_success (bool, optional): Whether to verify successful exit condition. Defaults to True.
+
+    Returns:
+       exception: SystemExit exception
+    """
+    process = subprocess.run(
+        options + ["--path", workload_dir, "--"] + config["app_1"],
+        capture_output=True,
+        text=True,
+    )
+    if check_success:
+        assert process.returncode == 0
+    return process.returncode
