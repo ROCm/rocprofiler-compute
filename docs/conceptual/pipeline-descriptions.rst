@@ -22,22 +22,22 @@ over an entire wavefront, each :ref:`work-item <desc-work-item>` (or,
 vector-lane) potentially operating on distinct data. The VALU of a CDNA™
 accelerator or GCN™ GPU typically consists of:
 
-*  Four 16-wide SIMD processors (see :hip-training-pdf:`24` for more details).
+* Four 16-wide SIMD processors (see :hip-training-pdf:`24` for more details).
 
-*  Four 64 or 128 KiB VGPR files (yielding a total of 256-512 KiB total
-   per CU), see :ref:`AGPRs <desc-agprs>` for more detail.
+* Four 64 or 128 KiB VGPR files (yielding a total of 256-512 KiB total
+  per CU), see :ref:`AGPRs <desc-agprs>` for more detail.
 
-*  An instruction buffer (per-SIMD) that contains execution slots for up
-   to 8 wavefronts (for 32 total wavefront slots on each CU).
+* An instruction buffer (per-SIMD) that contains execution slots for up
+  to 8 wavefronts (for 32 total wavefront slots on each CU).
 
-*  A vector memory (VMEM) unit which transfers data between VGPRs and
-   memory; each work-item supplies its own memory address and supplies
-   or receives unique data.
+* A vector memory (VMEM) unit which transfers data between VGPRs and
+  memory; each work-item supplies its own memory address and supplies
+  or receives unique data.
 
-*  CDNA accelerators, such as the MI100 and :ref:`MI2XX <mixxx-note>`, contain
-   additional
-   :amd-lab-note:`Matrix Fused Multiply-Add (MFMA) <amd-lab-notes-matrix-cores-readme>`
-   units.
+* CDNA accelerators, such as the MI100, :ref:`MI200, and MI300 <mixxx-note>`,
+  contain additional
+  :amd-lab-note:`Matrix Fused Multiply-Add (MFMA) <amd-lab-notes-matrix-cores-readme>`
+  units.
 
 To support branching and conditionals, each wavefront in the VALU
 has a distinct execution mask which determines which work-items in the
@@ -48,11 +48,12 @@ and are treated as no-ops.
 
 .. note::
 
+   On the CDNA3 :ref:`MI300 <mixxx-note>` and CDNA2 :ref:`MI200 <mixxx-note>`
+   series accelerators, there are 8 waveslots per SIMD.
+
    On GCN GPUs and the CDNA MI100 accelerator, there are slots for up to 10
    wavefronts in the instruction buffer, but generally occupancy is limited by
    other factors to 32 waves per :doc:`compute unit <compute-unit>`.
-   On the CDNA2 :ref:`MI2XX <mixxx-note>` series accelerators, there are only 8
-   waveslots per-SIMD.
 
 .. _desc-salu:
 
@@ -200,7 +201,7 @@ shadow (see the :ref:`MFMA <desc-mfma>` section for more detail).
 Matrix fused multiply-add (MFMA)
 --------------------------------
 
-CDNA accelerators, such as the MI100 and :ref:`MI2XX <mixxx-note>`, contain
+CDNA accelerators, such as the MI100, :ref:`MI200, and MI300<mixxx-note>`, contain
 specialized hardware to accelerate matrix-matrix multiplications, also
 known as Matrix Fused Multiply-Add (MFMA) operations. The exact
 operation types and supported formats may vary by accelerator. Refer to the
@@ -288,11 +289,11 @@ instructions (``v_accvgpr_*``). These data movement instructions may be
 used by the compiler to implement lower-cost register-spill/fills on
 architectures with AGPRs.
 
-AGPRs are not available on all AMD Instinct™ accelerators. GCN GPUs,
-such as the AMD Instinct MI50 had a 256 KiB VGPR file. The AMD
-Instinct MI100 (CDNA) has a 2x256 KiB register file, where one half
-is available as general-purpose VGPRs, and the other half is for matrix
-math accumulation VGPRs (AGPRs). The AMD Instinct :ref:`MI2XX <mixxx-note>`
-(CDNA2) has a 512 KiB VGPR file per CU, where each wave can dynamically request
-up to 256 KiB of VGPRs and an additional 256 KiB of AGPRs. For more information,
-refer to `this comment <https://github.com/ROCm/ROCm/issues/1689#issuecomment-1553751913>`_.
+AGPRs are not available on all AMD Instinct™ accelerators. GCN GPUs, such as
+the AMD Instinct MI50 had a 256 KiB VGPR file. The AMD Instinct MI100 (CDNA)
+has a 2x256 KiB register file, where one half is available as general-purpose
+VGPRs, and the other half is for matrix math accumulation VGPRs (AGPRs). The
+AMD Instinct :ref:`MI300 and MI200 <mixxx-note>` have a 512 KiB VGPR
+file per CU, where each wave can dynamically request up to 256 KiB of VGPRs and
+an additional 256 KiB of AGPRs. For more information, refer to `this comment
+<https://github.com/ROCm/ROCm/issues/1689#issuecomment-1553751913>`_.

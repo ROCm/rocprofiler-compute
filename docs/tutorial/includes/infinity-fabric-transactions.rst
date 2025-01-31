@@ -672,4 +672,4 @@ PCIe® is a registered trademark of PCI-SIG Corporation.
    }
    ```
 
-   On an AMD MI2XX accelerator, for FP32 values this will generate a `global_store_dword` instruction, with the `glc` and `slc` bits set, described in [section 10.1](https://developer.amd.com/wp-content/resources/CDNA2_Shader_ISA_4February2022.pdf) of the CDNA2 ISA guide.`
+   On an :ref:`AMD MI200 accelerator <mixxx-note>`, for FP32 values this will generate a `global_store_dword` instruction, with the `glc` and `slc` bits set, described in [section 10.1](https://developer.amd.com/wp-content/resources/CDNA2_Shader_ISA_4February2022.pdf) of the CDNA2 ISA guide.`

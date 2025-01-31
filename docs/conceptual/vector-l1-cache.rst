@@ -318,8 +318,8 @@ The address processor counts these instruction types as follows:
    * Global/Generic: global and flat memory operations, that are used for global
      and generic memory access.
 
-   * Spill/Stack: buffer instructions which are used on the MI50, MI100, and
-     :ref:`MI2XX <mixxx-note>` accelerators for register spills / stack memory.
+   * Spill/Stack: buffer instructions which are used on Instinct accelerators
+     for register spills / stack memory.
 
    These concepts are described in more detail in the :ref:`memory-spaces`,
    while generic memory access is explored in the
@@ -429,8 +429,8 @@ ROCm Compute Profiler reports the following L1 TLB metrics:
 
 .. note::
 
-   On current CDNA accelerators, such as the :ref:`MI2XX <mixxx-note>`, the
-   UTCL1 does *not* count hit-on-miss requests.
+   On :ref:`MI200 <mixxx-note>` (CDNA2) and earlier accelerators, the UTCL1 does *not*
+   count hit-on-miss requests.
 
 .. _desc-tc:
 
@@ -640,11 +640,14 @@ latencies of read/write memory operations to the :doc:`L2 cache <l2-cache>`.
 
      - Cycles
 
+.. _l1-cache-line-size:
+
 .. note::
 
    All cache accesses in vL1D are for a single cache line's worth of data.
-   The size of a cache line may vary, however on current AMD Instinct MI CDNA
-   accelerators and GCN™ GPUs the L1 cache line size is 64B.
+   The size of a cache line may vary. On the :ref:`MI300 <mixxx-note>`, the L1
+   cache line size is 128B. On older AMD Instinct MI CDNA accelerators and GCN™
+   GPUs the L1 cache line size is only 64B.
 
 .. rubric :: Footnotes
 

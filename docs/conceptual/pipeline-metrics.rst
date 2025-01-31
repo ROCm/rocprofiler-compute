@@ -337,7 +337,7 @@ VALU arithmetic instruction mix
 
    Not all metrics in this section (for instance, the floating-point instruction
    breakdowns) are available on CDNA accelerators older than the
-   :ref:`MI2XX <mixxx-note>` series.
+   :ref:`MI200 <mixxx-note>` series.
 
 This panel details the various types of vector instructions that were
 issued to the :ref:`VALU <desc-valu>`. The metrics in this section do *not*
@@ -495,7 +495,7 @@ MFMA instruction mix
 .. warning::
 
    The metrics in this section are only available on CDNA2
-   (:ref:`MI2XX <mixxx-note>`) accelerators and newer.
+   (:ref:`MI200 <mixxx-note>`) accelerators and newer.
 
 This section details the types of Matrix Fused Multiply-Add
 (:ref:`MFMA <desc-mfma>`) instructions that were issued. Note that
@@ -570,7 +570,7 @@ as a single operation regardless of the instruction type.
 
    Packed operations which operate on multiple operands in the same instruction
    are counted identically to the underlying instruction type. For example, the
-   ``v_pk_add_f32`` instruction on :ref:`MI2XX <mixxx-note>`, which performs an
+   ``v_pk_add_f32`` instruction on :ref:`MI200 <mixxx-note>`, which performs an
    add operation on two pairs of aligned 32-bit floating-point operands is
    counted only as a single addition -- that is, 1 operation.
 
@@ -580,7 +580,7 @@ the operation, and will report the same value even if the execution mask
 is identically zero.
 
 For example, a FMA instruction operating on 32-bit floating-point
-operands (such as ``v_fma_f32`` on a :ref:`MI2XX <mixxx-note>` accelerator)
+operands (such as ``v_fma_f32`` on a :ref:`MI200 <mixxx-note>` accelerator)
 would be counted as 128 total FLOPs: 2 operations (due to the
 instruction type) multiplied by 64 operations (because the wavefront is
 composed of 64 work-items).

@@ -68,8 +68,12 @@ extlinks = {
     "llvm-docs": ("https://llvm.org/docs/AMDGPUUsage.html#%s", "%s"),
     "amd-lab-note": ("https://gpuopen.com/learn/amd-lab-notes/%s", "%s"),
     "cdna2-white-paper": (
-        "https://www.amd.com/system/files/documents/amd-cdna2-white-paper.pdf#page=%s",
+        "https://www.amd.com/content/dam/amd/en/documents/instinct-business-docs/white-papers/amd-cdna2-white-paper.pdf#page=%s",
         "CDNA2 white paper (page %s)",
+    ),
+    "cdna3-white-paper": (
+        "https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/white-papers/amd-cdna-3-white-paper.pdf#page=%s",
+        "CDNA3 white paper (page %s)",
     ),
     "gcn-crash-course": (
         "https://www.slideshare.net/DevCentralAMD/gs4106-the-amd-gcn-architecture-a-crash-course-by-layla-mah#%s",
@@ -90,6 +94,10 @@ extlinks = {
     "mi200-isa-pdf": (
         "https://www.amd.com/system/files/TechDocs/instinct-mi200-cdna2-instruction-set-architecture.pdf#page=%s",
         "AMD Instinct MI200 ISA Reference Guide (page %s)",
+    ),
+    "mi300-isa-pdf": (
+        "https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/instruction-set-architectures/amd-instinct-mi300-cdna3-instruction-set-architecture.pdf#page=%s",
+        "AMD Instinct MI300 ISA Reference Guide (page %s)",
     ),
     "hsa-runtime-pdf": (
         "http://hsafoundation.com/wp-content/uploads/2021/02/HSA-Runtime-1.2.pdf#page=%s",

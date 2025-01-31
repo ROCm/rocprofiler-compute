@@ -11,7 +11,7 @@ VALU arithmetic instruction mix
 
    The examples in the section are expected to work on all CDNA™ accelerators.
    However, the actual experiment results in this section were collected on an
-   :ref:`MI2XX <mixxx-note>` accelerator.
+   :ref:`MI200 <mixxx-note>` accelerator.
 
 .. _valu-experiment-design:
 
