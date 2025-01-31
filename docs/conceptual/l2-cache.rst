@@ -16,14 +16,14 @@ caches <desc-sL1D>` and the :doc:`command processor <command-processor>`.
 The L2 cache consists of several distinct channels. The CDNA3-based :ref:`MI300 <mixxx-note>`
 accelerator consists of 16 channels each with a capacity of 256KB and utilizing
 256B address interleaving. These channels can operate largely independently and
-the system supports up to 8 instances (one per XCD). In constrast, the
-:ref:`MI200 <mixxx-note>` and earlier CDNA accelerators have 32 L2 cache
-channels each using 256B address interleaving, but only supports a maximum of 2
-instances. Incoming requests are mapped to specific L2 channels using a hashing
-mechanism designed to evenly distribute the requests across the available
-channels. Requests that do not find a match in the L2 cache are forwarded to
-the :ref:`Infinity Fabric™ <l2-fabric>` to be routed to the appropriate memory
-location. For more details, see :cdna3-white-paper:`9`.
+the system supports up to 8 instances (*one per XCD*). In constrast,
+:ref:`MI200 <mixxx-note>` CDNA2 accelerators have 32 L2 cache channels each
+using 256B address interleaving, and MI100 CDNA accelerators and GCN GPUs have
+only 16 L2 cache channels. Incoming requests are mapped to specific L2 channels
+using a hashing mechanism designed to evenly distribute the requests across the
+available channels. Requests that do not find a match in the L2 cache are
+forwarded to the :ref:`Infinity Fabric™ <l2-fabric>` to be routed to the
+appropriate memory location. For more details, see :cdna3-white-paper:`9`.
 
 The L2 cache metrics reported by ROCm Compute Profiler are broken down into four
 categories:
