@@ -18,7 +18,7 @@ jobs:
 
       - name: Merge - Fast Forward Only
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ROCM_CI }}
         run: |
           git checkout amd-staging
           git merge origin/develop --ff-only

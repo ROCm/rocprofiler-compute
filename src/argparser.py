@@ -496,6 +496,16 @@ Examples:
         help="\t\tSpecify GPU id(s) for filtering.",
     )
     analyze_group.add_argument(
+        "--spatial-multiplexing",
+        type=int,
+        metavar="",
+        nargs="+",
+        dest="spatial_multiplexing",
+        required=False,
+        default=None,
+        help="\t\t\tProvide Node ID and GPU number per node.",
+    )
+    analyze_group.add_argument(
         "-o",
         "--output",
         metavar="",
