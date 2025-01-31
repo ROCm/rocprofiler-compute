@@ -16,10 +16,14 @@ jobs:
           ref: develop
           fetch-depth: '0'
 
-      - name: Merge - Fast Forward Only
+      - name: Create and Merge Pull Request
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.VEDITHAL_PAT }}
         run: |
-          git checkout amd-staging
-          git merge origin/develop --ff-only
-          git push origin HEAD
+          gh pr create \
+            --title "Sync Develop to Staging" \
+            --body "This PR syncs changes from the Develop branch into the Staging branch." \
+            --base amd-staging \
+            --head develop
+          PR_NUMBER=$(gh pr list --repo ROCm/rocprofiler-compute --state open --head develop --json number -q '.[0].number')
+          gh pr merge $PR_NUMBER --rebase --repo ROCm/rocprofiler-compute
