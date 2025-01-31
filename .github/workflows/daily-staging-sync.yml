@@ -16,10 +16,21 @@ jobs:
           ref: develop
           fetch-depth: '0'
 
-      - name: Merge - Fast Forward Only
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.ROCPROFILER_COMPUTE_RUNNER_APP_APP_ID }}
+          private-key: ${{ secrets.ROCPROFILER_COMPUTE_RUNNER_APP_PRIVATE_KEY }}
+
+      - name: Create and Merge Pull Request
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
-          git checkout amd-staging
-          git merge origin/develop --ff-only
-          git push origin HEAD
+          gh pr create \
+            --title "Sync Develop to Staging" \
+            --body "This PR syncs changes from the Develop branch into the Staging branch." \
+            --base amd-staging \
+            --head develop
+          PR_NUMBER=$(gh pr list --repo ROCm/rocprofiler-compute --state open --head develop --json number -q '.[0].number')
+          gh pr merge $PR_NUMBER --rebase --repo ROCm/rocprofiler-compute
