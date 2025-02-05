@@ -320,6 +320,7 @@ Compute Profiler:
 .. figure:: ../data/performance-model/fabric.png
    :align: center
    :alt: L2-Fabric transaction flow on AMD Instinct MI-series accelerators
+   :width: 800
 
    L2↔Fabric transaction flow on AMD Instinct MI-series accelerators.
 
