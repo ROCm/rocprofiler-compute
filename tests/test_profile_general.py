@@ -920,8 +920,7 @@ def test_block_CPF():
         "pmc_perf_3.csv",
         "sysinfo.csv",
         "timestamps.csv",
-    ]\
-
+    ]
     assert sorted(list(file_dict.keys())) == sorted(expected_csvs)
 
     validate(
@@ -1343,7 +1342,11 @@ def test_join_type_kernel():
 def test_sort_dispatches():
     # only test 1 device for roofline
     device_id = "0"
-    options = baseline_with_roof_opts + ["--device", device_id] + ["--roof-only", "--sort", "dispatches"]
+    options = (
+        baseline_with_roof_opts
+        + ["--device", device_id]
+        + ["--roof-only", "--sort", "dispatches"]
+    )
     workload_dir = test_utils.get_output_dir()
     e = test_utils.launch_rocprof_compute(
         config, options, workload_dir, check_success=False
@@ -1378,7 +1381,11 @@ def test_sort_dispatches():
 def test_sort_kernels():
     # only test 1 device for roofline
     device_id = "0"
-    options = baseline_with_roof_opts + ["--device", device_id] + ["--roof-only", "--sort", "kernels"]
+    options = (
+        baseline_with_roof_opts
+        + ["--device", device_id]
+        + ["--roof-only", "--sort", "kernels"]
+    )
     workload_dir = test_utils.get_output_dir()
     e = test_utils.launch_rocprof_compute(
         config, options, workload_dir, check_success=False
@@ -1412,7 +1419,11 @@ def test_sort_kernels():
 def test_mem_levels_vL1D():
     # only test 1 device for roofline
     device_id = "0"
-    options = baseline_with_roof_opts + ["--device", device_id] + ["--roof-only", "--mem-level", "vL1D"]
+    options = (
+        baseline_with_roof_opts
+        + ["--device", device_id]
+        + ["--roof-only", "--mem-level", "vL1D"]
+    )
     workload_dir = test_utils.get_output_dir()
     e = test_utils.launch_rocprof_compute(
         config, options, workload_dir, check_success=False
@@ -1446,7 +1457,11 @@ def test_mem_levels_vL1D():
 def test_mem_levels_LDS():
     # only test 1 device for roofline
     device_id = "0"
-    options = baseline_with_roof_opts + ["--device", device_id] + ["--roof-only", "--mem-level", "LDS"]
+    options = (
+        baseline_with_roof_opts
+        + ["--device", device_id]
+        + ["--roof-only", "--mem-level", "LDS"]
+    )
     workload_dir = test_utils.get_output_dir()
     e = test_utils.launch_rocprof_compute(
         config, options, workload_dir, check_success=False
