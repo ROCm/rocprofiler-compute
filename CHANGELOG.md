@@ -8,6 +8,10 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 * Roofline support for Ubuntu 24.04 (#541)
 
+### Changed
+
+* Changed default normalization unit to per_kernel
+
 ## ROCm Compute Profiler 3.0.0 for ROCm 6.3.0
 
 ### Changed
