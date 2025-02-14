@@ -31,6 +31,11 @@ Panel Config:
             peak: None
             pop: None
             tips:
+          MFMA FLOPs (F8):
+            value: None # No perf counter
+            unit: GFLOP
+            peak: None # No perf counter
+            pop: None # No perf counter
           MFMA FLOPs (BF16):
             value: None # No perf counter
             Unit: None
@@ -174,6 +179,10 @@ Panel Config:
             max: None # No perf counter
             unit: (OPs  + $normUnit)
             tips:
+          F8 OPs:
+            avg: None # No HW module
+            min: None # No HW module
+            max: None # No HW module
           F16 OPs:
             avg: None # No perf counter
             min: None # No perf counter
