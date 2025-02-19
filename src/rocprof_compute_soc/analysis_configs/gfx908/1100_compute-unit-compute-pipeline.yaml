@@ -36,6 +36,7 @@ Panel Config:
             unit: GFLOP
             peak: None # No perf counter
             pop: None # No perf counter
+            tips:
           MFMA FLOPs (BF16):
             value: None # No perf counter
             Unit: None
