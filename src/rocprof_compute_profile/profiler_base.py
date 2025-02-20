@@ -22,6 +22,7 @@
 # SOFTWARE.
 ##############################################################################el
 
+import fnmatch
 import glob
 import logging
 import os
@@ -77,6 +78,14 @@ class RocProfCompute_Base:
                 out = self.__args.path + "/pmc_perf.csv"
             files = glob.glob(self.__args.path + "/" + "pmc_perf_*.csv")
             files.extend(glob.glob(self.__args.path + "/" + "SQ_*.csv"))
+
+            if self.get_args().hip_trace:
+                # remove hip api trace ouputs from this list
+                files = [f for f in files if not fnmatch.fnmatch(os.path.basename(f), "*_hip_api_trace.csv")]
+
+            if (self.get_args().kokkos_trace):
+                # remove marker api trace ouputs from this list
+                files = [f for f in files if not fnmatch.fnmatch(os.path.basename(f), "*_marker_api_trace.csv")]
         elif type(self.__args.path) == list:
             files = self.__args.path
         else:
