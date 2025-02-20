@@ -81,11 +81,19 @@ class RocProfCompute_Base:
 
             if self.get_args().hip_trace:
                 # remove hip api trace ouputs from this list
-                files = [f for f in files if not fnmatch.fnmatch(os.path.basename(f), "*_hip_api_trace.csv")]
+                files = [
+                    f
+                    for f in files
+                    if not fnmatch.fnmatch(os.path.basename(f), "*_hip_api_trace.csv")
+                ]
 
-            if (self.get_args().kokkos_trace):
+            if self.get_args().kokkos_trace:
                 # remove marker api trace ouputs from this list
-                files = [f for f in files if not fnmatch.fnmatch(os.path.basename(f), "*_marker_api_trace.csv")]
+                files = [
+                    f
+                    for f in files
+                    if not fnmatch.fnmatch(os.path.basename(f), "*_marker_api_trace.csv")
+                ]
         elif type(self.__args.path) == list:
             files = self.__args.path
         else:
