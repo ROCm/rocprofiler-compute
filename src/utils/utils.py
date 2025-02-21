@@ -700,6 +700,10 @@ def run_prof(
 
 
 def process_rocprofv3_output(rocprof_output, workload_dir, is_timestamps):
+    """
+    rocprofv3 specific output processing.
+    takes care of json or csv formats, for csv format, additional processing is performed.
+    """
     results_files_csv = {}
 
     if rocprof_output == "json":

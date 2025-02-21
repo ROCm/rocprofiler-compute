@@ -22,7 +22,6 @@
 # SOFTWARE.
 ##############################################################################el
 
-import fnmatch
 import glob
 import logging
 import os
@@ -84,7 +83,9 @@ class RocProfCompute_Base:
                 files = [
                     f
                     for f in files
-                    if not fnmatch.fnmatch(os.path.basename(f), "*_hip_api_trace.csv")
+                    if not re.compile(r"^.*_hip_api_trace\.csv$").match(
+                        os.path.basename(f)
+                    )
                 ]
 
             if self.get_args().kokkos_trace:
@@ -92,7 +93,9 @@ class RocProfCompute_Base:
                 files = [
                     f
                     for f in files
-                    if not fnmatch.fnmatch(os.path.basename(f), "*_marker_api_trace.csv")
+                    if not re.compile(r"^.*_marker_api_trace\.csv$").match(
+                        os.path.basename(f)
+                    )
                 ]
         elif type(self.__args.path) == list:
             files = self.__args.path
