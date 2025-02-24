@@ -29,6 +29,8 @@ import os
 import re
 import socket
 import subprocess
+import sys
+
 from dataclasses import dataclass, field, fields
 from datetime import datetime
 from math import ceil
@@ -38,7 +40,9 @@ import pandas as pd
 
 import config
 from utils.tty import get_table_string
+from utils.mi_gpu_data import get_gpu_series_dict, get_mi300_chip_id_dict, get_mi300_num_xcds
 from utils.utils import (
+    console_debug,
     console_error,
     console_log,
     console_warning,
@@ -59,19 +63,39 @@ VERSION_LOC = [
 
 
 def detect_arch(_rocminfo):
-    from rocprof_compute_base import SUPPORTED_ARCHS
-
     for idx1, linetext in enumerate(_rocminfo):
-        gpu_arch = search(r"^\s*Name\s*:\s+ ([a-zA-Z0-9]+)\s*$", linetext)
-        if gpu_arch in SUPPORTED_ARCHS.keys():
+        # NOTE: currently supported socs are gfx archs only
+        gpu_arch = search(r"^\s*Name:\s+ ([Gg][Ff][Xx][0-9]+)\s*$", linetext)
+        if gpu_arch in get_gpu_series_dict().keys():
             break
-        if str(gpu_arch) in SUPPORTED_ARCHS.keys():
+        if str(gpu_arch) in get_gpu_series_dict().keys():
             gpu_arch = str(gpu_arch)
             break
-    if not gpu_arch in SUPPORTED_ARCHS.keys():
-        console_error("Cannot find a supported arch in rocminfo")
+    if not gpu_arch in get_gpu_series_dict().keys():
+        console_error("Cannot find a supported arch in rocminfo: " + str(gpu_arch))
     else:
         return (gpu_arch, idx1)
+
+
+def detect_gpu_chip_id(_rocminfo):
+    for idx1, linetext in enumerate(_rocminfo):
+        # NOTE: current supported socs only have numbers in Chip ID
+        gpu_chip_id = search(r"^\s*Chip ID:\s+ ([0-9]+).*\s*$", linetext)
+        if gpu_chip_id and int(gpu_chip_id) in get_mi300_chip_id_dict().keys():
+            gpu_chip_id = str(gpu_chip_id)
+            break
+        if str(gpu_chip_id) in get_mi300_chip_id_dict().keys():
+            gpu_chip_id = str(gpu_chip_id)
+            break
+    if not gpu_chip_id:
+        console_warning(
+            "No Chip ID detected: " + str(gpu_chip_id)
+        )
+    if gpu_chip_id not in get_mi300_chip_id_dict().keys() and int(gpu_chip_id) not in get_mi300_chip_id_dict().keys():
+        console_warning(
+            "Unknown Chip ID detected: " + str(gpu_chip_id)
+        )
+    return gpu_chip_id
 
 
 # Custom decorator to mimic the behavior of kw_only found in Python 3.10
@@ -135,7 +159,9 @@ def generate_machine_specs(args, sysinfo: dict = None):
         linux_distro = ""
     rocm_version = get_rocm_ver().strip()
     # FIXME: use device
-    vbios = search(r"VBIOS version: (.*?)$", run(["rocm-smi", "-v"], exit_on_error=True))
+    vbios = search(
+        r"VBIOS version: (.*?)$", run(["rocm-smi", "-v"], exit_on_error=True)
+    )
     compute_partition = search(
         r"Compute Partition:\s*(\w+)", run(["rocm-smi", "--showcomputepartition"])
     )
@@ -155,6 +181,7 @@ def generate_machine_specs(args, sysinfo: dict = None):
     _rocminfo = rocminfo_full.split("\n")
     gpu_arch, idx = detect_arch(_rocminfo)
     _rocminfo = _rocminfo[idx + 1 :]  # update rocminfo for target section
+    gpu_chip_id = detect_gpu_chip_id(_rocminfo)
     specs = MachineSpecs(
         version=specs_version,
         timestamp=timestamp,
@@ -172,10 +199,14 @@ def generate_machine_specs(args, sysinfo: dict = None):
         compute_partition=compute_partition,
         memory_partition=memory_partition,
         gpu_arch=gpu_arch,
+        gpu_chip_id=gpu_chip_id
     )
+
     # Load above SoC specs via module import
     try:
-        soc_module = importlib.import_module("rocprof_compute_soc.soc_" + specs.gpu_arch)
+        soc_module = importlib.import_module(
+            "rocprof_compute_soc.soc_" + specs.gpu_arch
+        )
     except ModuleNotFoundError as e:
         console_error(
             "Arch %s marked as supported, but couldn't find class implementation %s."
@@ -359,6 +390,13 @@ class MachineSpecs:
             "name": "GPU Arch",
         },
     )
+    gpu_chip_id: str = field(
+        default=None,
+        metadata={
+            "doc": "The Chip ID of the accelerators/GPUs in the system.",
+            "name": "Chip ID",
+        },
+    )
     gpu_l1: str = field(
         default=None,
         metadata={
@@ -410,13 +448,6 @@ class MachineSpecs:
         metadata={
             "doc": "The maximum number of work-items in a workgroup on the accelerators/GPUs in the system.",
             "name": "Workgroup Max Size",
-        },
-    )
-    chip_id: str = field(
-        default=None,
-        metadata={
-            "doc": "The Chip ID of the accelerators/GPUs in the system.",
-            "name": "Chip ID",
         },
     )
     max_waves_per_cu: str = field(
@@ -569,7 +600,9 @@ class MachineSpecs:
                         if name == "version":
                             topstr += f"Output version: {value}\n"
                         else:
-                            console_error(f"Unknown out of table printing field: {name}")
+                            console_error(
+                                f"Unknown out of table printing field: {name}"
+                            )
                         continue
                     if "name" in field.metadata:
                         name = field.metadata["name"]
@@ -656,7 +689,7 @@ def total_l2_banks(archname, L2Banks, compute_partition):
     # Fixme: support all supported partitioning mode
     # Fixme: "name" is a bad name!
     totalL2Banks = L2Banks
-    xcds = total_xcds(archname, compute_partition)
+    xcds = get_mi300_num_xcds(archname, compute_partition)
     return L2Banks * xcds
 
 

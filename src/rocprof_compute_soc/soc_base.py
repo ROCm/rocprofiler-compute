@@ -27,20 +27,32 @@ import math
 import os
 import re
 import shutil
+import sys
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from pathlib import Path
 
 import numpy as np
 
-from rocprof_compute_base import MI300_CHIP_IDS, SUPPORTED_ARCHS
-from utils.utils import console_debug, console_error, console_log, demarcate
+from utils.utils import (
+    console_debug,
+    console_error,
+    console_log,
+    console_warning,
+    demarcate,
+)
+from utils.mi_gpu_data import (
+    get_gpu_series,
+    get_gpu_model,
+    get_mi300_num_xcds,
+)
 
 
 class OmniSoC_Base:
     def __init__(
         self, args, mspec
     ):  # new info field will contain rocminfo or sysinfo to populate properties
+        console_debug("[omnisoc init]")
         self.__args = args
         self.__arch = None
         self._mspec = mspec
@@ -99,6 +111,7 @@ class OmniSoC_Base:
 
     @demarcate
     def populate_mspec(self):
+        console_debug("[populate_mspec]")
         from utils.specs import run, search, total_sqc, total_xcds
 
         if not hasattr(self._mspec, "_rocminfo") or self._mspec._rocminfo is None:
@@ -148,11 +161,6 @@ class OmniSoC_Base:
                 self._mspec.workgroup_max_size = key
                 continue
 
-            key = search(r"^\s*Chip ID:\s+ ([a-zA-Z0-9]+)\s*", linetext)
-            if key != None:
-                self._mspec.chip_id = key
-                continue
-
             key = search(r"^\s*Max Waves Per CU:\s+ ([a-zA-Z0-9]+)\s*", linetext)
             if key != None:
                 self._mspec.max_waves_per_cu = key
@@ -173,20 +181,13 @@ class OmniSoC_Base:
         self._mspec.cur_sclk = self._mspec.max_sclk
         self._mspec.cur_mclk = self._mspec.max_mclk
 
-        self._mspec.gpu_series = list(SUPPORTED_ARCHS[self._mspec.gpu_arch].keys())[
-            0
-        ].upper()
-        # specify gpu name for gfx942 hardware
-        self._mspec.gpu_model = list(SUPPORTED_ARCHS[self._mspec.gpu_arch].keys())[
-            0
-        ].upper()
-        if self._mspec.gpu_model == "MI300":
-            # Use Chip ID to distinguish MI300 gpu model using the built-in dictionary
-            if self._mspec.chip_id in MI300_CHIP_IDS:
-                self._mspec.gpu_model = MI300_CHIP_IDS[self._mspec.chip_id]
-
+        self._mspec.gpu_series = get_gpu_series(self._mspec.gpu_arch).upper()
+        # specify gpu model name for gfx942 hardware
+        self._mspec.gpu_model = get_gpu_model(
+            self._mspec.gpu_arch, self._mspec.gpu_chip_id
+        ).upper()
         self._mspec.num_xcd = str(
-            total_xcds(self._mspec.gpu_model, self._mspec.compute_partition)
+            get_mi300_num_xcds(self._mspec.gpu_model, self._mspec.compute_partition)
         )
 
     @demarcate
@@ -235,7 +236,9 @@ class OmniSoC_Base:
                 # default: take all perfmons
                 pmc_files_list = ref_pmc_files_list
         else:
-            ref_pmc_files_list = glob.glob(self.__perfmon_dir + "/" + "pmc_roof_perf.txt")
+            ref_pmc_files_list = glob.glob(
+                self.__perfmon_dir + "/" + "pmc_roof_perf.txt"
+            )
             pmc_files_list = ref_pmc_files_list
 
         # Coalesce and writeback workload specific perfmon
@@ -310,7 +313,9 @@ def using_v3():
 
 
 @demarcate
-def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, spatial_multiplexing):
+def perfmon_coalesce(
+    pmc_files_list, perfmon_config, workload_dir, spatial_multiplexing
+):
     """Sort and bucket all related performance counters to minimize required application passes"""
     workload_perfmon_dir = workload_dir + "/perfmon"
 
@@ -438,7 +443,8 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, spatial_multi
         # TODO: more error checking
         if len(spatial_multiplexing) != 3:
             console_error(
-                "profiling", "multiplexing need provide node_idx node_count and gpu_count"
+                "profiling",
+                "multiplexing need provide node_idx node_count and gpu_count",
             )
 
         node_idx = int(spatial_multiplexing[0])

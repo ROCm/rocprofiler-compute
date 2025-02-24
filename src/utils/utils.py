@@ -43,6 +43,8 @@ import pandas as pd
 
 import config
 
+from utils.mi_gpu_data import get_mi300_num_xcds
+
 rocprof_cmd = ""
 rocprof_args = ""
 
@@ -653,7 +655,7 @@ def run_prof(
     if new_env:
         # flatten tcc for applicable mi300 input
         f = path(workload_dir + "/out/pmc_1/results_" + fbase + ".csv")
-        xcds = total_xcds(mspec.gpu_model, mspec.compute_partition)
+        xcds = get_mi300_num_xcds(mspec.gpu_model, mspec.compute_partition)
         df = flatten_tcc_info_across_xcds(f, xcds, int(mspec._l2_banks))
         df.to_csv(f, index=False)
 
@@ -801,6 +803,7 @@ def replace_timestamps(workload_dir):
 def gen_sysinfo(
     workload_name, workload_dir, ip_blocks, app_cmd, skip_roof, roof_only, mspec, soc
 ):
+    console_debug("[gen_sysinfo]")
     df = mspec.get_class_members()
 
     # Append workload information to machine specs
