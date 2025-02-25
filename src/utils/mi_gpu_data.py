@@ -99,7 +99,10 @@ class MIGPU(Singleton):
         if self.is_mi300:
             # NOTE: currently, all mi300 series gpus shall have compute partition information
             if self.compute_partition is None:
-                logging.warning("[MIGPU post init] mi300 gpu detected, but no num_xcd/compute partition data detected!!!")
+                logging.warning(
+                    "[MIGPU post init] mi300 gpu detected, but no num_xcd/compute partition data detected!!!"
+                )
+
     def set_chip_id(self, chip_id):
         self.chip_id = chip_id
 
@@ -108,7 +111,9 @@ class MIGPU(Singleton):
         All mi300 series gpus shall have compute partition information.
         """
         if num_xcds is None:
-            logging.warning("[MIGPU post init] mi300 gpu detected, but no num_xcd/compute partition data detected!!!")
+            logging.warning(
+                "[MIGPU post init] mi300 gpu detected, but no num_xcd/compute partition data detected!!!"
+            )
 
         self.mi300_arch = mi300_arch
         self.compute_partition = ComputePartitionMode(num_xcds)
@@ -208,9 +213,7 @@ def parse_mi_gpu_data():
                         gpu_model = models["gpu_model"]
 
                         # NOTE: mi300 architecture is available for all mi300 gpu models
-                        mi300_archs_dict[gpu_model] = models["mi300_arch"][
-                            "architecture"
-                        ]
+                        mi300_archs_dict[gpu_model] = models["mi300_arch"]["architecture"]
 
                         # NOTE: compute partition mode num xcds is available for all mi300 gpu models
                         mi300_num_xcds_dict[gpu_model] = models["mi300_arch"][
@@ -226,12 +229,6 @@ def parse_mi_gpu_data():
                         mi300_models_dict[arch].append(gpu_model)
 
     gpu_model_dict.update(mi300_models_dict)
-
-    print(gpu_series_dict)  # key: gpu arch
-    print(gpu_model_dict)  # key: gpu_arch
-    print(mi300_archs_dict)  # key: gpu model
-    print(mi300_num_xcds_dict)  # key: gpu model
-    print(mi300_chip_id_dict)  # key: chip id (int)
 
 
 def get_gpu_series_dict():
@@ -281,7 +278,9 @@ def get_mi300_archs_dict():
     if mi300_archs_dict:
         return mi300_archs_dict
     else:
-        logging.error("mi300_archs_dict not yet populated, did you run parse_mi_gpu_data()?")
+        logging.error(
+            "mi300_archs_dict not yet populated, did you run parse_mi_gpu_data()?"
+        )
 
 
 def get_mi300_num_xcds(gpu_model_, compute_partition_):
@@ -289,14 +288,19 @@ def get_mi300_num_xcds(gpu_model_, compute_partition_):
         result = mi300_num_xcds_dict[gpu_model_.lower()][compute_partition_.lower()]
         if result:
             return result
-        logging.error("Unknown compute partition found for %s / %s",
-                compute_partition_, gpu_model_)
+        logging.error(
+            "Unknown compute partition found for %s / %s", compute_partition_, gpu_model_
+        )
     else:
-        logging.error("mi300_num_xcds_dict not yet populated, did you run parse_mi_gpu_data()?")
+        logging.error(
+            "mi300_num_xcds_dict not yet populated, did you run parse_mi_gpu_data()?"
+        )
 
 
 def get_mi300_chip_id_dict():
     if mi300_chip_id_dict:
         return mi300_chip_id_dict
     else:
-        logging.error("mi300_chip_id_dict not yet populated, did you run parse_mi_gpu_data()?")
+        logging.error(
+            "mi300_chip_id_dict not yet populated, did you run parse_mi_gpu_data()?"
+        )

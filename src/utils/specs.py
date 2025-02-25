@@ -40,14 +40,17 @@ import pandas as pd
 
 import config
 from utils.tty import get_table_string
-from utils.mi_gpu_data import get_gpu_series_dict, get_mi300_chip_id_dict, get_mi300_num_xcds
+from utils.mi_gpu_data import (
+    get_gpu_series_dict,
+    get_mi300_chip_id_dict,
+    get_mi300_num_xcds,
+)
 from utils.utils import (
     console_debug,
     console_error,
     console_log,
     console_warning,
     get_version,
-    total_xcds,
 )
 
 VERSION_LOC = [
@@ -88,13 +91,12 @@ def detect_gpu_chip_id(_rocminfo):
             gpu_chip_id = str(gpu_chip_id)
             break
     if not gpu_chip_id:
-        console_warning(
-            "No Chip ID detected: " + str(gpu_chip_id)
-        )
-    if gpu_chip_id not in get_mi300_chip_id_dict().keys() and int(gpu_chip_id) not in get_mi300_chip_id_dict().keys():
-        console_warning(
-            "Unknown Chip ID detected: " + str(gpu_chip_id)
-        )
+        console_warning("No Chip ID detected: " + str(gpu_chip_id))
+    if (
+        gpu_chip_id not in get_mi300_chip_id_dict().keys()
+        and int(gpu_chip_id) not in get_mi300_chip_id_dict().keys()
+    ):
+        console_warning("Unknown Chip ID detected: " + str(gpu_chip_id))
     return gpu_chip_id
 
 
@@ -159,9 +161,7 @@ def generate_machine_specs(args, sysinfo: dict = None):
         linux_distro = ""
     rocm_version = get_rocm_ver().strip()
     # FIXME: use device
-    vbios = search(
-        r"VBIOS version: (.*?)$", run(["rocm-smi", "-v"], exit_on_error=True)
-    )
+    vbios = search(r"VBIOS version: (.*?)$", run(["rocm-smi", "-v"], exit_on_error=True))
     compute_partition = search(
         r"Compute Partition:\s*(\w+)", run(["rocm-smi", "--showcomputepartition"])
     )
@@ -199,14 +199,12 @@ def generate_machine_specs(args, sysinfo: dict = None):
         compute_partition=compute_partition,
         memory_partition=memory_partition,
         gpu_arch=gpu_arch,
-        gpu_chip_id=gpu_chip_id
+        gpu_chip_id=gpu_chip_id,
     )
 
     # Load above SoC specs via module import
     try:
-        soc_module = importlib.import_module(
-            "rocprof_compute_soc.soc_" + specs.gpu_arch
-        )
+        soc_module = importlib.import_module("rocprof_compute_soc.soc_" + specs.gpu_arch)
     except ModuleNotFoundError as e:
         console_error(
             "Arch %s marked as supported, but couldn't find class implementation %s."
@@ -600,9 +598,7 @@ class MachineSpecs:
                         if name == "version":
                             topstr += f"Output version: {value}\n"
                         else:
-                            console_error(
-                                f"Unknown out of table printing field: {name}"
-                            )
+                            console_error(f"Unknown out of table printing field: {name}")
                         continue
                     if "name" in field.metadata:
                         name = field.metadata["name"]
@@ -686,11 +682,9 @@ def total_sqc(archname, numCUs, numSEs):
 
 
 def total_l2_banks(archname, L2Banks, compute_partition):
-    # Fixme: support all supported partitioning mode
-    # Fixme: "name" is a bad name!
-    totalL2Banks = L2Banks
     xcds = get_mi300_num_xcds(archname, compute_partition)
-    return L2Banks * xcds
+    totalL2Banks = L2Banks * xcds
+    return totalL2Banks
 
 
 if __name__ == "__main__":

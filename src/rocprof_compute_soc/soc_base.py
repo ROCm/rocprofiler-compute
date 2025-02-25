@@ -38,7 +38,6 @@ from utils.utils import (
     console_debug,
     console_error,
     console_log,
-    console_warning,
     demarcate,
 )
 from utils.mi_gpu_data import (
@@ -112,7 +111,7 @@ class OmniSoC_Base:
     @demarcate
     def populate_mspec(self):
         console_debug("[populate_mspec]")
-        from utils.specs import run, search, total_sqc, total_xcds
+        from utils.specs import run, search, total_sqc
 
         if not hasattr(self._mspec, "_rocminfo") or self._mspec._rocminfo is None:
             return
@@ -236,9 +235,7 @@ class OmniSoC_Base:
                 # default: take all perfmons
                 pmc_files_list = ref_pmc_files_list
         else:
-            ref_pmc_files_list = glob.glob(
-                self.__perfmon_dir + "/" + "pmc_roof_perf.txt"
-            )
+            ref_pmc_files_list = glob.glob(self.__perfmon_dir + "/" + "pmc_roof_perf.txt")
             pmc_files_list = ref_pmc_files_list
 
         # Coalesce and writeback workload specific perfmon
@@ -313,9 +310,7 @@ def using_v3():
 
 
 @demarcate
-def perfmon_coalesce(
-    pmc_files_list, perfmon_config, workload_dir, spatial_multiplexing
-):
+def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, spatial_multiplexing):
     """Sort and bucket all related performance counters to minimize required application passes"""
     workload_perfmon_dir = workload_dir + "/perfmon"
 

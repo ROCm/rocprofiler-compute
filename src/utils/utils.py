@@ -1020,51 +1020,6 @@ def flatten_tcc_info_across_xcds(file, xcds, tcc_channel_per_xcd):
     return df
 
 
-def total_xcds(archname, compute_partition):
-    # check MI300 has a valid compute partition
-    mi300a_archs = ["mi300a_a0", "mi300a_a1"]
-    mi300x_archs = ["mi300x_a0", "mi300x_a1"]
-    mi308x_archs = ["mi308x"]
-    if (
-        archname.lower() in mi300a_archs + mi300x_archs + mi308x_archs
-        and compute_partition == "NA"
-    ):
-        console_error("Invalid compute partition found for {}".format(archname))
-    if archname.lower() not in mi300a_archs + mi300x_archs + mi308x_archs:
-        return 1
-    # from the whitepaper
-    # https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/white-papers/amd-cdna-3-white-paper.pdf
-    if compute_partition.lower() == "spx":
-        if archname.lower() in mi300a_archs:
-            return 6
-        if archname.lower() in mi300x_archs:
-            return 8
-        if archname.lower() in mi308x_archs:
-            return 4
-    if compute_partition.lower() == "tpx":
-        if archname.lower() in mi300a_archs:
-            return 2
-    if compute_partition.lower() == "dpx":
-        if archname.lower() in mi300x_archs:
-            return 4
-        if archname.lower() in mi308x_archs:
-            return 2
-    if compute_partition.lower() == "qpx":
-        if archname.lower() in mi300x_archs:
-            return 2
-    if compute_partition.lower() == "cpx":
-        if archname.lower() in mi300x_archs:
-            return 2
-        if archname.lower() in mi308x_archs:
-            return 1
-    # TODO implement other archs here as needed
-    console_error(
-        "Unknown compute partition / arch found for {} / {}".format(
-            compute_partition, archname
-        )
-    )
-
-
 def get_submodules(package_name):
     """List all submodules for a target package"""
     import importlib
