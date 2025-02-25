@@ -441,6 +441,15 @@ Examples:
     analyze_advanced_group = analyze_parser.add_argument_group("Advanced Options")
 
     analyze_group.add_argument(
+        "--name",
+        type=str,
+        metavar="",
+        dest="name",
+        default="",
+        required=False,
+        help="\t\t\tSpecify the name of the profile results",
+    )
+    analyze_group.add_argument(
         "-p",
         "--path",
         dest="path",

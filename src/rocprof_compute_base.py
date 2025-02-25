@@ -325,9 +325,16 @@ class RocProfCompute:
     @demarcate
     def run_analysis(self):
         self.print_graphic()
+        self.load_soc_specs()
 
         console_log("Analysis mode = %s" % self.__analyze_mode)
 
+        # Update default path if name is set
+        if self.__args.name != "":
+            self.__args.path = [[str(
+                Path(os.getcwd()).joinpath("workloads", self.__args.name, self.__mspec.gpu_model)
+            )]]
+        
         if self.__analyze_mode == "cli":
             from rocprof_compute_analyze.analysis_cli import cli_analysis
 
