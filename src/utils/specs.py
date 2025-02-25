@@ -30,7 +30,6 @@ import re
 import socket
 import subprocess
 import sys
-
 from dataclasses import dataclass, field, fields
 from datetime import datetime
 from math import ceil
@@ -39,12 +38,12 @@ from pathlib import Path as path
 import pandas as pd
 
 import config
-from utils.tty import get_table_string
 from utils.mi_gpu_data import (
     get_gpu_series_dict,
     get_mi300_chip_id_dict,
     get_mi300_num_xcds,
 )
+from utils.tty import get_table_string
 from utils.utils import (
     console_debug,
     console_error,

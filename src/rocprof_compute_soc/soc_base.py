@@ -34,16 +34,16 @@ from pathlib import Path
 
 import numpy as np
 
+from utils.mi_gpu_data import (
+    get_gpu_model,
+    get_gpu_series,
+    get_mi300_num_xcds,
+)
 from utils.utils import (
     console_debug,
     console_error,
     console_log,
     demarcate,
-)
-from utils.mi_gpu_data import (
-    get_gpu_series,
-    get_gpu_model,
-    get_mi300_num_xcds,
 )
 
 

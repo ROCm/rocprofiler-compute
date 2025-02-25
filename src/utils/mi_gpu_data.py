@@ -1,14 +1,12 @@
-import dash
 import logging
 import os
 import sys
-import yaml
-
-
 from dataclasses import dataclass, field
-from dash import Dash, html, dcc, Input, Output, State
 from typing import Any, Dict, List, Optional, Union
 
+import dash
+import yaml
+from dash import Dash, Input, Output, State, dcc, html
 
 # Constants for MI series
 # NOTE: Currently supports MI50, MI100, MI200, MI300
@@ -180,8 +178,8 @@ def parse_mi_gpu_data():
                   |-- partition_mode
     """
 
-    # TODO: generalize this!!!
-    yaml_file_path = "/home/xuchen/install/chip_info_0222/rocprofiler-compute/libexec/rocprofiler-compute/utils/mi_gpu_data.yaml"
+    current_dir = os.path.dirname(__file__)
+    yaml_file_path = os.path.join(current_dir, "mi_gpu_data.yaml")
 
     # Load the YAML data
     yaml_data = load_yaml(yaml_file_path)

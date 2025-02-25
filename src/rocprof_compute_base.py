@@ -24,7 +24,6 @@
 
 import argparse
 import importlib
-import logging
 import os
 import shutil
 import socket
@@ -43,8 +42,8 @@ from utils.logger import (
     setup_logging_priority,
 )
 from utils.mi_gpu_data import (
-    parse_mi_gpu_data,
     get_gpu_series_dict,
+    parse_mi_gpu_data,
 )
 from utils.specs import MachineSpecs, generate_machine_specs
 from utils.utils import (
