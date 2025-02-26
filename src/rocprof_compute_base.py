@@ -192,8 +192,8 @@ class RocProfCompute:
         )
         # Manually parse the remainder for profile mode (if it exists)
         args_list = sys.argv[1:]
-        if '--' in args_list:
-            index = args_list.index('--')
+        if "--" in args_list:
+            index = args_list.index("--")
             self.__args = parser.parse_args(args_list[:index])
             self.__args.remaining = args_list[index:]
         else:
@@ -343,10 +343,16 @@ class RocProfCompute:
 
         # Update default path if name is set
         if self.__args.name:
-            self.__args.path = [[str(
-                Path(os.getcwd()).joinpath("workloads", self.__args.name, self.__mspec.gpu_model)
-            )]]
-        
+            self.__args.path = [
+                [
+                    str(
+                        Path(os.getcwd()).joinpath(
+                            "workloads", self.__args.name, self.__mspec.gpu_model
+                        )
+                    )
+                ]
+            ]
+
         if self.__analyze_mode == "cli":
             from rocprof_compute_analyze.analysis_cli import cli_analysis
 
