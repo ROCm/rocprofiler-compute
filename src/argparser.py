@@ -109,12 +109,9 @@ Examples:
     roofline_group = profile_parser.add_argument_group("Standalone Roofline Options")
 
     profile_group.add_argument(
-        "name",
+        "name_pos",
         type=str,
-        metavar="name",
-        dest="name",
-        default="",
-        required=False,
+        nargs="?",
         help="\t\t\tAssign a name to workload.",
     )
     profile_group.add_argument(
@@ -123,7 +120,7 @@ Examples:
         type=str,
         metavar="",
         dest="name",
-        default="",
+        default=None,
         required=False,
         help="\t\t\tAssign a name to workload.",
     )
@@ -254,13 +251,6 @@ Examples:
         default=False,
         action="store_true",
         help="\t\t\tProfile without collecting roofline data.",
-    )
-    profile_group.add_argument(
-        "remaining",
-        metavar="-- [ ...]",
-        default=None,
-        nargs=argparse.REMAINDER,
-        help="\t\t\tProvide command for profiling after double dash.",
     )
     profile_group.add_argument(
         "--spatial-multiplexing",
@@ -451,12 +441,9 @@ Examples:
     analyze_advanced_group = analyze_parser.add_argument_group("Advanced Options")
 
     analyze_group.add_argument(
-        "name",
+        "name_pos",
         type=str,
-        metavar="name",
-        dest="name",
-        default="",
-        required=False,
+        nargs="?",
         help="\t\t\tSpecify the name of the profile results",
     )
     analyze_group.add_argument(
@@ -464,7 +451,7 @@ Examples:
         type=str,
         metavar="",
         dest="name",
-        default="",
+        default=None,
         required=False,
         help="\t\t\tSpecify the name of the profile results",
     )

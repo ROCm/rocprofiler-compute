@@ -190,7 +190,19 @@ class RocProfCompute:
         omniarg_parser(
             parser, config.rocprof_compute_home, self.__supported_archs, self.__version
         )
-        self.__args = parser.parse_args()
+        # Manually parse the remainder for profile mode (if it exists)
+        args_list = sys.argv[1:]
+        if '--' in args_list:
+            index = args_list.index('--')
+            self.__args = parser.parse_args(args_list[:index])
+            self.__args.remaining = args_list[index:]
+        else:
+            self.__args = parser.parse_args()
+            self.__args.remaining = None
+
+        # Use positional argument if name is not set
+        if not self.__args.name:
+            self.__args.name = self.__args.name_pos
 
         if self.__args.mode == None:
             if self.__args.specs:
@@ -330,7 +342,7 @@ class RocProfCompute:
         console_log("Analysis mode = %s" % self.__analyze_mode)
 
         # Update default path if name is set
-        if self.__args.name != "":
+        if self.__args.name:
             self.__args.path = [[str(
                 Path(os.getcwd()).joinpath("workloads", self.__args.name, self.__mspec.gpu_model)
             )]]
