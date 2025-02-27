@@ -26,6 +26,7 @@ import glob
 import logging
 import os
 import re
+import shutil
 import sys
 import time
 from abc import ABC, abstractmethod
@@ -77,6 +78,26 @@ class RocProfCompute_Base:
                 out = self.__args.path + "/pmc_perf.csv"
             files = glob.glob(self.__args.path + "/" + "pmc_perf_*.csv")
             files.extend(glob.glob(self.__args.path + "/" + "SQ_*.csv"))
+
+            if self.get_args().hip_trace:
+                # remove hip api trace ouputs from this list
+                files = [
+                    f
+                    for f in files
+                    if not re.compile(r"^.*_hip_api_trace\.csv$").match(
+                        os.path.basename(f)
+                    )
+                ]
+
+            if self.get_args().kokkos_trace:
+                # remove marker api trace ouputs from this list
+                files = [
+                    f
+                    for f in files
+                    if not re.compile(r"^.*_marker_api_trace\.csv$").match(
+                        os.path.basename(f)
+                    )
+                ]
         elif type(self.__args.path) == list:
             files = self.__args.path
         else:
@@ -266,7 +287,8 @@ class RocProfCompute_Base:
         # verify correct formatting for application binary
         self.__args.remaining = self.__args.remaining[1:]
         if self.__args.remaining:
-            if not Path(self.__args.remaining[0]).is_file():
+            # Ensure that command points to an executable
+            if not shutil.which(self.__args.remaining[0]):
                 console_error(
                     "Your command %s doesn't point to a executable. Please verify."
                     % self.__args.remaining[0]
