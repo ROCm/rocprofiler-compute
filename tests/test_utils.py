@@ -134,7 +134,9 @@ def check_csv_files(output_dir, num_devices, num_kernels):
 
 @pytest.fixture
 def binary_handler_profile_rocprof_compute(request):
-    def _handler(config, workload_dir, options=[], check_success=True, roof=False, kokkos=False):
+    def _handler(
+        config, workload_dir, options=[], check_success=True, roof=False, kokkos=False
+    ):
         # check app to run
         app_name = "app_kokkos" if kokkos else "app_1"
 
