@@ -190,6 +190,15 @@ class RocProfCompute:
         omniarg_parser(
             parser, config.rocprof_compute_home, self.__supported_archs, self.__version
         )
+        # Manually parse the remainder for profile mode (if it exists)
+        args_list = sys.argv[1:]
+        if "--" in args_list:
+            index = args_list.index("--")
+            self.__args = parser.parse_args(args_list[:index])
+            self.__args.remaining = args_list[index:]
+        else:
+            self.__args = parser.parse_args()
+            self.__args.remaining = None
 
         if self.__args.mode == None:
             if self.__args.specs:
@@ -203,16 +212,6 @@ class RocProfCompute:
 
             # FIXME:
             #     Might want to get host name from detected spec
-            # Manually parse the remainder for profile mode (if it exists)
-            args_list = sys.argv[1:]
-            if "--" in args_list:
-                index = args_list.index("--")
-                self.__args = parser.parse_args(args_list[:index])
-                self.__args.remaining = args_list[index:]
-            else:
-                self.__args = parser.parse_args()
-                self.__args.remaining = None
-
             # Use positional argument if name is not set
             if not self.__args.name:
                 self.__args.name = self.__args.name_pos
