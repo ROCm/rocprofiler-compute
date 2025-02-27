@@ -190,19 +190,6 @@ class RocProfCompute:
         omniarg_parser(
             parser, config.rocprof_compute_home, self.__supported_archs, self.__version
         )
-        # Manually parse the remainder for profile mode (if it exists)
-        args_list = sys.argv[1:]
-        if "--" in args_list:
-            index = args_list.index("--")
-            self.__args = parser.parse_args(args_list[:index])
-            self.__args.remaining = args_list[index:]
-        else:
-            self.__args = parser.parse_args()
-            self.__args.remaining = None
-
-        # Use positional argument if name is not set
-        if not self.__args.name:
-            self.__args.name = self.__args.name_pos
 
         if self.__args.mode == None:
             if self.__args.specs:
@@ -216,6 +203,19 @@ class RocProfCompute:
 
             # FIXME:
             #     Might want to get host name from detected spec
+            # Manually parse the remainder for profile mode (if it exists)
+            args_list = sys.argv[1:]
+            if "--" in args_list:
+                index = args_list.index("--")
+                self.__args = parser.parse_args(args_list[:index])
+                self.__args.remaining = args_list[index:]
+            else:
+                self.__args = parser.parse_args()
+                self.__args.remaining = None
+
+            # Use positional argument if name is not set
+            if not self.__args.name:
+                self.__args.name = self.__args.name_pos
             if self.__args.subpath == "node_name":
                 self.__args.path = str(
                     Path(self.__args.path).joinpath(socket.gethostname())
@@ -233,6 +233,9 @@ class RocProfCompute:
                     console_error("Directory already exists.")
 
         elif self.__args.mode == "analyze":
+            # Use positional argument if name is not set
+            if not self.__args.name:
+                self.__args.name = self.__args.name_pos
             # block all filters during spatial-multiplexing
             if self.__args.spatial_multiplexing:
                 self.__args.gpu_id = None
