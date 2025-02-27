@@ -339,7 +339,6 @@ class RocProfCompute:
     @demarcate
     def run_analysis(self):
         self.print_graphic()
-        self.load_soc_specs()
 
         console_log("Analysis mode = %s" % self.__analyze_mode)
 
@@ -349,7 +348,9 @@ class RocProfCompute:
                 [
                     str(
                         Path(os.getcwd()).joinpath(
-                            "workloads", self.__args.name, self.__mspec.gpu_model
+                            "workloads",
+                            self.__args.name,
+                            generate_machine_specs(self.__args).gpu_model,
                         )
                     )
                 ]
