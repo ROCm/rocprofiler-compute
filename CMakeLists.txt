@@ -194,6 +194,13 @@ message(STATUS "Pytest CPU threadcount: ${PYTEST_NUMPROCS}")
 # ---------------------------
 # profile mode tests
 # ---------------------------
+add_test(
+    NAME test_profile_kokkos_trace
+    COMMAND
+        ${Python3_EXECUTABLE} -m pytest -m kokkos
+        --junitxml=tests/test_profile_kokkos_trace.xml ${COV_OPTION}
+        ${PROJECT_SOURCE_DIR}/tests/test_profile_general.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 add_test(
     NAME test_profile_kernel_execution
@@ -245,6 +252,7 @@ add_test(
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 set_tests_properties(
+    test_profile_kokkos_trace
     test_profile_kernel_execution
     test_profile_ipblocks
     test_profile_dispatch

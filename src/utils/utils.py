@@ -624,7 +624,7 @@ def run_prof(
                 console_error(output, exit=False)
         console_error("Profiling execution failed.")
 
-    results_files = []
+    results_files = {}
 
     if rocprof_cmd.endswith("v2"):
         # rocprofv2 has separate csv files for each process
@@ -769,21 +769,24 @@ def process_kokkos_trace_output(workload_dir, fbase):
     )
     existing_marker_files_csv = [d for d in marker_api_trace_csvs if path(d).is_file()]
 
-    # concate and output marker api trace info
-    combined_results = pd.concat(
-        [pd.read_csv(f) for f in existing_marker_files_csv], ignore_index=True
-    )
-
-    combined_results.to_csv(
-        workload_dir + "/out/pmc_1/results_" + fbase + "_marker_api_trace.csv",
-        index=False,
-    )
-
-    if path(workload_dir + "/out").exists():
-        shutil.copyfile(
-            workload_dir + "/out/pmc_1/results_" + fbase + "_marker_api_trace.csv",
-            workload_dir + "/" + fbase + "_marker_api_trace.csv",
+    if existing_marker_files_csv:
+        # concate and output marker api trace info
+        combined_results = pd.concat(
+            [pd.read_csv(f) for f in existing_marker_files_csv], ignore_index=True
         )
+
+        combined_results.to_csv(
+            workload_dir + "/out/pmc_1/results_" + fbase + "_marker_api_trace.csv",
+            index=False,
+        )
+
+        if path(workload_dir + "/out").exists():
+            shutil.copyfile(
+                workload_dir + "/out/pmc_1/results_" + fbase + "_marker_api_trace.csv",
+                workload_dir + "/" + fbase + "_marker_api_trace.csv",
+            )
+    else:
+        console_warning("No marker api trace file generated for this kokkos trace run!!!")
 
 
 def replace_timestamps(workload_dir):

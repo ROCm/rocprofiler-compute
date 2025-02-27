@@ -38,6 +38,7 @@ MI300_CHIP_IDS = {
 config = {}
 config["kernel_name_1"] = "vecCopy"
 config["app_1"] = ["./tests/vcopy", "-n", "1048576", "-b", "256", "-i", "3"]
+config["app_kokkos"] = ["./tests/lulesh.kk"]
 config["cleanup"] = True
 config["COUNTER_LOGGING"] = False
 config["METRIC_COMPARE"] = False
@@ -128,6 +129,25 @@ ROOF_ONLY_FILES = sorted(
         "roofline.csv",
         "sysinfo.csv",
         "timestamps.csv",
+    ]
+)
+
+MARKER_API_TRACE_FILES = sorted(
+    [
+        "pmc_perf_0_marker_api_trace.csv",
+        "pmc_perf_1_marker_api_trace.csv",
+        "pmc_perf_2_marker_api_trace.csv",
+        "pmc_perf_3_marker_api_trace.csv",
+        "pmc_perf_4_marker_api_trace.csv",
+        "pmc_perf_5_marker_api_trace.csv",
+        "pmc_perf_6_marker_api_trace.csv",
+        "pmc_perf_7_marker_api_trace.csv",
+        "pmc_perf_8_marker_api_trace.csv",
+        "SQ_IFETCH_LEVEL_marker_api_trace.csv",
+        "SQ_INST_LEVEL_LDS_marker_api_trace.csv",
+        "SQ_INST_LEVEL_SMEM_marker_api_trace.csv",
+        "SQ_INST_LEVEL_VMEM_marker_api_trace.csv",
+        "SQ_LEVEL_WAVES_marker_api_trace.csv",
     ]
 )
 
@@ -487,6 +507,40 @@ def validate(test_name, workload_dir, file_dict, args=[]):
 # --
 # Start of profiling tests
 # --
+
+
+@pytest.mark.kokkos
+def test_kokkos_trace(binary_handler_profile_rocprof_compute):
+    # --kokkos-trace is only available for rocprofv3
+    curr_rocprof = os.environ["ROCPROF"]
+    if curr_rocprof != "rocprofv3":
+        # set to rocprofv3
+        os.environ["ROCPROF"] = "rocprofv3"
+
+    options = ["--kokkos-trace"]
+    workload_dir = test_utils.get_output_dir()
+    binary_handler_profile_rocprof_compute(
+        config, workload_dir, options, check_success=False, roof=False, kokkos=True
+    )
+
+    file_dict = test_utils.check_csv_files(workload_dir, 1, num_kernels)
+    marker_api_trace_files = []
+    for file_name in file_dict.keys():
+        if "marker_api_trace" in file_name:
+            marker_api_trace_files.append(file_name)
+
+    if soc == "MI100":
+        assert sorted(marker_api_trace_files) == MARKER_API_TRACE_FILES
+    elif soc == "MI200":
+        assert sorted(marker_api_trace_files) == MARKER_API_TRACE_FILES
+    elif "MI300" in soc:
+        assert sorted(marker_api_trace_files) == MARKER_API_TRACE_FILES
+    else:
+        print("This test is not supported for {}".format(soc))
+        assert 0
+
+    test_utils.clean_output_dir(config["cleanup"], workload_dir)
+    os.environ["ROCPROF"] = curr_rocprof
 
 
 @pytest.mark.misc

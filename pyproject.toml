@@ -50,6 +50,7 @@ pythonpath = [
     ]
 
 markers = [
+  "kokkos"
 	"kernel_execution",
 	"block",
 	"misc",
