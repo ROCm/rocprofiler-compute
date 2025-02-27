@@ -26,10 +26,6 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 * Fixed PoP of VALU Active Threads
 * Workaround broken mclk for old version of rocm-smi
 
-### Changed
-
-* Changed default normalization unit to per_kernel
-
 ## ROCm Compute Profiler 3.0.0 for ROCm 6.3.0
 
 ### Changed
