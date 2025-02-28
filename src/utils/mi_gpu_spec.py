@@ -4,9 +4,7 @@ import sys
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
 
-import dash
 import yaml
-from dash import Dash, Input, Output, State, dcc, html
 
 # Constants for MI series
 # NOTE: Currently supports MI50, MI100, MI200, MI300
@@ -65,7 +63,7 @@ class MIGPU(Singleton):
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super(MIGPU, cls).__new__(cls)
-            cls._instance.mi_gpu_data = []  # Initialize the instance attribute
+            cls._instance.mi_gpu_spec = []  # Initialize the instance attribute
         return cls._instance
 
     def __init__(
@@ -166,7 +164,7 @@ def load_yaml(file_path: str) -> Dict[str, Any]:
         )
 
 
-def parse_mi_gpu_data():
+def parse_mi_gpu_spec():
     """
     Parse out mi gpu data from yaml file and store in memory.
     MI GPUs
@@ -179,7 +177,7 @@ def parse_mi_gpu_data():
     """
 
     current_dir = os.path.dirname(__file__)
-    yaml_file_path = os.path.join(current_dir, "mi_gpu_data.yaml")
+    yaml_file_path = os.path.join(current_dir, "mi_gpu_spec.yaml")
 
     # Load the YAML data
     yaml_data = load_yaml(yaml_file_path)
@@ -187,7 +185,7 @@ def parse_mi_gpu_data():
 
     for mi_index, mi_series in MI_CONSTANS.items():
         if mi_series != MI_CONSTANS[MI300]:
-            logging.debug("[parse_mi_gpu_data] Processing series: %s" % mi_series)
+            logging.debug("[parse_mi_gpu_spec] Processing series: %s" % mi_series)
             for key, value in yaml_data.items():
                 # parse out gpu series and gpu model information for mi50, 100, 200
                 curr_gpu_arch = value[mi_index]["gpu_archs"][0]["gpu_arch"]
@@ -234,7 +232,7 @@ def get_gpu_series_dict():
         return gpu_series_dict
     else:
         logging.error(
-            "gpu_series_dict not yet populated, did you run parse_mi_gpu_data()?"
+            "gpu_series_dict not yet populated, did you run parse_mi_gpu_spec()?"
         )
 
 
@@ -244,10 +242,10 @@ def get_gpu_series(gpu_arch_):
             if gpu_series_dict[gpu_arch_]:
                 return gpu_series_dict[gpu_arch_]
         else:
-            logging.error("No matching gpu series found for gpu arch: " + gpu_arch_)
+            logging.warning("No matching gpu series found for gpu arch: " + gpu_arch_)
     else:
         logging.error(
-            "gpu_series_dict not yet populated, did you run parse_mi_gpu_data()?"
+            "gpu_series_dict not yet populated, did you run parse_mi_gpu_spec()?"
         )
 
 
@@ -268,7 +266,7 @@ def get_gpu_model(gpu_arch_, chip_id_):
             logging.error("No gpu model found for chip id: " + str(chip_id_))
     else:
         logging.error(
-            "gpu_model_dict not yet populated, did you run parse_mi_gpu_data()?"
+            "gpu_model_dict not yet populated, did you run parse_mi_gpu_spec()?"
         )
 
 
@@ -277,7 +275,7 @@ def get_mi300_archs_dict():
         return mi300_archs_dict
     else:
         logging.error(
-            "mi300_archs_dict not yet populated, did you run parse_mi_gpu_data()?"
+            "mi300_archs_dict not yet populated, did you run parse_mi_gpu_spec()?"
         )
 
 
@@ -286,12 +284,12 @@ def get_mi300_num_xcds(gpu_model_, compute_partition_):
         result = mi300_num_xcds_dict[gpu_model_.lower()][compute_partition_.lower()]
         if result:
             return result
-        logging.error(
+        logging.warning(
             "Unknown compute partition found for %s / %s", compute_partition_, gpu_model_
         )
     else:
         logging.error(
-            "mi300_num_xcds_dict not yet populated, did you run parse_mi_gpu_data()?"
+            "mi300_num_xcds_dict not yet populated, did you run parse_mi_gpu_spec()?"
         )
 
 
@@ -300,5 +298,5 @@ def get_mi300_chip_id_dict():
         return mi300_chip_id_dict
     else:
         logging.error(
-            "mi300_chip_id_dict not yet populated, did you run parse_mi_gpu_data()?"
+            "mi300_chip_id_dict not yet populated, did you run parse_mi_gpu_spec()?"
         )

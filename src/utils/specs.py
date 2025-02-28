@@ -38,7 +38,7 @@ from pathlib import Path as path
 import pandas as pd
 
 import config
-from utils.mi_gpu_data import (
+from utils.mi_gpu_spec import (
     get_gpu_series_dict,
     get_mi300_chip_id_dict,
     get_mi300_num_xcds,

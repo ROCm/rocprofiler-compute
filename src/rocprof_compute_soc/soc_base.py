@@ -34,7 +34,7 @@ from pathlib import Path
 
 import numpy as np
 
-from utils.mi_gpu_data import (
+from utils.mi_gpu_spec import (
     get_gpu_model,
     get_gpu_series,
     get_mi300_num_xcds,

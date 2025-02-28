@@ -42,7 +42,7 @@ from pathlib import Path as path
 import pandas as pd
 
 import config
-from utils.mi_gpu_data import get_mi300_num_xcds
+from utils.mi_gpu_spec import get_mi300_num_xcds
 
 rocprof_cmd = ""
 rocprof_args = ""
