@@ -130,7 +130,7 @@ class Roofline:
             dtype="I8",
             fig=fp16_fig,
         )
-        if mspec.gpu_series != "MI200":
+        if self.__mspec.gpu_series != "MI200":
             fp8_fig = self.generate_plot(dtype="FP8")
 
         # Create a legend and distinct kernel markers. This can be saved, optionally
@@ -166,8 +166,8 @@ class Roofline:
                 self.__run_parameters["workload_dir"]
                 + "/empirRoof_gpu-{}_int8_fp16.pdf".format(dev_id)
             )
-            if mspec.gpu_series != "MI200":
-                ml_combo_fig_fp8.write_image(
+            if self.__mspec.gpu_series != "MI200":
+                fp8_fig.write_image(
                     self.__run_parameters["workload_dir"]
                     + "/empirRoof_gpu-{}_fp8.pdf".format(dev_id)
                 )
@@ -186,8 +186,8 @@ class Roofline:
                 self.__run_parameters["workload_dir"]
                 + "/empirRoof_gpu-{}_int8_fp16.pdf".format(dev_id)
             )
-            if mspec.gpu_series != "MI200":
-                ml_combo_fig_fp8.write_image(
+            if self.__mspec.gpu_series != "MI200":
+                fp8_fig.write_image(
                     self.__run_parameters["workload_dir"]
                     + "/empirRoof_gpu-{}_fp8.pdf".format(dev_id)
                 )
@@ -197,13 +197,13 @@ class Roofline:
                 )
             console_log("roofline", "Empirical Roofline PDFs saved!")
         else:
-            if mspec.gpu_series != "MI200":
+            if self.__mspec.gpu_series != "MI200":
                 f8_child = (
                     html.Div(
                         className="float-child",
                         children=[
                             html.H3(children="Empirical Roofline Analysis (FP8)"),
-                            dcc.Graph(figure=ml_combo_fig_fp8),
+                            dcc.Graph(figure=fp8_fig),
                         ],
                     ),
                 )
