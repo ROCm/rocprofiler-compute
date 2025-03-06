@@ -81,8 +81,8 @@ mi_gpu_spec:
                 compute_partition_mode:
                   num_xcds:
                     spx: 6
-                    tpx: 2
                     dpx: null
+                    tpx: 2
                     qpx: null
                     cpx: null
             chip_ids:
@@ -97,10 +97,10 @@ mi_gpu_spec:
                 compute_partition_mode:
                   num_xcds:
                     spx: 8
-                    tpx: null
                     dpx: 4
+                    tpx: null
                     qpx: 2
-                    cpx: 2
+                    cpx: 1
             chip_ids:
               local: null
 
@@ -113,8 +113,8 @@ mi_gpu_spec:
                 compute_partition_mode:
                   num_xcds:
                     spx: 6
-                    tpx: 2
                     dpx: null
+                    tpx: 2
                     qpx: null
                     cpx: null
             chip_ids:
@@ -127,10 +127,10 @@ mi_gpu_spec:
                 compute_partition_mode:
                   num_xcds:
                     spx: 8
-                    tpx: null
                     dpx: 4
+                    tpx: null
                     qpx: 2
-                    cpx: 2
+                    cpx: 1
             chip_ids:
               local: 29857
 
@@ -141,8 +141,8 @@ mi_gpu_spec:
                 compute_partition_mode:
                   num_xcds:
                     spx: 4
-                    tpx: null
                     dpx: 2
+                    tpx: null
                     qpx: null
                     cpx: 1
             chip_ids:
