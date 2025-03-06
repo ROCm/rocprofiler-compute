@@ -19,6 +19,7 @@ gpu_series_dict = {}  # key: gpu arch
 gpu_model_dict = {}  # key: gpu_arch
 mi300_archs_dict = {}  # key: gpu model
 mi300_num_xcds_dict = {}  # key: gpu model
+mi300_nps_dict = {}  # key: gpu model (NOTE: key can also be architecture)
 mi300_chip_id_dict = {}  # key: chip id (int)
 
 
@@ -216,6 +217,11 @@ def parse_mi_gpu_spec():
                             "partition_mode"
                         ]["compute_partition_mode"]["num_xcds"]
 
+                        # NOTE: memory partition mode nps is available for all mi300 gpu models
+                        mi300_nps_dict[gpu_model] = models["mi300_arch"][
+                            "partition_mode"
+                        ]["memory_partition_mode"]
+
                         if not models["chip_ids"]["local"] is None:
                             # save chip_id, gpu_model pair if chip id is available
                             # NOTE: chip id is available for all gfx942 machines
@@ -225,6 +231,7 @@ def parse_mi_gpu_spec():
                         mi300_models_dict[arch].append(gpu_model)
 
     gpu_model_dict.update(mi300_models_dict)
+    sys.exit(1)
 
 
 def get_gpu_series_dict():
