@@ -85,6 +85,9 @@ mi_gpu_spec:
                     tpx: 2
                     qpx: null
                     cpx: null
+                memory_partition_mode:
+                  nps4: {tpx}
+                  nps1: {spx, tpx}
             chip_ids:
               local: null
 
@@ -101,6 +104,9 @@ mi_gpu_spec:
                     tpx: null
                     qpx: 2
                     cpx: 1
+                memory_partition_mode:
+                  nps4: {qpx, cpx}
+                  nps1: {spx, qpx, cpx}
             chip_ids:
               local: null
 
@@ -117,6 +123,9 @@ mi_gpu_spec:
                     tpx: 2
                     qpx: null
                     cpx: null
+                memory_partition_mode:
+                  nps4: {tpx}
+                  nps1: {spx, tpx}
             chip_ids:
               local: 29856
 
@@ -131,6 +140,9 @@ mi_gpu_spec:
                     tpx: null
                     qpx: 2
                     cpx: 1
+                memory_partition_mode:
+                  nps4: {qpx, cpx}
+                  nps1: {spx, qpx, cpx}
             chip_ids:
               local: 29857
 
@@ -145,5 +157,8 @@ mi_gpu_spec:
                     tpx: null
                     qpx: null
                     cpx: 1
+                memory_partition_mode:
+                  nps4: {cpx}
+                  nps1: {spx, dpx, cpx}
             chip_ids:
               local: 29858
