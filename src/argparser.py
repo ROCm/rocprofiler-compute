@@ -153,7 +153,8 @@ Examples:
         required=False,
         default=False,
         action="store_true",
-        help="\t\t\tKokkos trace, traces Kokkos API calls.",
+        help=argparse.SUPPRESS,
+        #help="\t\t\tKokkos trace, traces Kokkos API calls.",
     )
     profile_group.add_argument(
         "-k",
@@ -535,9 +536,9 @@ Examples:
         "--normal-unit",
         dest="normal_unit",
         metavar="",
-        default="per_wave",
+        default="per_kernel",
         choices=["per_wave", "per_cycle", "per_second", "per_kernel"],
-        help="\t\tSpecify the normalization unit: (DEFAULT: per_wave)\n\t\t   per_wave\n\t\t   per_cycle\n\t\t   per_second\n\t\t   per_kernel",
+        help="\t\tSpecify the normalization unit: (DEFAULT: per_kernel)\n\t\t   per_wave\n\t\t   per_cycle\n\t\t   per_second\n\t\t   per_kernel",
     )
     analyze_advanced_group.add_argument(
         "-t",
