@@ -130,7 +130,7 @@ MI200_ROOF_ONLY_FILES = sorted(
     ]
 )
 
-MI300_ROOF_ONLY_FILES = sorted(ROOF_ONLY_FILES + ["empirRoof_gpu-0_fp8.pdf"])
+MI300_ROOF_ONLY_FILES = sorted(MI200_ROOF_ONLY_FILES + ["empirRoof_gpu-0_fp8.pdf"])
 
 METRIC_THRESHOLDS = {
     "2.1.12": {"absolute": 0, "relative": 8},
