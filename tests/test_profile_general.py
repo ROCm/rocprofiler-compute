@@ -116,11 +116,10 @@ ALL_CSVS_MI300 = sorted(
     ]
 )
 
-ROOF_ONLY_FILES = sorted(
+MI200_ROOF_ONLY_FILES = sorted(
     [
         "empirRoof_gpu-0_fp32_fp64.pdf",
         "empirRoof_gpu-0_int8_fp16.pdf",
-        "empirRoof_gpu-0_fp8.pdf",
         "pmc_perf.csv",
         "pmc_perf_0.csv",
         "pmc_perf_1.csv",
@@ -130,6 +129,8 @@ ROOF_ONLY_FILES = sorted(
         "timestamps.csv",
     ]
 )
+
+MI300_ROOF_ONLY_FILES = sorted(ROOF_ONLY_FILES + ["empirRoof_gpu-0_fp8.pdf"])
 
 METRIC_THRESHOLDS = {
     "2.1.12": {"absolute": 0, "relative": 8},
@@ -309,6 +310,14 @@ def gpu_soc():
 
 
 soc = gpu_soc()
+
+
+# Set ROOF_ONLY_FILES according to soc
+if soc == "MI200":
+    ROOF_ONLY_FILES = MI200_ROOF_ONLY_FILES
+else:
+    ROOF_ONLY_FILES = MI300_ROOF_ONLY_FILES
+
 
 # Set rocprofv2 as profiler if MI300
 if "MI300" in soc:
