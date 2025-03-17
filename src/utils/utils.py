@@ -1019,6 +1019,57 @@ def flatten_tcc_info_across_xcds(file, xcds, tcc_channel_per_xcd):
     return df
 
 
+def total_xcds(gpu_model, compute_partition):
+    """
+    Return's the number of xcds for a gpu model and compute_partition pair.
+    NOTE: Similar functionality to "utils.mi_gpu_spec.get_mi300_num_xcds()",
+          this function is preserved for systems that are outside of the
+          MI family.
+    """
+    # check MI300 has a valid compute partition
+    mi300a_model = ["mi300a_a0", "mi300a_a1"]
+    mi300x_model = ["mi300x_a0", "mi300x_a1"]
+    mi308x_model = ["mi308x"]
+    if (
+        gpu_model.lower() in mi300a_model + mi300x_model + mi308x_model
+        and compute_partition == "NA"
+    ):
+        console_error("Invalid compute partition found for {}".format(gpu_model))
+    if gpu_model.lower() not in mi300a_model + mi300x_model + mi308x_model:
+        return 1
+    # from the whitepaper
+    # https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/white-papers/amd-cdna-3-white-paper.pdf
+    if compute_partition.lower() == "spx":
+        if gpu_model.lower() in mi300a_model:
+            return 6
+        if gpu_model.lower() in mi300x_model:
+            return 8
+        if gpu_model.lower() in mi308x_model:
+            return 4
+    if compute_partition.lower() == "tpx":
+        if gpu_model.lower() in mi300a_model:
+            return 2
+    if compute_partition.lower() == "dpx":
+        if gpu_model.lower() in mi300x_model:
+            return 4
+        if gpu_model.lower() in mi308x_model:
+            return 2
+    if compute_partition.lower() == "qpx":
+        if gpu_model.lower() in mi300x_model:
+            return 2
+    if compute_partition.lower() == "cpx":
+        if gpu_model.lower() in mi300x_model:
+            return 1
+        if gpu_model.lower() in mi308x_model:
+            return 1
+    # TODO implement other archs here as needed
+    console_error(
+        "Unknown compute partition / arch found for {} / {}".format(
+            compute_partition, gpu_model
+        )
+    )
+
+
 def get_submodules(package_name):
     """List all submodules for a target package"""
     import importlib
