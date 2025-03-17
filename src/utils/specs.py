@@ -35,10 +35,12 @@ from math import ceil
 from pathlib import Path as path
 
 import pandas as pd
+import yaml
 
 import config
 from utils.tty import get_table_string
 from utils.utils import (
+    console_debug,
     console_error,
     console_log,
     console_warning,
@@ -135,17 +137,24 @@ def generate_machine_specs(args, sysinfo: dict = None):
         linux_distro = ""
     rocm_version = get_rocm_ver().strip()
     # FIXME: use device
-    vbios = search(r"VBIOS version: (.*?)$", run(["rocm-smi", "-v"], exit_on_error=True))
-    compute_partition = search(
-        r"Compute Partition:\s*(\w+)", run(["rocm-smi", "--showcomputepartition"])
-    )
+
+    vbios_pattern = r"PART_NUMBER:\s*(\S+)"
+    compute_partition_pattern = r"COMPUTE_PARTITION:\s*(\S+)"
+    memory_partition_pattern = r"MEMORY_PARTITION:\s*(\S+)"
+
+    vbios = search(vbios_pattern, run(["amd-smi", "static"], exit_on_error=True))
+    compute_partition = search(compute_partition_pattern, run(["amd-smi", "static"]))
     if compute_partition is None:
         compute_partition = "NA"
-    memory_partition = search(
-        r"Memory Partition:\s*(\w+)", run(["rocm-smi", "--showmemorypartition"])
-    )
+    memory_partition = search(memory_partition_pattern, run(["amd-smi", "static"]))
     if memory_partition is None:
         memory_partition = "NA"
+
+    console_debug(
+        "vbios is {}, compute partition is {}, memory partition is {}".format(
+            vbios, compute_partition, memory_partition
+        )
+    )
 
     ##########################################
     ## B. SoC Specs
@@ -628,7 +637,7 @@ def run(cmd, exit_on_error=False):
         )
 
     if exit_on_error:
-        if cmd[0] == "rocm-smi":
+        if cmd[0] == "rocm-smi" or cmd[0] == "amd-smi":
             if p.returncode != 2 and p.returncode != 0:
                 console_error("No GPU detected. Unable to load rocm-smi")
         elif p.returncode != 0:
