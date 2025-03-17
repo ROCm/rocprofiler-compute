@@ -35,7 +35,6 @@ from math import ceil
 from pathlib import Path as path
 
 import pandas as pd
-import yaml
 
 import config
 from utils.tty import get_table_string
@@ -637,9 +636,9 @@ def run(cmd, exit_on_error=False):
         )
 
     if exit_on_error:
-        if cmd[0] == "rocm-smi" or cmd[0] == "amd-smi":
+        if cmd[0] == "amd-smi":
             if p.returncode != 2 and p.returncode != 0:
-                console_error("No GPU detected. Unable to load rocm-smi")
+                console_error("No GPU detected. Unable to load amd-smi")
         elif p.returncode != 0:
             console_error("Command [%s] failed with non-zero exit code" % cmd)
     return p.stdout.decode("utf-8")
