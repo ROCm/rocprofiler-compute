@@ -1021,11 +1021,15 @@ def flatten_tcc_info_across_xcds(file, xcds, tcc_channel_per_xcd):
 
 def total_xcds(gpu_model, compute_partition):
     """
-    Return's the number of xcds for a gpu model and compute_partition pair.
-    NOTE: Similar functionality to "utils.mi_gpu_spec.get_mi300_num_xcds()",
-          this function is preserved for systems that are outside of the
-          MI family.
+    Returns the number of xcds for a gpu model and compute_partition pair.
     """
+
+    # For mi300 chips, return result from mi_gpu_spec
+    result = get_mi300_num_xcds(gpu_model, compute_partition)
+    if result:
+        return result
+
+    # For other systems, use manual check
     # check MI300 has a valid compute partition
     mi300a_model = ["mi300a_a0", "mi300a_a1"]
     mi300x_model = ["mi300x_a0", "mi300x_a1"]

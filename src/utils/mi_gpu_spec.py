@@ -289,11 +289,13 @@ def get_mi300_archs_dict():
 def get_mi300_num_xcds(gpu_model_, compute_partition_):
     if mi300_num_xcds_dict:
         result = mi300_num_xcds_dict[gpu_model_.lower()][compute_partition_.lower()]
-        if result:
-            return result
-        logging.warning(
-            "Unknown compute partition found for %s / %s", compute_partition_, gpu_model_
-        )
+        if not result:
+            logging.warning(
+                "Unknown compute partition found for %s / %s",
+                compute_partition_,
+                gpu_model_,
+            )
+        return result
     else:
         logging.error(
             "mi300_num_xcds_dict not yet populated, did you run parse_mi_gpu_spec()?"
