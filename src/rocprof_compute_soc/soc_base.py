@@ -33,19 +33,18 @@ from collections import OrderedDict
 from pathlib import Path
 
 import numpy as np
+import yaml
 
-from utils.mi_gpu_spec import (
-    get_gpu_model,
-    get_gpu_series,
-    get_mi300_num_xcds,
-)
+from utils.mi_gpu_spec import get_gpu_model, get_gpu_series
+from utils.parser import build_in_vars, supported_denom
 from utils.utils import (
     console_debug,
     console_error,
     console_log,
+    convert_metric_id_to_panel_idx,
     demarcate,
+    total_xcds
 )
-
 
 class OmniSoC_Base:
     def __init__(
@@ -186,7 +185,7 @@ class OmniSoC_Base:
             self._mspec.gpu_arch, self._mspec.gpu_chip_id
         ).upper()
         self._mspec.num_xcd = str(
-            get_mi300_num_xcds(self._mspec.gpu_model, self._mspec.compute_partition)
+            total_xcds(self._mspec.gpu_model, self._mspec.compute_partition)
         )
 
     @demarcate

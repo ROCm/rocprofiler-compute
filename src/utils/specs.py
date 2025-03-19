@@ -38,11 +38,7 @@ from pathlib import Path as path
 import pandas as pd
 
 import config
-from utils.mi_gpu_spec import (
-    get_gpu_series_dict,
-    get_mi300_chip_id_dict,
-    get_mi300_num_xcds,
-)
+from utils.mi_gpu_spec import get_gpu_series_dict, get_mi300_chip_id_dict
 from utils.tty import get_table_string
 from utils.utils import (
     console_debug,
@@ -50,6 +46,7 @@ from utils.utils import (
     console_log,
     console_warning,
     get_version,
+    total_xcds,
 )
 
 VERSION_LOC = [
@@ -681,7 +678,7 @@ def total_sqc(archname, numCUs, numSEs):
 
 
 def total_l2_banks(archname, L2Banks, compute_partition):
-    xcds = get_mi300_num_xcds(archname, compute_partition)
+    xcds = total_xcds(archname, compute_partition)
     totalL2Banks = L2Banks * xcds
     return totalL2Banks
 
