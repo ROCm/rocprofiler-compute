@@ -35,7 +35,6 @@ from pathlib import Path
 import numpy as np
 import yaml
 
-
 from utils.mi_gpu_spec import get_gpu_model, get_gpu_series
 from utils.parser import build_in_vars, supported_denom
 from utils.utils import (
@@ -44,8 +43,9 @@ from utils.utils import (
     console_log,
     convert_metric_id_to_panel_idx,
     demarcate,
-    total_xcds
+    total_xcds,
 )
+
 
 class OmniSoC_Base:
     def __init__(
