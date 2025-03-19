@@ -231,7 +231,6 @@ def parse_mi_gpu_spec():
                         mi300_models_dict[arch].append(gpu_model)
 
     gpu_model_dict.update(mi300_models_dict)
-    sys.exit(1)
 
 
 def get_gpu_series_dict():
