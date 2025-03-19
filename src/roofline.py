@@ -25,9 +25,11 @@
 import os
 import time
 from abc import ABC, abstractmethod
+from collections import OrderedDict
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
 from dash import dcc, html
 
@@ -75,12 +77,6 @@ class Roofline:
         if hasattr(self.__args, "sort") and self.__args.sort != "ALL":
             self.__run_parameters["sort_type"] = self.__args.sort
 
-        if (
-            not isinstance(self.__run_parameters["workload_dir"], list)
-            and self.__run_parameters["workload_dir"] != None
-        ):
-            self.roof_setup()
-
         self.validate_parameters()
 
     def validate_parameters(self):
@@ -110,6 +106,12 @@ class Roofline:
         ret_df,
     ):
         """Generate a set of empirical roofline plots given a directory containing required profiling and benchmarking data"""
+        if (
+            not isinstance(self.__run_parameters["workload_dir"], list)
+            and self.__run_parameters["workload_dir"] != None
+        ):
+            self.roof_setup()
+
         # Create arithmetic intensity data that will populate the roofline model
         console_debug("roofline", "Path: %s" % self.__run_parameters["workload_dir"])
         self.__ai_data = calc_ai(self.__mspec, self.__run_parameters["sort_type"], ret_df)
@@ -130,6 +132,9 @@ class Roofline:
             dtype="I8",
             fig=fp16_fig,
         )
+        if self.__mspec.gpu_series != "MI200":
+            fig_fp8 = self.generate_plot(dtype="FP8")
+
         # Create a legend and distinct kernel markers. This can be saved, optionally
         self.__figure = go.Figure(
             go.Scatter(
@@ -163,6 +168,11 @@ class Roofline:
                 self.__run_parameters["workload_dir"]
                 + "/empirRoof_gpu-{}_int8_fp16.pdf".format(dev_id)
             )
+            if self.__mspec.gpu_series != "MI200":
+                fig_fp8.write_image(
+                    self.__run_parameters["workload_dir"]
+                    + "/empirRoof_gpu-{}_fp8.pdf".format(dev_id)
+                )
             # only save a legend if kernel_names option is toggled
             if self.__run_parameters["include_kernel_names"]:
                 self.__figure.write_image(
@@ -178,12 +188,27 @@ class Roofline:
                 self.__run_parameters["workload_dir"]
                 + "/empirRoof_gpu-{}_int8_fp16.pdf".format(dev_id)
             )
+            if self.__mspec.gpu_series != "MI200":
+                fig_fp8.write_image(
+                    self.__run_parameters["workload_dir"]
+                    + "/empirRoof_gpu-{}_fp8.pdf".format(dev_id)
+                )
             if self.__run_parameters["include_kernel_names"]:
                 self.__figure.write_image(
                     self.__run_parameters["workload_dir"] + "/kernelName_legend.pdf"
                 )
             console_log("roofline", "Empirical Roofline PDFs saved!")
         else:
+            if self.__mspec.gpu_series != "MI200":
+                fp8_graph = html.Div(
+                    className="float-child",
+                    children=[
+                        html.H3(children="Empirical Roofline Analysis (FP8)"),
+                        dcc.Graph(figure=fig_fp8),
+                    ],
+                )
+            else:
+                fp8_graph = None
             return html.Section(
                 id="roofline",
                 children=[
@@ -208,6 +233,7 @@ class Roofline:
                                     dcc.Graph(figure=ml_combo_fig_int8_fp16),
                                 ],
                             ),
+                            fp8_graph,
                         ],
                     )
                 ],
@@ -362,9 +388,11 @@ class Roofline:
 
     @demarcate
     def standalone_roofline(self):
-        from collections import OrderedDict
-
-        import pandas as pd
+        if (
+            not isinstance(self.__run_parameters["workload_dir"], list)
+            and self.__run_parameters["workload_dir"] != None
+        ):
+            self.roof_setup()
 
         # Change vL1D to a interpretable str, if required
         if "vL1D" in self.__run_parameters["mem_level"]:
@@ -380,32 +408,6 @@ class Roofline:
         t_df = OrderedDict()
         t_df["pmc_perf"] = pd.read_csv(app_path)
         self.empirical_roofline(ret_df=t_df)
-
-    # Main methods
-    @abstractmethod
-    def pre_processing(self):
-        if self.__args.roof_only:
-            # check for sysinfo
-            console_log(
-                "roofline", "Checking for sysinfo.csv in " + str(self.__args.path)
-            )
-            sysinfo_path = str(Path(self.__args.path).joinpath("sysinfo.csv"))
-            if not Path(sysinfo_path).is_file():
-                console_log("roofline", "sysinfo.csv not found. Generating...")
-
-                class Dummy_SoC:
-                    roofline_obj = True
-
-                gen_sysinfo(
-                    workload_name=self.__args.name,
-                    workload_dir=self.__workload_dir,
-                    ip_blocks=self.__args.ipblocks,
-                    app_cmd=self.__args.remaining,
-                    skip_roof=self.__args.no_roof,
-                    roof_only=self.__args.roof_only,
-                    mspec=self.__mspec,
-                    soc=Dummy_SoC,
-                )
 
     @abstractmethod
     def profile(self):

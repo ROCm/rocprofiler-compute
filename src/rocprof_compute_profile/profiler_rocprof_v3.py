@@ -32,8 +32,8 @@ from utils.utils import console_error, console_log, demarcate, replace_timestamp
 
 
 class rocprof_v3_profiler(RocProfCompute_Base):
-    def __init__(self, profiling_args, profiler_mode, soc):
-        super().__init__(profiling_args, profiler_mode, soc)
+    def __init__(self, profiling_args, profiler_mode, soc, supported_archs):
+        super().__init__(profiling_args, profiler_mode, soc, supported_archs)
         self.ready_to_profile = (
             self.get_args().roof_only
             and not Path(self.get_args().path).joinpath("pmc_perf.csv").is_file()
@@ -50,6 +50,10 @@ class rocprof_v3_profiler(RocProfCompute_Base):
 
         if self.get_args().kokkos_trace:
             trace_option = "--kokkos-trace"
+            # NOTE: --kokkos-trace feature is incomplete and is disabled for now.
+            console_error(
+                "The option '--kokkos-trace' is not supported in the current version of rocprof-compute. This functionality is planned for a future release. Please adjust your profiling options accordingly."
+            )
         if self.get_args().hip_trace:
             trace_option = "--hip-trace"
 
@@ -67,8 +71,25 @@ class rocprof_v3_profiler(RocProfCompute_Base):
             trace_option,
             "--output-format",
             rocprof_out_format,
-            "--",
         ]
+        # Kernel filtering
+        if self.get_args().kernel:
+            args.extend(["--kernel-include-regex", "|".join(self.get_args().kernel)])
+        # Dispatch filtering
+        dispatch = []
+        # rocprofv3 dispatch indexing is inclusive and starts from 1
+        if self.get_args().dispatch:
+            for dispatch_id in self.get_args().dispatch:
+                if ":" in dispatch_id:
+                    tokens = dispatch_id.split(":")
+                    # 4:7 -> 5-7
+                    dispatch.append(f"{int(tokens[0]) + 1}-{tokens[1]}")
+                else:
+                    # 4 -> 5
+                    dispatch.append(f"{int(dispatch_id) + 1}")
+        if dispatch:
+            args.extend(["--kernel-iteration-range", f"[{','.join(dispatch)}]"])
+        args.append("--")
         args.extend(app_cmd)
         return args
 

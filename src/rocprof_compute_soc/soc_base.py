@@ -35,6 +35,7 @@ from pathlib import Path
 import numpy as np
 import yaml
 
+
 from utils.mi_gpu_spec import get_gpu_model, get_gpu_series
 from utils.parser import build_in_vars, supported_denom
 from utils.utils import (
@@ -58,19 +59,10 @@ class OmniSoC_Base:
         self.__perfmon_config = (
             {}
         )  # Per IP block max number of simulutaneous counters. GFX IP Blocks
+        self.__section_counters = set()  # hw counters corresponding to filtered sections
         self.__soc_params = {}  # SoC specifications
         self.__compatible_profilers = []  # Store profilers compatible with SoC
         self.populate_mspec()
-        # In some cases (i.e. --specs) path will not be given
-        if hasattr(self.__args, "path"):
-            if self.__args.path == str(Path(os.getcwd()).joinpath("workloads")):
-                self.__workload_dir = str(
-                    Path(self.__args.path).joinpath(
-                        self.__args.name, self._mspec.gpu_model
-                    )
-                )
-            else:
-                self.__workload_dir = self.__args.path
 
     def __hash__(self):
         return hash(self.__arch)
@@ -171,8 +163,14 @@ class OmniSoC_Base:
         )
 
         # we get the max mclk from rocm-smi --showmclkrange
-        rocm_smi_mclk = run(["rocm-smi", "--showmclkrange"], exit_on_error=True)
-        self._mspec.max_mclk = search(r"(\d+)Mhz\s*$", rocm_smi_mclk)
+        # Regular expression to extract the max memory clock (third frequency level in MEM)
+        memory_clock_pattern = (
+            r"MEM:\s*[^:]*FREQUENCY_LEVELS:\s*(?:\d+: \d+ MHz\s*){2}(\d+)\s*MHz"
+        )
+        amd_smi_mclk = run(["amd-smi", "static"], exit_on_error=True)
+        self._mspec.max_mclk = search(memory_clock_pattern, amd_smi_mclk)
+
+        console_debug("max mem clock is {}".format(self._mspec.max_mclk))
 
         # these are just max's now, because the parsing was broken and this was inconsistent
         # with how we use the clocks elsewhere (all max, all the time)
@@ -189,6 +187,47 @@ class OmniSoC_Base:
         )
 
     @demarcate
+    def section_filter(self):
+        """
+        Create a set of counters required for the selected report sections.
+        Parse analysis report configuration files based on the selected report sections to be filtered.
+        """
+        args = self.__args
+        for section in self.__filter_metric_ids:
+            section_num = convert_metric_id_to_panel_idx(section)
+            file_id = str(section_num // 100)
+            # Convert "4" to "04"
+            if len(file_id) == 1:
+                file_id = f"0{file_id}"
+            # Identify yaml file corresponding to file_id
+            config_filename = [
+                filename
+                for filename in os.listdir(Path(args.config_dir).joinpath(self.__arch))
+                if filename.endswith(".yaml") and filename.startswith(file_id)
+            ][0]
+            # Read the yaml file
+            with open(
+                Path(args.config_dir).joinpath(self.__arch, config_filename), "r"
+            ) as stream:
+                section_config = yaml.safe_load(stream)
+            # Extract subsection if section is of the form 4.52
+            if section_num % 100:
+                section_config_text = "\n".join(
+                    [
+                        # Convert yaml to string
+                        yaml.dump(subsection)
+                        for subsection in section_config["Panel Config"]["data source"]
+                        if subsection["metric_table"]["id"] == section_num
+                    ]
+                )
+            else:
+                # Convert yaml to string
+                section_config_text = yaml.dump(section_config)
+            self.__section_counters = self.__section_counters.union(
+                parse_counters(section_config_text)
+            )
+
+    @demarcate
     def perfmon_filter(self, roofline_perfmon_only: bool):
         """Filter default performance counter set based on user arguments"""
         if (
@@ -196,15 +235,40 @@ class OmniSoC_Base:
             and Path(self.get_args().path).joinpath("pmc_perf.csv").is_file()
         ):
             return
-        workload_perfmon_dir = self.__workload_dir + "/perfmon"
+
+        # In some cases (i.e. --specs) path will not be given
+        if hasattr(self.__args, "path"):
+            if self.__args.path == str(Path(os.getcwd()).joinpath("workloads")):
+                workload_dir = str(
+                    Path(self.__args.path).joinpath(
+                        self.__args.name, self._mspec.gpu_model
+                    )
+                )
+            else:
+                workload_dir = self.__args.path
+
+        workload_perfmon_dir = workload_dir + "/perfmon"
+
+        self.__filter_hardware_blocks = [
+            name
+            for name, type in self.get_args().filter_blocks.items()
+            if type == "hardware_block"
+        ]
+        self.__filter_metric_ids = [
+            name
+            for name, type in self.get_args().filter_blocks.items()
+            if type == "metric_id"
+        ]
+
+        self.section_filter()
 
         # Initialize directories
-        if not Path(self.__workload_dir).is_dir():
-            os.makedirs(self.__workload_dir)
-        elif not Path(self.__workload_dir).is_symlink():
-            shutil.rmtree(self.__workload_dir)
+        if not Path(workload_dir).is_dir():
+            os.makedirs(workload_dir)
+        elif not Path(workload_dir).is_symlink():
+            shutil.rmtree(workload_dir)
         else:
-            os.unlink(self.__workload_dir)
+            os.unlink(workload_dir)
 
         os.makedirs(workload_perfmon_dir)
 
@@ -215,16 +279,17 @@ class OmniSoC_Base:
             )
 
             # Perfmon list filtering
-            if self.__args.ipblocks != None:
-                for i in range(len(self.__args.ipblocks)):
-                    self.__args.ipblocks[i] = self.__args.ipblocks[i].lower()
+            if self.__filter_hardware_blocks:
+                hardware_blocks = [
+                    block.lower() for block in self.__filter_hardware_blocks
+                ]
                 mpattern = "pmc_([a-zA-Z0-9_]+)_perf*"
 
                 pmc_files_list = []
                 for fname in ref_pmc_files_list:
                     fbase = Path(fname).stem
                     ip = re.match(mpattern, fbase).group(1)
-                    if ip in self.__args.ipblocks:
+                    if ip in hardware_blocks:
                         pmc_files_list.append(fname)
                         console_log("fname: " + fbase + ": Added")
                     else:
@@ -241,8 +306,9 @@ class OmniSoC_Base:
         perfmon_coalesce(
             pmc_files_list,
             self.__perfmon_config,
-            self.__workload_dir,
+            workload_dir,
             self.get_args().spatial_multiplexing,
+            self.__section_counters,
         )
 
     # ----------------------------------------------------
@@ -303,13 +369,44 @@ class CounterFile:
         return self.blocks[block].add(counter)
 
 
-# TODO: This is a HACK
+# FIXME: This is a HACK
 def using_v3():
-    return "ROCPROF" in os.environ.keys() and os.environ["ROCPROF"] == "rocprofv3"
+    return "ROCPROF" in os.environ.keys() and os.environ["ROCPROF"].endswith("rocprofv3")
 
 
 @demarcate
-def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, spatial_multiplexing):
+def parse_counters(config_text):
+    """
+    Create a set of all hardware counters mentioned in the given config file content string
+    """
+    # hw counter name should start with ip block name
+    hw_counter_regex = r"(?:SQ|SQC|TA|TD|TCP|TCC|CPC|CPF|SPI|GRBM)_[0-9A-Za-z_]+"
+    # only capture the variable name after $ using capturing group
+    variable_regex = r"\$([0-9A-Za-z_]+)"
+    hw_counter_matches = set(re.findall(hw_counter_regex, config_text))
+    variable_matches = set(re.findall(variable_regex, config_text))
+    # get hw counters and variables for all supported denominators
+    for formula in supported_denom.values():
+        hw_counter_matches.update(re.findall(hw_counter_regex, formula))
+        variable_matches.update(re.findall(variable_regex, formula))
+    # get hw counters corresponding to variables recursively
+    while variable_matches:
+        subvariable_matches = set()
+        for var in variable_matches:
+            if var in build_in_vars:
+                hw_counter_matches.update(
+                    re.findall(hw_counter_regex, build_in_vars[var])
+                )
+                subvariable_matches.update(re.findall(variable_regex, build_in_vars[var]))
+        # process new found variables
+        variable_matches = subvariable_matches - variable_matches
+    return list(hw_counter_matches)
+
+
+@demarcate
+def perfmon_coalesce(
+    pmc_files_list, perfmon_config, workload_dir, spatial_multiplexing, section_counters
+):
     """Sort and bucket all related performance counters to minimize required application passes"""
     workload_perfmon_dir = workload_dir + "/perfmon"
 
@@ -386,6 +483,49 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, spatial_multi
         for accu in accus:
             if accu in normal_counters:
                 del normal_counters[accu]
+
+    # If section report filters have been provided, only collect counters necessary for those section reports
+    # Remove _sum and _expand suffixes while matching
+    def remove_suffixes(string):
+        for suffix in ["_sum", "_expand"]:
+            if string.endswith(suffix):
+                string = string[: -len(suffix)]
+                break
+        return string
+
+    section_counters = {remove_suffixes(counter) for counter in section_counters}
+    ignored_counters = list()
+
+    if section_counters:
+        # Remove unnecessary normal counters
+        for counter_name in list(normal_counters.keys()):
+            if remove_suffixes(counter_name) not in section_counters:
+                del normal_counters[counter_name]
+                ignored_counters.append(counter_name)
+
+        # Remove unnecessary accumulate counters
+        filtered_accumlate_counters = list()
+        for counters in accumulate_counters:
+            if any(
+                remove_suffixes(counter_name) in section_counters
+                for counter_name in counters
+            ):
+                filtered_accumlate_counters.append(counters)
+            else:
+                ignored_counters.extend(counter_name)
+        accumulate_counters = filtered_accumlate_counters
+
+    if ignored_counters:
+        console_log(
+            f"Not collecting following counters per provided filter: {', '.join(ignored_counters)} "
+        )
+
+    # Throw error if no counters to be collected
+    if len(normal_counters) == 0 and len(accumulate_counters) == 0:
+        console_error(
+            "profiling",
+            "No performance counters to collect, please check the provided profiling filters",
+        )
 
     output_files = []
 

@@ -36,7 +36,7 @@ import yaml
 import config
 from utils import schema
 from utils.kernel_name_shortener import kernel_name_shortener
-from utils.utils import console_debug, console_error, demarcate
+from utils.utils import console_debug, console_error, console_log, demarcate
 
 # TODO: use pandas chunksize or dask to read really large csv file
 # from dask import dataframe as dd
@@ -83,6 +83,21 @@ def load_panel_configs(dir):
     # for key, value in od.items():
     #     print(key, value)
     return od
+
+
+def load_profiling_config(config_dir):
+    """
+    Load profiling config from yaml file.
+    """
+    try:
+        with open(Path(config_dir).joinpath("profiling_config.yaml")) as file:
+            prof_config = yaml.safe_load(file)
+            return prof_config
+    except FileNotFoundError:
+        console_log(
+            f"Could not find profiling_config.yaml in {config_dir} for filtering analysis report"
+        )
+    return dict()
 
 
 @demarcate
@@ -209,7 +224,8 @@ def create_df_pmc(
                     dfs.append(tmp_df)
                     coll_levels.append(f[:-4])
 
-        final_df = pd.concat(dfs, keys=coll_levels, axis=1, copy=False)
+        # TODO: double check the case if all tmp_df.shape[0] are not on the same page
+        final_df = pd.concat(dfs, keys=coll_levels, axis=1, join="inner", copy=False)
         if verbose >= 2:
             console_debug("pmc_raw_data final_single_df %s" % final_df.info)
         return final_df

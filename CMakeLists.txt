@@ -244,6 +244,13 @@ add_test(
             ${COV_OPTION} ${PROJECT_SOURCE_DIR}/tests/test_profile_general.py
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
+add_test(
+    NAME test_profile_section
+    COMMAND
+        ${Python3_EXECUTABLE} -m pytest -m section --junitxml=tests/test_profile_misc.xml
+        ${COV_OPTION} ${PROJECT_SOURCE_DIR}/tests/test_profile_general.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
 set_tests_properties(
     test_profile_kernel_execution
     test_profile_ipblocks
@@ -384,13 +391,20 @@ add_custom_target(
     # Create VERSION.sha file
     COMMAND git -C ${PROJECT_SOURCE_DIR} rev-parse HEAD > VERSION.sha
     # Build standalone binary
+    # NOTE: --no-deployment-flag=self-execution is used to avoid self-execution and fork
+    # bombs as explained in
+    # https://nuitka.net/user-documentation/common-issue-solutions.html#fork-bombs-self-execution
     COMMAND
-        ${Python3_EXECUTABLE} -m nuitka --mode=onefile
+        ${Python3_EXECUTABLE} -m nuitka --mode=onefile --no-deployment-flag=self-execution
         --include-data-files=${PROJECT_SOURCE_DIR}/VERSION*=./ --enable-plugin=no-qt
-        --include-package-data=dash_svg --include-package=dash_bootstrap_components
-        --include-package=plotly --include-package-data=kaleido
+        --include-package=dash_svg --include-package-data=dash_svg
+        --include-package=dash_bootstrap_components
+        --include-package-data=dash_bootstrap_components --include-package=plotly
+        --include-package-data=plotly --include-package=kaleido
+        --include-package-data=kaleido --include-package=rocprof_compute_analyze
+        --include-package-data=rocprof_compute_analyze
         --include-package=rocprof_compute_soc --include-package-data=rocprof_compute_soc
-        --include-package-data=utils rocprof-compute
+        --include-package=utils --include-package-data=utils rocprof-compute
     # Remove library rpath from executable
     COMMAND patchelf --remove-rpath rocprof-compute.bin
     # Move to build directory
