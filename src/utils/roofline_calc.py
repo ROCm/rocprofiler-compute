@@ -41,7 +41,23 @@ FONT_SIZE = 16
 FONT_COLOR = "black"
 FONT_WEIGHT = "bold"
 
-SUPPORTED_SOC = ["mi200", "mi300"]
+SUPPORTED_DATATYPES = {
+    "gfx90a": ["FP16", "BF16", "FP32", "FP64", "I8"],  # Unsupported: F8
+    "gfx940": ["FP8", "FP16", "FP32", "FP64"],  # Unsupported: BF16, I8
+    "gfx941": ["FP8", "FP16", "FP32", "FP64"],  # Unsupported: BF16, I8
+    "gfx942": ["FP8", "FP16", "FP32", "FP64"],  # Unsupported: BF16, I8
+}
+
+PEAK_OPS_DATATYPES = {"FP8": "Flops", "FP32": "Flops", "FP64": "Flops"}
+
+MFMA_DATATYPES = {
+    "FP8": "Flops",
+    "FP16": "Flops",
+    "BF16": "Flops",
+    "FP32": "Flops",
+    "FP64": "Flops",
+    "I8": "Ops",
+}
 
 TOP_N = 10
 
@@ -106,31 +122,23 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
 
     x1 = y1 = x2 = y2 = -1
     x1_mfma = y1_mfma = x2_mfma = y2_mfma = -1
-    target_precision = dtype[2:]
 
-    if dtype != "FP16" and dtype != "I8":
-        peakOps = float(benchmark_data[dtype + "Flops"][roofline_parameters["device_id"]])
+    if dtype in PEAK_OPS_DATATYPES.keys():
+        peakOps = float(
+            benchmark_data[dtype + "{}".format(PEAK_OPS_DATATYPES[dtype])][
+                roofline_parameters["device_id"]
+            ]
+        )
     for i in range(0, len(cacheHierarchy)):
         # Plot BW line
         console_debug("roofline", "Current cache level is %s" % cacheHierarchy[i])
         curr_bw = cacheHierarchy[i] + "Bw"
         peakBw = float(benchmark_data[curr_bw][roofline_parameters["device_id"]])
 
-        if dtype == "I8":
-            peakMFMA = float(
-                benchmark_data["MFMAI8Ops"][roofline_parameters["device_id"]]
-            )
-        else:
-            peakMFMA = float(
-                benchmark_data["MFMAF{}Flops".format(target_precision)][
-                    roofline_parameters["device_id"]
-                ]
-            )
-
         x1 = float(XMIN)
         y1 = float(XMIN) * peakBw
-        # Note: No reg peakOps for FP16 or INT8
-        if dtype != "FP16" and dtype != "I8":
+
+        if dtype in PEAK_OPS_DATATYPES.keys():
             x2 = peakOps / peakBw
             y2 = peakOps
 
@@ -138,8 +146,18 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
             x1_mfma = peakOps / peakBw
             y1_mfma = peakOps
 
-        x2_mfma = peakMFMA / peakBw
-        y2_mfma = peakMFMA
+        if dtype in MFMA_DATATYPES.keys():
+            target_precision = (
+                ("F" + dtype[2:]) if (MFMA_DATATYPES[dtype] == "Flops") else (dtype)
+            )
+
+            peakMFMA = float(
+                benchmark_data[
+                    "MFMA{}{}".format(target_precision, MFMA_DATATYPES[dtype])
+                ][roofline_parameters["device_id"]]
+            )
+            x2_mfma = peakMFMA / peakBw
+            y2_mfma = peakMFMA
 
         # These are the points to use:
         console_debug("roofline", "coordinate points:")
@@ -153,8 +171,7 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
     # -------------------------------------------------------------------------------------
     #                                     Plot computing roof
     # -------------------------------------------------------------------------------------
-    # Note: No FMA roof for FP16 or INT8
-    if dtype != "FP16" and dtype != "I8":
+    if dtype in PEAK_OPS_DATATYPES.keys():
         # Plot FMA roof
         x0 = XMAX
         if x2 < x0:
@@ -166,8 +183,8 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
         graphPoints["valu"].append(peakOps)
 
     # Plot MFMA roof
-    if (
-        x1_mfma != -1 or dtype == "FP16" or dtype == "I8"
+    if x1_mfma != -1 or (
+        dtype in MFMA_DATATYPES.keys()
     ):  # assert that mfma has been assigned
         x0_mfma = XMAX
         if x2_mfma < x0_mfma:
@@ -205,6 +222,8 @@ def calc_ai(mspec, sort_type, ret_df):
     myList = []
     at_end = False
     next_kernelName = ""
+
+    supported_dt = SUPPORTED_DATATYPES[mspec.gpu_arch]
 
     for idx in df.index:
         # CASE: Top kernels
@@ -251,7 +270,7 @@ def calc_ai(mspec, sort_type, ret_df):
                 + (df["SQ_INSTS_VALU_MFMA_MOPS_F32"][idx] * 512)
                 + (df["SQ_INSTS_VALU_MFMA_MOPS_F64"][idx] * 512)
             )
-            if mspec.gpu_series != "MI200":
+            if "FP8" in supported_dt:
                 total_flops += df["SQ_INSTS_VALU_MFMA_MOPS_F8"][idx] * 512
         except KeyError:
             console_debug(
@@ -291,7 +310,7 @@ def calc_ai(mspec, sort_type, ret_df):
             pass
 
         try:
-            if mspec.gpu_series != "MI200":
+            if "FP8" in supported_dt:
                 mfma_flops_f8 += df["SQ_INSTS_VALU_MFMA_MOPS_F8"][idx] * 512
             mfma_flops_f16 += df["SQ_INSTS_VALU_MFMA_MOPS_F16"][idx] * 512
             mfma_flops_bf16 += df["SQ_INSTS_VALU_MFMA_MOPS_BF16"][idx] * 512
