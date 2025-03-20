@@ -286,19 +286,32 @@ def get_mi300_archs_dict():
 
 
 def get_mi300_num_xcds(gpu_model_, compute_partition_):
+    result = None
     if mi300_num_xcds_dict:
-        result = mi300_num_xcds_dict[gpu_model_.lower()][compute_partition_.lower()]
-        if not result:
-            logging.warning(
-                "Unknown compute partition found for %s / %s",
-                compute_partition_,
-                gpu_model_,
-            )
-        return result
+        if gpu_model_.lower() in mi300_num_xcds_dict.keys():
+            if (
+                compute_partition_.lower()
+                in mi300_num_xcds_dict[gpu_model_.lower()].keys()
+            ):
+                result = mi300_num_xcds_dict[gpu_model_.lower()][
+                    compute_partition_.lower()
+                ]
+                if not result:
+                    logging.warning(
+                        "Unknown compute partition found for %s / %s",
+                        compute_partition_,
+                        gpu_model_,
+                    )
+            else:
+                logging.info("unknown compute partition: " + compute_partition_)
+
+        else:
+            logging.info("current system is not a mi300 system: " + str(gpu_model_))
     else:
         logging.error(
             "mi300_num_xcds_dict not yet populated, did you run parse_mi_gpu_spec()?"
         )
+    return result
 
 
 def get_mi300_chip_id_dict():

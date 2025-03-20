@@ -1058,6 +1058,7 @@ def total_xcds(gpu_model, compute_partition):
         and compute_partition == "NA"
     ):
         console_error("Invalid compute partition found for {}".format(gpu_model))
+
     if gpu_model.lower() not in mi300a_model + mi300x_model + mi308x_model:
         return 1
     # from the whitepaper

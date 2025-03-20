@@ -88,7 +88,7 @@ def detect_gpu_chip_id(_rocminfo):
             break
     if not gpu_chip_id:
         console_warning("No Chip ID detected: " + str(gpu_chip_id))
-    if (
+    elif (
         gpu_chip_id not in get_mi300_chip_id_dict().keys()
         and int(gpu_chip_id) not in get_mi300_chip_id_dict().keys()
     ):
