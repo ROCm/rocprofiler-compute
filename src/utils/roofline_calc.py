@@ -48,16 +48,8 @@ SUPPORTED_DATATYPES = {
     "gfx942": ["FP8", "FP16", "FP32", "FP64"],  # Unsupported: BF16, I8
 }
 
-PEAK_OPS_DATATYPES = {"FP8": "Flops", "FP32": "Flops", "FP64": "Flops"}
-
-MFMA_DATATYPES = {
-    "FP8": "Flops",
-    "FP16": "Flops",
-    "BF16": "Flops",
-    "FP32": "Flops",
-    "FP64": "Flops",
-    "I8": "Ops",
-}
+PEAK_OPS_DATATYPES = ["FP8", "FP32", "FP64"]
+MFMA_DATATYPES = ["FP8", "FP16", "BF16", "FP32", "FP64", "I8"]
 
 TOP_N = 10
 
@@ -123,9 +115,11 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
     x1 = y1 = x2 = y2 = -1
     x1_mfma = y1_mfma = x2_mfma = y2_mfma = -1
 
-    if dtype in PEAK_OPS_DATATYPES.keys():
+    ops_flops = "Ops" if (dtype[:1] == "I") else "Flops"
+
+    if dtype in PEAK_OPS_DATATYPES:
         peakOps = float(
-            benchmark_data[dtype + "{}".format(PEAK_OPS_DATATYPES[dtype])][
+            benchmark_data[dtype + "{}".format(ops_flops)][
                 roofline_parameters["device_id"]
             ]
         )
@@ -138,7 +132,7 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
         x1 = float(XMIN)
         y1 = float(XMIN) * peakBw
 
-        if dtype in PEAK_OPS_DATATYPES.keys():
+        if dtype in PEAK_OPS_DATATYPES:
             x2 = peakOps / peakBw
             y2 = peakOps
 
@@ -146,15 +140,13 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
             x1_mfma = peakOps / peakBw
             y1_mfma = peakOps
 
-        if dtype in MFMA_DATATYPES.keys():
-            target_precision = (
-                ("F" + dtype[2:]) if (MFMA_DATATYPES[dtype] == "Flops") else (dtype)
-            )
+        if dtype in MFMA_DATATYPES:
+            target_precision = (dtype) if (dtype[:1] == "I") else ("F" + dtype[2:])
 
             peakMFMA = float(
-                benchmark_data[
-                    "MFMA{}{}".format(target_precision, MFMA_DATATYPES[dtype])
-                ][roofline_parameters["device_id"]]
+                benchmark_data["MFMA{}{}".format(target_precision, ops_flops)][
+                    roofline_parameters["device_id"]
+                ]
             )
             x2_mfma = peakMFMA / peakBw
             y2_mfma = peakMFMA
@@ -171,7 +163,7 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
     # -------------------------------------------------------------------------------------
     #                                     Plot computing roof
     # -------------------------------------------------------------------------------------
-    if dtype in PEAK_OPS_DATATYPES.keys():
+    if dtype in PEAK_OPS_DATATYPES:
         # Plot FMA roof
         x0 = XMAX
         if x2 < x0:
@@ -183,9 +175,7 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
         graphPoints["valu"].append(peakOps)
 
     # Plot MFMA roof
-    if x1_mfma != -1 or (
-        dtype in MFMA_DATATYPES.keys()
-    ):  # assert that mfma has been assigned
+    if x1_mfma != -1 or (dtype in MFMA_DATATYPES):  # assert that mfma has been assigned
         x0_mfma = XMAX
         if x2_mfma < x0_mfma:
             x0_mfma = x2_mfma
