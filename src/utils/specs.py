@@ -64,7 +64,7 @@ VERSION_LOC = [
 def detect_arch(_rocminfo):
     for idx1, linetext in enumerate(_rocminfo):
         # NOTE: currently supported socs are gfx archs only
-        gpu_arch = search(r"^\s*Name\s*:\s+ ([Gg][Ff][Xx][0-9]+).*\s*$", linetext)
+        gpu_arch = search(r"^\s*Name\s*:\s* ([Gg][Ff][Xx][[a-zA-Z0-9]]+).*\s*$", linetext)
         if gpu_arch in get_gpu_series_dict().keys():
             break
         if str(gpu_arch) in get_gpu_series_dict().keys():
@@ -79,7 +79,7 @@ def detect_arch(_rocminfo):
 def detect_gpu_chip_id(_rocminfo):
     for idx1, linetext in enumerate(_rocminfo):
         # NOTE: current supported socs only have numbers in Chip ID
-        gpu_chip_id = search(r"^\s*Chip ID\s*:\s+ ([0-9]+).*\s*$", linetext)
+        gpu_chip_id = search(r"^\s*Chip ID\s*:\s* ([0-9]+).*\s*$", linetext)
         if gpu_chip_id and int(gpu_chip_id) in get_mi300_chip_id_dict().keys():
             gpu_chip_id = str(gpu_chip_id)
             break
