@@ -45,8 +45,8 @@ from utils.utils import (
     console_log,
     convert_metric_id_to_panel_idx,
     demarcate,
-    total_xcds,
     get_default_accumulate_counter_file_ymal,
+    total_xcds,
     using_v3,
 )
 

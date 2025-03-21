@@ -234,84 +234,105 @@ def parse_mi_gpu_spec():
 
 
 def get_gpu_series_dict():
-    if gpu_series_dict:
-        return gpu_series_dict
-    else:
+    if not gpu_series_dict:
         logging.error(
             "gpu_series_dict not yet populated, did you run parse_mi_gpu_spec()?"
         )
+        return None
+    return gpu_series_dict
 
 
 def get_gpu_series(gpu_arch_):
-    if gpu_series_dict:
-        if gpu_arch_ in gpu_series_dict or gpu_arch_.lower() in gpu_series_dict:
-            if gpu_series_dict[gpu_arch_]:
-                return gpu_series_dict[gpu_arch_]
-        else:
-            logging.warning("No matching gpu series found for gpu arch: " + gpu_arch_)
-    else:
+    if not gpu_series_dict:
         logging.error(
             "gpu_series_dict not yet populated, did you run parse_mi_gpu_spec()?"
         )
+        return None
+
+    # Normalize the key by checking both the raw and lowercase versions
+    gpu_series = gpu_series_dict.get(gpu_arch_) or gpu_series_dict.get(gpu_arch_.lower())
+    if gpu_series:
+        return gpu_series
+
+    logging.warning(f"No matching gpu series found for gpu arch: {gpu_arch_}")
+    return None
 
 
 def get_gpu_model(gpu_arch_, chip_id_):
-
-    if gpu_model_dict:
-        if gpu_arch_.lower() == "gfx942":
-            # Use Chip ID to further distinguish gfx942 arch gpus
-            if int(chip_id_) in mi300_chip_id_dict:
-                gpu_model = mi300_chip_id_dict[int(chip_id_)]
-                if gpu_model:
-                    return gpu_model
-            logging.error("No gpu model found for chip id: " + str(chip_id_))
-        else:
-            if gpu_arch_.lower() in gpu_model_dict:
-                if gpu_model_dict[gpu_arch_.lower()][0]:
-                    return gpu_model_dict[gpu_arch_.lower()][0]
-            logging.error("No gpu model found for chip id: " + str(chip_id_))
-    else:
+    # Check that gpu_model_dict is populated first
+    if not gpu_model_dict:
         logging.error(
-            "gpu_model_dict not yet populated, did you run parse_mi_gpu_spec()?"
+            "gpu_model_dict not yet populated. Did you run parse_mi_gpu_spec()?"
         )
+        return None
+
+    gpu_arch_lower = gpu_arch_.lower()
+    chip_id_int = None
+    try:
+        chip_id_int = int(chip_id_)
+    except (ValueError, TypeError):
+        logging.error(f"Invalid chip_id: {chip_id_}")
+        return None
+
+    # Handle gfx942 with chip_id mapping
+    if gpu_arch_lower == "gfx942":
+        if chip_id_int in mi300_chip_id_dict:
+            gpu_model = mi300_chip_id_dict.get(chip_id_int)
+        else:
+            logging.warning(f"No gpu model found for chip id: {chip_id_}")
+            return None
+
+    # Otherwise use gpu_model_dict mapping for other architectures
+    elif gpu_arch_lower in gpu_model_dict:
+        # NOTE: take the first element works for now
+        gpu_model = gpu_model_dict[gpu_arch_lower][0]
+    else:
+        logging.warning(f"No gpu model found for chip id: {chip_id_}")
+        return None
+
+    if not gpu_model:
+        logging.warning(f"No gpu model found for chip id: {chip_id_}")
+        return None
+
+    return gpu_model
 
 
 def get_mi300_archs_dict():
-    if mi300_archs_dict:
-        return mi300_archs_dict
-    else:
+    if not mi300_archs_dict:
         logging.error(
             "mi300_archs_dict not yet populated, did you run parse_mi_gpu_spec()?"
         )
+        return None
+    return mi300_archs_dict
 
 
 def get_mi300_num_xcds(gpu_model_, compute_partition_):
-    result = None
-    if mi300_num_xcds_dict:
-        if gpu_model_.lower() in mi300_num_xcds_dict.keys():
-            if (
-                compute_partition_.lower()
-                in mi300_num_xcds_dict[gpu_model_.lower()].keys()
-            ):
-                result = mi300_num_xcds_dict[gpu_model_.lower()][
-                    compute_partition_.lower()
-                ]
-                if not result:
-                    logging.warning(
-                        "Unknown compute partition found for %s / %s",
-                        compute_partition_,
-                        gpu_model_,
-                    )
-            else:
-                logging.info("unknown compute partition: " + compute_partition_)
-
-        else:
-            logging.info("current system is not a mi300 system: " + str(gpu_model_))
-    else:
+    if not mi300_num_xcds_dict:
         logging.error(
             "mi300_num_xcds_dict not yet populated, did you run parse_mi_gpu_spec()?"
         )
-    return result
+        return None
+
+    gpu_model_lower = gpu_model_.lower()
+    partition_lower = compute_partition_.lower()
+
+    if gpu_model_lower not in mi300_num_xcds_dict:
+        logging.info(f"Current system is not a mi300 system: {gpu_model_}")
+        return None
+
+    model_dict = mi300_num_xcds_dict[gpu_model_lower]
+    if partition_lower not in model_dict:
+        logging.info(f"Unknown compute partition: {compute_partition_}")
+        return None
+
+    num_xcds = model_dict[partition_lower]
+    if not num_xcds:
+        logging.warning(
+            "Unknown compute partition found for %s / %s", compute_partition_, gpu_model_
+        )
+        return None
+
+    return num_xcds
 
 
 def get_mi300_chip_id_dict():
