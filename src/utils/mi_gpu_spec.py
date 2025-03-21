@@ -267,31 +267,25 @@ def get_gpu_model(gpu_arch_, chip_id_):
         return None
 
     gpu_arch_lower = gpu_arch_.lower()
-    chip_id_int = None
-    try:
-        chip_id_int = int(chip_id_)
-    except (ValueError, TypeError):
-        logging.error(f"Invalid chip_id: {chip_id_}")
-        return None
 
     # Handle gfx942 with chip_id mapping
     if gpu_arch_lower == "gfx942":
-        if chip_id_int in mi300_chip_id_dict:
-            gpu_model = mi300_chip_id_dict.get(chip_id_int)
+        if chip_id_ and int(chip_id_) in mi300_chip_id_dict:
+            gpu_model = mi300_chip_id_dict.get(int(chip_id_))
         else:
             logging.warning(f"No gpu model found for chip id: {chip_id_}")
             return None
 
-    # Otherwise use gpu_model_dict mapping for other architectures
+    # Otherwise use gpu_model_dict mapping for other mi architectures
     elif gpu_arch_lower in gpu_model_dict:
         # NOTE: take the first element works for now
         gpu_model = gpu_model_dict[gpu_arch_lower][0]
     else:
-        logging.warning(f"No gpu model found for chip id: {chip_id_}")
+        logging.warning(f"No gpu model found for gpu arch: {gpu_arch_lower}")
         return None
 
     if not gpu_model:
-        logging.warning(f"No gpu model found for chip id: {chip_id_}")
+        logging.warning(f"No gpu model found for gpu arch: {gpu_arch_lower}")
         return None
 
     return gpu_model
