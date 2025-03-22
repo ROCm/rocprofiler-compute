@@ -42,9 +42,27 @@ from pathlib import Path as path
 import pandas as pd
 
 import config
+from utils.mi_gpu_spec import get_mi300_num_xcds
 
 rocprof_cmd = ""
 rocprof_args = ""
+
+
+# TODO: This is a HACK
+def using_v3():
+    return "ROCPROF" in os.environ.keys() and "rocprofv3" in os.environ["ROCPROF"]
+
+
+# TODO: This is a HACK
+def get_default_accumulate_counter_file_ymal():
+    """Return the path of the default derivative counters' definatin's yaml file that we current use to store accumulated counters' defination. It will possibly be removed later on"""
+    return str(
+        config.rocprof_compute_home.joinpath(
+            "rocprof_compute_soc",
+            "profile_configs",
+            "accum_counters.yaml",
+        )
+    )
 
 
 def demarcate(function):
@@ -570,9 +588,12 @@ def run_prof(
 
     console_debug("pmc file: %s" % path(fname).name)
 
+    path_counter_config_yaml = path(fname).with_suffix(".yaml")
     # standard rocprof options
     default_options = ["-i", fname]
     options = default_options + profiler_options
+    if path_counter_config_yaml.exists():
+        options = ["-E", str(path_counter_config_yaml)] + options
 
     # set required env var for mi300
     new_env = None
@@ -581,12 +602,6 @@ def run_prof(
         or mspec.gpu_model.lower() == "mi300x_a1"
         or mspec.gpu_model.lower() == "mi300a_a0"
         or mspec.gpu_model.lower() == "mi300a_a1"
-    ) and (
-        path(fname).name == "pmc_perf_13.txt"
-        or path(fname).name == "pmc_perf_14.txt"
-        or path(fname).name == "pmc_perf_15.txt"
-        or path(fname).name == "pmc_perf_16.txt"
-        or path(fname).name == "pmc_perf_17.txt"
     ):
         new_env = os.environ.copy()
         new_env["ROCPROFILER_INDIVIDUAL_XCC_MODE"] = "1"
@@ -596,6 +611,7 @@ def run_prof(
         is_timestamps = True
     time_1 = time.time()
 
+    console_debug("rocprof command: {}".format([rocprof_cmd] + options))
     # profile the app
     if new_env:
         success, output = capture_subprocess_output(
@@ -651,9 +667,15 @@ def run_prof(
         # TODO: add hip trace output processing
 
         # Combine results into single CSV file
-        combined_results = pd.concat(
-            [pd.read_csv(f) for f in results_files], ignore_index=True
-        )
+        if results_files:
+            combined_results = pd.concat(
+                [pd.read_csv(f) for f in results_files], ignore_index=True
+            )
+        else:
+            console_warning(
+                f"Cannot write results for {fbase}.csv due to no counter csv files generated."
+            )
+            return
 
         # Overwrite column to ensure unique IDs.
         combined_results["Dispatch_ID"] = range(0, len(combined_results))
@@ -662,10 +684,10 @@ def run_prof(
             workload_dir + "/out/pmc_1/results_" + fbase + ".csv", index=False
         )
 
-    if new_env:
+    if new_env and not using_v3():
         # flatten tcc for applicable mi300 input
         f = path(workload_dir + "/out/pmc_1/results_" + fbase + ".csv")
-        xcds = total_xcds(mspec.gpu_model, mspec.compute_partition)
+        xcds = get_mi300_num_xcds(mspec.gpu_model, mspec.compute_partition)
         df = flatten_tcc_info_across_xcds(f, xcds, int(mspec._l2_banks))
         df.to_csv(f, index=False)
 
@@ -761,7 +783,8 @@ def process_rocprofv3_output(rocprof_output, workload_dir, is_timestamps):
             )
         else:
             # when the input is not for timestamps, and counter csv file is not generated, we assume failed rocprof run and will completely bypass the file generation and merging for current pmc
-            console_error("No counter csv files generated, rocprofv3 run failed!!!")
+            results_files_csv = []
+            console_warning("No counter csv files generated, rocprofv3 run failed!!!")
 
     else:
         console_error("The output file of rocprofv3 can only support json or csv!!!")
@@ -813,6 +836,7 @@ def replace_timestamps(workload_dir):
 def gen_sysinfo(
     workload_name, workload_dir, ip_blocks, app_cmd, skip_roof, roof_only, mspec, soc
 ):
+    console_debug("[gen_sysinfo]")
     df = mspec.get_class_members()
 
     # Append workload information to machine specs
@@ -856,7 +880,11 @@ def detect_roofline(mspec):
             msg = "user-supplied path to binary not accessible"
             msg += "--> ROOFLINE_BIN = %s\n" % target_binary
             console_error("roofline", msg)
-    elif rhel_distro == "platform:el8" or rhel_distro == "platform:el9":
+    elif (
+        rhel_distro == "platform:el8"
+        or rhel_distro == "platform:el9"
+        or rhel_distro == "platform:al8"
+    ):
         # Must be a valid RHEL machine
         distro = "platform:el8"
     elif (
@@ -1029,47 +1057,58 @@ def flatten_tcc_info_across_xcds(file, xcds, tcc_channel_per_xcd):
     return df
 
 
-def total_xcds(archname, compute_partition):
+def total_xcds(gpu_model, compute_partition):
+    """
+    Returns the number of xcds for a gpu model and compute_partition pair.
+    """
+
+    # For mi300 chips, return result from mi_gpu_spec
+    result = get_mi300_num_xcds(gpu_model, compute_partition)
+    if result:
+        return result
+
+    # For other systems, use manual check
     # check MI300 has a valid compute partition
-    mi300a_archs = ["mi300a_a0", "mi300a_a1"]
-    mi300x_archs = ["mi300x_a0", "mi300x_a1"]
-    mi308x_archs = ["mi308x"]
+    mi300a_model = ["mi300a_a0", "mi300a_a1"]
+    mi300x_model = ["mi300x_a0", "mi300x_a1"]
+    mi308x_model = ["mi308x"]
     if (
-        archname.lower() in mi300a_archs + mi300x_archs + mi308x_archs
+        gpu_model.lower() in mi300a_model + mi300x_model + mi308x_model
         and compute_partition == "NA"
     ):
-        console_error("Invalid compute partition found for {}".format(archname))
-    if archname.lower() not in mi300a_archs + mi300x_archs + mi308x_archs:
+        console_error("Invalid compute partition found for {}".format(gpu_model))
+
+    if gpu_model.lower() not in mi300a_model + mi300x_model + mi308x_model:
         return 1
     # from the whitepaper
     # https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/white-papers/amd-cdna-3-white-paper.pdf
     if compute_partition.lower() == "spx":
-        if archname.lower() in mi300a_archs:
+        if gpu_model.lower() in mi300a_model:
             return 6
-        if archname.lower() in mi300x_archs:
+        if gpu_model.lower() in mi300x_model:
             return 8
-        if archname.lower() in mi308x_archs:
+        if gpu_model.lower() in mi308x_model:
             return 4
     if compute_partition.lower() == "tpx":
-        if archname.lower() in mi300a_archs:
+        if gpu_model.lower() in mi300a_model:
             return 2
     if compute_partition.lower() == "dpx":
-        if archname.lower() in mi300x_archs:
+        if gpu_model.lower() in mi300x_model:
             return 4
-        if archname.lower() in mi308x_archs:
+        if gpu_model.lower() in mi308x_model:
             return 2
     if compute_partition.lower() == "qpx":
-        if archname.lower() in mi300x_archs:
+        if gpu_model.lower() in mi300x_model:
             return 2
     if compute_partition.lower() == "cpx":
-        if archname.lower() in mi300x_archs:
-            return 2
-        if archname.lower() in mi308x_archs:
+        if gpu_model.lower() in mi300x_model:
+            return 1
+        if gpu_model.lower() in mi308x_model:
             return 1
     # TODO implement other archs here as needed
     console_error(
         "Unknown compute partition / arch found for {} / {}".format(
-            compute_partition, archname
+            compute_partition, gpu_model
         )
     )
 
