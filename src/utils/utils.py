@@ -43,6 +43,7 @@ import pandas as pd
 
 import config
 from utils.mi_gpu_spec import get_mi300_num_xcds
+from utils.logger import console_error, console_debug, console_log, console_warning
 
 rocprof_cmd = ""
 rocprof_args = ""
@@ -58,54 +59,6 @@ def using_v1():
 
 def using_v3():
     return "ROCPROF" in os.environ.keys() and "rocprofv3" in os.environ["ROCPROF"]
-
-
-def demarcate(function):
-    def wrap_function(*args, **kwargs):
-        logging.trace("----- [entering function] -> %s()" % (function.__qualname__))
-        result = function(*args, **kwargs)
-        logging.trace("----- [exiting  function] -> %s()" % function.__qualname__)
-        return result
-
-    return wrap_function
-
-
-def console_error(*argv, exit=True):
-    if len(argv) > 1:
-        logging.error(f"[{argv[0]}] {argv[1]}")
-    else:
-        logging.error(f"{argv[0]}")
-    if exit:
-        sys.exit(1)
-
-
-def console_log(*argv, indent_level=0):
-    indent = ""
-    if indent_level >= 1:
-        indent = " " * 3 * indent_level + "|-> "  # spaces per indent level
-
-    if len(argv) > 1:
-        logging.info(indent + f"[{argv[0]}] {argv[1]}")
-    else:
-        logging.info(indent + f"{argv[0]}")
-
-
-def console_debug(*argv):
-    if len(argv) > 1:
-        logging.debug(f"[{argv[0]}] {argv[1]}")
-    else:
-        logging.debug(f"{argv[0]}")
-
-
-def console_warning(*argv):
-    if len(argv) > 1:
-        logging.warning(f"[{argv[0]}] {argv[1]}")
-    else:
-        logging.warning(f"{argv[0]}")
-
-
-def trace_logger(message, *args, **kwargs):
-    logging.log(logging.TRACE, message, *args, **kwargs)
 
 
 def get_version(rocprof_compute_home) -> dict:

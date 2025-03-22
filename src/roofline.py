@@ -40,13 +40,12 @@ from utils.roofline_calc import (
     calc_ai,
     constuct_roof,
 )
-from utils.utils import (
+from utils.utils import mibench
+from utils.logger import (
     console_debug,
     console_error,
     console_log,
     demarcate,
-    gen_sysinfo,
-    mibench,
 )
 
 SYMBOLS = [0, 1, 2, 3, 4, 5, 13, 17, 18, 20]

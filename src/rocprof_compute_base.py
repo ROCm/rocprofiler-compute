@@ -41,15 +41,15 @@ from utils.logger import (
     setup_console_handler,
     setup_file_handler,
     setup_logging_priority,
-)
-from utils.mi_gpu_spec import get_gpu_series_dict, parse_mi_gpu_spec
-from utils.specs import MachineSpecs, generate_machine_specs
-from utils.utils import (
     console_debug,
     console_error,
     console_log,
     console_warning,
     demarcate,
+)
+from utils.mi_gpu_spec import get_gpu_series_dict, parse_mi_gpu_spec
+from utils.specs import MachineSpecs, generate_machine_specs
+from utils.utils import (
     detect_rocprof,
     get_submodules,
     get_version,

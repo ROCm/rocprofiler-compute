@@ -28,7 +28,8 @@ from pathlib import Path
 
 import config
 from rocprof_compute_profile.profiler_base import RocProfCompute_Base
-from utils.utils import console_error, console_log, demarcate, replace_timestamps
+from utils.logger import console_error, console_log, demarcate
+from utils.utils import replace_timestamps
 
 
 class rocprof_v3_profiler(RocProfCompute_Base):
