@@ -124,6 +124,7 @@ class PlainFormatter(logging.Formatter):
 # Setup console handler - provided as separate function to be called
 # prior to argument parsing
 def setup_console_handler():
+    logging.getLogger().handlers.clear()
     # register a trace level logger
     logging.TRACE = logging.DEBUG - 5
     logging.addLevelName(logging.TRACE, "TRACE")
