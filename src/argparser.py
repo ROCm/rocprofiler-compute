@@ -377,7 +377,7 @@ Examples:
         nargs="+",
         type=str,
         default=["FP32"],
-        help="\t\t\tChoose datatypes to collect roofline profile for: (DEFAULT: FP32)\n\t\t\t   FP8\n\t\t\t   FP16\n\t\t\t   BF16\n\t\t\t   FP32\n\t\t\t   FP64\n\t\t\t   I8",
+        help="\t\t\tChoose datatypes to generate plotted roofline PDFs for: (DEFAULT: FP32)\n\t\t\t   FP8\n\t\t\t   FP16\n\t\t\t   BF16\n\t\t\t   FP32\n\t\t\t   FP64\n\t\t\t   I8",
     )
 
     # roofline_group.add_argument('-w', '--workgroups', required=False, default=-1, type=int, help="\t\t\tNumber of kernel workgroups (DEFAULT: 1024)")

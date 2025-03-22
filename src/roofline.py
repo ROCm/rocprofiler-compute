@@ -348,7 +348,6 @@ class Roofline:
                     y=self.__ai_data["ai_l1"][1],
                     name=dtype + "_ai_l1",
                     mode="markers",
-                    marker={"color": "#00CC96"},
                     marker_symbol=(
                         SYMBOLS if self.__run_parameters["include_kernel_names"] else None
                     ),
@@ -360,7 +359,6 @@ class Roofline:
                     y=self.__ai_data["ai_l2"][1],
                     name=dtype + "_ai_l2",
                     mode="markers",
-                    marker={"color": "#EF553B"},
                     marker_symbol=(
                         SYMBOLS if self.__run_parameters["include_kernel_names"] else None
                     ),
@@ -372,7 +370,6 @@ class Roofline:
                     y=self.__ai_data["ai_hbm"][1],
                     name=dtype + "_ai_hbm",
                     mode="markers",
-                    marker={"color": "#636EFA"},
                     marker_symbol=(
                         SYMBOLS if self.__run_parameters["include_kernel_names"] else None
                     ),
