@@ -41,6 +41,7 @@ COLORS = {
     "TRACE": MAGENTA,
 }
 
+
 def demarcate(function):
     def wrap_function(*args, **kwargs):
         logging.trace("----- [entering function] -> %s()" % (function.__qualname__))
@@ -49,6 +50,7 @@ def demarcate(function):
         return result
 
     return wrap_function
+
 
 def console_error(*argv, exit=True):
     if len(argv) > 1:
