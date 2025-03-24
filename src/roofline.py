@@ -66,7 +66,7 @@ class Roofline:
                 "mem_level": "ALL",
                 "include_kernel_names": False,
                 "is_standalone": False,
-                "datatype": ["FP32"],
+                "roofline_data_type": ["FP32"],
             }
         )
         self.__ai_data = None
@@ -83,8 +83,10 @@ class Roofline:
             self.__run_parameters["mem_level"] = self.__args.mem_level
         if hasattr(self.__args, "sort") and self.__args.sort != "ALL":
             self.__run_parameters["sort_type"] = self.__args.sort
-        if hasattr(self.__args, "datatype") and self.__args.datatype != ["FP32"]:
-            self.__run_parameters["datatype"] = self.__args.datatype
+        if hasattr(
+            self.__args, "roofline_data_type"
+        ) and self.__args.roofline_data_type != ["FP32"]:
+            self.__run_parameters["roofline_data_type"] = self.__args.roofline_data_type
         self.validate_parameters()
 
     def validate_parameters(self):
@@ -132,13 +134,14 @@ class Roofline:
         # Generate a roofline figure for the datatypes
         ops_figure = flops_figure = None
         ops_dt_list = flops_dt_list = ""
-        for dt in self.__run_parameters["datatype"]:
+        for dt in self.__run_parameters["roofline_data_type"]:
             # Do not generate a roofline figure if the datatype is not supported on this gpu_arch
             if not str(dt) in SUPPORTED_DATATYPES[self.__mspec.gpu_arch]:
                 console_error(
                     "{} is not a supported datatype for roofline profiling on {}".format(
                         str(dt), self.__mspec.gpu_model
-                    )
+                    ),
+                    exit=False,
                 )
                 continue
 
