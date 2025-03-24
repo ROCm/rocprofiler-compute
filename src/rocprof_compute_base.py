@@ -42,10 +42,7 @@ from utils.logger import (
     setup_file_handler,
     setup_logging_priority,
 )
-from utils.mi_gpu_spec import (
-    get_gpu_series_dict,
-    parse_mi_gpu_spec,
-)
+from utils.mi_gpu_spec import get_gpu_series_dict, parse_mi_gpu_spec
 from utils.specs import MachineSpecs, generate_machine_specs
 from utils.utils import (
     console_debug,
@@ -160,10 +157,6 @@ class RocProfCompute:
 
         arch = self.__mspec.gpu_arch
 
-        # NB: This checker is a bit redundent. We already check this in specs module
-        if arch not in self.__supported_archs.keys():
-            console_error("%s is an unsupported SoC" % arch)
-
         soc_module = importlib.import_module("rocprof_compute_soc.soc_" + arch)
         soc_class = getattr(soc_module, arch + "_soc")
         self.__soc[arch] = soc_class(self.__args, self.__mspec)
@@ -189,7 +182,7 @@ class RocProfCompute:
                 sys.exit(0)
             parser.print_help(sys.stderr)
             console_error(
-                "rocprof-compute requires you pass a valid mode. Detected None."
+                "rocprof-compute requires you to pass a valid mode. Detected None."
             )
         elif self.__args.mode == "profile":
 
