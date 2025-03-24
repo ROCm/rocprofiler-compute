@@ -369,8 +369,8 @@ Examples:
     )
 
     roofline_group.add_argument(
-        "-D",
-        "--datatype",
+        "-R",
+        "--roofline-data-type",
         required=False,
         choices=["FP8", "FP16", "BF16", "FP32", "FP64", "I8"],
         metavar="",
