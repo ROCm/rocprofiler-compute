@@ -700,19 +700,80 @@ def eval_metric(dfs, dfs_type, sys_info, raw_pmc_df, debug):
         console_error("Hauting execution for warning above.")
 
     ammolite__se_per_gpu = int(sys_info.se_per_gpu)
+    if np.isnan(ammolite__se_per_gpu):
+        console_warning(
+            "se_per_gpu is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
     ammolite__pipes_per_gpu = int(sys_info.pipes_per_gpu)
+    if np.isnan(ammolite__pipes_per_gpu):
+        console_warning(
+            "pipes_per_gpu is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
     ammolite__cu_per_gpu = int(sys_info.cu_per_gpu)
+    if np.isnan(ammolite__cu_per_gpu):
+        console_warning(
+            "cu_per_gpu is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
     ammolite__simd_per_cu = int(sys_info.simd_per_cu)  # not used
+    if np.isnan(ammolite__simd_per_cu):
+        console_warning(
+            "simd_per_cu is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
     ammolite__sqc_per_gpu = int(sys_info.sqc_per_gpu)
+    if np.isnan(ammolite__sqc_per_gpu):
+        console_warning(
+            "sqc_per_gpu is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
     ammolite__lds_banks_per_cu = int(sys_info.lds_banks_per_cu)
+    if np.isnan(ammolite__lds_banks_per_cu):
+        console_warning(
+            "lds_banks_per_cu is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
     ammolite__cur_sclk = float(sys_info.cur_sclk)  # not used
-    ammolite__mclk = float(sys_info.cur_mclk)  # not used
+    if np.isnan(ammolite__cur_sclk):
+        console_warning(
+            "cur_sclk is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
+    ammolite__cur_mclk = float(sys_info.cur_mclk)  # not used
+    if np.isnan(ammolite__cur_mclk):
+        console_warning(
+            "cur_mclk is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
+    ammolite__max_mclk = float(sys_info.max_mclk)
+    if np.isnan(ammolite__max_mclk):
+        console_warning(
+            "max_mclk is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
     ammolite__max_sclk = float(sys_info.max_sclk)
+    if np.isnan(ammolite__max_sclk):
+        console_warning(
+            "max_sclk is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
     ammolite__max_waves_per_cu = int(sys_info.max_waves_per_cu)
-    ammolite__hbm_bw = float(sys_info.hbm_bw)
+    if np.isnan(ammolite__max_waves_per_cu):
+        console_warning(
+            "max_waver_per_cu is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
+    ammolite__num_hbm_channels = float(sys_info.num_hbm_channels)
+    if np.isnan(ammolite__num_hbm_channels):
+        console_warning(
+            "num_hbm_channels is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
     ammolite__total_l2_chan = calc_builtin_var("$total_l2_chan", sys_info)
+    if np.isnan(ammolite__total_l2_chan):
+        console_warning(
+            "total_l2_chan is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
     ammolite__num_xcd = int(sys_info.num_xcd)
+    if np.isnan(ammolite__num_xcd):
+        console_warning(
+            "num_xcd is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
     ammolite__wave_size = int(sys_info.wave_size)
+    if np.isnan(ammolite__wave_size):
+        console_warning(
+            "wave_size is not available in sysinfo.csv, please provide the correct value using --specs-correction"
+        )
 
     # TODO: fix all $normUnit in Unit column or title
 
@@ -821,7 +882,6 @@ def eval_metric(dfs, dfs_type, sys_info, raw_pmc_df, debug):
                                         else:
                                             console_error("analysis", str(ae))
 
-                                # print("eval_metric", id, expr)
                                 try:
                                     out = eval(compile(row[expr], "<string>", "eval"))
 

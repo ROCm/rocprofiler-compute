@@ -22,6 +22,19 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 * Support host-trap PC Sampling on CLI (beta version)
 
+* Add support for MI 350 series GPUs with the addition of following counters
+  * Add SPI Wave Occupancy
+  * Add Scheduler-Pipe Wave Utilization
+  * Update formula for VGPR Writes
+  * Add Scheduler FIFO Full Rate
+  * Add CPC ADC Utilization
+  * Add F6F4 datatype metrics
+  * Update formula for total FLOPs while taking into account F6F4 ops
+  * Add LDS STORE / LOAD / ATOMIC isntruction count metrics
+  * ADD LDS STORE / LAOD / ATOMIC bandwidth metrics
+  * Add LDS FIFO full rate
+  * Add Sequencer -> TA ADDR / CMD / DATA Stall rates
+
 ### Changed
 
 * Change normal_unit default to per_kernel
@@ -37,6 +50,15 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 ### Known issues
 
 * GPU id filtering is not supported when using rocprof v3
+
+* Analysis of previous workload data will not work due to sysinfo.csv schema change
+  * This can be solved by running the profiling operation again for the workload.
+  Interrupting the process after ten seconds. Copying the sysinfo.csv file from new
+  data folder to old one. This assumes the specification of your system has not changed
+  since the previous workload data was created.
+
+* Analysis of new workloads might require providing shader/memory clock speed using
+--specs-correction operation if amd-smi/rocminfo does not provide clock speeds
 
 ## ROCm Compute Profiler 3.1.0 for ROCm 6.4.0
 
