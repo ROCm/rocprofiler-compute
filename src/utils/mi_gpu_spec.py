@@ -312,7 +312,6 @@ def get_mi300_num_xcds(gpu_model_, compute_partition_):
     partition_lower = compute_partition_.lower()
 
     if gpu_model_lower not in mi300_num_xcds_dict:
-        console_log(f"Current system is not a mi300 system: {gpu_model_}")
         return None
 
     model_dict = mi300_num_xcds_dict[gpu_model_lower]
