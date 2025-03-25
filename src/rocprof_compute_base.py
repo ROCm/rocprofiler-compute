@@ -38,14 +38,14 @@ import config
 from argparser import omniarg_parser
 from utils import file_io, parser, schema
 from utils.logger import (
-    setup_console_handler,
-    setup_file_handler,
-    setup_logging_priority,
     console_debug,
     console_error,
     console_log,
     console_warning,
     demarcate,
+    setup_console_handler,
+    setup_file_handler,
+    setup_logging_priority,
 )
 from utils.mi_gpu_spec import get_gpu_series_dict, parse_mi_gpu_spec
 from utils.specs import MachineSpecs, generate_machine_specs

@@ -42,8 +42,8 @@ from pathlib import Path as path
 import pandas as pd
 
 import config
+from utils.logger import console_debug, console_error, console_log, console_warning
 from utils.mi_gpu_spec import get_mi300_num_xcds
-from utils.logger import console_error, console_debug, console_log, console_warning
 
 rocprof_cmd = ""
 rocprof_args = ""

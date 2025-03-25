@@ -33,6 +33,12 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import dcc, html
 
+from utils.logger import (
+    console_debug,
+    console_error,
+    console_log,
+    demarcate,
+)
 from utils.roofline_calc import (
     MFMA_DATATYPES,
     PEAK_OPS_DATATYPES,
@@ -41,12 +47,6 @@ from utils.roofline_calc import (
     constuct_roof,
 )
 from utils.utils import mibench
-from utils.logger import (
-    console_debug,
-    console_error,
-    console_log,
-    demarcate,
-)
 
 SYMBOLS = [0, 1, 2, 3, 4, 5, 13, 17, 18, 20]
 
