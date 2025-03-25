@@ -35,8 +35,6 @@ import pandas as pd
 import yaml
 
 import config
-from utils.mi_gpu_spec import get_gpu_model, get_gpu_series
-from utils.parser import build_in_vars, supported_denom
 from utils.logger import (
     console_debug,
     console_error,
@@ -44,10 +42,11 @@ from utils.logger import (
     console_warning,
     demarcate,
 )
+from utils.mi_gpu_spec import get_gpu_model, get_gpu_series
+from utils.parser import build_in_vars, supported_denom
 from utils.utils import (
     capture_subprocess_output,
     convert_metric_id_to_panel_idx,
-    demarcate,
     detect_rocprof,
     get_submodules,
     is_tcc_channel_counter,
