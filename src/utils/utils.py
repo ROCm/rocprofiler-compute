@@ -57,7 +57,7 @@ def using_v1():
 
 
 def using_v3():
-    return "ROCPROF" in os.environ.keys() and "rocprofv3" in os.environ["ROCPROF"]
+    return "ROCPROF" in os.environ.keys() and os.environ["ROCPROF"].endswith("rocprofv3")
 
 
 def demarcate(function):
@@ -490,6 +490,15 @@ def v3_counter_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_fi
         columns="Counter_Name",
         values="Counter_Value",
     ).reset_index()
+
+    # NB: Agent_Id is int in older rocporfv3, now switched to string with prefix "Agent ". We need to make sure handle both cases.
+    console_debug(
+        "The type of Agent ID from counter csv file is {}".format(
+            result["Agent_Id"].dtype
+        )
+    )
+    if result["Agent_Id"].dtype == "object":
+        result["Agent_Id"] = result["Agent_Id"].str.extract("(\d+)").astype("int64")
 
     # Grab the Wave_Front_Size column from agent info
     result = result.merge(
@@ -1156,13 +1165,25 @@ def print_status(msg):
 
 def set_locale_encoding():
     try:
+        # Attempt to set the locale to 'C.UTF-8'
         locale.setlocale(locale.LC_ALL, "C.UTF-8")
-    except locale.Error as error:
-        console_error(
-            "Please ensure that the 'C.UTF-8' locale is available on your system.",
-            exit=False,
-        )
-        console_error(error)
+    except locale.Error:
+        # If 'C.UTF-8' is not available, check if the current locale is UTF-8 based
+        current_locale = locale.getdefaultlocale()
+        if current_locale and "UTF-8" in current_locale[1]:
+            try:
+                locale.setlocale(locale.LC_ALL, current_locale[0])
+            except locale.Error as error:
+                console_error(
+                    "Failed to set locale to the current UTF-8-based locale.",
+                    exit=False,
+                )
+                console_error(error)
+        else:
+            console_error(
+                "Please ensure that a UTF-8-based locale is available on your system.",
+                exit=False,
+            )
 
 
 def reverse_multi_index_df_pmc(final_df):
