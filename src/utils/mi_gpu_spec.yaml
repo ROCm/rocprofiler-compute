@@ -162,3 +162,15 @@ mi_gpu_spec:
                   nps1: {spx, dpx, cpx}
             chip_ids:
               local: 29858
+
+# TODO: What are different variants of MI 350, what are chip ids?
+  - gpu_series: mi350
+    gpu_archs:
+      - gpu_arch: gfx950
+        models:
+          - gpu_model: mi350
+            mi300_arch:
+              architecture: null
+              partition_mode: null
+            chip_ids:
+              local: null

@@ -14,6 +14,7 @@ import test_utils
 
 # Globals
 
+# TODO: What are the supported MI 350 GPU variants?
 SUPPORTED_ARCHS = {
     "gfx906": {"mi50": ["MI50", "MI60"]},
     "gfx908": {"mi100": ["MI100"]},
@@ -21,6 +22,7 @@ SUPPORTED_ARCHS = {
     "gfx940": {"mi300": ["MI300A_A0"]},
     "gfx941": {"mi300": ["MI300X_A0"]},
     "gfx942": {"mi300": ["MI300A_A1", "MI300X_A1"]},
+    "gfx950": {"mi350": ["MI350"]},
 }
 
 MI300_CHIP_IDS = {

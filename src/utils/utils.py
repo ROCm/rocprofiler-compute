@@ -487,6 +487,9 @@ def v3_counter_csv_to_v2_csv(counter_file, agent_info_filepath, converted_csv_fi
         values="Counter_Value",
     ).reset_index()
 
+    # Transform Agent_Id column in result table from string to int
+    # e.g. "Agent 2" -> 2
+    result["Agent_Id"] = result["Agent_Id"].str.extract(r"(\d+)").astype(int)
     # Grab the Wave_Front_Size column from agent info
     result = result.merge(
         pd_agent_info[["Node_Id", "Wave_Front_Size"]],
@@ -1048,6 +1051,7 @@ def flatten_tcc_info_across_xcds(file, xcds, tcc_channel_per_xcd):
     return df
 
 
+# TODO: What are the number of XCDs for MI 350?
 def total_xcds(gpu_model, compute_partition):
     """
     Returns the number of xcds for a gpu model and compute_partition pair.

@@ -542,6 +542,7 @@ class MachineSpecs:
         },
     )
 
+    # TODO: What are HBM channels for MI 350?
     def get_hbm_channels(self):
         # check MI300 has a valid compute partition
         mi300a_archs = ["mi300a_a0", "mi300a_a1"]

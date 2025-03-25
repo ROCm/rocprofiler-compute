@@ -79,6 +79,7 @@ class RocProfCompute_Base:
                 out = self.__args.path + "/pmc_perf.csv"
             files = glob.glob(self.__args.path + "/" + "pmc_perf_*.csv")
             files.extend(glob.glob(self.__args.path + "/" + "SQ_*.csv"))
+            files.extend(glob.glob(self.__args.path + "/" + "CPC_*.csv"))
 
             if self.get_args().hip_trace:
                 # remove hip api trace ouputs from this list
