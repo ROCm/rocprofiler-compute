@@ -194,21 +194,21 @@ Panel Config:
             unit: (Req  + $normUnit)
             tips:
           L1 Access Latency:
-            avg: AVG((TCP_TCP_LATENCY_sum / $denom)))
-            min: MIN((TCP_TCP_LATENCY_sum / $denom)))
-            max: MAX((TCP_TCP_LATENCY_sum / $denom)))
+            avg: AVG((TCP_TCP_LATENCY_sum / $denom))
+            min: MIN((TCP_TCP_LATENCY_sum / $denom))
+            max: MAX((TCP_TCP_LATENCY_sum / $denom))
             unit: (Cycles  + $normUnit)
             tips:
           L1-L2 Read Latency:
-            avg: AVG((TCP_TCC_READ_REQ_LATENCY_sum / $denom)))
-            min: MIN((TCP_TCC_READ_REQ_LATENCY_sum / $denom)))
-            max: MAX((TCP_TCC_READ_REQ_LATENCY_sum / $denom)))
+            avg: AVG((TCP_TCC_READ_REQ_LATENCY_sum / $denom))
+            min: MIN((TCP_TCC_READ_REQ_LATENCY_sum / $denom))
+            max: MAX((TCP_TCC_READ_REQ_LATENCY_sum / $denom))
             unit: (Cycles  + $normUnit)
             tips:
           L1-L2 Write Latency:
-            avg: AVG((TCP_TCC_WRITE_REQ_LATENCY_sum / $denom)))
-            min: MIN((TCP_TCC_WRITE_REQ_LATENCY_sum / $denom)))
-            max: MAX((TCP_TCC_WRITE_REQ_LATENCY_sum / $denom)))
+            avg: AVG((TCP_TCC_WRITE_REQ_LATENCY_sum / $denom))
+            min: MIN((TCP_TCC_WRITE_REQ_LATENCY_sum / $denom))
+            max: MAX((TCP_TCC_WRITE_REQ_LATENCY_sum / $denom))
             unit: (Cycles  + $normUnit)
             tips:
 
