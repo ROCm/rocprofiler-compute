@@ -22,9 +22,11 @@ set_target_properties(vmem PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DI
 set(VSEQ_SOURCES ../sample/vsequential_access.cpp)
 set_source_files_properties(${VSEQ_SOURCES} PROPERTIES LANGUAGE HIP)
 add_executable(vsequential_access ${VSEQ_SOURCES})
-set_target_properties(vsequential_access PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/tests)
+set_target_properties(vsequential_access PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+                                                    ${CMAKE_SOURCE_DIR}/tests)
 
 set(VRAND_SOURCES ../sample/vrandom_access.cpp)
 set_source_files_properties(${VCOPY_SVRAND_SOURCESOURCES} PROPERTIES LANGUAGE HIP)
 add_executable(vrandom_access ${VRAND_SOURCES})
-set_target_properties(vrandom_access PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/tests)
+set_target_properties(vrandom_access PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+                                                ${CMAKE_SOURCE_DIR}/tests)
