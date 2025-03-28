@@ -17,8 +17,8 @@ rocprof_compute = SourceFileLoader("rocprof-compute", "src/rocprof-compute").loa
 
 config = {}
 # FIXME: update path
-config["vseq"] = ["./sample/vseq"]
-config["vrand"] = ["./sample/vrand"]
+config["vseq"] = ["./tests/vseq"]
+config["vrand"] = ["./tests/vrand"]
 config["cleanup"] = True
 config["COUNTER_LOGGING"] = False
 config["METRIC_COMPARE"] = False
