@@ -16,9 +16,8 @@ import test_utils
 rocprof_compute = SourceFileLoader("rocprof-compute", "src/rocprof-compute").load_module()
 
 config = {}
-# FIXME: update path
-config["vseq"] = ["./tests/vseq"]
-config["vrand"] = ["./tests/vrand"]
+config["vseq"] = ["./tests/vsequential_access"]
+config["vrand"] = ["./tests/vrandom_access"]
 config["cleanup"] = True
 config["COUNTER_LOGGING"] = False
 config["METRIC_COMPARE"] = False
