@@ -123,9 +123,11 @@ def test_L1_cache_counters(
 
     result = {}
     metrics = ["Read Req", "Write Req", "Cache Hit Rate"]
+    base = Path(test_utils.get_output_dir())
 
     for app_name in app_names:
-        workload_dir = test_utils.get_output_dir() + app_name
+
+        workload_dir = str(base / app_name)
 
         # 1. profile the app
         return_code = binary_handler_profile_rocprof_compute(
@@ -157,6 +159,7 @@ def test_L1_cache_counters(
 
         # 4. clean local output
         test_utils.clean_output_dir(config["cleanup"], workload_dir)
+    test_utils.clean_output_dir(config["cleanup"], base)
 
     # 5. check results are expected
 
