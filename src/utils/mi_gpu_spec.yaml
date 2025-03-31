@@ -40,7 +40,7 @@ mi_gpu_spec:
           - gpu_model: mi100
             partition_mode: null
             chip_ids:
-              physical: null
+              physical: 29580
               virtual: null
 
   - gpu_series: mi200
@@ -50,17 +50,17 @@ mi_gpu_spec:
           - gpu_model: mi210
             partition_mode: null
             chip_ids:
-              physical: null
+              physical: 29711
               virtual: null
           - gpu_model: mi250
             partition_mode: null
             chip_ids:
-              physical: null
+              physical: 29708
               virtual: null
           - gpu_model: mi250x
             partition_mode: null
             chip_ids:
-              physical: null
+              physical: 29704
               virtual: null
 
   - gpu_series: mi300
