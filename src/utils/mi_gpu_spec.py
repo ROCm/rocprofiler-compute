@@ -127,18 +127,6 @@ def parse_mi_gpu_spec():
 
     gpu_model_dict.update(mi300_models_dict)
 
-    print("gpu series")
-    print(gpu_series_dict)  # key: gpu arch
-    print("gpu model")
-    print(gpu_model_dict)  # key: gpu_arch
-    print("mi300 num xcd")
-    print(mi300_num_xcds_dict)  # key: gpu model
-    print("mi300 nps")
-    print(mi300_nps_dict)  # key: gpu model
-    print("mi300 chip id")
-    print(mi300_chip_id_dict)  # key: chip id (int)
-    sys.exit(1)
-
 
 def get_gpu_series_dict():
     if not gpu_series_dict:
