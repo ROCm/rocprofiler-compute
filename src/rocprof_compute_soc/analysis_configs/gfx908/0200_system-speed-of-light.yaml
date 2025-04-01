@@ -179,17 +179,17 @@ Panel Config:
             value: AVG((((TCC_EA_RDREQ_32B_sum * 32) + ((TCC_EA_RDREQ_sum - TCC_EA_RDREQ_32B_sum)
               * 64)) / (End_Timestamp - Start_Timestamp)))
             unit: GB/s
-            peak: $hbm_bw
+            peak: ($max_mclk / 1000 * 32 * $num_hbm_channels)
             pop: ((100 * AVG((((TCC_EA_RDREQ_32B_sum * 32) + ((TCC_EA_RDREQ_sum - TCC_EA_RDREQ_32B_sum)
-              * 64)) / (End_Timestamp - Start_Timestamp)))) / $hbm_bw)
+              * 64)) / (End_Timestamp - Start_Timestamp)))) / ($max_mclk / 1000 * 32 * $num_hbm_channels))
             tips:
           L2-Fabric Write BW:
             value: AVG((((TCC_EA_WRREQ_64B_sum * 64) + ((TCC_EA_WRREQ_sum - TCC_EA_WRREQ_64B_sum)
               * 32)) / (End_Timestamp - Start_Timestamp)))
             unit: GB/s
-            peak: $hbm_bw
+            peak: ($max_mclk / 1000 * 32 * $num_hbm_channels)
             pop: ((100 * AVG((((TCC_EA_WRREQ_64B_sum * 64) + ((TCC_EA_WRREQ_sum - TCC_EA_WRREQ_64B_sum)
-              * 32)) / (End_Timestamp - Start_Timestamp)))) / $hbm_bw)
+              * 32)) / (End_Timestamp - Start_Timestamp)))) / ($max_mclk / 1000 * 32 * $num_hbm_channels))
             tips:
           L2-Fabric Read Latency:
             value: AVG(((TCC_EA_RDREQ_LEVEL_sum / TCC_EA_RDREQ_sum) if (TCC_EA_RDREQ_sum

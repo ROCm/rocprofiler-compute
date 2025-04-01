@@ -41,6 +41,24 @@ Panel Config:
             max: MAX((SQ_INSTS_LDS / $denom))
             unit: (instr + $normUnit)
             tips:
+          LDS LOAD:
+            avg: AVG((SQ_INSTS_LDS_LOAD / $denom))
+            min: MIN((SQ_INSTS_LDS_LOAD  / $denom))
+            max: MAX((SQ_INSTS_LDS_LOAD  / $denom))
+            unit: (instr + $normUnit)
+            tips:
+          LDS STORE:
+            avg: AVG((SQ_INSTS_LDS_STORE / $denom))
+            min: MIN((SQ_INSTS_LDS_STORE / $denom))
+            max: MAX((SQ_INSTS_LDS_STORE / $denom))
+            unit: (instr + $normUnit)
+            tips:
+          LDS ATOMIC:
+            avg: AVG((SQ_INSTS_LDS_ATOMIC / $denom))
+            min: MIN((SQ_INSTS_LDS_ATOMIC / $denom))
+            max: MAX((SQ_INSTS_LDS_ATOMIC / $denom))
+            unit: (instr + $normUnit)
+            tips:
           MFMA:
             avg: AVG((SQ_INSTS_MFMA / $denom))
             min: MIN((SQ_INSTS_MFMA / $denom))
@@ -273,5 +291,11 @@ Panel Config:
             avg: AVG((SQ_INSTS_VALU_MFMA_F64 / $denom))
             min: MIN((SQ_INSTS_VALU_MFMA_F64 / $denom))
             max: MAX((SQ_INSTS_VALU_MFMA_F64 / $denom))
+            unit: (instr + $normUnit)
+            tips:
+          MFMA-F6F4:
+            avg: AVG((SQ_INSTS_VALU_MFMA_F6F4 / $denom))
+            min: MIN((SQ_INSTS_VALU_MFMA_F6F4 / $denom))
+            max: MAX((SQ_INSTS_VALU_MFMA_F6F4 / $denom))
             unit: (instr + $normUnit)
             tips:

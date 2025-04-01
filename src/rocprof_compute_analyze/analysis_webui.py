@@ -35,7 +35,7 @@ from dash.dependencies import Input, Output, State
 from rocprof_compute_analyze.analysis_base import OmniAnalyze_Base
 from utils import file_io, parser
 from utils.gui import build_bar_chart, build_table_chart
-from utils.utils import console_debug, console_error, demarcate
+from utils.logger import console_debug, console_error, demarcate
 
 PROJECT_NAME = "rocprofiler-compute"
 
@@ -107,7 +107,12 @@ class webui_analysis(OmniAnalyze_Base):
             console_debug("analysis", "gui normalization is %s" % norm_filt)
 
             base_data = self.initalize_runs()  # Re-initalizes everything
-            hbm_bw = base_data[base_run].sys_info["hbm_bw"][0]
+            hbm_bw = (
+                int(base_data[base_run].sys_info["max_mclk"][0])
+                / 1000
+                * 32
+                * int(base_data[base_run].sys_info["num_hbm_channels"][0])
+            )
             panel_configs = copy.deepcopy(arch_configs.panel_configs)
             # Generate original raw df
             base_data[base_run].raw_pmc = file_io.create_df_pmc(
@@ -231,7 +236,7 @@ class webui_analysis(OmniAnalyze_Base):
                                 norm_filt=norm_filt,
                                 comparable_columns=comparable_columns,
                                 decimal=self.get_args().decimal,
-                                hbm_bw=base_data[base_run].sys_info["hbm_bw"][0],
+                                hbm_bw=hbm_bw,
                             )
 
                             # Update content for this section

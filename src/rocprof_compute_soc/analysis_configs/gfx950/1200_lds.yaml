@@ -55,6 +55,42 @@ Panel Config:
             max: MAX((SQ_INSTS_LDS / $denom))
             unit: (Instr  + $normUnit)
             tips:
+          LDS LOAD:
+            avg: AVG((SQ_INSTS_LDS_LOAD / $denom))
+            min: MIN((SQ_INSTS_LDS_LOAD  / $denom))
+            max: MAX((SQ_INSTS_LDS_LOAD  / $denom))
+            unit: (instr + $normUnit)
+            tips:
+          LDS STORE:
+            avg: AVG((SQ_INSTS_LDS_STORE / $denom))
+            min: MIN((SQ_INSTS_LDS_STORE / $denom))
+            max: MAX((SQ_INSTS_LDS_STORE / $denom))
+            unit: (instr + $normUnit)
+            tips:
+          LDS ATOMIC:
+            avg: AVG((SQ_INSTS_LDS_ATOMIC / $denom))
+            min: MIN((SQ_INSTS_LDS_ATOMIC / $denom))
+            max: MAX((SQ_INSTS_LDS_ATOMIC / $denom))
+            unit: (instr + $normUnit)
+            tips:
+          LDS LOAD Bandwidth:
+            avg: AVG(64 * SQ_INSTS_LDS_LOAD_BANDWIDTH / (End_Timestamp - Start_Timestamp))
+            min: MIN(64 * SQ_INSTS_LDS_LOAD_BANDWIDTH / (End_Timestamp - Start_Timestamp))
+            max: MAX(64 * SQ_INSTS_LDS_LOAD_BANDWIDTH / (End_Timestamp - Start_Timestamp))
+            units: Gbps
+            tips:
+          LDS STORE Bandwidth:
+            avg: AVG(64 * SQ_INSTS_LDS_STORE_BANDWIDTH / (End_Timestamp - Start_Timestamp))
+            min: MIN(64 * SQ_INSTS_LDS_STORE_BANDWIDTH / (End_Timestamp - Start_Timestamp))
+            max: MAX(64 * SQ_INSTS_LDS_STORE_BANDWIDTH / (End_Timestamp - Start_Timestamp))
+            units: Gbps
+            tips:
+          LDS ATOMIC Bandwidth:
+            avg: AVG(64 * SQ_INSTS_LDS_ATOMIC_BANDWIDTH / (End_Timestamp - Start_Timestamp))
+            min: MIN(64 * SQ_INSTS_LDS_ATOMIC_BANDWIDTH / (End_Timestamp - Start_Timestamp))
+            max: MAX(64 * SQ_INSTS_LDS_ATOMIC_BANDWIDTH / (End_Timestamp - Start_Timestamp))
+            units: Gbps
+            tips:
           Theoretical Bandwidth:
             avg: AVG(((((SQ_LDS_IDX_ACTIVE - SQ_LDS_BANK_CONFLICT) * 4) * TO_INT($lds_banks_per_cu))
               / $denom))
@@ -115,4 +151,16 @@ Panel Config:
             min: MIN((SQ_LDS_MEM_VIOLATIONS / $denom))
             max: MAX((SQ_LDS_MEM_VIOLATIONS / $denom))
             unit: (Accesses + $normUnit)
+            tips:
+          LDS Command FIFO Full Rate:
+            avg: AVG((SQ_LDS_CMD_FIFO_FULL / $denom))
+            min: MIN((SQ_LDS_CMD_FIFO_FULL / $denom))
+            max: MAX((SQ_LDS_CMD_FIFO_FULL / $denom))
+            unit: (Cycles  + $normUnit)
+            tips:
+          LDS Data FIFO Full Rate:
+            avg: AVG((SQ_LDS_DATA_FIFO_FULL / $denom))
+            min: MIN((SQ_LDS_DATA_FIFO_FULL / $denom))
+            max: MAX((SQ_LDS_DATA_FIFO_FULL / $denom))
+            unit: (Cycles  + $normUnit)
             tips:

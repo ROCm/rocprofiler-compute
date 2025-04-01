@@ -29,7 +29,8 @@ import pandas as pd
 from tabulate import tabulate
 
 from utils import parser
-from utils.utils import console_log, console_warning, convert_metric_id_to_panel_idx
+from utils.logger import console_log, console_warning
+from utils.utils import convert_metric_id_to_panel_idx
 
 hidden_columns = ["Tips", "coll_level"]
 hidden_sections = [1900, 2000]
@@ -247,10 +248,14 @@ def show_all(args, runs, archConfigs, output, profiling_config):
                     )
                     # Do not print the table if any column is empty
                     if is_empty_columns_exist:
-                        console_log(
-                            f"Not showing table with empty column(s): {table_id_str} {table_config['title']}"
-                        )
-
+                        if "title" in table_config:
+                            console_log(
+                                f"Not showing table with empty column(s): {table_id_str} {table_config['title']}"
+                            )
+                        else:
+                            console_log(
+                                f"Not showing table with empty column(s): {table_id_str}"
+                            )
                     if (
                         "title" in table_config
                         and table_config["title"]

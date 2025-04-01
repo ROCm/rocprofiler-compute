@@ -27,7 +27,8 @@ from pathlib import Path
 import config
 from rocprof_compute_soc.soc_base import OmniSoC_Base
 from roofline import Roofline
-from utils.utils import console_error, console_log, demarcate, mibench
+from utils.logger import demarcate
+from utils.utils import console_error, console_log, mibench
 
 
 class gfx950_soc(OmniSoC_Base):
@@ -58,7 +59,6 @@ class gfx950_soc(OmniSoC_Base):
             )
         self.set_compatible_profilers(["rocprofv3"])
         # Per IP block max number of simultaneous counters. GFX IP Blocks
-        # TODO: Verify max number of counters per block for MI 350
         self.set_perfmon_config(
             {
                 "SQ": 8,
@@ -75,15 +75,6 @@ class gfx950_soc(OmniSoC_Base):
             }
         )
         self.roofline_obj = Roofline(args, self._mspec)
-
-        # TODO: amd-smi clock speeds are 0 for gfx950
-        # TODO: Verify hard coded values
-        if self._mspec.max_mclk is None or self._mspec.cur_mclk is None:
-            self._mspec.max_mclk = 1300
-            self._mspec.cur_mclk = 1300
-        if self._mspec.max_sclk == "0" or self._mspec.cur_sclk == "0":
-            self._mspec.max_sclk = 1420
-            self._mspec.cur_sclk = 1420
 
         # Set arch specific specs
         self._mspec._l2_banks = 16

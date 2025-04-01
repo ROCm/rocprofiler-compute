@@ -27,7 +27,8 @@ from pathlib import Path
 import config
 from rocprof_compute_soc.soc_base import OmniSoC_Base
 from roofline import Roofline
-from utils.utils import console_error, console_log, demarcate, mibench
+from utils.logger import console_error, console_log, demarcate
+from utils.utils import mibench
 
 
 class gfx942_soc(OmniSoC_Base):
@@ -62,12 +63,6 @@ class gfx942_soc(OmniSoC_Base):
             }
         )
         self.roofline_obj = Roofline(args, self._mspec)
-
-        # Workaround for broken --showmclkrange
-        # MI300X/MI300A/MI308X have 1300MHz mclk
-        if self._mspec.max_mclk is None or self._mspec.cur_mclk is None:
-            self._mspec.max_mclk = 1300
-            self._mspec.cur_mclk = 1300
 
         # Set arch specific specs
         self._mspec._l2_banks = 16

@@ -26,7 +26,7 @@ from pathlib import Path
 
 import config
 from rocprof_compute_soc.soc_base import OmniSoC_Base
-from utils.utils import console_error, demarcate
+from utils.logger import console_error, demarcate
 
 
 class gfx908_soc(OmniSoC_Base):
@@ -54,10 +54,6 @@ class gfx908_soc(OmniSoC_Base):
         self._mspec._l2_banks = 32
         self._mspec.lds_banks_per_cu = 32
         self._mspec.pipes_per_gpu = 4
-        # --showmclkrange is broken in Mi100, hardcode freq
-        if self._mspec.max_mclk is None or self._mspec.cur_mclk is None:
-            self._mspec.max_mclk = 1200
-            self._mspec.cur_mclk = 1200
 
     # -----------------------
     # Required child methods

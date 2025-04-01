@@ -57,6 +57,18 @@ Panel Config:
             #alias: lds_
             value: ROUND(AVG((SQ_INSTS_LDS / $denom)), 0)
             tips:
+          LDS LOAD:
+            #alias: lds_
+            value: ROUND(AVG((SQ_INSTS_LDS_LOAD / $denom)), 0)
+            tips:
+          LDS STORE:
+            #alias: lds_
+            value: ROUND(AVG((SQ_INSTS_LDS_STORE / $denom)), 0)
+            tips:
+          LDS ATOMIC:
+            #alias: lds_
+            value: ROUND(AVG((SQ_INSTS_LDS_ATOMIC / $denom)), 0)
+            tips:
           GWS:
             #alias: gws_
             value: ROUND(AVG((SQ_INSTS_GDS / $denom)), 0)
