@@ -80,7 +80,7 @@ class RocProfCompute:
         self.parse_args()
         self.__mode = self.__args.mode
         self.__loglevel = setup_logging_priority(
-            self.__args.verbose, self.__args.quiet, self.__mode
+            self.__args.verbose, self.__args.quiet, self.__mode, self.__args.gui
         )
         setattr(self.__args, "loglevel", self.__loglevel)
         set_locale_encoding()
