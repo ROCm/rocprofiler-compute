@@ -19,7 +19,7 @@ def pytest_addoption(parser):
 @pytest.fixture
 def binary_handler_profile_rocprof_compute(request):
     def _handler(
-        config, workload_dir, options=[], app_name="app_1", check_success=True, roof=False
+        config, workload_dir, options=[], check_success=True, roof=False, app_name="app_1"
     ):
         if request.config.getoption("--call-binary"):
             baseline_opts = [

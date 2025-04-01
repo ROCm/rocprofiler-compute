@@ -134,9 +134,9 @@ def test_L1_cache_counters(
             config,
             workload_dir,
             options,
-            app_name=app_name,
             check_success=False,
             roof=False,
+            app_name=app_name
         )
         assert return_code == 0
 
