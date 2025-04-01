@@ -35,16 +35,18 @@ import pandas as pd
 import yaml
 
 import config
-from utils.mi_gpu_spec import get_gpu_model, get_gpu_series
-from utils.parser import build_in_vars, supported_denom
-from utils.utils import (
-    capture_subprocess_output,
+from utils.logger import (
     console_debug,
     console_error,
     console_log,
     console_warning,
-    convert_metric_id_to_panel_idx,
     demarcate,
+)
+from utils.mi_gpu_spec import get_gpu_model, get_gpu_series
+from utils.parser import build_in_vars, supported_denom
+from utils.utils import (
+    capture_subprocess_output,
+    convert_metric_id_to_panel_idx,
     detect_rocprof,
     get_submodules,
     is_tcc_channel_counter,
@@ -103,7 +105,6 @@ class OmniSoC_Base:
 
     @demarcate
     def populate_mspec(self):
-        console_debug("[populate_mspec]")
         from utils.specs import run, search, total_sqc
 
         if not hasattr(self._mspec, "_rocminfo") or self._mspec._rocminfo is None:
@@ -179,11 +180,11 @@ class OmniSoC_Base:
         self._mspec.cur_sclk = self._mspec.max_sclk
         self._mspec.cur_mclk = self._mspec.max_mclk
 
-        self._mspec.gpu_series = get_gpu_series(self._mspec.gpu_arch).upper()
+        self._mspec.gpu_series = get_gpu_series(self._mspec.gpu_arch)
         # specify gpu model name for gfx942 hardware
         self._mspec.gpu_model = get_gpu_model(
             self._mspec.gpu_arch, self._mspec.gpu_chip_id
-        ).upper()
+        )
         self._mspec.num_xcd = str(
             total_xcds(self._mspec.gpu_model, self._mspec.compute_partition)
         )
@@ -254,6 +255,10 @@ class OmniSoC_Base:
         # Handle TCC channel counters: if hw_counter_matches has elements ending with '['
         # Expand and interleve the TCC channel counters
         # e.g.  TCC_HIT[0] TCC_ATOMIC[0] ... TCC_HIT[1] TCC_ATOMIC[1] ...
+        num_xcd_for_pmc_file = 1
+        if using_v3():
+            num_xcd_for_pmc_file = int(self._mspec.num_xcd)
+
         for counter_name in counters.copy():
             if counter_name.startswith("TCC") and counter_name.endswith("["):
                 counters.remove(counter_name)
@@ -261,9 +266,7 @@ class OmniSoC_Base:
                 counters = counters.union(
                     {
                         f"{counter_name}[{i}]"
-                        for i in range(
-                            int(self._mspec.num_xcd) * int(self._mspec._l2_banks)
-                        )
+                        for i in range(num_xcd_for_pmc_file * int(self._mspec._l2_banks))
                     }
                 )
 
@@ -308,10 +311,7 @@ class OmniSoC_Base:
                     if counter_name.startswith(tuple(filter_hardware_blocks))
                 }
 
-        if using_v3():
-            # Counters not supported in rocprof v3
-            counters = counters - {"TCC_BUBBLE"}
-        else:
+        if not using_v3():
             # Counters not supported in rocprof v1 / v2
             counters = counters - {"SQ_INSTS_VALU_MFMA_F8", "SQ_INSTS_VALU_MFMA_MOPS_F8"}
 
@@ -321,6 +321,9 @@ class OmniSoC_Base:
         counters = counters - {"SQC_DCACHE_INFLIGHT_LEVEL"}
         if self.__arch not in ("gfx908", "gfx90a"):
             counters = counters - {"TCP_TCP_LATENCY_sum"}
+
+        # SQ_ACCUM_PREV_HIRES will be injected for level counters later on
+        counters = counters - {"SQ_ACCUM_PREV_HIRES"}
 
         # Coalesce and writeback workload specific perfmon
         self.perfmon_coalesce(counters)

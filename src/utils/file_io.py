@@ -36,7 +36,7 @@ import yaml
 import config
 from utils import schema
 from utils.kernel_name_shortener import kernel_name_shortener
-from utils.utils import console_debug, console_error, console_log, demarcate
+from utils.logger import console_debug, console_error, console_log, demarcate
 
 # TODO: use pandas chunksize or dask to read really large csv file
 # from dask import dataframe as dd
@@ -116,7 +116,9 @@ def create_df_kernel_top_stats(
     Create top stats info by grouping kernels with user's filters.
     """
 
+    # NB: think about df = pd.DataFrame(df_in["pmc_perf"].copy())
     df = df_in["pmc_perf"]
+
     # Demangle original KernelNames
     kernel_name_shortener(df, kernel_verbose)
 

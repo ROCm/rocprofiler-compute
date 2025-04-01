@@ -38,16 +38,10 @@ from pathlib import Path as path
 import pandas as pd
 
 import config
+from utils.logger import console_debug, console_error, console_log, console_warning
 from utils.mi_gpu_spec import get_gpu_series_dict, get_mi300_chip_id_dict
 from utils.tty import get_table_string
-from utils.utils import (
-    console_debug,
-    console_error,
-    console_log,
-    console_warning,
-    get_version,
-    total_xcds,
-)
+from utils.utils import get_version, total_xcds
 
 VERSION_LOC = [
     "version",
@@ -77,20 +71,21 @@ def detect_arch(_rocminfo):
 
 
 def detect_gpu_chip_id(_rocminfo):
+    gpu_chip_id = None
+    mi300_chip_id_dict = get_mi300_chip_id_dict().keys()
+
     for idx1, linetext in enumerate(_rocminfo):
         # NOTE: current supported socs only have numbers in Chip ID
-        gpu_chip_id = search(r"^\s*Chip ID\s*:\s* ([0-9]+).*\s*$", linetext)
-        if gpu_chip_id and int(gpu_chip_id) in get_mi300_chip_id_dict().keys():
-            gpu_chip_id = str(gpu_chip_id)
+        chip_found = search(r"^\s*Chip ID\s*:\s* ([0-9]+).*\s*$", linetext)
+        if chip_found:
+            gpu_chip_id = str(chip_found)
             break
-        if str(gpu_chip_id) in get_mi300_chip_id_dict().keys():
-            gpu_chip_id = str(gpu_chip_id)
-            break
+
     if not gpu_chip_id:
         console_warning("No Chip ID detected: " + str(gpu_chip_id))
     elif (
-        gpu_chip_id not in get_mi300_chip_id_dict().keys()
-        and int(gpu_chip_id) not in get_mi300_chip_id_dict().keys()
+        gpu_chip_id not in mi300_chip_id_dict
+        and int(gpu_chip_id) not in mi300_chip_id_dict
     ):
         console_warning("Unknown Chip ID detected: " + str(gpu_chip_id))
     return gpu_chip_id
@@ -547,6 +542,7 @@ class MachineSpecs:
         mi300a_archs = ["mi300a_a0", "mi300a_a1"]
         mi300x_archs = ["mi300x_a0", "mi300x_a1"]
         mi308x_archs = ["mi308x"]
+
         if self.gpu_model.lower() in mi300a_archs + mi300x_archs + mi308x_archs:
             hbmchannels = 128
             if self.memory_partition.lower() == "nps2":

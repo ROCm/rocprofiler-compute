@@ -13,6 +13,15 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
   * -b option in profile mode also accept hardware IP block for filtering, however, this support will be deprecated soon
   * --list-metrics option added in profile mode to list possible metric id(s), similar to analyze mode
 
+* Datatype selection option for roofline profiling
+  * --roofline-data-type / -R option added to specify which datatypes the user wants to capture in the roofline PDF plot outputs
+  * Default is FP32, but user can specify as many types as desired to overlay on the same plot output
+
+* Additional datatypes for roofline profiling
+  * Now supports FP8, FP16, BF16, FP32, FP64, I8, I32, I64 (dependent on gpu architecture)
+
+* Support host-trap PC Sampling on CLI (beta version)
+
 ### Changed
 
 * Change normal_unit default to per_kernel
