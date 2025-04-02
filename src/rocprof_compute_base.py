@@ -37,6 +37,7 @@ import yaml
 import config
 from argparser import omniarg_parser
 from utils import file_io, parser, schema
+from utils.gpu_spec import get_gpu_series_dict, parse_mi_gpu_spec
 from utils.logger import (
     console_debug,
     console_error,

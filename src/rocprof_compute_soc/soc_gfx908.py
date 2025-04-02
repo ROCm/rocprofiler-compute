@@ -26,8 +26,8 @@ from pathlib import Path
 
 import config
 from rocprof_compute_soc.soc_base import OmniSoC_Base
+from utils.gpu_spec import get_perfmon_config_dict
 from utils.logger import console_error, demarcate
-from utils.mi_gpu_spec import get_perfmon_config_dict
 
 
 class gfx908_soc(OmniSoC_Base):
