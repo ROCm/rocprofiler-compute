@@ -1,0 +1,84 @@
+# --------------------------------------------------------------------------------
+#
+# This yaml file tracks the perfmon configuration for each soc
+#
+#   |-- soc_gfx
+#      |-- "SQ"
+#      |-- "TA"
+#      |-- "TD"
+#      |-- "TCP"
+#      |-- "TCC"
+#      |-- "CPC"
+#      |-- "CPF"
+#      |-- "SPI":
+#      |-- "GRBM"
+#      |-- "GDS"
+#
+# --------------------------------------------------------------------------------
+
+soc_gfx90a:
+    SQ: 8
+    TA: 2
+    TD: 2
+    TCP: 4
+    TCC: 4
+    CPC: 2
+    CPF: 2
+    SPI: 2
+    GRBM: 2
+    GDS: 4
+soc_gfx906:
+    SQ: 8
+    TA: 2
+    TD: 2
+    TCP: 4
+    TCC: 4
+    CPC: 2
+    CPF: 2
+    SPI: 2
+    GRBM: 2
+    GDS: 4
+soc_gfx908:
+    SQ: 8
+    TA: 2
+    TD: 2
+    TCP: 4
+    TCC: 4
+    CPC: 2
+    CPF: 2
+    SPI: 2
+    GRBM: 2
+    GDS: 4
+soc_gfx940:
+    SQ: 8
+    TA: 2
+    TD: 2
+    TCP: 4
+    TCC: 4
+    CPC: 2
+    CPF: 2
+    SPI: 2
+    GRBM: 2
+    GDS: 4
+soc_gfx941:
+    SQ: 8
+    TA: 2
+    TD: 2
+    TCP: 4
+    TCC: 4
+    CPC: 2
+    CPF: 2
+    SPI: 2
+    GRBM: 2
+    GDS: 4
+soc_gfx942:
+    SQ: 8
+    TA: 2
+    TD: 2
+    TCP: 4
+    TCC: 4
+    CPC: 2
+    CPF: 2
+    SPI: 2
+    GRBM: 2
+    GDS: 4

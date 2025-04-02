@@ -28,6 +28,7 @@ import config
 from rocprof_compute_soc.soc_base import OmniSoC_Base
 from roofline import Roofline
 from utils.logger import console_log, demarcate
+from utils.mi_gpu_spec import get_perfmon_config_dict
 from utils.utils import mibench
 
 
@@ -48,20 +49,7 @@ class gfx90a_soc(OmniSoC_Base):
             )
         self.set_compatible_profilers(["rocprofv1", "rocscope", "rocprofv2", "rocprofv3"])
         # Per IP block max number of simultaneous counters. GFX IP Blocks
-        self.set_perfmon_config(
-            {
-                "SQ": 8,
-                "TA": 2,
-                "TD": 2,
-                "TCP": 4,
-                "TCC": 4,
-                "CPC": 2,
-                "CPF": 2,
-                "SPI": 2,
-                "GRBM": 2,
-                "GDS": 4,
-            }
-        )
+        self.set_perfmon_config(get_perfmon_config_dict("soc_gfx90a"))
         self.roofline_obj = Roofline(args, self._mspec)
 
         # Set arch specific specs

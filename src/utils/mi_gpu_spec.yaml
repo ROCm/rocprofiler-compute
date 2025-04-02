@@ -60,8 +60,14 @@ mi_gpu_spec:
                   spx: 6
                   tpx: 2
               memory_partition_mode:
-                nps4: [tpx]
-                nps1: [spx, tpx]
+                nps4:
+                  tpx: 3
+                nps1:
+                  spx: 1
+                  tpx: 3
+            chip_ids:
+              physical: null
+              virtual: null
 
       - gpu_arch: gfx941
         models:
@@ -74,8 +80,16 @@ mi_gpu_spec:
                   qpx: 2
                   cpx: 1
               memory_partition_mode:
-                nps4: [qpx, cpx]
-                nps1: [spx, qpx, cpx]
+                nps4:
+                  qpx: 4
+                  cpx: 8
+                nps1:
+                  spx: 1
+                  qpx: 4
+                  cpx: 8
+            chip_ids:
+              physical: null
+              virtual: null
 
       - gpu_arch: gfx942
         models:
@@ -86,8 +100,11 @@ mi_gpu_spec:
                   spx: 6
                   tpx: 2
               memory_partition_mode:
-                nps4: [tpx]
-                nps1: [spx, tpx]
+                nps4:
+                  tpx: 3
+                nps1:
+                  spx: 1
+                  tpx: 3
             chip_ids:
               physical: 29856
               virtual: 29876
@@ -101,8 +118,13 @@ mi_gpu_spec:
                   qpx: 2
                   cpx: 1
               memory_partition_mode:
-                nps4: [qpx, cpx]
-                nps1: [spx, qpx, cpx]
+                nps4:
+                  qpx: 4
+                  cpx: 8
+                nps1:
+                  spx: 1
+                  qpx: 4
+                  cpx: 8
             chip_ids:
               physical: 29857
               virtual: 29877
@@ -115,8 +137,12 @@ mi_gpu_spec:
                   dpx: 2
                   cpx: 1
               memory_partition_mode:
-                nps4: [cpx]
-                nps1: [spx, dpx, cpx]
+                nps4:
+                  cpx: 8
+                nps1:
+                  spx: 1
+                  qpx: 4
+                  cpx: 8
             chip_ids:
               physical: 29858
               virtual: 29878
@@ -130,8 +156,13 @@ mi_gpu_spec:
                   qpx: 2
                   cpx: 1
               memory_partition_mode:
-                nps4: [qpx, cpx]
-                nps1: [spx, qpx, cpx]
+                nps4:
+                  qpx: 4
+                  cpx: 8
+                nps1:
+                  spx: 1
+                  qpx: 4
+                  cpx: 8
             chip_ids:
               physical: 29861
               virtual: 29881
@@ -149,7 +180,12 @@ mi_gpu_spec:
                   qpx: 2
                   cpx: 1
               memory_partition_mode:
-                  nps1: [spx, dpx, qpx, cpx]
-                  nps4: [qpx, cpx]
+                nps4:
+                  qpx: 4
+                  cpx: 8
+                nps1:
+                  spx: 1
+                  qpx: 4
+                  cpx: 8
             chip_ids:
               physical: 30112
