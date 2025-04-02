@@ -186,9 +186,12 @@ Panel Config:
             unit: (instr + $normUnit)
             tips:
           Global/Generic Coalesceable Instr:
-            avg: AVG((TA_FLAT_COALESCEABLE_WAVEFRONTS_sum / $denom))
-            min: MIN((TA_FLAT_COALESCEABLE_WAVEFRONTS_sum / $denom))
-            max: MAX((TA_FLAT_COALESCEABLE_WAVEFRONTS_sum / $denom))
+            avg: None
+            # AVG((TA_FLAT_COALESCEABLE_WAVEFRONTS_sum / $denom))
+            min: None
+            # MIN((TA_FLAT_COALESCEABLE_WAVEFRONTS_sum / $denom))
+            max: None
+            # MAX((TA_FLAT_COALESCEABLE_WAVEFRONTS_sum / $denom))
             unit: (instr + $normUnit)
             tips:
           Global/Generic Read:
