@@ -461,21 +461,21 @@ Panel Config:
             unit: (Req  + $normUnit)
             tips:
           Read Bandwidth - PCIe:
-            avg: AVG(TCC_EA0_RDREQ_IO_32B_sum / $denom)
-            min: MIN(TCC_EA0_RDREQ_IO_32B_sum / $denom)
-            max: MAX(TCC_EA0_RDREQ_IO_32B_sum / $denom)
+            avg: None # AVG(TCC_EA0_RDREQ_IO_32B_sum / $denom)
+            min: None # MIN(TCC_EA0_RDREQ_IO_32B_sum / $denom)
+            max: None # MAX(TCC_EA0_RDREQ_IO_32B_sum / $denom)
             unit: (Bytes + $normUnit)
             tips:
           Read Bandwidth - Infinity Fabric™:
-            avg: AVG(TCC_EA0_RDREQ_GMI_32B_sum / $denom)
-            min: MIN(TCC_EA0_RDREQ_GMI_32B_sum / $denom)
-            max: MAX(TCC_EA0_RDREQ_GMI_32B_sum / $denom)
+            avg: None # AVG(TCC_EA0_RDREQ_GMI_32B_sum / $denom)
+            min: None # MIN(TCC_EA0_RDREQ_GMI_32B_sum / $denom)
+            max: None # MAX(TCC_EA0_RDREQ_GMI_32B_sum / $denom)
             unit: (Bytes + $normUnit)
             tips:
           Read Bandwidth - HBM:
-            avg: AVG(TCC_EA0_RDREQ_DRAM_32B_sum / $denom)
-            min: MIN(TCC_EA0_RDREQ_DRAM_32B_sum / $denom)
-            max: MAX(TCC_EA0_RDREQ_DRAM_32B_sum / $denom)
+            avg: None # AVG(TCC_EA0_RDREQ_DRAM_32B_sum / $denom)
+            min: None # MIN(TCC_EA0_RDREQ_DRAM_32B_sum / $denom)
+            max: None # MAX(TCC_EA0_RDREQ_DRAM_32B_sum / $denom)
             unit: (Bytes + $normUnit)
             tips:
           Write and Atomic (32B):
