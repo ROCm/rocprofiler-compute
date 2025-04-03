@@ -243,22 +243,22 @@ Panel Config:
             unit: (Req  + $normUnit)
             tips:
           L1 Access Latency:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
-            unit: Cycles
+            avg: AVG((TCP_TCP_LATENCY_sum / $denom))
+            min: MIN((TCP_TCP_LATENCY_sum / $denom))
+            max: MAX((TCP_TCP_LATENCY_sum / $denom))
+            unit: (Cycles  + $normUnit)
             tips:
           L1-L2 Read Latency:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
-            unit: Cycles
+            avg: AVG((TCP_TCC_READ_REQ_LATENCY_sum / $denom))
+            min: MIN((TCP_TCC_READ_REQ_LATENCY_sum / $denom))
+            max: MAX((TCP_TCC_READ_REQ_LATENCY_sum / $denom))
+            unit: (Cycles  + $normUnit)
             tips:
           L1-L2 Write Latency:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
-            unit: Cycles
+            avg: AVG((TCP_TCC_WRITE_REQ_LATENCY_sum / $denom))
+            min: MIN((TCP_TCC_WRITE_REQ_LATENCY_sum / $denom))
+            max: MAX((TCP_TCC_WRITE_REQ_LATENCY_sum / $denom))
+            unit: (Cycles  + $normUnit)
             tips:
 
     - metric_table:
