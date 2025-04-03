@@ -25,8 +25,8 @@ Panel Config:
             unit: Pct of Peak
             tips:
           Bandwidth:
-            value: ((100 * AVG(((TCP_TOTAL_CACHE_ACCESSES_sum * 64) / (End_Timestamp - Start_Timestamp))))
-              / ((($max_sclk / 1000) * 64) * $cu_per_gpu))
+            value: ((100 * AVG(((TCP_TOTAL_CACHE_ACCESSES_sum * 128) / (End_Timestamp - Start_Timestamp))))
+              / ((($max_sclk / 1000) * 128) * $cu_per_gpu))
             unit: Pct of Peak
             tips:
           Utilization:
@@ -62,23 +62,28 @@ Panel Config:
             tips:
           Stalled on Address:
             expr:
-              None
+              (((100 * TCP_TCP_TA_ADDR_STALL_CYCLES_sum) / TCP_GATE_EN1_sum) if (TCP_GATE_EN1_sum
+              != 0) else None)
             tips:
           Stalled on Data:
             expr:
-              None
+              (((100 * TCP_TCP_TA_DATA_STALL_CYCLES_sum) / TCP_GATE_EN1_sum) if (TCP_GATE_EN1_sum
+              != 0) else None)
             tips:
           Stalled on Latency FIFO:
             expr:
-              None
+              (((100 * TCP_LFIFO_STALL_CYCLES_sum) / TCP_GATE_EN1_sum) if (TCP_GATE_EN1_sum
+              != 0) else None)
             tips:
           Stalled on Request FIFO:
             expr:
-              None
+              (((100 * TCP_RFIFO_STALL_CYCLES_sum) / TCP_GATE_EN1_sum) if (TCP_GATE_EN1_sum
+              != 0) else None)
             tips:
           Stalled on Read Return:
             expr:
-              None
+              (((100 * TCP_TCR_RDRET_STALL_sum) / TCP_GATE_EN1_sum) if (TCP_GATE_EN1_sum
+              != 0) else None)
             tips:
           Tag RAM Stall (Read):
             expr:
@@ -136,24 +141,24 @@ Panel Config:
             unit: (Req  + $normUnit)
             tips:
           Cache BW:
-            avg: AVG(((TCP_TOTAL_CACHE_ACCESSES_sum * 64) / $denom))
-            min: MIN(((TCP_TOTAL_CACHE_ACCESSES_sum * 64) / $denom))
-            max: MAX(((TCP_TOTAL_CACHE_ACCESSES_sum * 64) / $denom))
+            avg: AVG(((TCP_TOTAL_CACHE_ACCESSES_sum * 128) / $denom))
+            min: MIN(((TCP_TOTAL_CACHE_ACCESSES_sum * 128) / $denom))
+            max: MAX(((TCP_TOTAL_CACHE_ACCESSES_sum * 128) / $denom))
             unit: (Bytes + $normUnit)
             tips:
           Cache Hit Rate:
             avg: AVG(((100 - ((100 * (((TCP_TCC_READ_REQ_sum + TCP_TCC_WRITE_REQ_sum) +
               TCP_TCC_ATOMIC_WITH_RET_REQ_sum) + TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum)) /
               TCP_TOTAL_CACHE_ACCESSES_sum)) if (TCP_TOTAL_CACHE_ACCESSES_sum != 0) else
-              None))
+               None))
             min: MIN(((100 - ((100 * (((TCP_TCC_READ_REQ_sum + TCP_TCC_WRITE_REQ_sum) +
               TCP_TCC_ATOMIC_WITH_RET_REQ_sum) + TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum)) /
               TCP_TOTAL_CACHE_ACCESSES_sum)) if (TCP_TOTAL_CACHE_ACCESSES_sum != 0) else
-              None))
+               None))
             max: MAX(((100 - ((100 * (((TCP_TCC_READ_REQ_sum + TCP_TCC_WRITE_REQ_sum) +
               TCP_TCC_ATOMIC_WITH_RET_REQ_sum) + TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum)) /
               TCP_TOTAL_CACHE_ACCESSES_sum)) if (TCP_TOTAL_CACHE_ACCESSES_sum != 0) else
-              None))
+               None))
             unit: pct
             tips:
           Cache Accesses:
@@ -181,36 +186,39 @@ Panel Config:
             unit: (Req + $normUnit)
             tips:
           L1-L2 BW:
-            avg: AVG(((64 * (((TCP_TCC_READ_REQ_sum + TCP_TCC_WRITE_REQ_sum) + TCP_TCC_ATOMIC_WITH_RET_REQ_sum)
-              + TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum)) / $denom))
-            min: MIN(((64 * (((TCP_TCC_READ_REQ_sum + TCP_TCC_WRITE_REQ_sum) + TCP_TCC_ATOMIC_WITH_RET_REQ_sum)
-              + TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum)) / $denom))
-            max: MAX(((64 * (((TCP_TCC_READ_REQ_sum + TCP_TCC_WRITE_REQ_sum) + TCP_TCC_ATOMIC_WITH_RET_REQ_sum)
-              + TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum)) / $denom))
+            avg: AVG(((128 * TCP_TCC_READ_REQ_sum + 64 *
+                      (TCP_TCC_WRITE_REQ_sum + TCP_TCC_ATOMIC_WITH_RET_REQ_sum +
+                        TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum)) / $denom))
+            min: MIN(((128 * TCP_TCC_READ_REQ_sum + 64 *
+                      (TCP_TCC_WRITE_REQ_sum + TCP_TCC_ATOMIC_WITH_RET_REQ_sum +
+                        TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum)) / $denom))
+            max: MAX(((128 * TCP_TCC_READ_REQ_sum + 64 *
+                      (TCP_TCC_WRITE_REQ_sum + TCP_TCC_ATOMIC_WITH_RET_REQ_sum +
+                        TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum)) / $denom))
             unit: (Bytes + $normUnit)
             tips:
           Tag RAM 0 Req:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
+            avg: AVG((TCP_TAGRAM0_REQ_sum / $denom))
+            min: MIN((TCP_TAGRAM0_REQ_sum / $denom))
+            max: MAX((TCP_TAGRAM0_REQ_sum / $denom))
             unit: (Req  + $normUnit)
             tips:
           Tag RAM 1 Req:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
+            avg: AVG((TCP_TAGRAM1_REQ_sum / $denom))
+            min: MIN((TCP_TAGRAM1_REQ_sum / $denom))
+            max: MAX((TCP_TAGRAM1_REQ_sum / $denom))
             unit: (Req  + $normUnit)
             tips:
           Tag RAM 2 Req:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
+            avg: AVG((TCP_TAGRAM2_REQ_sum / $denom))
+            min: MIN((TCP_TAGRAM2_REQ_sum / $denom))
+            max: MAX((TCP_TAGRAM2_REQ_sum / $denom))
             unit: (Req  + $normUnit)
             tips:
           Tag RAM 3 Req:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
+            avg: AVG((TCP_TAGRAM3_REQ_sum / $denom))
+            min: MIN((TCP_TAGRAM3_REQ_sum / $denom))
+            max: MAX((TCP_TAGRAM3_REQ_sum / $denom))
             unit: (Req  + $normUnit)
             tips:
           L1-L2 Read:
@@ -235,34 +243,22 @@ Panel Config:
             unit: (Req  + $normUnit)
             tips:
           L1 Access Latency:
-            avg: AVG(((TCP_TCP_LATENCY_sum / TCP_TA_TCP_STATE_READ_sum) if (TCP_TA_TCP_STATE_READ_sum
-              != 0) else None))
-            min: MIN(((TCP_TCP_LATENCY_sum / TCP_TA_TCP_STATE_READ_sum) if (TCP_TA_TCP_STATE_READ_sum
-              != 0) else None))
-            max: MAX(((TCP_TCP_LATENCY_sum / TCP_TA_TCP_STATE_READ_sum) if (TCP_TA_TCP_STATE_READ_sum
-              != 0) else None))
-            unit: Cycles
+            avg: AVG((TCP_TCP_LATENCY_sum / $denom))
+            min: MIN((TCP_TCP_LATENCY_sum / $denom))
+            max: MAX((TCP_TCP_LATENCY_sum / $denom))
+            unit: (Cycles  + $normUnit)
             tips:
           L1-L2 Read Latency:
-            avg: AVG(((TCP_TCC_READ_REQ_LATENCY_sum / (TCP_TCC_READ_REQ_sum + TCP_TCC_ATOMIC_WITH_RET_REQ_sum))
-              if ((TCP_TCC_READ_REQ_sum + TCP_TCC_ATOMIC_WITH_RET_REQ_sum) != 0) else None))
-            min: MIN(((TCP_TCC_READ_REQ_LATENCY_sum / (TCP_TCC_READ_REQ_sum + TCP_TCC_ATOMIC_WITH_RET_REQ_sum))
-              if ((TCP_TCC_READ_REQ_sum + TCP_TCC_ATOMIC_WITH_RET_REQ_sum) != 0) else None))
-            max: MAX(((TCP_TCC_READ_REQ_LATENCY_sum / (TCP_TCC_READ_REQ_sum + TCP_TCC_ATOMIC_WITH_RET_REQ_sum))
-              if ((TCP_TCC_READ_REQ_sum + TCP_TCC_ATOMIC_WITH_RET_REQ_sum) != 0) else None))
-            unit: Cycles
+            avg: AVG((TCP_TCC_READ_REQ_LATENCY_sum / $denom))
+            min: MIN((TCP_TCC_READ_REQ_LATENCY_sum / $denom))
+            max: MAX((TCP_TCC_READ_REQ_LATENCY_sum / $denom))
+            unit: (Cycles  + $normUnit)
             tips:
           L1-L2 Write Latency:
-            avg: AVG(((TCP_TCC_WRITE_REQ_LATENCY_sum / (TCP_TCC_WRITE_REQ_sum + TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum))
-              if ((TCP_TCC_WRITE_REQ_sum + TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum) != 0) else
-              None))
-            min: MIN(((TCP_TCC_WRITE_REQ_LATENCY_sum / (TCP_TCC_WRITE_REQ_sum + TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum))
-              if ((TCP_TCC_WRITE_REQ_sum + TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum) != 0) else
-              None))
-            max: MAX(((TCP_TCC_WRITE_REQ_LATENCY_sum / (TCP_TCC_WRITE_REQ_sum + TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum))
-              if ((TCP_TCC_WRITE_REQ_sum + TCP_TCC_ATOMIC_WITHOUT_RET_REQ_sum) != 0) else
-              None))
-            unit: Cycles
+            avg: AVG((TCP_TCC_WRITE_REQ_LATENCY_sum / $denom))
+            min: MIN((TCP_TCC_WRITE_REQ_LATENCY_sum / $denom))
+            max: MAX((TCP_TCC_WRITE_REQ_LATENCY_sum / $denom))
+            unit: (Cycles  + $normUnit)
             tips:
 
     - metric_table:
@@ -281,41 +277,41 @@ Panel Config:
           NC - Read:
             xfer: Read
             coherency: NC
-            avg: None # No perf counter
-            min: None # No perf counter
-            max: None # No perf counter
+            avg: AVG((TCP_TCC_NC_READ_REQ_sum / $denom))
+            min: MIN((TCP_TCC_NC_READ_REQ_sum / $denom))
+            max: MAX((TCP_TCC_NC_READ_REQ_sum / $denom))
             unit: (Req  + $normUnit)
             tips:
           UC - Read:
             xfer: Read
             coherency: UC
-            avg: None # No perf counter
-            min: None # No perf counter
-            max: None # No perf counter
+            avg: AVG((TCP_TCC_UC_READ_REQ_sum / $denom))
+            min: MIN((TCP_TCC_UC_READ_REQ_sum / $denom))
+            max: MAX((TCP_TCC_UC_READ_REQ_sum / $denom))
             unit: (Req  + $normUnit)
             tips:
           CC - Read:
             xfer: Read
             coherency: CC
-            avg: None # No perf counter
-            min: None # No perf counter
-            max: None # No perf counter
+            avg: AVG((TCP_TCC_CC_READ_REQ_sum / $denom))
+            min: MIN((TCP_TCC_CC_READ_REQ_sum / $denom))
+            max: MAX((TCP_TCC_CC_READ_REQ_sum / $denom))
             unit: (Req  + $normUnit)
             tips:
           RW - Read:
             xfer: Read
             coherency: RW
-            avg: None # No perf counter
-            min: None # No perf counter
-            max: None # No perf counter
+            avg: AVG((TCP_TCC_RW_READ_REQ_sum / $denom))
+            min: MIN((TCP_TCC_RW_READ_REQ_sum / $denom))
+            max: MAX((TCP_TCC_RW_READ_REQ_sum / $denom))
             unit: (Req  + $normUnit)
             tips:
           RW - Write:
             xfer: Write
             coherency: RW
-            avg: None # No perf counter
-            min: None # No perf counter
-            max: None # No perf counter
+            avg: AVG((TCP_TCC_RW_WRITE_REQ_sum / $denom))
+            min: MIN((TCP_TCC_RW_WRITE_REQ_sum / $denom))
+            max: MAX((TCP_TCC_RW_WRITE_REQ_sum / $denom))
             unit: (Req  + $normUnit)
             tips:
           NC - Write:
@@ -345,33 +341,33 @@ Panel Config:
           NC - Atomic:
             xfer: Atomic
             coherency: NC
-            avg: None # No perf counter
-            min: None # No perf counter
-            max: None # No perf counter
+            avg: AVG((TCP_TCC_NC_ATOMIC_REQ_sum / $denom))
+            min: MIN((TCP_TCC_NC_ATOMIC_REQ_sum / $denom))
+            max: MAX((TCP_TCC_NC_ATOMIC_REQ_sum / $denom))
             unit: (Req  + $normUnit)
             tips:
           UC - Atomic:
             xfer: Atomic
             coherency: UC
-            avg: None # No perf counter
-            min: None # No perf counter
-            max: None # No perf counter
+            avg: AVG((TCP_TCC_UC_ATOMIC_REQ_sum / $denom))
+            min: MIN((TCP_TCC_UC_ATOMIC_REQ_sum / $denom))
+            max: MAX((TCP_TCC_UC_ATOMIC_REQ_sum / $denom))
             unit: (Req  + $normUnit)
             tips:
           CC - Atomic:
             xfer: Atomic
             coherency: CC
-            avg: None # No perf counter
-            min: None # No perf counter
-            max: None # No perf counter
+            avg: AVG((TCP_TCC_CC_ATOMIC_REQ_sum / $denom))
+            min: MIN((TCP_TCC_CC_ATOMIC_REQ_sum / $denom))
+            max: MAX((TCP_TCC_CC_ATOMIC_REQ_sum / $denom))
             unit: (Req  + $normUnit)
             tips:
           RW - Atomic:
             xfer: Atomic
             coherency: RW
-            avg: None # No perf counter
-            min: None # No perf counter
-            max: None # No perf counter
+            avg: AVG((TCP_TCC_RW_ATOMIC_REQ_sum / $denom))
+            min: MIN((TCP_TCC_RW_ATOMIC_REQ_sum / $denom))
+            max: MAX((TCP_TCC_RW_ATOMIC_REQ_sum / $denom))
             unit: (Req  + $normUnit)
             tips:
 
@@ -393,9 +389,9 @@ Panel Config:
             units: (Req + $normUnit)
             tips:
           Inflight Req:
-            avg:  None # Missing perfmon
-            min:  None # Missing perfmon
-            max:  None # Missing perfmon
+            avg: AVG((TCP_CLIENT_UTCL1_INFLIGHT_sum / $denom))
+            min: MIN((TCP_CLIENT_UTCL1_INFLIGHT_sum / $denom))
+            max: MAX((TCP_CLIENT_UTCL1_INFLIGHT_sum / $denom))
             units: (Req + $normUnit)
             tips:
           Hit Ratio:
@@ -420,9 +416,9 @@ Panel Config:
             units: (Req + $normUnit)
             tips:
           Misses under Translation Miss:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
+            avg: AVG((TCP_UTCL1_TRANSLATION_MISS_UNDER_MISS_sum / $denom))
+            min: MIN((TCP_UTCL1_TRANSLATION_MISS_UNDER_MISS_sum / $denom))
+            max: MAX((TCP_UTCL1_TRANSLATION_MISS_UNDER_MISS_sum / $denom))
             units: (Req + $normUnit)
             tips:
           Permission Misses:
@@ -443,44 +439,44 @@ Panel Config:
           tips: Tips
         metric:
           Cache Full Stall:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
+            avg: AVG((TCP_UTCL1_STALL_INFLIGHT_MAX_sum / $denom))
+            min: MIN((TCP_UTCL1_STALL_INFLIGHT_MAX_sum / $denom))
+            max: MAX((TCP_UTCL1_STALL_INFLIGHT_MAX_sum / $denom))
             units: (Cycles + $normUnit)
             tips:
           Cache Miss Stall:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
+            avg: AVG((TCP_UTCL1_STALL_MULTI_MISS_sum / $denom))
+            min: MIN((TCP_UTCL1_STALL_MULTI_MISS_sum / $denom))
+            max: MAX((TCP_UTCL1_STALL_MULTI_MISS_sum / $denom))
             units: (Cycles + $normUnit)
             tips:
           Serialization Stall:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
+            avg: AVG((TCP_UTCL1_SERIALIZATION_STALL_sum / $denom))
+            min: MIN((TCP_UTCL1_SERIALIZATION_STALL_sum / $denom))
+            max: MAX((TCP_UTCL1_SERIALIZATION_STALL_sum / $denom))
             units: (Cycles + $normUnit)
             tips:
           Thrashing Stall:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
+            avg: AVG((TCP_UTCL1_THRASHING_STALL_sum / $denom))
+            min: MIN((TCP_UTCL1_THRASHING_STALL_sum / $denom))
+            max: MAX((TCP_UTCL1_THRASHING_STALL_sum / $denom))
             units: (Cycles + $normUnit)
             tips:
           Latency FIFO Stall:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
+            avg: AVG((TCP_UTCL1_LFIFO_FULL_sum / $denom))
+            min: MIN((TCP_UTCL1_LFIFO_FULL_sum / $denom))
+            max: MAX((TCP_UTCL1_LFIFO_FULL_sum / $denom))
             units: (Cycles + $normUnit)
             tips:
           Resident Page Full Stall:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
+            avg: AVG((TCP_UTCL1_STALL_LFIFO_NO_RES_sum / $denom))
+            min: MIN((TCP_UTCL1_STALL_LFIFO_NO_RES_sum / $denom))
+            max: MAX((TCP_UTCL1_STALL_LFIFO_NO_RES_sum / $denom))
             units: (Cycles + $normUnit)
             tips:
           UTCL2 Stall:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
+            avg: AVG((TCP_UTCL1_STALL_UTCL2_REQ_OUT_OF_CREDITS_sum / $denom))
+            min: MIN((TCP_UTCL1_STALL_UTCL2_REQ_OUT_OF_CREDITS_sum / $denom))
+            max: MAX((TCP_UTCL1_STALL_UTCL2_REQ_OUT_OF_CREDITS_sum / $denom))
             units: (Cycles + $normUnit)
             tips:
