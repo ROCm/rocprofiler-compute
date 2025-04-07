@@ -118,8 +118,8 @@ mi_gpu_spec:
                 nps4: [cpx]
                 nps1: [spx, dpx, cpx]
             chip_ids:
-              physical: 29861
-              virtual: 29881
+              physical: 29858
+              virtual: 29878
 
           - gpu_model: mi325x
             partition_mode:
@@ -133,8 +133,8 @@ mi_gpu_spec:
                 nps4: [qpx, cpx]
                 nps1: [spx, qpx, cpx]
             chip_ids:
-              physical: 29858
-              virtual: 29878
+              physical: 29861
+              virtual: 29881
 
   - gpu_series: mi350
     gpu_archs:
