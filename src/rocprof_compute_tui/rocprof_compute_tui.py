@@ -3,6 +3,7 @@ import pandas as pd
 from textual.app import App, ComposeResult
 from textual.widgets import (
     Button,
+    Header,
     Static,
     DirectoryTree,
     TabbedContent,
@@ -47,13 +48,11 @@ class MainMenuView(Static):
 
     def on_key(self, event: Key) -> None:
         if event.key == "up":
-            # move index up (decrement), wrap around if needed
             self.focused_button_index = (self.focused_button_index - 1) % len(
                 self.buttons
             )
             self.buttons[self.focused_button_index].focus()
         elif event.key == "down":
-            # move index down (increment), wrap around
             self.focused_button_index = (self.focused_button_index + 1) % len(
                 self.buttons
             )
@@ -66,7 +65,7 @@ class MainMenuView(Static):
 
 
 class ProfileStubScreen(Screen):
-    """Minimal placeholder screen for Profile functionality."""
+    """FIXME: placeholder screen for Profile."""
 
     def on_key(self, event: Key) -> None:
         if event.key == "q":
@@ -83,20 +82,22 @@ class AnalyzeScreen(Screen):
     def __init__(self, start_path=None) -> None:
         super().__init__()
         if start_path is None:
-            start_path = Path.home()  # default to user's home directory
+            # FIXME: what's the default path? (should not matter when profile and analyze stages are streamdlined)
+            start_path = Path.cwd()
         self.start_path = Path(start_path)
         self.selected_item: Path | None = None
 
     def compose(self) -> ComposeResult:
+        yield Header()
         yield Static(
             "Analyze Screen\n"
             "• Navigate with arrow keys\n"
             "• Press Space or Enter to expand/collapse directories\n"
-            "• Press 's' to select the currently highlighted item for analysis\n"
+            "• Press 's' to select the currently highlighted directory for analysis\n"
             "• Press 'q' to go back to the main menu\n",
             id="analyze-header",
         )
-        # DirectoryTree automatically displays a file tree
+        # TODO: improve the UI here?
         self.dir_tree = DirectoryTree(self.start_path, id="dir-tree")
         yield self.dir_tree
 
@@ -112,6 +113,11 @@ class AnalyzeScreen(Screen):
         self.selected_item = event.path
         self.app.log(f"Selected file: {event.path}")
 
+    def on_mount(self) -> None:
+        self.sub_title = "Analyze"
+
+    # TODO: add on_button events to enable double click
+    # TODO: consider right click functionalities?
     def on_key(self, event: Key) -> None:
         if event.key.lower() == "q":
             # Return to the main menu
@@ -145,6 +151,7 @@ class AnalysisResultsScreen(Screen):
         super().__init__(*args, **kwargs)
         self.selected_path = selected_path
         self.return_msg = "Analyze run failed."
+        self.table_dfs = None
 
         ##############################
         # FIXME CLI integration
@@ -154,10 +161,10 @@ class AnalysisResultsScreen(Screen):
 
         if self.exit_code == 0:
             self.return_msg = "Analyze run completed."
-
-        self.table_dfs = get_table_dfs()
+            self.table_dfs = get_table_dfs()
 
     def compose(self) -> ComposeResult:
+        yield Header()
         yield Static(
             f"Analysis Results Screen\n"
             f"Selected Path: {self.selected_path}\n"
@@ -183,39 +190,48 @@ class AnalysisResultsScreen(Screen):
                 yield self.build_logs_view()
 
     def build_summary_view(self) -> Static:
-        """
-        For demonstration, show a markdown-like summary or
-        put a textual widget describing high-level results.
-        """
-        # If you have a function get_summary_for_path(self.selected_path),
-        # you could call that here to get the actual data.
-        summary_text = (
-            f"# Summary of Analysis\n\n"
-            f"This is a placeholder summary for `{self.selected_path}`.\n\n"
-            f"Add your real logic to parse the files, run your CLI,\n"
-            f"and extract key metrics."
-        )
-        return Markdown(summary_text)
-
-    def build_dataframe_view(self) -> Static:
         md_content = ""
 
-        for key, df in self.table_dfs.items():
-            md_content += f"### {key}\n\n"
-            md_content += "```\n" + df.to_string(index=False) + "\n```\n\n"
+        if self.table_dfs:
+            md_content += f"### 0.1 Top Kernels \n\n"
+            md_content += (
+                "```\n"
+                + self.table_dfs["0.1 Top Kernels"].to_string(index=False)
+                + "\n```\n\n"
+            )
+
+            md_content += f"### 0.2 Dispatch List \n\n"
+            md_content += (
+                "```\n"
+                + self.table_dfs["0.2 Dispatch List"].to_string(index=False)
+                + "\n```\n\n"
+            )
+
+        return Markdown(md_content)
+
+    def build_dataframe_view(self) -> Static:
+        # TODO: use Collapsible or Markdown Viewer
+        md_content = ""
+
+        if self.table_dfs:
+            for key, df in self.table_dfs.items():
+                if "Top Kernels" in key or "Dispatch List" in key:
+                    continue
+                md_content += f"### {key}\n\n"
+                md_content += "```\n" + df.to_string(index=False) + "\n```\n\n"
 
         return Markdown(md_content)
 
     def build_logs_view(self) -> Static:
-        """
-        A placeholder for any log or detailed data you want to show.
-        Could be a large text area or a scrolled container of lines.
-        """
+        # TODO: integrate real-time log here?
         logs_text = (
             f"Here, you could load logs from {self.selected_path}.\n"
             "For now, it's just placeholder text."
         )
         return Markdown(logs_text)
+
+    def on_mount(self) -> None:
+        self.sub_title = "Analyze Results"
 
     def on_key(self, event: Key) -> None:
         """Press 'q' to go back to the main menu."""
@@ -261,8 +277,13 @@ class RocProfTUI(App):
         super().__init__(**kwargs)
 
     def compose(self) -> ComposeResult:
+        yield Header()
         yield MainMenuView()
         yield Static("Press ESC to quit at any time.")
+
+    def on_mount(self) -> None:
+        self.title = "ROCm Compute Profiler"
+        self.sub_title = "Home"
 
     def on_key(self, event: Key) -> None:
         """Global key handler to capture escape and quit."""

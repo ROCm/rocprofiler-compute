@@ -8,15 +8,10 @@ from typing import List, Optional, Union
 
 class RocprofRunner:
     """
-    Encapsulates calls to the 'rocprof-compute' CLI tool,
-    including building command lines, running profiling,
-    capturing output, and optionally streaming logs for real-time feedback.
+    Encapsulates calls to the 'rocprof-compute' CLI.
     """
 
     def __init__(self, executable: str = "src/rocprof-compute"):
-        """
-        :param executable: Path or name of the rocprof-compute CLI executable.
-        """
         self.executable = executable
         self.logger = logging.getLogger(__name__)  # or a dedicated logger
 
@@ -28,16 +23,6 @@ class RocprofRunner:
         real_time_logs: bool = False,
         timeout: Optional[int] = None,
     ) -> int:
-        """
-        Invokes the 'rocprof-compute' profiler on the given target application.
-
-        :param target_app: Path to the target application executable or script.
-        :param app_args: List of arguments for the target app.
-        :param output_dir: Directory where rocprof-compute would store results.
-        :param real_time_logs: If True, print or capture stdout/stderr in real-time.
-        :param timeout: If set, kill the process after N seconds.
-        :return: The exit code of the profiling process (0 means success, typically).
-        """
 
         cmd_parts = [self.executable, "profile"]
         # Set output directory
@@ -87,15 +72,6 @@ class RocprofRunner:
         output_file: Optional[Union[str, Path]] = None,
         extra_args: Optional[List[str]] = None,
     ) -> int:
-        """
-        Runs the 'rocprof-compute analyze' command on a specified directory
-        containing profiler data, optionally saving analysis to a file.
-
-        :param input_dir: Directory where profiling data is located.
-        :param output_file: Optionally specify a file to write analysis results.
-        :param extra_args: Additional flags or arguments for the analyze subcommand.
-        :return: The exit code of the analyze process.
-        """
 
         cmd_parts = [self.executable, "analyze", "--path", str(input_dir)]
         if output_file:
