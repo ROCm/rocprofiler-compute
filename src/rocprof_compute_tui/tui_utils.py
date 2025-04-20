@@ -1,5 +1,9 @@
+import datetime
 import re
 import pandas as pd
+import logging
+
+from rocprof_compute_cmd import RocprofRunner
 
 
 def parse_section_header(line):
@@ -72,26 +76,54 @@ def parse_ascii_table(table_lines):
 
 def parse_file(filename):
     """
-    Read the file and parse its content.
-    Detects headers (like “0.1 Top Kernels”) and
-    ASCII table (delimited by a top border starting with "╒" and bottom border with "╘").
-    Returns a list of dicts with keys: section, name, header, data.
+    Returns nested structure:
+    {
+        "0. Top Stats": {
+            "0.1 Top Kernels": {header: [...], data: [...]},
+            "0.2 Dispatch List": {header: [...], data: [...]}
+        },
+        "1. System Info": {
+            "1.1 System Information": {header: [...], data: [...]}
+        },
+        ...
+    }
     """
     with open(filename, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
-    tables = []
+    sections = {}
     current_section = None
-    current_table_name = None
+    current_subsection = None
     table_lines = []
     in_table = False
 
     for line in lines:
         line = line.rstrip("\n")
-        sec = parse_section_header(line)
-        if sec:
-            current_section, current_table_name = sec
 
+        # Skip separator lines
+        if line.startswith(
+            "--------------------------------------------------------------------------------"
+        ):
+            continue
+
+        # Check for section header (e.g., "0. Top Stats")
+        section_match = re.match(r"^\s*(\d+\. .+)$", line)
+        if section_match:
+            current_section = section_match.group(1).strip()
+            sections[current_section] = {}
+            continue
+
+        # Check for subsection header (e.g., "0.1 Top Kernels")
+        # FIXME: 1. System Info is an exception, no subsection
+        subsection_match = re.match(r"^\s*(\d+\.\d+ .+)$", line)
+        if subsection_match:
+            current_subsection = subsection_match.group(1).strip()
+            if current_section is None:
+                current_section = "Uncategorized"
+                sections[current_section] = {}
+            continue
+
+        # Table parsing logic
         if line.startswith("╒"):
             in_table = True
             table_lines = [line]
@@ -99,20 +131,17 @@ def parse_file(filename):
 
         if in_table:
             table_lines.append(line)
-            # When reaching a bottom border (starting with "╘"), assume table is complete.
             if line.startswith("╘"):
-                header, data = parse_ascii_table(table_lines)
-                tables.append(
-                    {
-                        "section": current_section,
-                        "name": current_table_name,
+                if current_section and current_subsection:
+                    header, data = parse_ascii_table(table_lines)
+                    sections[current_section][current_subsection] = {
                         "header": header,
                         "data": data,
                     }
-                )
                 in_table = False
                 table_lines = []
-    return tables
+
+    return sections
 
 
 def section_key(section_str):
@@ -129,16 +158,36 @@ def section_key(section_str):
 
 
 def get_table_dfs():
-    # FIXME: update the path!!!
     filename = "/home/xuchen/dev/rocprofiler-compute/TUI_OUTPUT.txt"
-    tables_info = parse_file(filename)
+    sections_info = parse_file(filename)
 
-    tables_info.sort(key=lambda t: section_key(t["section"]))
+    # Convert to DataFrames while maintaining nested structure
+    section_dfs = {}
+    for section_name, subsections in sections_info.items():
+        section_dfs[section_name] = {}
+        for subsection_name, table_data in subsections.items():
+            if table_data and table_data["data"]:  # Only if we have data
+                try:
+                    df = pd.DataFrame(table_data["data"], columns=table_data["header"])
+                    section_dfs[section_name][subsection_name] = df
+                except Exception as e:
+                    print(f"Error creating DataFrame for {subsection_name}: {e}")
+                    continue
 
-    table_dfs = {}
-    for table in tables_info:
-        df = pd.DataFrame(table["data"], columns=table["header"])
-        key = f"{table['section']} {table['name']}"
-        table_dfs[key] = df
+    return section_dfs
 
-    return table_dfs
+
+def analyze_runner(workload_path):
+    timestamp_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"/home/xuchen/dev/rocprofiler-compute/TUI_OUTPUT.txt"
+
+    runner = RocprofRunner()
+
+    exit_code = runner.run_analyze(input_dir=workload_path, output_file=filename)
+
+    if exit_code == 0:
+        logging.info("run_analyze WORKED")
+    else:
+        logging.error("SOMETHING IS WRONGGGGG")
+
+    return exit_code
