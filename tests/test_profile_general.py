@@ -557,7 +557,9 @@ def test_roof_kernel_names(binary_handler_profile_rocprof_compute):
     # assert successful run
     assert returncode == 0
     file_dict = test_utils.check_csv_files(workload_dir, 1, num_kernels)
-    if soc == "MI200" in soc or "MI300" in soc:
+    if soc == "MI100":
+        assert sorted(list(file_dict.keys())) == ALL_CSVS_MI100
+    else:
         assert sorted(list(file_dict.keys())) == sorted(
             (
                 [f for f in ROOF_ONLY_FILES if f != "timestamps.csv"]
@@ -566,8 +568,6 @@ def test_roof_kernel_names(binary_handler_profile_rocprof_compute):
             )
             + ["kernelName_legend.pdf"]
         )
-    else:
-        assert sorted(list(file_dict.keys())) == ALL_CSVS_MI100
 
     validate(
         inspect.stack()[0][3],
