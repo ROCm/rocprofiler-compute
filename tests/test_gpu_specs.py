@@ -103,7 +103,7 @@ def test_num_xcds(binary_handler_profile_rocprof_compute):
 
     # 1. Check if gfx942 soc
     if not arch or "gfx942" not in arch.lower():
-        pytest.skip("Skipping num xcds test for non-fx942 socs.")
+        pytest.skip("Skipping num xcds test for non-gfx942 socs.")
 
     # 2. Run rocprof-compute -s and grab rocprof-compute num_xcd
     proc = subprocess.run(
