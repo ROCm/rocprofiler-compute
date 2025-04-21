@@ -71,4 +71,5 @@ markers = [
 	"kernel_verbose",
 	"serial",
 	"L1_cache",
+  "num_xcds",
 ]

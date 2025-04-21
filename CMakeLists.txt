@@ -296,6 +296,17 @@ add_test(
         ${COV_OPTION} ${PROJECT_SOURCE_DIR}/tests/test_TCP_counters.py
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
+# ---------------------------
+# Spec tests
+# ---------------------------
+
+add_test(
+    NAME test_gpu_sepcs
+    COMMAND
+        ${Python3_EXECUTABLE} -m pytest -m num_xcds --junitxml=tests/test_gpu_specs.xml
+        ${COV_OPTION} ${PROJECT_SOURCE_DIR}/tests/test_gpu_specs.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
 # ---------
 # Install
 # ---------
