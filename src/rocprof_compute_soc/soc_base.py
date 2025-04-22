@@ -186,7 +186,9 @@ class OmniSoC_Base:
             self._mspec.gpu_arch, self._mspec.gpu_chip_id
         )
         self._mspec.num_xcd = str(
-            mi_gpu_specs.get_num_xcds(self._mspec.gpu_model, self._mspec.compute_partition)
+            mi_gpu_specs.get_num_xcds(
+                self._mspec.gpu_model, self._mspec.compute_partition
+            )
         )
 
     @demarcate

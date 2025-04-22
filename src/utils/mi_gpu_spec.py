@@ -218,9 +218,7 @@ class MIGPUSpecs:
         if cls._chip_id_dict:
             return cls._chip_id_dict
         else:
-            console_error(
-                "mi300_chip_id_dict not yet populated, did you run parse_mi_gpu_spec()?"
-            )
+            console_error()
 
 
 # pre-initialize the instance when module loads
