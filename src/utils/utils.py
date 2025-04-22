@@ -43,7 +43,7 @@ import pandas as pd
 
 import config
 from utils.logger import console_debug, console_error, console_log, console_warning
-from utils.mi_gpu_spec import get_num_xcds
+from utils.mi_gpu_spec import mi_gpu_specs
 
 rocprof_cmd = ""
 rocprof_args = ""
@@ -671,7 +671,7 @@ def run_prof(
     if new_env and not using_v3() and not using_v1():
         # flatten tcc for applicable mi300 input
         f = path(workload_dir + "/out/pmc_1/results_" + fbase + ".csv")
-        xcds = get_num_xcds(mspec.gpu_model, mspec.compute_partition)
+        xcds = mi_gpu_specs.get_num_xcds(mspec.gpu_model, mspec.compute_partition)
         df = flatten_tcc_info_across_xcds(f, xcds, int(mspec._l2_banks))
         df.to_csv(f, index=False)
 

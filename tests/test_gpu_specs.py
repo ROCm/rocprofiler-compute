@@ -1,16 +1,13 @@
-import csv
-import inspect
-import os
 import re
-import shutil
 import subprocess
 import sys
 from importlib.machinery import SourceFileLoader
-from pathlib import Path
 from unittest.mock import patch
 
 import pandas as pd
 import pytest
+
+from src.utils.specs import generate_machine_specs
 
 rocprof_compute = SourceFileLoader("rocprof-compute", "src/rocprof-compute").load_module()
 
@@ -66,7 +63,7 @@ def run(cmd):
     if cmd[0] == "amd-smi" and p.returncode == 8:
         print("ERROR: No GPU detected. Unable to load amd-smi")
         assert 0
-    return p.stdout.decode("ascii")
+    return p.stdout.decode("utf-8")
 
 
 def gpu_arch():
@@ -97,8 +94,26 @@ def gpu_arch():
     return gpu_arch
 
 
-@pytest.mark.num_xcds
-def test_num_xcds(binary_handler_profile_rocprof_compute):
+@pytest.mark.num_xcds_spec_class
+def test_num_xcds_spec_class(monkeypatch):
+    arch = gpu_arch()
+
+    # 1. Check if gfx942 soc
+    if not arch or "gfx942" not in arch.lower():
+        pytest.skip("Skipping num xcds test for non-gfx942 socs.")
+
+    # 2. load machine specs
+    machine_spec = generate_machine_specs(None)
+
+    # 3. check results are expected
+    assert machine_spec.compute_partition is not None
+    assert int(machine_spec.num_xcd) == GFX942_NUM_XCDS.get(
+        machine_spec.compute_partition.lower(), -1
+    )
+
+
+@pytest.mark.num_xcds_cli_output
+def test_num_xcds_cli_output():
     arch = gpu_arch()
 
     # 1. Check if gfx942 soc
@@ -126,7 +141,6 @@ def test_num_xcds(binary_handler_profile_rocprof_compute):
     ), "Spec 'Compute Partition' not found in table"
     assert "Num XCDs" in return_dict, "Spec 'Num XCDs' not found in table"
 
-    # check its value
     compute_partition_actual = return_dict["Compute Partition"]
     num_xcd_actual = return_dict["Num XCDs"]
 
