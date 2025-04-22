@@ -247,7 +247,7 @@ add_test(
 add_test(
     NAME test_profile_section
     COMMAND
-        ${Python3_EXECUTABLE} -m pytest -m section --junitxml=tests/test_profile_misc.xml
+        ${Python3_EXECUTABLE} -m pytest -m section --junitxml=tests/test_profile_section.xml
         ${COV_OPTION} ${PROJECT_SOURCE_DIR}/tests/test_profile_general.py
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
@@ -292,7 +292,7 @@ add_test(
 add_test(
     NAME test_L1_cache_counters
     COMMAND
-        ${Python3_EXECUTABLE} -m pytest -m L1_cache --junitxml=tests/test_TCP_counters.xml
+        ${Python3_EXECUTABLE} -m pytest -m L1_cache --junitxml=tests/test_L1_cache_counters.xml
         ${COV_OPTION} ${PROJECT_SOURCE_DIR}/tests/test_TCP_counters.py
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
@@ -301,9 +301,16 @@ add_test(
 # ---------------------------
 
 add_test(
-    NAME test_gpu_sepcs
+    NAME test_num_xcds_spec_class
     COMMAND
-        ${Python3_EXECUTABLE} -m pytest -m num_xcds --junitxml=tests/test_gpu_specs.xml
+        ${Python3_EXECUTABLE} -m pytest -m num_xcds_spec_class --junitxml=tests/test_num_xcds_spec_class.xml
+        ${COV_OPTION} ${PROJECT_SOURCE_DIR}/tests/test_gpu_specs.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+add_test(
+    NAME test_num_xcds_cli_output
+    COMMAND
+        ${Python3_EXECUTABLE} -m pytest -m num_xcds_cli_output --junitxml=tests/test_num_xcds_cli_output.xml
         ${COV_OPTION} ${PROJECT_SOURCE_DIR}/tests/test_gpu_specs.py
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
