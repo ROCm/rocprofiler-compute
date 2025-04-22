@@ -21,6 +21,17 @@ mi_gpu_spec:
   - gpu_series: mi50
     gpu_archs:
       - gpu_arch: gfx906
+        perfmon_config:
+          SQ: 8
+          TA: 2
+          TD: 2
+          TCP: 4
+          TCC: 4
+          CPC: 2
+          CPF: 2
+          SPI: 2
+          GRBM: 2
+          GDS: 4
         models:
           - gpu_model: mi50
           - gpu_model: mi60
@@ -28,6 +39,17 @@ mi_gpu_spec:
   - gpu_series: mi100
     gpu_archs:
       - gpu_arch: gfx908
+        perfmon_config:
+          SQ: 8
+          TA: 2
+          TD: 2
+          TCP: 4
+          TCC: 4
+          CPC: 2
+          CPF: 2
+          SPI: 2
+          GRBM: 2
+          GDS: 4
         models:
           - gpu_model: mi100
             chip_ids:
@@ -36,6 +58,17 @@ mi_gpu_spec:
   - gpu_series: mi200
     gpu_archs:
       - gpu_arch: gfx90a
+        perfmon_config:
+          SQ: 8
+          TA: 2
+          TD: 2
+          TCP: 4
+          TCC: 4
+          CPC: 2
+          CPF: 2
+          SPI: 2
+          GRBM: 2
+          GDS: 4
         models:
           - gpu_model: mi210
             chip_ids:
@@ -52,6 +85,17 @@ mi_gpu_spec:
   - gpu_series: mi300
     gpu_archs:
       - gpu_arch: gfx940
+        perfmon_config:
+          SQ: 8
+          TA: 2
+          TD: 2
+          TCP: 4
+          TCC: 4
+          CPC: 2
+          CPF: 2
+          SPI: 2
+          GRBM: 2
+          GDS: 4
         models:
           - gpu_model: mi300a_a0
             partition_mode:
@@ -70,6 +114,17 @@ mi_gpu_spec:
               virtual: null
 
       - gpu_arch: gfx941
+        perfmon_config:
+          SQ: 8
+          TA: 2
+          TD: 2
+          TCP: 4
+          TCC: 4
+          CPC: 2
+          CPF: 2
+          SPI: 2
+          GRBM: 2
+          GDS: 4
         models:
           - gpu_model: mi300x_a0
             partition_mode:
@@ -92,6 +147,17 @@ mi_gpu_spec:
               virtual: null
 
       - gpu_arch: gfx942
+        perfmon_config:
+          SQ: 8
+          TA: 2
+          TD: 2
+          TCP: 4
+          TCC: 4
+          CPC: 2
+          CPF: 2
+          SPI: 2
+          GRBM: 2
+          GDS: 4
         models:
           - gpu_model: mi300a_a1
             partition_mode:
