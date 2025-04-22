@@ -76,14 +76,13 @@ def get_base_spi_pipe_counter(counter):
 
 
 def using_v1():
-
-    return "ROCPROF" not in os.environ.keys() or (
-        "ROCPROF" in os.environ.keys() and os.environ["ROCPROF"].endswith("rocprof")
-    )
+    return "ROCPROF" in os.environ.keys() and os.environ["ROCPROF"].endswith("rocprof")
 
 
 def using_v3():
-    return "ROCPROF" in os.environ.keys() and os.environ["ROCPROF"].endswith("rocprofv3")
+    return "ROCPROF" not in os.environ.keys() or (
+        "ROCPROF" in os.environ.keys() and os.environ["ROCPROF"].endswith("rocprofv3")
+    )
 
 
 def get_version(rocprof_compute_home) -> dict:
@@ -147,7 +146,7 @@ def detect_rocprof():
     global rocprof_cmd
     # detect rocprof
     if not "ROCPROF" in os.environ.keys():
-        rocprof_cmd = "rocprof"
+        rocprof_cmd = "rocprofv3"
     else:
         rocprof_cmd = os.environ["ROCPROF"]
 
@@ -155,7 +154,7 @@ def detect_rocprof():
     rocprof_path = shutil.which(rocprof_cmd)
 
     if not rocprof_path:
-        rocprof_cmd = "rocprof"
+        rocprof_cmd = "rocprofv3"
         console_warning(
             "Unable to resolve path to %s binary. Reverting to default." % rocprof_cmd
         )
@@ -930,6 +929,7 @@ def detect_roofline(mspec):
     elif (
         rhel_distro == "platform:el8"
         or rhel_distro == "platform:el9"
+        or rhel_distro == "platform:el10"
         or rhel_distro == "platform:al8"
     ):
         # Must be a valid RHEL machine
