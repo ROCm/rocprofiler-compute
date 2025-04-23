@@ -46,12 +46,19 @@ class AnalysisScreen(Screen):
     #main-container {
         layout: grid;
         grid-size: 3 2;
-        grid-columns: 1fr 3fr 1fr;
+        grid-columns: 1fr 5fr 1fr;
         grid-rows: 1fr auto;
         width: 100%;
         height: 100%;
         padding: 1;
         grid-gutter: 1;
+    }
+
+    #center-container {
+        layout: grid;
+        grid-size: 1 2;
+        grid-rows: 4fr 1fr;
+        height: 100%;
     }
 
     /* Panel styling */
@@ -87,12 +94,10 @@ class AnalysisScreen(Screen):
 
     .collapsible-title {
         background: $surface-darken-2;
-        padding: 1;
         text-style: bold;
     }
 
     .collapsible-content {
-        padding: 1;
         background: $surface;
     }
 
@@ -176,7 +181,10 @@ class AnalysisScreen(Screen):
 
     def _compose_initial_state(self) -> ComposeResult:
         """Initial empty state before analysis"""
-        yield Label("Run analysis to view results", classes="placeholder")
+        yield Label(
+            "Select a workload directory to run analysis and view results",
+            classes="placeholder",
+        )
 
     def refresh_results(self) -> None:
         """Safe refresh with proper mounting sequence"""
