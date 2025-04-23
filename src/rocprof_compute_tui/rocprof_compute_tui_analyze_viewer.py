@@ -1,5 +1,5 @@
 from textual.app import ComposeResult
-from textual.containers import VerticalScroll, Horizontal, Vertical
+from textual.containers import Container, VerticalScroll, Horizontal, Vertical
 from textual.widgets import (
     DirectoryTree,
     Static,
@@ -89,7 +89,6 @@ class AnalysisScreen(Screen):
 
     /* Collapsible sections */
     Collapsible {
-        margin: 1 0;
     }
 
     .collapsible-title {
@@ -99,6 +98,35 @@ class AnalysisScreen(Screen):
 
     .collapsible-content {
         background: $surface;
+    }
+
+    #summary-section {
+        height: 1;
+        margin: 0;
+    }
+
+    .summary-grid {
+    }
+
+    .header-cell {
+        text-style: bold;
+        color: cyan;
+        padding: 0 1;
+        height: 1;
+        margin: 0;
+    }
+
+    .data-cell {
+        color: magenta;
+        padding: 0 1;
+        height: 1;
+        margin: 0;
+    }
+
+    .row {
+        width: 1fr;
+        height: 1;
+        margin: 0;
     }
 
     /* DataTables */
@@ -211,22 +239,14 @@ class AnalysisScreen(Screen):
     def _build_summary_section(self) -> Collapsible:
         """Build complete collapsible section"""
         df = self.dfs["0. Top Stats"]["0.1 Top Kernels"]
-        # Create all child widgets first
-        summary_children = [
-            Label("Top Kernels by Duration (ns):", classes="section-header")
-        ]
 
-        # Build collapsible with pre-constructed children
-        summary_children.extend(
-            [
-                Vertical(
-                    self._df_to_rich_view(df),
-                )
-            ]
-        )
         summary = Collapsible(
-            *summary_children, title="📊 Kernel Summary", collapsed=True
+            Label("Top Kernels by Duration (ns):", classes="section-header"),
+            Vertical(self._df_to_rich_view(df)),
+            title="📊 Kernel Summary",
+            collapsed=True,
         )
+
         summary.add_class("summary-section")
         return summary
 
@@ -311,32 +331,42 @@ class AnalysisScreen(Screen):
 
         return table
 
-    def _df_to_rich_view(self, df: pd.DataFrame) -> Static:
+    def _df_to_rich_view(self, df: pd.DataFrame) -> Vertical:
         """Convert DataFrame to a beautiful rich table with proper alignment"""
 
-        from rich.table import Table
-        from rich.box import SQUARE
-
-        # Create a Rich Table
-        rich_table = Table(
-            box=SQUARE,
-            show_header=True,
-            header_style="bold cyan",
-            show_lines=True,
-            expand=True,
-        )
-
-        # Add columns
+        col_widths: dict[str, int] = {}
         for col in df.columns:
-            # Right-align numeric columns, left-align others
-            justify = "right" if pd.api.types.is_numeric_dtype(df[col]) else "left"
-            rich_table.add_column(str(col), justify=justify, style="magenta")
+            max_data_len = max(len(str(x)) for x in df[col])
+            col_widths[col] = max(len(str(col)), max_data_len)
 
-        # Add rows
-        for row in df.itertuples(index=False):
-            rich_table.add_row(*[str(x) for x in row])
+        # 1) Header row: one Label per column
+        header_cells = []
+        for col in df.columns:
+            text = str(col).center(col_widths[col])
+            hdr = Label(str(text), classes="header-cell")
+            hdr.tooltip = f"Column: {col}"
+            header_cells.append(hdr)
+        header_row = Horizontal(*header_cells, classes="row")
 
-        return Static(rich_table)
+        # 2) Data rows: one Horizontal per DataFrame row
+        data_rows = []
+        for _, row in df.iterrows():
+            cells = []
+            for col in df.columns:
+                val = row[col]
+                s = str(val)
+                if pd.api.types.is_numeric_dtype(df[col]):
+                    s = s.rjust(col_widths[col])
+                else:
+                    s = s.ljust(col_widths[col])
+                cell = Label(str(s), classes="data-cell")
+                cell.tooltip = f"{col} → {val}"
+                cells.append(cell)
+            data_rows.append(Horizontal(*cells, classes="row"))
+
+        # 3) Wrap all rows in a Vertical
+        grid = Vertical(header_row, *data_rows, classes="summary-grid")
+        return grid
 
     @on(Button.Pressed, "#analyze")
     def on_analyze(self):
