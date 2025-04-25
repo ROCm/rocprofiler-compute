@@ -6,7 +6,7 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 ### Added
 
-* Roofline support for RHEL 10
+* Roofline support for RHEL 10, Alibaba Cloud Linux 3
 
 ## ROCm Compute Profiler 3.1.0 for ROCm 6.4.0
 
