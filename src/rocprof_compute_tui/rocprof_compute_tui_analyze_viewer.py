@@ -10,6 +10,9 @@ from textual.widgets import (
     Label,
     DataTable,
     RichLog,
+    TabbedContent,
+    TabPane,
+    Markdown,
 )
 import pandas as pd
 from pathlib import Path
@@ -19,6 +22,7 @@ from textual.screen import Screen
 from textual import on, events, work
 
 from tui_utils import get_table_dfs
+from tui_plots import ScatterPlot
 
 
 SECTIONS_TO_SKIP = [
@@ -62,9 +66,10 @@ class AnalysisScreen(Screen):
     }
 
     /* Panel styling */
-    #left-panel, #right-panel, #center-panel, #terminal-panel {
+    #left-panel, #right-panel, #center-panel, #bottom-panel {
         border: solid $primary;
         background: $surface-darken-1;
+        height: 100%;
     }
 
     /* Directory Tree */
@@ -173,11 +178,7 @@ class AnalysisScreen(Screen):
         super().__init__()
         self.dfs = dfs or {}
         self.selected_path = Path.cwd()
-        self.terminal_log = RichLog(id="terminal-log")
         sys.stdout = self  # Redirect stdout
-
-    def write(self, text: str):
-        self.terminal_log.write(text.strip())
 
     def flush(self):
         pass
@@ -200,12 +201,17 @@ class AnalysisScreen(Screen):
                 with VerticalScroll(id="center-panel"):
                     yield from self._compose_initial_state()
 
-                # Bottom Row - Terminal
-                with Vertical(id="terminal-panel"):
-                    yield Label("Terminal Output")
-                    yield self.terminal_log
+                # Bottom Row → TabbedContent
+                with TabbedContent(initial="tab-tips", id="bottom-panel"):
+                    with TabPane("Tips", id="tab-tips"):
+                        # TODO
+                        yield (Markdown("🚧 Under Construction"))
+                    with TabPane("Terminal Output", id="tab-terminal"):
+                        # TODO
+                        yield (Markdown("🚧 Under Construction"))
+
             with Vertical(id="right-panel"):
-                yield Label("Toolbox")
+                yield Label("🚧 Under Construction")
 
     def _compose_initial_state(self) -> ComposeResult:
         """Initial empty state before analysis"""
@@ -261,6 +267,14 @@ class AnalysisScreen(Screen):
                 title="System Speed-of-Light",
                 collapsed=True,
             ),
+        )
+
+        sysinf_children.append(
+            Collapsible(
+                ScatterPlot(),
+                title="Roofline",
+                collapsed=True,
+            )
         )
 
         df = self.dfs["3. Memory Chart"]["3.1 Memory Chart"]

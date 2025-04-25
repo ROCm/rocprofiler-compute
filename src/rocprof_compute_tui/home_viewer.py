@@ -1,6 +1,5 @@
-from pathlib import Path
 from textual.app import ComposeResult
-from textual.containers import Container, Horizontal, Vertical, Grid
+from textual.containers import Container, Vertical, Horizontal
 from textual.widgets import (
     Button,
     Header,
@@ -9,14 +8,11 @@ from textual.widgets import (
     ListView,
     ListItem,
     Label,
-    DataTable,
-    Markdown
+    Markdown,
 )
 from textual.screen import Screen
 from textual import on, events, work
 from textual.events import Key
-from textual.reactive import reactive
-from rich.text import Text
 import datetime
 import logging
 import os
@@ -39,14 +35,15 @@ class MainMenuView(Screen):
     CSS = """
     #main-container {
         layout: grid;
-        grid-size: 2 2;
+        grid-size: 4 4;
         grid-columns: 1fr 1fr;
         grid-rows: auto 1fr;
         padding: 1;
     }
 
     #welcome-panel {
-        column-span: 2;
+        column-span: 4;
+        row-span: 1;
         height: auto;
         border: round $primary;
         padding: 1;
@@ -68,12 +65,15 @@ class MainMenuView(Screen):
     }
 
     #recent-profiles {
+        row-span: 3;
         height: 100%;
         border: round $primary;
         margin: 1;
     }
 
     #quick-actions {
+        column-span: 3;
+        row-span: 3;
         height: 100%;
         border: round $primary;
         margin: 1;
@@ -111,14 +111,9 @@ class MainMenuView(Screen):
 
             # Recent profiles panel
             with Vertical(id="recent-profiles"):
-                yield Label("Recent Profiles", classes="panel-title")
-                self.recent_profiles = ListView(id="profile-list")
-                yield self.recent_profiles
-
                 yield Label("Recent Analyzes", classes="panel-title")
                 self.recent_analyzes = ListView(id="analyze-list")
                 yield self.recent_analyzes
-
 
                 with Vertical():
                     yield Button("Open Profile", id="open-profile", disabled=True)
@@ -127,9 +122,13 @@ class MainMenuView(Screen):
             # Quick actions panel
             with Vertical(id="quick-actions"):
                 yield Label("Quick Actions", classes="panel-title")
-                yield Button("New Profile (Demo)", id="new-profile", variant="success")
-                yield Button("Compare Runs", id="compare-runs", disabled=True)
-                yield Button("Settings", id="settings", disabled=True)
+                yield Button("New Analyze (Demo)", id="new-profile", variant="success")
+
+                # TODO
+                yield (Markdown("🚧 Under Construction"))
+
+                # yield Button("Compare Runs", id="compare-runs", disabled=True)
+                # yield Button("Settings", id="settings", disabled=True)
 
         # Load initial data
         self.load_recent_profiles()
