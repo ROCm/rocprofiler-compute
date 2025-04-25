@@ -6,8 +6,8 @@ docs/ @ROCm/rocm-documentation @prbasyal-amd
 *.rst @ROCm/rocm-documentation @prbasyal-amd
 .readthedocs.yaml @ROCm/rocm-documentation @prbasyal-amd
 
-<!-- # Packaging
-cmake/
-tests/
-CMakeLists.txt
-utils/ -->
+## Packaging
+# cmake/
+# tests/
+# CMakeLists.txt
+# utils/
