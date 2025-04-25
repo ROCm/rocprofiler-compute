@@ -42,7 +42,6 @@ from pathlib import Path as path
 import pandas as pd
 
 import config
-from utils.mi_gpu_spec import mi_gpu_specs
 from utils.logger import (
     console_debug,
     console_error,
@@ -50,6 +49,7 @@ from utils.logger import (
     console_warning,
     demarcate,
 )
+from utils.mi_gpu_spec import mi_gpu_specs
 
 rocprof_cmd = ""
 rocprof_args = ""
