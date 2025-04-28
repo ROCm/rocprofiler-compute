@@ -1,8 +1,8 @@
 import datetime
-import re
-import pandas as pd
 import logging
+import re
 
+import pandas as pd
 from rocprof_compute_cmd import RocprofRunner
 
 

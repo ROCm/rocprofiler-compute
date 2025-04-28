@@ -1,20 +1,20 @@
-from pathlib import Path
-from textual.app import App, ComposeResult
-from textual.widgets import (
-    Button,
-    Label,
-    Header,
-    Static,
-    DirectoryTree,
-)
-from textual.screen import Screen
-from textual import on
-from textual.containers import Container, Vertical, Horizontal
-from textual.events import Key
 import logging
+from pathlib import Path
 
 from home_viewer import MainMenuView
 from rocprof_compute_tui_analyze_viewer import AnalysisScreen
+from textual import on
+from textual.app import App, ComposeResult
+from textual.containers import Container, Horizontal, Vertical
+from textual.events import Key
+from textual.screen import Screen
+from textual.widgets import (
+    Button,
+    DirectoryTree,
+    Header,
+    Label,
+    Static,
+)
 
 
 class FolderOnlyDirectory(DirectoryTree):

@@ -1,29 +1,30 @@
+import sys
+from pathlib import Path
+from typing import Any, Dict
+
+import pandas as pd
+from mem_chart import plot_mem_chart
+from textual import events, on, work
 from textual.app import ComposeResult
-from textual.containers import Container, VerticalScroll, Horizontal, Vertical
+from textual.containers import Container, Horizontal, Vertical, VerticalScroll
+from textual.screen import Screen
 from textual.widgets import (
-    DirectoryTree,
-    Static,
-    Header,
-    Footer,
     Button,
     Collapsible,
-    Label,
     DataTable,
+    DirectoryTree,
+    Footer,
+    Header,
+    Label,
+    Markdown,
     RichLog,
+    Static,
     TabbedContent,
     TabPane,
-    Markdown,
+    TextArea,
 )
-import pandas as pd
-from pathlib import Path
-import sys
-from typing import Dict, Any
-from textual.screen import Screen
-from textual import on, events, work
-
-from tui_utils import get_table_dfs
 from tui_plots import ScatterPlot
-
+from tui_utils import get_table_dfs
 
 SECTIONS_TO_SKIP = [
     "0. Top Stats",
@@ -159,6 +160,23 @@ class AnalysisScreen(Screen):
         padding: 1;
     }
 
+    .mem-chart {
+        border: solid $accent;
+        padding: 2;
+        width: auto;
+        height: auto;
+        overflow: auto;
+        background: $surface;
+        color: $text;
+    }
+
+    /* Debug view styling */
+    .debug-view {
+        border: solid $error;
+        padding: 1;
+        width: 100%;
+    }
+
     /* Status classes */
     .error {
         color: $error;
@@ -178,10 +196,9 @@ class AnalysisScreen(Screen):
         super().__init__()
         self.dfs = dfs or {}
         self.selected_path = Path.cwd()
+        self.tooltips = TextArea(read_only=True)
+        self.logs = TextArea(read_only=True)
         sys.stdout = self  # Redirect stdout
-
-    def flush(self):
-        pass
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -204,11 +221,9 @@ class AnalysisScreen(Screen):
                 # Bottom Row → TabbedContent
                 with TabbedContent(initial="tab-tips", id="bottom-panel"):
                     with TabPane("Tips", id="tab-tips"):
-                        # TODO
-                        yield (Markdown("🚧 Under Construction"))
+                        yield (self.tooltips)
                     with TabPane("Terminal Output", id="tab-terminal"):
-                        # TODO
-                        yield (Markdown("🚧 Under Construction"))
+                        yield (self.logs)
 
             with Vertical(id="right-panel"):
                 yield Label("🚧 Under Construction")
@@ -235,12 +250,13 @@ class AnalysisScreen(Screen):
         """Main results composition"""
         try:
             yield Label("Analysis Results")
-            yield self._build_summary_section()
+            # TODO: FIXME
+            # yield self._build_summary_section()
             yield self._build_sysinfo_section()
-            yield self._build_kernel_section()
+            # yield self._build_kernel_section()
 
         except Exception as e:
-            yield Label(f"Display Error: {str(e)}", classes="error")
+            self.logs.text = f"Display Error: {str(e)}"
 
     def _build_summary_section(self) -> Collapsible:
         """Build complete collapsible section"""
@@ -248,7 +264,7 @@ class AnalysisScreen(Screen):
 
         summary = Collapsible(
             Label("Top Kernels by Duration (ns):", classes="section-header"),
-            Vertical(self._df_to_rich_view(df)),
+            self._create_table(df),
             title="📊 Kernel Summary",
             collapsed=True,
         )
@@ -263,7 +279,7 @@ class AnalysisScreen(Screen):
         df = self.dfs["2. System Speed-of-Light"]["2.1 Speed-of-Light"]
         sysinf_children.append(
             Collapsible(
-                self._df_to_rich_view(df),
+                self._create_table(df),
                 title="System Speed-of-Light",
                 collapsed=True,
             ),
@@ -278,16 +294,18 @@ class AnalysisScreen(Screen):
         )
 
         df = self.dfs["3. Memory Chart"]["3.1 Memory Chart"]
+
+        # TODO: adjust size!!! overflow!!!
         sysinf_children.append(
             Collapsible(
-                self._df_to_rich_view(df),
+                self._create_mem_chart(df),
                 title="Memory Chart",
-                collapsed=True,
+                collapsed=False,
             ),
         )
 
         sysinfo = Collapsible(
-            *sysinf_children, title="⚡ System Information", collapsed=True
+            *sysinf_children, title="⚡ System Information", collapsed=False
         )
         sysinfo.add_class("sysinfo-section")
         return sysinfo
@@ -303,7 +321,7 @@ class AnalysisScreen(Screen):
             for subsection_name, df in subsections.items():
                 kernel_children.append(
                     Collapsible(
-                        self._df_to_rich_view(df), title=subsection_name, collapsed=True
+                        self._create_table(df), title=subsection_name, collapsed=True
                     )
                 )
             children.append(
@@ -315,72 +333,87 @@ class AnalysisScreen(Screen):
         return kernels
 
     def _create_table(self, df: pd.DataFrame) -> DataTable:
-        """Safely create populated DataTable"""
-        table = DataTable()
+        table = DataTable(zebra_stripes=True)
 
-        try:
-            if not df.empty:
-                columns = list(df.columns)
-                table.add_columns(*columns)
+        str_columns = [str(col) for col in df.columns]
+        table.add_columns(*str_columns)
 
-                for i in range(len(df)):
-                    row = df.iloc[i]
-                    table.add_row(
-                        *[
-                            (
-                                str(row[col])
-                                if col in df.columns and not pd.isna(row[col])
-                                else ""
-                            )
-                            for col in columns
-                        ]
-                    )
-            else:
-                table.add_column("Info")
-                table.add_row("No data available")
-
-        except Exception as e:
-            table.add_column("Error")
-            table.add_row(str(e))
+        table.add_rows([tuple(str(x) for x in row) for row in df.itertuples(index=False)])
 
         return table
 
-    def _df_to_rich_view(self, df: pd.DataFrame) -> Vertical:
-        """Convert DataFrame to a beautiful rich table with proper alignment"""
+    def on_data_table_cell_selected(self, event: DataTable.CellSelected):
+        table = event.data_table
+        row_idx = event.coordinate.row
 
-        col_widths: dict[str, int] = {}
-        for col in df.columns:
-            max_data_len = max(len(str(x)) for x in df[col])
-            col_widths[col] = max(len(str(col)), max_data_len)
+        try:
+            row_data = table.get_row_at(row_idx)
+            content = f"Selected Row {row_idx}:\n"
+            content += "\n".join(f"{val}" for val in row_data)
 
-        # 1) Header row: one Label per column
-        header_cells = []
-        for col in df.columns:
-            text = str(col).center(col_widths[col])
-            hdr = Label(str(text), classes="header-cell")
-            hdr.tooltip = f"Column: {col}"
-            header_cells.append(hdr)
-        header_row = Horizontal(*header_cells, classes="row")
+            # Show it in the TextArea
+            self.tooltips.text = content
 
-        # 2) Data rows: one Horizontal per DataFrame row
-        data_rows = []
-        for _, row in df.iterrows():
-            cells = []
-            for col in df.columns:
-                val = row[col]
-                s = str(val)
-                if pd.api.types.is_numeric_dtype(df[col]):
-                    s = s.rjust(col_widths[col])
+        except Exception as e:
+            self.tooltips.text = f"Error displaying row {str(row_idx)}: {str(e)}"
+
+    def _create_mem_chart(self, df: pd.DataFrame) -> Static:
+        """Create memory chart visualization"""
+        try:
+            # Prepare data
+            metric_dict = df[["Metric", "Value"]].set_index("Metric").to_dict()["Value"]
+
+            # Debug the metric_dict
+            self.logs.text = f"Metrics: {metric_dict}"
+
+            import sys
+            from io import StringIO
+
+            # Save original stdout
+            original_stdout = sys.stdout
+
+            # Create a StringIO object to capture output
+            string_buffer = StringIO()
+
+            # Replace sys.stdout with our buffer
+            sys.stdout = string_buffer
+
+            try:
+                # Call the plot function - does it print to stdout or return a value?
+                result = plot_mem_chart("", "per_kernel", metric_dict)
+
+                # Get the output from stdout
+                stdout_output = string_buffer.getvalue()
+
+                # Check if we got output from either method
+                if stdout_output:
+                    self.logs.text += (
+                        f"\nGot output from stdout: {len(stdout_output)} chars"
+                    )
+                    plot_str = stdout_output
+                elif result:
+                    self.logs.text += f"\nGot returned value: {len(str(result))} chars"
+                    plot_str = str(result)
                 else:
-                    s = s.ljust(col_widths[col])
-                cell = Label(str(s), classes="data-cell")
-                cell.tooltip = f"{col} → {val}"
-                cells.append(cell)
-            data_rows.append(Horizontal(*cells, classes="row"))
+                    self.logs.text += "\nNo output captured from either method"
+                    plot_str = "No chart data generated"
+            finally:
+                # Restore original stdout
+                sys.stdout = original_stdout
 
-        # 3) Wrap all rows in a Vertical
-        grid = Vertical(header_row, *data_rows, classes="summary-grid")
-        return grid
+            # Create widget with monospace font and no markup
+            return Static(
+                plot_str,
+                markup=False,
+                classes="mem-chart",
+                shrink=False,
+            )
+        except Exception as e:
+            self.logs.text = f"Memory chart error: {str(e)}\n{type(e)}"
+            import traceback
+
+            self.logs.text += f"\n{traceback.format_exc()}"
+            return Static(f"Error: {str(e)}", classes="error")
 
     @on(Button.Pressed, "#analyze")
     def on_analyze(self):
@@ -394,7 +427,4 @@ class AnalysisScreen(Screen):
             self.dfs = get_table_dfs()
             self.app.call_from_thread(self.refresh_results)
         except Exception as e:
-            print(f"Analysis failed: {e}")
-
-    def on_unmount(self):
-        sys.stdout = sys.__stdout__
+            self.logs.text = f"Analysis failed: {e}"

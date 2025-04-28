@@ -1,21 +1,22 @@
-from textual.app import ComposeResult
-from textual.containers import Container, Vertical, Horizontal
-from textual.widgets import (
-    Button,
-    Header,
-    Footer,
-    Static,
-    ListView,
-    ListItem,
-    Label,
-    Markdown,
-)
-from textual.screen import Screen
-from textual import on, events, work
-from textual.events import Key
 import datetime
 import logging
 import os
+
+from textual import events, on, work
+from textual.app import ComposeResult
+from textual.containers import Container, Horizontal, Vertical
+from textual.events import Key
+from textual.screen import Screen
+from textual.widgets import (
+    Button,
+    Footer,
+    Header,
+    Label,
+    ListItem,
+    ListView,
+    Markdown,
+    Static,
+)
 
 
 class RecentItem(ListItem):
