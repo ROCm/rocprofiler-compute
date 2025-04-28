@@ -71,7 +71,6 @@ class OmniSoC_Base:
         self.__soc_params = {}  # SoC specifications
         self.__compatible_profilers = []  # Store profilers compatible with SoC
         self.populate_mspec()
-        parse_perfmon_config()
 
     def __hash__(self):
         return hash(self.__arch)
