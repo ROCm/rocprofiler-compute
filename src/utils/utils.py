@@ -49,7 +49,7 @@ from utils.logger import (
     console_warning,
     demarcate,
 )
-from utils.mi_gpu_spec import get_num_xcds
+from utils.mi_gpu_spec import mi_gpu_specs
 
 rocprof_cmd = ""
 rocprof_args = ""
@@ -587,8 +587,10 @@ def run_prof(
     # standard rocprof options
     default_options = ["-i", fname]
     options = default_options + profiler_options
-    if using_v3() and path_counter_config_yaml.exists():
-        options = ["-E", str(path_counter_config_yaml)] + options
+    if using_v3():
+        options = ["-A", "absolute"] + options
+        if path_counter_config_yaml.exists():
+            options = ["-E", str(path_counter_config_yaml)] + options
 
     # set required env var for mi300
     new_env = None
@@ -675,7 +677,7 @@ def run_prof(
     if new_env and not using_v3() and not using_v1():
         # flatten tcc for applicable mi300 input
         f = path(workload_dir + "/out/pmc_1/results_" + fbase + ".csv")
-        xcds = get_num_xcds(mspec.gpu_model, mspec.compute_partition)
+        xcds = mi_gpu_specs.get_num_xcds(mspec.gpu_model, mspec.compute_partition)
         df = flatten_tcc_info_across_xcds(f, xcds, int(mspec._l2_banks))
         df.to_csv(f, index=False)
 
