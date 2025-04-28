@@ -35,7 +35,6 @@ import pandas as pd
 import yaml
 
 import config
-from utils.gpu_spec import get_gpu_model, get_gpu_series, parse_perfmon_config
 from utils.logger import (
     console_debug,
     console_error,

@@ -39,6 +39,7 @@ class MIGPUSpecs:
     _gpu_model_dict = {}  # key: gpu_arch
     _num_xcds_dict = {}  # key: gpu model
     _chip_id_dict = {}  # key: chip id (int)
+    _perfmon_config = {}
 
     _initialized = False
 
@@ -108,6 +109,7 @@ class MIGPUSpecs:
             for archs in series["gpu_archs"]:
                 curr_gpu_arch = archs["gpu_arch"]
                 cls._gpu_series_dict[curr_gpu_arch] = curr_gpu_series
+                cls._perfmon_config[curr_gpu_arch] = archs["perfmon_config"]
                 cls._gpu_model_dict[curr_gpu_arch] = []
                 for models in archs["models"]:
                     curr_gpu_model = models["gpu_model"]
@@ -148,6 +150,20 @@ class MIGPUSpecs:
 
         console_warning(f"No matching gpu series found for gpu arch: {gpu_arch_}")
         return None
+
+    @classmethod
+    def get_perfmon_config(cls, gpu_arch_):
+        # Check that gpu_model_dict is populated first
+        if not cls._perfmon_config:
+            console_error(
+                "gpu_model_dict not yet populated. Did you run parse_mi_gpu_spec()?"
+            )
+            return None
+
+        gpu_arch_lower = gpu_arch_.lower()
+
+        return cls._perfmon_config.get(gpu_arch_lower, None)
+
 
     @classmethod
     def get_gpu_model(cls, gpu_arch_, chip_id_):
