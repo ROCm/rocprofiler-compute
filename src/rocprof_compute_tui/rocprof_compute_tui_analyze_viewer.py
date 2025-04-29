@@ -6,7 +6,14 @@ import pandas as pd
 from mem_chart import plot_mem_chart
 from textual import events, on, work
 from textual.app import ComposeResult
-from textual.containers import Container, Horizontal, Vertical, VerticalScroll
+from textual.containers import (
+    Container,
+    Horizontal,
+    HorizontalScroll,
+    ScrollableContainer,
+    Vertical,
+    VerticalScroll,
+)
 from textual.screen import Screen
 from textual.widgets import (
     Button,
@@ -51,7 +58,7 @@ class AnalysisScreen(Screen):
     #main-container {
         layout: grid;
         grid-size: 3 2;
-        grid-columns: 1fr 5fr 1fr;
+        grid-columns: 1fr 7fr 1fr;
         grid-rows: 1fr auto;
         width: 100%;
         height: 100%;
@@ -62,7 +69,7 @@ class AnalysisScreen(Screen):
     #center-container {
         layout: grid;
         grid-size: 1 2;
-        grid-rows: 4fr 1fr;
+        grid-rows: 5fr 1fr;
         height: 100%;
     }
 
@@ -70,7 +77,6 @@ class AnalysisScreen(Screen):
     #left-panel, #right-panel, #center-panel, #bottom-panel {
         border: solid $primary;
         background: $surface-darken-1;
-        height: 100%;
     }
 
     /* Directory Tree */
@@ -78,7 +84,7 @@ class AnalysisScreen(Screen):
         height: 1fr;
     }
 
-    .tree--folder {
+    .tree-folder {
         color: $accent;
         text-style: bold;
     }
@@ -162,10 +168,11 @@ class AnalysisScreen(Screen):
 
     .mem-chart {
         border: solid $accent;
-        padding: 2;
+        padding: 0;
         width: auto;
         height: auto;
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x:auto;
         background: $surface;
         color: $text;
     }
@@ -215,7 +222,7 @@ class AnalysisScreen(Screen):
 
             with Vertical(id="center-container"):
                 # Center Panel
-                with VerticalScroll(id="center-panel"):
+                with ScrollableContainer(id="center-panel"):
                     yield from self._compose_initial_state()
 
                 # Bottom Row → TabbedContent
@@ -250,10 +257,9 @@ class AnalysisScreen(Screen):
         """Main results composition"""
         try:
             yield Label("Analysis Results")
-            # TODO: FIXME
-            # yield self._build_summary_section()
+            yield self._build_summary_section()
             yield self._build_sysinfo_section()
-            # yield self._build_kernel_section()
+            yield self._build_kernel_section()
 
         except Exception as e:
             self.logs.text = f"Display Error: {str(e)}"
@@ -276,6 +282,9 @@ class AnalysisScreen(Screen):
         """Build the kernels section with hierarchical data"""
         sysinf_children = []
 
+        ########################################
+        # 1. System Speed of Light
+        ########################################
         df = self.dfs["2. System Speed-of-Light"]["2.1 Speed-of-Light"]
         sysinf_children.append(
             Collapsible(
@@ -285,6 +294,9 @@ class AnalysisScreen(Screen):
             ),
         )
 
+        ########################################
+        # 2. Roofline
+        ########################################
         sysinf_children.append(
             Collapsible(
                 ScatterPlot(),
@@ -293,19 +305,20 @@ class AnalysisScreen(Screen):
             )
         )
 
+        ########################################
+        # 3. Memory Chart (ANSI Art)
+        ########################################
         df = self.dfs["3. Memory Chart"]["3.1 Memory Chart"]
-
-        # TODO: adjust size!!! overflow!!!
         sysinf_children.append(
             Collapsible(
                 self._create_mem_chart(df),
                 title="Memory Chart",
-                collapsed=False,
+                collapsed=True,
             ),
         )
 
         sysinfo = Collapsible(
-            *sysinf_children, title="⚡ System Information", collapsed=False
+            *sysinf_children, title="⚡ System Information", collapsed=True
         )
         sysinfo.add_class("sysinfo-section")
         return sysinfo
@@ -362,30 +375,19 @@ class AnalysisScreen(Screen):
         try:
             # Prepare data
             metric_dict = df[["Metric", "Value"]].set_index("Metric").to_dict()["Value"]
-
-            # Debug the metric_dict
             self.logs.text = f"Metrics: {metric_dict}"
 
             import sys
             from io import StringIO
 
-            # Save original stdout
             original_stdout = sys.stdout
-
-            # Create a StringIO object to capture output
             string_buffer = StringIO()
-
-            # Replace sys.stdout with our buffer
             sys.stdout = string_buffer
 
             try:
-                # Call the plot function - does it print to stdout or return a value?
                 result = plot_mem_chart("", "per_kernel", metric_dict)
-
-                # Get the output from stdout
                 stdout_output = string_buffer.getvalue()
 
-                # Check if we got output from either method
                 if stdout_output:
                     self.logs.text += (
                         f"\nGot output from stdout: {len(stdout_output)} chars"
@@ -398,16 +400,16 @@ class AnalysisScreen(Screen):
                     self.logs.text += "\nNo output captured from either method"
                     plot_str = "No chart data generated"
             finally:
-                # Restore original stdout
                 sys.stdout = original_stdout
 
-            # Create widget with monospace font and no markup
+            # Wrap the Static widget in a Scroll container
             return Static(
                 plot_str,
                 markup=False,
                 classes="mem-chart",
                 shrink=False,
             )
+
         except Exception as e:
             self.logs.text = f"Memory chart error: {str(e)}\n{type(e)}"
             import traceback
