@@ -6,6 +6,8 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 ### Added
 
+* Add `--hip-trace` to support hip api trace outputs
+
 * Add support to be able to acquire from rocprofv3 every single channle on each XCD of TCC counters
 
 * Add Docker files to package the application and dependencies into a single portable and executable standalone binary file
