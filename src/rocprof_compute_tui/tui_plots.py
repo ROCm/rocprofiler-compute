@@ -12,10 +12,10 @@ from __future__ import annotations
 from datetime import datetime
 from itertools import chain, cycle
 
+import numpy as np
 from textual.app import App, ComposeResult
 from textual.containers import VerticalScroll
 from textual.widgets import Header, Label, Rule, TabbedContent, TabPane
-
 from textual_plotext import PlotextPlot
 
 
@@ -184,40 +184,75 @@ class SpecialPlots(ExamplesPane):
         )
 
 
-class ScatterPlot(PlotextPlot):
+class RooflinePlot(PlotextPlot):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.styles.height = "75%"
+        self.styles.width = "75%"
         self.plot_initialized = False
-        self.label_padding = (12, 4)
+        self.plt.theme("pro")
 
     def on_mount(self):
         self.refresh_plot()
 
     def refresh_plot(self):
         # Get the current size of this widget
-        widget_width, widget_height = self.size
-
-        # Calculate desired plot size
-        plot_width = max(widget_width - self.label_padding[0], 10)
-        plot_height = max(widget_height - self.label_padding[1], 5)
+        plot_width, plot_height = self.size
 
         # Configure the plot size
         self.plt.plot_size(plot_width, plot_height)
-
-        self.create_plot()
-        self.refresh()
+        self.create_roofline()
         self.plot_initialized = True
 
     def on_resize(self):
         if self.plot_initialized:
             self.refresh_plot()
 
-    def create_plot(self):
-        # Your plotting code here
+    def create_roofline(self):
+        """Generate the roofline plot data and visualization."""
+        # Roofline model parameters
+        peak_performance = 1000.0  # GFLOPS
+        memory_bandwidth = 100.0  # GB/s
+
+        # For memory-bound region (diagonal line)
+        x_mem = [0.1, 0.5, 1.0, 5.0, 10.0]
+        y_mem = [x * memory_bandwidth for x in x_mem]
+
+        # For compute-bound region (horizontal line)
+        x_comp = [10.0, 20.0, 50.0, 100.0]
+        y_comp = [peak_performance] * len(x_comp)
+
+        # Example workloads with safe values
+        workloads = [
+            (0.5, 45.0, "Workload A"),  # Memory bound
+            (2.0, 180.0, "Workload B"),  # Memory bound
+            (15.0, 950.0, "Workload C"),  # Compute bound
+            (30.0, 980.0, "Workload D")   # Compute bound
+        ]
+
+        # Clear the plot and set properties
         self.plt.clear_figure()
-        self.plt.subplots(1, 1)
-        self.plt.plot([1, 2, 3, 4], [1, 4, 9, 16])
-        self.plt.title("🚧 Under Construction (Showing sample data)")
-        self.plt.xlabel("X Axis")
-        self.plt.ylabel("Y Axis")
+        self.plt.title("Roofline Model (🚧 Under Construction)")
+        self.plt.xlabel("Arithmetic Intensity (FLOPs/Byte)")
+        self.plt.ylabel("Performance (GFLOP/sec)")
+
+        # Plot memory-bound and compute-bound lines
+        self.plt.plot(x_mem, y_mem, label="Memory Bound")
+        self.plt.plot(x_comp, y_comp, label="Compute Bound")
+
+        # Add workload points
+        workload_x = [w[0] for w in workloads]
+        workload_y = [w[1] for w in workloads]
+        workload_names = [w[2] for w in workloads]
+
+        # Plot workload points one by one to avoid errors
+        for i in range(len(workload_x)):
+            self.plt.scatter([workload_x[i]], [workload_y[i]], label=workload_names[i])
+
+        # Set a reasonable view range
+        self.plt.xlim(0, 100)
+        self.plt.ylim(0, 1100)
+
+        # Draw the plot
+        self.refresh()

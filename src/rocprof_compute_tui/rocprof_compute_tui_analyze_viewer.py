@@ -30,7 +30,7 @@ from textual.widgets import (
     TabPane,
     TextArea,
 )
-from tui_plots import ScatterPlot
+from tui_plots import RooflinePlot
 from tui_utils import get_table_dfs
 
 SECTIONS_TO_SKIP = [
@@ -166,6 +166,14 @@ class AnalysisScreen(Screen):
         padding: 1;
     }
 
+    .roofline-plot {
+        padding: 1;
+        width: auto;
+        height: auto;
+        background: $surface;
+        color: $text;
+    }
+
     .mem-chart {
         border: solid $accent;
         padding: 0;
@@ -299,9 +307,7 @@ class AnalysisScreen(Screen):
         ########################################
         sysinf_children.append(
             Collapsible(
-                ScatterPlot(),
-                title="Roofline",
-                collapsed=True,
+                VerticalScroll(RooflinePlot()), title="Roofline", collapsed=True, id="roofline-plot"
             )
         )
 
