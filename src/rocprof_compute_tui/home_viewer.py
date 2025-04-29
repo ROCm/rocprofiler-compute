@@ -2,9 +2,9 @@ import datetime
 import logging
 import os
 
-from textual import events, on, work
+from textual import on, work
 from textual.app import ComposeResult
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Container, Vertical
 from textual.events import Key
 from textual.screen import Screen
 from textual.widgets import (
@@ -21,6 +21,7 @@ from textual.widgets import (
 
 class RecentItem(ListItem):
     """Custom list item for recent with timestamp"""
+
     def __init__(self, path: str, timestamp: str):
         super().__init__()
         self.path = path
@@ -29,6 +30,7 @@ class RecentItem(ListItem):
 
     def compose(self) -> ComposeResult:
         yield Label(f"[b]{self.path_display}[/b]\n[dim]{self.timestamp}[/dim]")
+
 
 class MainMenuView(Screen):
     """Professional main menu with multiple panels"""
@@ -118,7 +120,12 @@ class MainMenuView(Screen):
 
                 with Vertical():
                     yield Button("Open Profile", id="open-profile", disabled=True)
-                    yield Button("Clear History", id="clear-history", variant="error", disabled=True)
+                    yield Button(
+                        "Clear History",
+                        id="clear-history",
+                        variant="error",
+                        disabled=True,
+                    )
 
             # Quick actions panel
             with Vertical(id="quick-actions"):
@@ -140,7 +147,9 @@ class MainMenuView(Screen):
 
     def update_clock(self) -> None:
         """Update the clock every second"""
-        self.query_one("#last-updated", Static).update(f"Last Updated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        self.query_one("#last-updated", Static).update(
+            f"Last Updated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        )
 
     @work(thread=True)
     def load_recent_profiles(self) -> None:
@@ -148,7 +157,10 @@ class MainMenuView(Screen):
         try:
             # Simulated data - replace with actual profile loading
             recent_profiles = [
-                ("/home/xuchen/dev/rocprofiler-compute/sample/vmem", "2024-05-20 14:30:22"),
+                (
+                    "/home/xuchen/dev/rocprofiler-compute/sample/vmem",
+                    "2024-05-20 14:30:22",
+                ),
             ]
 
             def update_ui():
@@ -166,7 +178,10 @@ class MainMenuView(Screen):
         try:
             # Simulated data - replace with actual profile loading
             recent_analyzes = [
-                ("/home/xuchen/dev/rocprofiler-compute/workloads/vmem/MI300X_A1", "2024-05-20 14:30:22"),
+                (
+                    "/home/xuchen/dev/rocprofiler-compute/workloads/vmem/MI300X_A1",
+                    "2024-05-20 14:30:22",
+                ),
             ]
 
             def update_ui():
@@ -183,7 +198,6 @@ class MainMenuView(Screen):
         """Handle profile selection"""
         if isinstance(event.item, RecentItem):
             self.notify(f"Selected Profile: {event.item.path_display}")
-
 
     @on(Button.Pressed, "#open-profile")
     def on_open_profile(self) -> None:

@@ -4,12 +4,10 @@ from typing import Any, Dict
 
 import pandas as pd
 from mem_chart import plot_mem_chart
-from textual import events, on, work
+from textual import on, work
 from textual.app import ComposeResult
 from textual.containers import (
-    Container,
     Horizontal,
-    HorizontalScroll,
     ScrollableContainer,
     Vertical,
     VerticalScroll,
@@ -23,8 +21,6 @@ from textual.widgets import (
     Footer,
     Header,
     Label,
-    Markdown,
-    RichLog,
     Static,
     TabbedContent,
     TabPane,
@@ -307,7 +303,10 @@ class AnalysisScreen(Screen):
         ########################################
         sysinf_children.append(
             Collapsible(
-                VerticalScroll(RooflinePlot()), title="Roofline", collapsed=True, id="roofline-plot"
+                VerticalScroll(RooflinePlot()),
+                title="Roofline",
+                collapsed=True,
+                id="roofline-plot",
             )
         )
 

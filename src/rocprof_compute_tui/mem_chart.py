@@ -960,6 +960,7 @@ def is_numeric(val: str) -> bool:
     except (ValueError, TypeError):
         return False
 
+
 def plot_mem_chart(arch, normal_unit, metric_dict):
     """plot memory chart from an arch with given metrics dict"""
 

@@ -9,13 +9,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-from itertools import chain, cycle
-
-import numpy as np
 from textual.app import App, ComposeResult
 from textual.containers import VerticalScroll
-from textual.widgets import Header, Label, Rule, TabbedContent, TabPane
+from textual.widgets import Label, Rule
 from textual_plotext import PlotextPlot
 
 
@@ -228,7 +224,7 @@ class RooflinePlot(PlotextPlot):
             (0.5, 45.0, "Workload A"),  # Memory bound
             (2.0, 180.0, "Workload B"),  # Memory bound
             (15.0, 950.0, "Workload C"),  # Compute bound
-            (30.0, 980.0, "Workload D")   # Compute bound
+            (30.0, 980.0, "Workload D"),  # Compute bound
         ]
 
         # Clear the plot and set properties
