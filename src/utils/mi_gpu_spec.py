@@ -164,7 +164,6 @@ class MIGPUSpecs:
 
         return cls._perfmon_config.get(gpu_arch_lower, None)
 
-
     @classmethod
     def get_gpu_model(cls, gpu_arch_, chip_id_):
         # Check that gpu_model_dict is populated first
