@@ -372,8 +372,6 @@ class RocProfCompute:
             from rocprof_compute_analyze.analysis_cli import cli_analysis
 
             analyzer = cli_analysis(self.__args, self.__supported_archs)
-            print (self.__args)
-            print (self.__supported_archs)
         elif self.__analyze_mode == "web_ui":
             from rocprof_compute_analyze.analysis_webui import webui_analysis
 
