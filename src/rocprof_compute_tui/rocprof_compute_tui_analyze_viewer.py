@@ -27,7 +27,7 @@ from textual.widgets import (
     TextArea,
 )
 from tui_plots import RooflinePlot
-from tui_utils import get_table_dfs
+from tui_utils import analyze_runner, get_table_dfs
 
 SECTIONS_TO_SKIP = [
     "0. Top Stats",
@@ -428,9 +428,9 @@ class AnalysisScreen(Screen):
 
     @work(thread=True)
     def run_analysis(self, path: Path):
-        """Your analysis logic here"""
         try:
-            # Simulate analysis
+            # FIXME: apply real analyze logic here!!!
+            exit_code = analyze_runner(path)
             self.dfs = get_table_dfs()
             self.app.call_from_thread(self.refresh_results)
         except Exception as e:
