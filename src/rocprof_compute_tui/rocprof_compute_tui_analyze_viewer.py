@@ -264,6 +264,7 @@ class AnalysisScreen(Screen):
             yield self._build_summary_section()
             yield self._build_sysinfo_section()
             yield self._build_kernel_section()
+            yield self._build_source_section()
 
         except Exception as e:
             self.logs.text = f"Display Error: {str(e)}"
@@ -323,14 +324,14 @@ class AnalysisScreen(Screen):
         )
 
         sysinfo = Collapsible(
-            *sysinf_children, title="⚡ System Information", collapsed=True
+            *sysinf_children, title="⚡ High Level Analysis", collapsed=True
         )
         sysinfo.add_class("sysinfo-section")
         return sysinfo
 
     def _build_kernel_section(self) -> Collapsible:
         """Build the detailed metrics section"""
-        children = [Label("Performance Metrics", classes="section-header")]
+        children = []
 
         for section_name, subsections in self.dfs.items():
             if section_name in SECTIONS_TO_SKIP:
@@ -346,9 +347,16 @@ class AnalysisScreen(Screen):
                 Collapsible(*kernel_children, title=section_name, collapsed=True)
             )
 
-        kernels = Collapsible(*children, title="🔍 Kernels", collapsed=True)
+        kernels = Collapsible(*children, title="🔍 Detailed Block Analysis", collapsed=True)
         kernels.add_class("kernels-section")
         return kernels
+
+    def _build_source_section(self) -> Collapsible:
+        children = [Label("🚧 Under Construction", classes="section-header")]
+
+        sources = Collapsible(*children, title="🚧 Source Level Analysis", collapsed=True)
+        sources.add_class("source-section")
+        return sources
 
     def _create_table(self, df: pd.DataFrame) -> DataTable:
         table = DataTable(zebra_stripes=True)
