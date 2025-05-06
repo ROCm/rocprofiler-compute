@@ -1,6 +1,8 @@
 import datetime
 import logging
+import os
 import re
+from pathlib import Path
 
 import pandas as pd
 from rocprof_compute_cmd import RocprofRunner
@@ -158,7 +160,7 @@ def section_key(section_str):
 
 
 def get_table_dfs():
-    filename = "/home/xuchen/dev/rocprofiler-compute/TUI_OUTPUT.txt"
+    filename = str(Path(os.getcwd()).joinpath("analyze_output.csv"))
     sections_info = parse_file(filename)
 
     # Convert to DataFrames while maintaining nested structure
@@ -166,7 +168,7 @@ def get_table_dfs():
     for section_name, subsections in sections_info.items():
         section_dfs[section_name] = {}
         for subsection_name, table_data in subsections.items():
-            if table_data and table_data["data"]:  # Only if we have data
+            if table_data and table_data["data"]:
                 try:
                     df = pd.DataFrame(table_data["data"], columns=table_data["header"])
                     section_dfs[section_name][subsection_name] = df
@@ -178,16 +180,12 @@ def get_table_dfs():
 
 
 def analyze_runner(workload_path):
-    timestamp_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"/home/xuchen/dev/rocprofiler-compute/TUI_OUTPUT.txt"
+    filename = str(Path(os.getcwd()).joinpath("analyze_output.csv"))
 
     runner = RocprofRunner()
 
-    exit_code = runner.run_analyze(input_dir=workload_path, output_file=filename)
+    stdout_output, stderr_output, exit_code, cmd_str = runner.run_analyze(
+        input_dir=workload_path, output_file=filename
+    )
 
-    if exit_code == 0:
-        logging.info("run_analyze WORKED")
-    else:
-        logging.error("SOMETHING IS WRONGGGGG")
-
-    return exit_code
+    return stdout_output, stderr_output, exit_code, cmd_str

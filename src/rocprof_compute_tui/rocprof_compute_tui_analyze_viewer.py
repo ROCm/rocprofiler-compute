@@ -12,6 +12,7 @@ from textual.containers import (
     Vertical,
     VerticalScroll,
 )
+from textual.events import MouseDown, MouseMove, MouseUp
 from textual.screen import Screen
 from textual.widgets import (
     Button,
@@ -65,7 +66,7 @@ class AnalysisScreen(Screen):
     #center-container {
         layout: grid;
         grid-size: 1 2;
-        grid-rows: 5fr 1fr;
+        grid-rows: 6fr 2fr;
         height: 100%;
     }
 
@@ -201,15 +202,22 @@ class AnalysisScreen(Screen):
     .success {
         color: $success;
     }
+
+    #splitter {
+        height: 1;
+        background: gray;
+    }
     """
 
     def __init__(self, dfs: Dict[str, Any] = None):
         super().__init__()
         self.dfs = dfs or {}
-        self.selected_path = Path.cwd()
+        self.start_path = Path.cwd()
+        self.selected_path = None
         self.tooltips = TextArea(read_only=True)
-        self.logs = TextArea(read_only=True)
-        sys.stdout = self  # Redirect stdout
+        self.output = TextArea(read_only=True)
+        self.terminal = TextArea(read_only=True)
+        sys.stdout = self
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -219,10 +227,9 @@ class AnalysisScreen(Screen):
             # Left Panel
             with Vertical(id="left-panel"):
                 yield Label("Directory Explorer")
-                yield FolderOnlyDirectory(self.selected_path)
+                yield FolderOnlyDirectory(self.start_path, id="dir-tree")
                 with Horizontal():
                     yield Button("Analyze", id="analyze")
-                    yield Button("Refresh", id="refresh")
 
             with Vertical(id="center-container"):
                 # Center Panel
@@ -230,11 +237,15 @@ class AnalysisScreen(Screen):
                     yield from self._compose_initial_state()
 
                 # Bottom Row → TabbedContent
-                with TabbedContent(initial="tab-tips", id="bottom-panel"):
-                    with TabPane("Tips", id="tab-tips"):
+                with TabbedContent(initial="tab-output", id="bottom-panel"):
+                    with TabPane("TIPS", id="tab-tips"):
                         yield (self.tooltips)
-                    with TabPane("Terminal Output", id="tab-terminal"):
-                        yield (self.logs)
+
+                    with TabPane("OUTPUT", id="tab-output"):
+                        yield (self.output)
+
+                    with TabPane("TERMINAL", id="tab-terminal"):
+                        yield (self.terminal)
 
             with Vertical(id="right-panel"):
                 yield Label("🚧 Under Construction")
@@ -267,19 +278,41 @@ class AnalysisScreen(Screen):
             yield self._build_source_section()
 
         except Exception as e:
-            self.logs.text = f"Display Error: {str(e)}"
+            self.output.text += f"\nDisplay Error: {str(e)}"
 
     def _build_summary_section(self) -> Collapsible:
         """Build complete collapsible section"""
-        df = self.dfs["0. Top Stats"]["0.1 Top Kernels"]
+        summary_children = []
 
-        summary = Collapsible(
-            Label("Top Kernels by Duration (ns):", classes="section-header"),
-            self._create_table(df),
-            title="📊 Kernel Summary",
-            collapsed=True,
+        df = self.dfs["0. Top Stats"]["0.1 Top Kernels"]
+        summary_children.append(
+            Collapsible(
+                Label("Top Kernels by Duration (ns):", classes="section-header"),
+                self._create_table(df),
+                title="Top Kernels",
+                collapsed=True,
+            )
         )
 
+        df = self.dfs["0. Top Stats"]["0.2 Dispatch List"]
+        summary_children.append(
+            Collapsible(
+                self._create_table(df),
+                title="Dispatch List",
+                collapsed=True,
+            )
+        )
+
+        df = self.dfs["1. System Info"]["0.2 Dispatch List"]
+        summary_children.append(
+            Collapsible(
+                self._create_table(df),
+                title="System Info",
+                collapsed=True,
+            )
+        )
+
+        summary = Collapsible(*summary_children, title="📊 Summaries", collapsed=True)
         summary.add_class("summary-section")
         return summary
 
@@ -347,7 +380,9 @@ class AnalysisScreen(Screen):
                 Collapsible(*kernel_children, title=section_name, collapsed=True)
             )
 
-        kernels = Collapsible(*children, title="🔍 Detailed Block Analysis", collapsed=True)
+        kernels = Collapsible(
+            *children, title="🔍 Detailed Block Analysis", collapsed=True
+        )
         kernels.add_class("kernels-section")
         return kernels
 
@@ -361,9 +396,12 @@ class AnalysisScreen(Screen):
     def _create_table(self, df: pd.DataFrame) -> DataTable:
         table = DataTable(zebra_stripes=True)
 
+        # FIXME: are there edge cases? This removes all rows with NaN/empty whitespace cells
+        df = df.dropna(how="any")
+        df = df[~df.apply(lambda row: row.astype(str).str.strip().eq("").any(), axis=1)]
+
         str_columns = [str(col) for col in df.columns]
         table.add_columns(*str_columns)
-
         table.add_rows([tuple(str(x) for x in row) for row in df.itertuples(index=False)])
 
         return table
@@ -388,7 +426,7 @@ class AnalysisScreen(Screen):
         try:
             # Prepare data
             metric_dict = df[["Metric", "Value"]].set_index("Metric").to_dict()["Value"]
-            self.logs.text = f"Metrics: {metric_dict}"
+            # self.output.text += f"\nMetrics: {metric_dict}"
 
             import sys
             from io import StringIO
@@ -402,15 +440,15 @@ class AnalysisScreen(Screen):
                 stdout_output = string_buffer.getvalue()
 
                 if stdout_output:
-                    self.logs.text += (
+                    self.output.text += (
                         f"\nGot output from stdout: {len(stdout_output)} chars"
                     )
                     plot_str = stdout_output
                 elif result:
-                    self.logs.text += f"\nGot returned value: {len(str(result))} chars"
+                    # self.output.text += f"\nGot returned value: {len(str(result))} chars"
                     plot_str = str(result)
                 else:
-                    self.logs.text += "\nNo output captured from either method"
+                    self.output.text += "\nNo output captured from either method"
                     plot_str = "No chart data generated"
             finally:
                 sys.stdout = original_stdout
@@ -424,22 +462,35 @@ class AnalysisScreen(Screen):
             )
 
         except Exception as e:
-            self.logs.text = f"Memory chart error: {str(e)}\n{type(e)}"
+            self.output.text += f"\nMemory chart error: {str(e)}\n{type(e)}"
             import traceback
 
-            self.logs.text += f"\n{traceback.format_exc()}"
+            self.output.text += f"\n{traceback.format_exc()}"
             return Static(f"Error: {str(e)}", classes="error")
 
     @on(Button.Pressed, "#analyze")
     def on_analyze(self):
+        self.output.text += f"Selected workload to analyze: {self.selected_path}"
         self.run_analysis(self.selected_path)
+
+    @on(FolderOnlyDirectory.DirectorySelected, "#dir-tree")
+    def directory_chosen(self, event: FolderOnlyDirectory.DirectorySelected) -> None:
+        """When a directory is highlighted by the user."""
+        self.selected_path = event.path
 
     @work(thread=True)
     def run_analysis(self, path: Path):
         try:
-            # FIXME: apply real analyze logic here!!!
-            exit_code = analyze_runner(path)
-            self.dfs = get_table_dfs()
-            self.app.call_from_thread(self.refresh_results)
+            self.output.text += f"\nRunning rocprof-compute analyze..."
+            stdout_output, stderr_output, exit_code, cmd_str = analyze_runner(path)
+            if exit_code == 0:
+                self.output.text += f"\nLoading data..."
+                self.dfs = get_table_dfs()
+                self.app.call_from_thread(self.refresh_results)
+
+                self.output.text += f"\nAnalysis log: {str(stdout_output)}"
+            else:
+                self.output.text += f"\nAnalysis failed: {str(stderr_output)}"
+                self.output.text += f"\nrunning cmd: {str(cmd_str)}"
         except Exception as e:
-            self.logs.text = f"Analysis failed: {e}"
+            self.output.text += f"Analysis failed: {e}"

@@ -10,9 +10,10 @@ class RocprofRunner:
     Encapsulates calls to the 'rocprof-compute' CLI.
     """
 
+    # FIXME: should use executable "rocprof-compute"
     def __init__(self, executable: str = "src/rocprof-compute"):
         self.executable = executable
-        self.logger = logging.getLogger(__name__)  # or a dedicated logger
+        self.logger = logging.getLogger(__name__)
 
     def run_profile(
         self,
@@ -70,7 +71,7 @@ class RocprofRunner:
         input_dir: Union[str, Path],
         output_file: Optional[Union[str, Path]] = None,
         extra_args: Optional[List[str]] = None,
-    ) -> int:
+    ):
 
         cmd_parts = [self.executable, "analyze", "--path", str(input_dir)]
         if output_file:
@@ -84,13 +85,8 @@ class RocprofRunner:
         process = subprocess.Popen(
             cmd_parts, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
+
         stdout_output, stderr_output = process.communicate()
         exit_code = process.returncode
 
-        if stdout_output:
-            self.logger.debug("[rocprof-compute analyze stdout] %s", stdout_output)
-        if stderr_output:
-            self.logger.debug("[rocprof-compute analyze stderr] %s", stderr_output)
-
-        self.logger.info("rocprof-compute analyze exited with code %s", exit_code)
-        return exit_code
+        return stdout_output, stderr_output, exit_code, cmd_str

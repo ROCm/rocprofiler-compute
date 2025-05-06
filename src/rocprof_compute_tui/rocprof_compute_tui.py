@@ -58,12 +58,12 @@ class RocProfTUI(App):
     SCREENS = {
         "home": MainMenuView,
         "profile": ProfileStubScreen,
-        "test": AnalysisScreen,
+        "analyze": AnalysisScreen,
     }
 
     def on_mount(self) -> None:
         self.title = "ROCm Compute Profiler"
-        self.push_screen("home")
+        self.push_screen("analyze")
 
     def on_key(self, event: Key) -> None:
         if event.key == "escape":
