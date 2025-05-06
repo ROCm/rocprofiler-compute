@@ -27,9 +27,9 @@ from pathlib import Path
 import config
 from rocprof_compute_soc.soc_base import OmniSoC_Base
 from roofline import Roofline
-from utils.logger import console_error, console_log, demarcate
 from utils.mi_gpu_spec import mi_gpu_specs
-from utils.utils import mibench
+from utils.logger import demarcate
+from utils.utils import console_error, console_log, console_warning, mibench
 
 
 class gfx950_soc(OmniSoC_Base):
@@ -73,6 +73,12 @@ class gfx950_soc(OmniSoC_Base):
         super().post_profiling()
 
         if not self.get_args().no_roof:
+            pmc_path = str(Path(self.get_args().path).joinpath("pmc_perf.csv"))
+            if not Path(pmc_path).is_file():
+                console_warning(
+                    "Incomplete or missing profiling data. Skipping roofline."
+                )
+                return
             console_log(
                 "roofline", "Checking for roofline.csv in " + str(self.get_args().path)
             )
