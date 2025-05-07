@@ -6,14 +6,12 @@ Contains the main view layout and organization for the application.
 
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 from textual import on, work
 from textual.app import ComposeResult
-from textual.containers import Horizontal, ScrollableContainer, Vertical
+from textual.containers import Horizontal, Vertical
 from textual.reactive import reactive
-from textual.widget import Widget
-from textual.widgets import Button, Label, TabbedContent, TabPane, TextArea
+from textual.widgets import Button
 from widgets.directory_tree import FolderOnlyDirectory
 from widgets.panels import BottomPanel, CenterPanel, LeftPanel, RightPanel
 from widgets.splitter import HorizontalSplitter
@@ -33,7 +31,9 @@ class MainView(Horizontal):
         super().__init__(id="main-container")
         self.start_path = (
             # NOTE: is cwd the best choice?
-            Path.cwd() if DEFAULT_START_PATH is None else Path(DEFAULT_START_PATH)
+            Path.cwd()
+            if DEFAULT_START_PATH is None
+            else Path(DEFAULT_START_PATH)
         )
 
         # Set up output redirect
