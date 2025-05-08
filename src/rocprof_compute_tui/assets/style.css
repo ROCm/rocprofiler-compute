@@ -209,3 +209,125 @@ TabPane {
     text-style: bold;
     border-bottom: solid $primary;
 }
+
+.section {
+    border: round $accent 40%;
+    border-title-color: $text-accent 50%;
+    border-title-align: right;
+
+    &:focus-within {
+        border: round $accent 100%;
+        border-title-color: $foreground;
+        border-title-style: b;
+    }
+
+}
+
+RocprofTUIApp {
+    & Tabs {
+        height: 1;
+
+        & Underline {
+            display: none;
+            height: 0;
+        }
+    }
+
+    & TabbedContent:focus-within Tabs {
+        &:focus {
+            & .-active {
+                text-style: $block-cursor-text-style;
+                color: $block-cursor-foreground;
+                background: $block-cursor-background;
+            }
+        }
+
+        &:blur Tab:enabled {
+            &.-active {
+                background: $panel;
+            }
+        }
+    }
+}
+
+/* DATA CATALOG */
+FolderOnlyDirectory {
+    height: 1fr;
+    width: 1fr;
+    layers: main overlay;
+}
+
+FolderOnlyDirectory DatabaseTree,
+FolderOnlyDirectory FileTree,
+FolderOnlyDirectory S3Tree {
+    background: $background;
+    padding: 0 1;
+    &:focus {
+        background-tint: $background;
+    }
+}
+
+FolderOnlyDirectory * .harlequin-tree--type-label {
+    color: $foreground-muted;
+}
+
+FolderOnlyDirectory * .tree--cursor {
+    text-style: bold;
+    color: auto;
+    background: $secondary-muted;
+}
+
+FolderOnlyDirectory *:focus .tree--cursor {
+    background: $secondary;
+}
+
+FolderOnlyDirectory * .tree--guides {
+    color: $primary;
+}
+
+FolderOnlyDirectory * .tree--guides-hover {
+    color: $primary;
+}
+
+FolderOnlyDirectory * .tree--guides-selected {
+    color: $secondary;
+}
+
+FolderOnlyDirectory * .directory-tree--folder {
+    text-style: bold;
+}
+
+FolderOnlyDirectory * .directory-tree--hidden {
+    text-style: italic;
+    color: $text-muted;
+}
+
+FolderOnlyDirectory ContextMenu {
+    layer: overlay;
+    display: none;
+    padding: 1 1;
+    border: none;
+    color: $background;
+    margin: 0 2;
+    overflow: hidden auto;
+    width: 1fr;
+    max-width: 100%;
+    max-height: 10;
+    background: $panel ;
+    &:focus{
+        background: $secondary ;
+        &>.option-list--option-hover {
+            color: $background;
+            background: $secondary;
+            text-style: bold;
+        }
+        &>.option-list--option-highlighted {
+            color: $secondary;
+            background: $background;
+            text-style: bold;
+        }
+    }
+    &.open {
+        display: block;
+    }
+}

@@ -16,6 +16,7 @@ from widgets.collapsibles import (
     build_sysinfo_section,
 )
 from widgets.directory_tree import FolderOnlyDirectory
+from widgets.tabbed_content import PostingTabbedContent
 
 
 class LeftPanel(Vertical):
@@ -23,7 +24,7 @@ class LeftPanel(Vertical):
 
     def __init__(self, start_path: Path):
         """Initialize the left panel."""
-        super().__init__(id="left-panel")
+        super().__init__()
         self.start_path = start_path
 
     def compose(self):
@@ -33,13 +34,16 @@ class LeftPanel(Vertical):
         with Vertical():
             yield Button("Analyze", id="analyze")
 
+    def on_mount(self):
+        self.add_class("section")
+
 
 class CenterPanel(ScrollableContainer):
     """Center panel with analysis results."""
 
     def __init__(self):
         """Initialize the center panel."""
-        super().__init__(id="center-panel")
+        super().__init__()
         self.dfs = {}
 
     def compose(self):
@@ -68,18 +72,24 @@ class CenterPanel(ScrollableContainer):
         except Exception as e:
             self.mount(Label(f"Error displaying results: {str(e)}", classes="error"))
 
+    def on_mount(self):
+        self.add_class("section")
+
 
 class RightPanel(Vertical):
     """Right panel for additional tools."""
 
     def __init__(self):
         """Initialize the right panel."""
-        super().__init__(id="right-panel")
+        super().__init__()
 
     def compose(self):
         """Compose the right panel."""
         yield Label("🚧 Under Construction")
 
+    def _on_mount(self):
+        self.border_title = "🚧 Under Construction"
+        self.add_class("section")
 
 class BottomPanel(Vertical):
     """Bottom panel with tabbed output areas."""
@@ -87,7 +97,7 @@ class BottomPanel(Vertical):
     def __init__(self):
         """Initialize the bottom panel."""
 
-        super().__init__(id="bottom-panel")
+        super().__init__()
 
         # Create text areas as instance attributes
         self.tips_area = TextArea(id="tips-text", read_only=True)
@@ -98,7 +108,7 @@ class BottomPanel(Vertical):
         self.default_tab = "tab-output"
 
     def compose(self):
-        with TabbedContent(initial="tab-output", id="bottom-panel"):
+        with PostingTabbedContent(initial="tab-output"):
             with TabPane("TIPS", id="tab-tips"):
                 yield (self.tips_area)
 
@@ -107,3 +117,6 @@ class BottomPanel(Vertical):
 
             with TabPane("TERMINAL", id="tab-terminal"):
                 yield (self.terminal_area)
+
+    def on_mount(self):
+        self.add_class("section")
