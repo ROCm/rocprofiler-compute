@@ -674,9 +674,13 @@ def total_sqc(archname, numCUs, numSEs):
 
 
 def total_l2_banks(archname, L2Banks, compute_partition):
-    xcds = mi_gpu_specs.get_num_xcds(archname, compute_partition)
-    totalL2Banks = L2Banks * xcds
-    return totalL2Banks
+    total_l2_banks = None
+    xcd_count = mi_gpu_specs.get_num_xcds(archname, compute_partition)
+
+    if xcd_count is not None:
+        total_l2_banks = L2Banks * xcd_count
+
+    return total_l2_banks
 
 
 if __name__ == "__main__":

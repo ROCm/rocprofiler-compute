@@ -39,7 +39,7 @@ class MIGPUSpecs:
     _gpu_model_dict = {}  # key: gpu_arch
     _num_xcds_dict = {}  # key: gpu model
     _chip_id_dict = {}  # key: chip id (int)
-    _perfmon_config = {}
+    _perfmon_config = {} # key: gpu arch
 
     _initialized = False
 
@@ -199,33 +199,41 @@ class MIGPUSpecs:
 
     @classmethod
     def get_num_xcds(cls, gpu_model_, compute_partition_):
-        # Only gpu in and above mi 300 series have more than one XCDs
-        if gpu_model_.lower() in ("mi50", "mi60", "mi100", "mi210", "mi250", "mi250x"):
-            return 1
-
-        if not cls._num_xcds_dict:
-            console_error(
-                "mi300_num_xcds_dict not yet populated, did you run parse_mi_gpu_spec()?"
-            )
+        """Retrieve the number of XCDs based on the GPU model and compute partition."""
+        if not gpu_model_ or not compute_partition_:
             return None
 
         gpu_model_lower = gpu_model_.lower()
         partition_lower = compute_partition_.lower()
 
+        # Check if the GPU model is part of the MI series
+        if gpu_model_lower in {"mi50", "mi60", "mi100", "mi210", "mi250", "mi250x"}:
+            return 1
+
+        # Validate population of the _num_xcds_dict
+        if not cls._num_xcds_dict:
+            console_error(
+                "mi300_num_xcds_dict not populated. Did you run parse_mi_gpu_spec()?"
+            )
+            return None
+
+        # Check if the model exists in the dictionary
         if gpu_model_lower not in cls._num_xcds_dict:
             return None
 
         model_dict = cls._num_xcds_dict[gpu_model_lower]
+
+        # Check if the compute partition is known
         if partition_lower not in model_dict:
             console_log(f"Unknown compute partition: {compute_partition_}")
             return None
 
         num_xcds = model_dict[partition_lower]
-        if not num_xcds:
+
+        # Handle case when num_xcds is not defined
+        if num_xcds is None:
             console_warning(
-                "Unknown compute partition found for %s / %s",
-                compute_partition_,
-                gpu_model_,
+                f"Unknown compute partition found for {compute_partition_} / {gpu_model_}"
             )
             return None
 

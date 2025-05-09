@@ -11,6 +11,8 @@
 #       |-- architecture: currently, only mi300 gpus hold different architectures
 #           |-- gpu model
 #           |-- chip_ids: chip id is specific to the environment the gpu is being used on
+#               | -- physical
+#               | -- virtual
 #           |-- partition_mode
 #               | -- compute partition mode
 #               | -- memory partition mode
