@@ -122,33 +122,6 @@ DataTable>.datatable--row-odd {
     min-height: 8;
 }
 
-TabbedContent Tabs {
-    dock: top;
-    height: 3;
-    background: $surface-darken-2;
-    padding: 0 1;
-}
-
-TabbedContent Tabs Tab {
-    padding: 0 2;
-    margin-right: 1;
-    color: $text;
-}
-
-TabbedContent Tabs Tab:hover {
-    background: $primary-darken-1;
-}
-
-TabbedContent Tabs Tab.-active {
-    background: $primary;
-    color: $text-primary;
-    text-style: bold;
-}
-
-TabPane {
-    padding: 0 1 1 1;
-}
-
 /* Visualizations */
 .roofline-plot {
     padding: 1;
@@ -262,6 +235,7 @@ FolderOnlyDirectory FileTree,
 FolderOnlyDirectory S3Tree {
     background: $background;
     padding: 0 1;
+
     &:focus {
         background-tint: $background;
     }
@@ -314,19 +288,23 @@ FolderOnlyDirectory ContextMenu {
     max-width: 100%;
     max-height: 10;
     background: $panel ;
-    &:focus{
+
+    &:focus {
         background: $secondary ;
+
         &>.option-list--option-hover {
             color: $background;
             background: $secondary;
             text-style: bold;
         }
+
         &>.option-list--option-highlighted {
             color: $secondary;
             background: $background;
             text-style: bold;
         }
     }
+
     &.open {
         display: block;
     }

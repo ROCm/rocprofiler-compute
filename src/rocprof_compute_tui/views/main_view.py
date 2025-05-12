@@ -12,9 +12,13 @@ from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.reactive import reactive
 from textual.widgets import Button
+from widgets.center_panel.center import CenterPanel
+from widgets.collapsibles import DataTable
 from widgets.directory_tree import FolderOnlyDirectory
-from widgets.panels import BottomPanel, CenterPanel, LeftPanel, RightPanel
-from widgets.splitter import HorizontalSplitter
+from widgets.explorer.browser import Browser
+from widgets.right_panel.right import RightPanel
+from widgets.tabs.tabs_area import TabsArea
+from widgets.tabs.tabs_output import OutputTab
 
 from config import DEFAULT_START_PATH, SECTIONS_TO_SKIP
 from utils.tui_utils import analyze_runner, get_table_dfs
@@ -55,7 +59,7 @@ class MainView(Horizontal):
     def compose(self) -> ComposeResult:
         """Compose the main view layout."""
         # Left Panel - Directory navigation and controls
-        yield LeftPanel(self.start_path)
+        yield Browser(self.start_path)
 
         # Center Container - Holds both analysis results and output tabs
         with Vertical(id="center-container"):
@@ -63,16 +67,34 @@ class MainView(Horizontal):
             yield CenterPanel()
 
             # Bottom Panel - Output, terminal, and tips
-            bottom_panel = BottomPanel()
-            yield bottom_panel
+            tabs = TabsArea()
+            yield tabs
 
             # Store references to text areas
-            self.tooltips = bottom_panel.tips_area
-            self.output = bottom_panel.output_area
-            self.terminal = bottom_panel.terminal_area
+            self.tooltips = tabs.tips_area
+            self.output = tabs.output_area
+            self.terminal = tabs.terminal_area
 
         # Right Panel - Additional tools/features
         yield RightPanel()
+
+    @on(DataTable.CellSelected)
+    def on_data_table_cell_selected(self, event: DataTable.CellSelected) -> None:
+        table = event.data_table
+        row_idx = event.coordinate.row
+
+        try:
+            row_data = table.get_row_at(row_idx)
+            content = f"Selected Row {row_idx}:\n"
+            content += "\n".join(f"{val}" for val in row_data)
+
+            # Show it in the TextArea
+            self.tooltips.text = content
+
+        except Exception as e:
+            table.add_column("Error")
+            table.add_row(str(e))
+            self.tooltips.text = f"Error displaying row {str(row_idx)}: {str(e)}"
 
     @on(FolderOnlyDirectory.DirectorySelected)
     def on_directory_selected(self, event: FolderOnlyDirectory.DirectorySelected) -> None:

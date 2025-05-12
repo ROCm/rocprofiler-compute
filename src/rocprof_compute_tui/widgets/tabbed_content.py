@@ -2,7 +2,7 @@ from textual.binding import Binding
 from textual.widgets import TabbedContent, Tabs
 
 
-class PostingTabbedContent(TabbedContent):
+class TabsTabbedContent(TabbedContent):
     BINDINGS = [
         Binding("l", "next_tab", "Next tab", show=False),
         Binding("h", "previous_tab", "Previous tab", show=False),
