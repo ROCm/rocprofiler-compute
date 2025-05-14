@@ -464,6 +464,7 @@ def calc_ai(mspec, sort_type, ret_df):
                     calls,
                     total_flops / calls,
                     valu_flops / calls,
+                    mfma_flops_f6f4 / calls,
                     mfma_flops_f8 / calls,
                     mfma_flops_f16 / calls,
                     mfma_flops_bf16 / calls,
