@@ -39,7 +39,7 @@ class MIGPUSpecs:
     _gpu_model_dict = {}  # key: gpu_arch
     _num_xcds_dict = {}  # key: gpu model
     _chip_id_dict = {}  # key: chip id (int)
-    _perfmon_config = {} # key: gpu arch
+    _perfmon_config = {}  # key: gpu arch
 
     _initialized = False
 
