@@ -22,6 +22,10 @@ GFX942_CHIP_IDS_TO_NUM_XCDS = {
     "29878": {"spx": 4, "dpx": 2, "cpx": 1},
     "29861": {"spx": 8, "dpx": 4, "qpx": 2, "cpx": 1},
     "29881": {"spx": 8, "dpx": 4, "qpx": 2, "cpx": 1},
+    "29864": {"spx": 4, "dpx": 2, "cpx": 1},
+    "29884": {"spx": 4, "dpx": 2, "cpx": 1},
+    "29865": {"spx": 8, "dpx": 4, "qpx": 2, "cpx": 1},
+    "29885": {"spx": 8, "dpx": 4, "qpx": 2, "cpx": 1},
 }
 
 # helper to strip ANSI color codes if your app uses them
