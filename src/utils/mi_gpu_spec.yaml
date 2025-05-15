@@ -197,6 +197,26 @@ mi_gpu_spec:
               physical: 29857
               virtual: 29877
 
+          - gpu_model: mi300xhf
+            partition_mode:
+              compute_partition_mode:
+                num_xcds:
+                  spx: 8
+                  dpx: 4
+                  qpx: 2
+                  cpx: 1
+              memory_partition_mode:
+                nps4:
+                  qpx: 4
+                  cpx: 8
+                nps1:
+                  spx: 1
+                  qpx: 4
+                  cpx: 8
+            chip_ids:
+              physical: 29865
+              virtual: 29885
+
           - gpu_model: mi308x
             partition_mode:
               compute_partition_mode:
@@ -214,6 +234,24 @@ mi_gpu_spec:
             chip_ids:
               physical: 29858
               virtual: 29878
+
+          - gpu_model: mi308xhf
+            partition_mode:
+              compute_partition_mode:
+                num_xcds:
+                  spx: 4
+                  dpx: 2
+                  cpx: 1
+              memory_partition_mode:
+                nps4:
+                  cpx: 8
+                nps1:
+                  spx: 1
+                  qpx: 4
+                  cpx: 8
+            chip_ids:
+              physical: 29864
+              virtual: 29884
 
           - gpu_model: mi325x
             partition_mode:
