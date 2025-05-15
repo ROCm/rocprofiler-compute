@@ -5,16 +5,9 @@ Contains the panel widgets used in the main layout.
 """
 
 from pathlib import Path
-from typing import Any, Dict
 
 from textual.containers import Vertical
 from textual.widgets import Button, Label
-from widgets.collapsibles import (
-    build_kernel_section,
-    build_source_section,
-    build_summary_section,
-    build_sysinfo_section,
-)
 from widgets.directory_tree import FolderOnlyDirectory
 
 

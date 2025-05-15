@@ -4,7 +4,6 @@ Panel Widget Modules
 Contains the panel widgets used in the main layout.
 """
 
-from pathlib import Path
 from typing import Any, Dict
 
 from textual.containers import ScrollableContainer
@@ -17,12 +16,12 @@ from widgets.collapsibles import (
 )
 
 
-class CenterPanel(ScrollableContainer):
+class AnalyzeView(ScrollableContainer):
     """Center panel with analysis results."""
 
     def __init__(self):
         """Initialize the center panel."""
-        super().__init__()
+        super().__init__(id="analyze-view")
         self.dfs = {}
 
     def compose(self):
@@ -39,10 +38,6 @@ class CenterPanel(ScrollableContainer):
 
         # Create and mount widgets one by one to preserve order
         try:
-            # Main header
-            self.mount(Label("Analysis Results", classes="main-header"))
-
-            # Use the builder functions that match the original structure
             self.mount(build_summary_section(dfs))
             self.mount(build_sysinfo_section(dfs))
             self.mount(build_kernel_section(dfs))
@@ -50,6 +45,3 @@ class CenterPanel(ScrollableContainer):
 
         except Exception as e:
             self.mount(Label(f"Error displaying results: {str(e)}", classes="error"))
-
-    def on_mount(self):
-        self.add_class("section")

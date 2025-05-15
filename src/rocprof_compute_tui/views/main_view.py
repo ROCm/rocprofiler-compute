@@ -12,15 +12,14 @@ from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.reactive import reactive
 from textual.widgets import Button
-from widgets.center_panel.center import CenterPanel
+from widgets.center_panel.center_area import CenterPanel
 from widgets.collapsibles import DataTable
 from widgets.directory_tree import FolderOnlyDirectory
 from widgets.explorer.browser import Browser
 from widgets.right_panel.right import RightPanel
 from widgets.tabs.tabs_area import TabsArea
-from widgets.tabs.tabs_output import OutputTab
 
-from config import DEFAULT_START_PATH, SECTIONS_TO_SKIP
+from config import DEFAULT_START_PATH
 from utils.tui_utils import analyze_runner, get_table_dfs
 
 
@@ -64,7 +63,10 @@ class MainView(Horizontal):
         # Center Container - Holds both analysis results and output tabs
         with Vertical(id="center-container"):
             # Center Panel - Analysis results display
-            yield CenterPanel()
+            center_panel = CenterPanel()
+            yield center_panel
+
+            self.center = center_panel
 
             # Bottom Panel - Output, terminal, and tips
             tabs = TabsArea()
@@ -124,6 +126,7 @@ class MainView(Horizontal):
                 self.output.text += f"\nLoading analysis data..."
                 self.dfs = get_table_dfs()
                 self.app.call_from_thread(self.refresh_results)
+                self.output.text += f"\nAnalysis output: {stdout_output}"
                 self.output.text += f"\nAnalysis completed successfully"
             else:
                 self.output.text += f"\nAnalysis failed: {stderr_output}"
@@ -133,11 +136,16 @@ class MainView(Horizontal):
 
     def refresh_results(self) -> None:
         """Refresh analysis results in the center panel."""
-        center_panel = self.query_one(CenterPanel)
-        center_panel.update_results(self.dfs)
+        try:
+            analyze_view = self.query_one("#analyze-view")
+            analyze_view.update_results(self.dfs)
+        except Exception as e:
+            if hasattr(self, "output"):
+                self.output.text += f"\nRefresh error: {str(e)}"
 
     def refresh_view(self) -> None:
         """Refresh the entire view."""
-        self.output.text += "\nRefreshing view..."
-        if self.dfs:
-            self.refresh_results()
+        if hasattr(self, "output"):
+            self.output.text += "\nRefreshing view..."
+            if self.dfs:
+                self.refresh_results()

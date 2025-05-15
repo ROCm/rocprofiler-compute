@@ -4,25 +4,9 @@ Panel Widget Modules
 Contains the panel widgets used in the main layout.
 """
 
-import json
-from pathlib import Path
-from typing import Any, Dict
-
-from textual.app import ComposeResult
-from textual.containers import ScrollableContainer, Vertical
-from textual.lazy import Lazy
-from textual.reactive import Reactive, reactive
-from textual.widgets import Button, Label, TabbedContent, TabPane, TextArea
-from textual.widgets._tabbed_content import ContentTabs
-from widgets.collapsibles import (
-    build_kernel_section,
-    build_source_section,
-    build_summary_section,
-    build_sysinfo_section,
-)
-from widgets.directory_tree import FolderOnlyDirectory
+from textual.containers import Vertical
+from textual.widgets import TabPane, TextArea
 from widgets.tabbed_content import TabsTabbedContent
-from widgets.tabs.tabs_output import OutputTab
 
 
 class TabsArea(Vertical):
@@ -59,5 +43,5 @@ class TabsArea(Vertical):
                 yield (self.terminal_area)
 
     def on_mount(self) -> None:
-        self.border_title = "Tabs"
+        self.border_title = "BOTTOM TABS"
         self.add_class("section")
