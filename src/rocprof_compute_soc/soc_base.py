@@ -205,22 +205,21 @@ class OmniSoC_Base:
 
         from utils.specs import run, search
 
-        # Execute amd-smi command once and store result
         amd_smi_static = run(["amd-smi", "static", "--gpu=0"], exit_on_error=True)
 
+        # Purposely search for patterns without variants suffix to try and match a known GPU model
         detection_methods = [
             {
                 "name": "Marketing Name",
-                "pattern": r"MARKET_NAME:\s*.*(mi|MI\d*[a-zA-Z]*):",
+                "pattern": r"MARKET_NAME:\s*.*(mi|MI\d*[a-zA-Z]*)",
             },
             {
                 "name": "VBIOS Name",
-                "pattern": r"NAME:\s*.*(mi|MI\d*[a-zA-Z]*_?[a-zA-Z]*)_HW",
+                "pattern": r"NAME:\s*.*(mi|MI\d*[a-zA-Z]*)",
             },
             {"name": "Product Name", "pattern": r"PRODUCT_NAME:\s*.*(mi|MI\d*[a-zA-Z]*)"},
         ]
 
-        # Try each detection method in sequence
         gpu_model = None
         for method in detection_methods:
             console_warning(f"Determining GPU model using {method['name']}.")
@@ -229,12 +228,15 @@ class OmniSoC_Base:
                 break
 
         if not gpu_model:
-            console_error("Unable to determine the GPU model, tool exiting.")
+            console_error("Unable to determine the GPU model. \nrocprof-compute exiting.")
             return None
 
-        # Apply specific adjustments for MI300 series
         gpu_model = self._adjust_mi300_model(gpu_model.lower(), gpu_arch.lower())
 
+        if gpu_model.lower() not in mi_gpu_specs.get_num_xcds_dict().keys():
+            console_error(
+                f"Unknown GPU model detected {gpu_model.upper()}. \nrocprof-compute exiting."
+            )
         return gpu_model.upper()
 
     def _adjust_mi300_model(self, gpu_model, gpu_arch):
