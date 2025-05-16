@@ -243,6 +243,13 @@ class MIGPUSpecs:
         else:
             console_error()
 
+    @classmethod
+    def get_num_xcds_dict(cls):
+        if cls._num_xcds_dict:
+            return cls._num_xcds_dict
+        else:
+            console_error()
+
 
 # pre-initialize the instance when module loads
 mi_gpu_specs = MIGPUSpecs()
