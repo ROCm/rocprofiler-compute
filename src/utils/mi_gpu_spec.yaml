@@ -9,6 +9,7 @@
 # MI GPUs
 #   |-- series: the specific MI series; mi50, mi100, mi200, mi300
 #       |-- architecture: currently, only mi300 gpus hold different architectures
+#           |-- perfmon_config
 #           |-- gpu model
 #           |-- chip_ids: chip id is specific to the environment the gpu is being used on
 #               | -- physical
@@ -327,3 +328,22 @@ mi_gpu_spec:
             chip_ids:
               physical: 30115
               virtual: 30131
+          - gpu_model: mi358
+            partition_mode:
+              compute_partition_mode:
+                num_xcds:
+                  spx: 8
+                  dpx: 4
+                  qpx: 2
+                  cpx: 1
+              memory_partition_mode:
+                nps4:
+                  qpx: 4
+                  cpx: 8
+                nps1:
+                  spx: 1
+                  qpx: 4
+                  cpx: 8
+            chip_ids:
+              physical: 30114
+              virtual: 30130

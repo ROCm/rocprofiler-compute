@@ -22,9 +22,6 @@ MI_CONSTANS = {
     MI350: "mi350",
 }
 
-# perfmon info
-perfmon_config_dict = {}  # key: soc
-
 
 # ----------------------------
 # Data Class handling to preserve the hierarchical gpu information

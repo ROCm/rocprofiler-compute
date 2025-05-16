@@ -186,11 +186,69 @@ class OmniSoC_Base:
         self._mspec.gpu_model = mi_gpu_specs.get_gpu_model(
             self._mspec.gpu_arch, self._mspec.gpu_chip_id
         )
+
+        if not self._mspec.gpu_model:
+            self._mspec.gpu_model = self.detect_gpu_model(self._mspec.gpu_arch)
+
         self._mspec.num_xcd = str(
             mi_gpu_specs.get_num_xcds(
                 self._mspec.gpu_model, self._mspec.compute_partition
             )
         )
+
+    @demarcate
+    def detect_gpu_model(self, gpu_arch):
+        """
+        Detects the GPU model using various identifiers from 'amd-smi static'.
+        Falls back through multiple methods if the primary method fails.
+        """
+
+        from utils.specs import run, search
+
+        # Execute amd-smi command once and store result
+        amd_smi_static = run(["amd-smi", "static", "--gpu=0"], exit_on_error=True)
+
+        detection_methods = [
+            {
+                "name": "Marketing Name",
+                "pattern": r"MARKET_NAME:\s*.*(mi|MI\d*[a-zA-Z]*):",
+            },
+            {
+                "name": "VBIOS Name",
+                "pattern": r"NAME:\s*.*(mi|MI\d*[a-zA-Z]*_?[a-zA-Z]*)_HW",
+            },
+            {"name": "Product Name", "pattern": r"PRODUCT_NAME:\s*.*(mi|MI\d*[a-zA-Z]*)"},
+        ]
+
+        # Try each detection method in sequence
+        gpu_model = None
+        for method in detection_methods:
+            console_warning(f"Determining GPU model using {method['name']}.")
+            gpu_model = search(method["pattern"], amd_smi_static)
+            if gpu_model:
+                break
+
+        if not gpu_model:
+            console_error("Unable to determine the GPU model, tool exiting.")
+            return None
+
+        # Apply specific adjustments for MI300 series
+        gpu_model = self._adjust_mi300_model(gpu_model.lower(), gpu_arch.lower())
+
+        return gpu_model.upper()
+
+    def _adjust_mi300_model(self, gpu_model, gpu_arch):
+        """
+        Applies specific adjustments for MI300 series GPU models based on architecture.
+        """
+
+        if gpu_model in ["mi300a", "mi300x"]:
+            if gpu_arch in ["gfx940", "gfx941"]:
+                gpu_model += "_a0"
+            elif gpu_arch == "gfx942":
+                gpu_model += "_a1"
+
+        return gpu_model
 
     @demarcate
     def detect_counters(self):
