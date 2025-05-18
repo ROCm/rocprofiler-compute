@@ -11,7 +11,7 @@ class RocprofRunner:
     """
 
     # FIXME: should use executable "rocprof-compute"
-    def __init__(self, executable: str = "src/rocprof-compute"):
+    def __init__(self, executable: str = "rocprof-compute"):
         self.executable = executable
         self.logger = logging.getLogger(__name__)
 
