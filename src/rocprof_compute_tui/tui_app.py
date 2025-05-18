@@ -4,10 +4,13 @@ ROCm Compute Profiler TUI - Main Application
 This module contains the main application for the rocprof-compute tool.
 """
 
+from textual import on, work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.widgets import Footer, Header
+from textual.widgets import Button, Footer, Header
+from textual_fspicker import SelectDirectory
 from views.main_view import MainView
+from widgets.menu_bar.menu_bar import DropdownMenu
 
 from config import APP_TITLE, VERSION
 
@@ -43,6 +46,15 @@ class RocprofTUIApp(App):
     def action_refresh(self) -> None:
         """Refresh the view."""
         self.main_view.refresh_view()
+
+    @on(Button.Pressed, "#menu-open-workload")
+    @work
+    async def pick_a_directory(self) -> None:
+        if opened := await self.push_screen_wait(SelectDirectory()):
+            self.main_view.selected_path = opened
+            dropdown = self.query_one(f"#{"file-dropdown"}", DropdownMenu)
+            dropdown.add_class("hidden")
+            self.main_view.run_analysis()
 
 
 if __name__ == "__main__":

@@ -1,10 +1,99 @@
+import logging
 import os
 import re
+from datetime import datetime
+from enum import Enum
 from pathlib import Path
 
 import pandas as pd
 
 from utils.rocprof_compute_cmd import RocprofRunner
+
+
+class LogLevel(str, Enum):
+    """Log levels for consistent logging."""
+
+    INFO = "info"
+    WARNING = "warning"
+    ERROR = "error"
+    SUCCESS = "success"  # Maintained for UI compatibility
+
+
+class Logger:
+    """Centralized logging handler for the application."""
+
+    def __init__(self, output_area=None):
+        """
+        Initialize the logger.
+        """
+        self.output_area = output_area
+        self._setup_logger()
+
+    def _setup_logger(self):
+        """
+        Setup the Python logger with proper formatting.
+        """
+        self.logger = logging.getLogger("app")
+        self.logger.setLevel(logging.INFO)
+
+        if not self.logger.handlers:
+            handler = logging.StreamHandler()
+            formatter = logging.Formatter(
+                "%(asctime)s [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+            )
+            handler.setFormatter(formatter)
+            self.logger.addHandler(handler)
+
+    def set_output_area(self, output_area):
+        """
+        Set or update the output area for displaying logs.
+        """
+        self.output_area = output_area
+
+    def log(self, message, level=LogLevel.INFO, update_ui=True):
+        """
+        Log a message with the specified level.
+        """
+        level_map = {
+            LogLevel.INFO: logging.INFO,
+            LogLevel.SUCCESS: logging.INFO,  # Success is treated as INFO in Python logging
+            LogLevel.WARNING: logging.WARNING,
+            LogLevel.ERROR: logging.ERROR,
+        }
+
+        # Log to Python logger
+        self.logger.log(level_map[level], message)
+
+        timestamp = datetime.now().strftime("%H:%M:%S")
+
+        if update_ui and self.output_area:
+            if level == LogLevel.ERROR:
+                formatted_msg = f"[{timestamp}] [ERROR] {message}"
+            elif level == LogLevel.WARNING:
+                formatted_msg = f"[{timestamp}] [WARNING] {message}"
+            elif level == LogLevel.SUCCESS:
+                formatted_msg = f"[{timestamp}] [SUCCESS] {message}"
+            else:  # INFO
+                formatted_msg = f"[{timestamp}] [INFO] {message}"
+
+            # Append to output area
+            if hasattr(self.output_area, "text"):
+                current_text = self.output_area.text
+                self.output_area.text = (
+                    f"{current_text}\n{formatted_msg}" if current_text else formatted_msg
+                )
+
+    def info(self, message, update_ui=True):
+        self.log(message, LogLevel.INFO, update_ui)
+
+    def success(self, message, update_ui=True):
+        self.log(message, LogLevel.SUCCESS, update_ui)
+
+    def warning(self, message, update_ui=True):
+        self.log(message, LogLevel.WARNING, update_ui)
+
+    def error(self, message, update_ui=True):
+        self.log(message, LogLevel.ERROR, update_ui)
 
 
 def split_table_line(line):

@@ -7,6 +7,7 @@ Contains the panel widgets used in the main layout.
 from textual.containers import Vertical
 from textual.widgets import TabPane, TextArea
 from widgets.tabbed_content import TabsTabbedContent
+from widgets.tabs.tabs_terminal import Terimnal
 
 
 class TabsArea(Vertical):
@@ -26,7 +27,6 @@ class TabsArea(Vertical):
         # Create text areas as instance attributes
         self.tips_area = TextArea(id="tips-text", read_only=True)
         self.output_area = TextArea(id="output-text", read_only=True)
-        self.terminal_area = TextArea(id="terminal-text")
 
         # Set initial tab
         self.default_tab = "tab-output"
@@ -39,8 +39,8 @@ class TabsArea(Vertical):
             with TabPane("OUTPUT", id="tab-output"):
                 yield (self.output_area)
 
-            with TabPane("TERMINAL", id="tab-terminal"):
-                yield (self.terminal_area)
+            with TabPane("TERMINAL(🚧)", id="tab-terminal"):
+                yield Terimnal()
 
     def on_mount(self) -> None:
         self.border_title = "BOTTOM TABS"

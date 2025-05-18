@@ -12,20 +12,24 @@ Screen {
 /* Main layout containers */
 #main-container {
     layout: grid;
-    grid-size: 3 2;
-    grid-columns: 1fr 7fr 1fr;
-    grid-rows: 1fr auto;
-    width: 100%;
-    height: 100%;
-    padding: 1;
-    grid-gutter: 1;
+    grid-size: 1 2;
+    /* 1 column, 2 rows */
+    grid-columns: 1fr;
+    grid-rows: auto 1fr;
 }
 
 #center-container {
     layout: grid;
+    grid-size: 2 1;
+    /* 2 column, 1 rows */
+    grid-columns: 8fr 1fr;
+}
+
+#activity-container {
+    layout: grid;
     grid-size: 1 2;
-    grid-rows: 6fr 2fr;
-    height: 100%;
+    /* 1 column, 2 rows */
+    grid-rows: 4fr 1fr;
 }
 
 /* Panel styling */
@@ -35,26 +39,6 @@ Screen {
 #bottom-panel {
     border: solid $primary;
     background: $surface-darken-1;
-}
-
-/* Directory Tree */
-DirectoryTree {
-    height: 1fr;
-}
-
-.tree-folder {
-    color: $accent;
-    text-style: bold;
-}
-
-/* Buttons */
-Button {
-    width: 1fr;
-    margin: 1;
-}
-
-Button:hover {
-    background: $primary-lighten-1;
 }
 
 /* Collapsible sections */
@@ -118,7 +102,6 @@ DataTable>.datatable--row-odd {
 
 /* TabbedContent styling */
 #bottom-panel {
-    height: 100%;
     min-height: 8;
 }
 
@@ -197,15 +180,6 @@ DataTable>.datatable--row-odd {
 }
 
 RocprofTUIApp {
-    & Tabs {
-        height: 1;
-
-        & Underline {
-            display: none;
-            height: 0;
-        }
-    }
-
     & TabbedContent:focus-within Tabs {
         &:focus {
             & .-active {
@@ -223,89 +197,119 @@ RocprofTUIApp {
     }
 }
 
-/* DATA CATALOG */
-FolderOnlyDirectory {
-    height: 1fr;
-    width: 1fr;
-    layers: main overlay;
-}
-
-FolderOnlyDirectory DatabaseTree,
-FolderOnlyDirectory FileTree,
-FolderOnlyDirectory S3Tree {
-    background: $background;
+Button {
+    background: $surface;
+    color: $text;
+    min-width: 10;
+    height: 1;
+    margin: 0;
     padding: 0 1;
-
-    &:focus {
-        background-tint: $background;
-    }
-}
-
-FolderOnlyDirectory * .harlequin-tree--type-label {
-    color: $foreground-muted;
-}
-
-FolderOnlyDirectory * .tree--cursor {
-    text-style: bold;
-    color: auto;
-    background: $secondary-muted;
-}
-
-FolderOnlyDirectory *:focus .tree--cursor {
-    background: $secondary;
-}
-
-FolderOnlyDirectory * .tree--guides {
-    color: $primary;
-}
-
-FolderOnlyDirectory * .tree--guides-hover {
-    color: $primary;
-}
-
-FolderOnlyDirectory * .tree--guides-selected {
-    color: $secondary;
-}
-
-FolderOnlyDirectory * .directory-tree--folder {
-    text-style: bold;
-}
-
-FolderOnlyDirectory * .directory-tree--hidden {
-    text-style: italic;
-    color: $text-muted;
-}
-
-FolderOnlyDirectory ContextMenu {
-    layer: overlay;
-    display: none;
-    padding: 1 1;
     border: none;
-    color: $background;
-    margin: 0 2;
-    overflow: hidden auto;
-    width: 1fr;
-    max-width: 100%;
-    max-height: 10;
-    background: $panel ;
+    width: auto;
+}
 
-    &:focus {
-        background: $secondary ;
+Button:hover {
+    background: $primary-background-lighten-1;
+    color: $text-accent;
+}
 
-        &>.option-list--option-hover {
-            color: $background;
-            background: $secondary;
-            text-style: bold;
-        }
+Button.selected {
+    background: $primary-background;
+    color: $text-accent;
+    text-style: bold;
+}
 
-        &>.option-list--option-highlighted {
-            color: $secondary;
-            background: $background;
-            text-style: bold;
-        }
-    }
+MenuBar {
+    width: 100%;
+    height: auto;
+    background: $surface;
+    grid-rows: 1;
+}
 
-    &.open {
-        display: block;
+#menu-buttons {
+    width: 100%;
+    height: auto;
+    background: $surface;
+}
+
+MenuButton {
+    background: $surface;
+    color: $text;
+    min-width: 10;
+    height: 1;
+    border: none;
+    width: auto;
+}
+
+MenuButton:hover {
+    background: $primary-background-lighten-1;
+    color: $text-accent;
+}
+
+MenuButton.selected {
+    background: $primary-background;
+    color: $text-accent;
+}
+
+#dropdown-container {
+    width: 100%;
+    height: auto;
+}
+
+DropdownMenu {
+    background: $accent;
+    width: auto;
+    min-width: 20;
+    padding-top: 1;
+    height: auto;
+}
+
+#file-dropdown {
+    margin-left: 0;
+}
+
+.menu-item {
+    background: $accent;
+}
+
+.menu-item:hover {
+    background: $primary-background-lighten-1;
+    color: $text-accent;
+}
+
+.hidden {
+    display: none;
+}
+
+Terimnal {
+    layout: vertical;
+    width: 100%;
+    height: 100%;
+    min-height: 10;
+    background: $surface;
+}
+
+#term-output-scroll {
+    width: 100%;
+    height: 1fr;
+    min-height: 10;
+    max-height: 75%;
+    background: $surface;
+    overflow-y: scroll;
+}
+
+#term-output {
+    width: 100%;
+    background: $surface;
+    color: $text;
+}
+
+#terminal-input {
+    padding: 0;
+
+    &:focus-within {
+        border: round $accent 100%;
+        border-title-color: $foreground;
+        border-title-style: b;
     }
 }

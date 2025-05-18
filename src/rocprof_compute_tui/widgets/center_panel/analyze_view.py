@@ -27,7 +27,7 @@ class AnalyzeView(ScrollableContainer):
     def compose(self):
         """Compose the initial center panel state."""
         yield Label(
-            "Select a workload directory to run analysis and view results",
+            "Open a workload directory to run analysis and view results",
             classes="placeholder",
         )
 
@@ -43,5 +43,12 @@ class AnalyzeView(ScrollableContainer):
             self.mount(build_kernel_section(dfs))
             self.mount(build_source_section(dfs))
 
+        except Exception as e:
+            self.mount(Label(f"Error displaying results: {str(e)}", classes="error"))
+
+    def update_view(self, message: str, log_level: str) -> None:
+        self.remove_children()
+        try:
+            self.mount(Label(f"{message}", classes=log_level))
         except Exception as e:
             self.mount(Label(f"Error displaying results: {str(e)}", classes="error"))

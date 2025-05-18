@@ -20,24 +20,17 @@ class CenterPanel(Vertical):
     }
 
     def __init__(self):
-        """Initialize the bottom panel."""
-
         super().__init__()
 
-        self.analyze_view = AnalyzeView()
-
-        # Set initial tab
         self.default_tab = "center-analyze"
+        self.analyze_view = AnalyzeView()
 
     def compose(self):
         with TabsTabbedContent(initial="tab-analyze"):
             with TabPane("Analyze Results", id="tab-analyze"):
                 yield self.analyze_view
 
-            with TabPane("View 1", id="tab-1"):
-                yield Label("🚧 Under Construction")
-
-            with TabPane("View 2", id="tab-2"):
+            with TabPane("placeholder", id="tab-1"):
                 yield Label("🚧 Under Construction")
 
     def on_mount(self) -> None:
