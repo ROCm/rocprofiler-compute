@@ -46,7 +46,7 @@ class gfx950_soc(OmniSoC_Base):
                     )
                 )
             )
-        self.set_compatible_profilers(["rocprofv3"])
+        self.set_compatible_profilers(["rocprofv3", "rocprofiler-sdk"])
         # Per IP block max number of simultaneous counters. GFX IP Blocks
         self.set_perfmon_config(
             {
@@ -63,7 +63,9 @@ class gfx950_soc(OmniSoC_Base):
                 "TCC_channels": 16,
             }
         )
-        self.roofline_obj = Roofline(args, self._mspec)
+        # Create roofline object if mode is provided; skip for --specs
+        if hasattr(self.get_args(), "mode") and self.get_args().mode:
+            self.roofline_obj = Roofline(args, self._mspec)
 
         # Set arch specific specs
         self._mspec._l2_banks = 16
