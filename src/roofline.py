@@ -342,14 +342,18 @@ class Roofline:
         #######################
         # Plot the arithmetic intensity points for each cache level
 
-        # Check for F4F6 PC which applies to both FP4 and FP6 MFMA; avoid duplicate plotting
+        # Check for F6F4 PC which applies to both FP4 and FP6 MFMA; avoid duplicate plotting
         skipAI = False
         if dtype == "FP4" or dtype == "FP6":
             if (dtype == "FP6") and (
                 "FP4" in self.__run_parameters["roofline_data_type"]
             ):
                 skipAI = True
-            dtype = "F4F6"
+            console_debug(
+                "roofline",
+                "Datatype {} is captured through the F6F4 perfmon event".format(dtype),
+            )
+            dtype = "F6F4"
 
         if ops_flops == "FLOP":
             if not skipAI:
