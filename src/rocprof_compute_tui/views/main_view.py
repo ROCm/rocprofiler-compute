@@ -94,8 +94,6 @@ class MainView(Horizontal):
             self.tooltips.text = error_msg
             self.logger.error(error_msg)
 
-        self.run_analysis()
-
     @work(thread=True)
     def run_analysis(self) -> None:
         if not self.selected_path:
