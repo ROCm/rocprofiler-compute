@@ -1,13 +1,64 @@
+import copy
 import logging
 import os
 import re
+import sys
+from collections import defaultdict
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
 
 import pandas as pd
 
-from utils.rocprof_compute_cmd import RocprofRunner
+HIDDEN_SECTIONS = [1900, 2000]
+HIDDEN_COLUMNS = ["Tips", "coll_level"]
+
+supported_field = [
+    "Value",
+    "Minimum",
+    "Maximum",
+    "Average",
+    "Median",
+    "Min",
+    "Max",
+    "Avg",
+    "Pct of Peak",
+    "Peak",
+    "Count",
+    "Mean",
+    "Pct",
+    "Std Dev",
+    "Q1",
+    "Q3",
+    "Expression",
+    # Special keywords for L2 channel
+    "Channel",
+    "L2 Cache Hit Rate",
+    "Requests",
+    "L2 Read",
+    "L2 Write",
+    "L2 Atomic",
+    "L2-Fabric Requests",
+    "L2-Fabric Read",
+    "L2-Fabric Write and Atomic",
+    "L2-Fabric Atomic",
+    "L2 Read Req",
+    "L2 Write Req",
+    "L2 Atomic Req",
+    "L2-Fabric Read Req",
+    "L2-Fabric Write and Atomic Req",
+    "L2-Fabric Atomic Req",
+    "L2-Fabric Read Latency",
+    "L2-Fabric Write Latency",
+    "L2-Fabric Atomic Latency",
+    "L2-Fabric Read Stall (PCIe)",
+    "L2-Fabric Read Stall (Infinity Fabric™)",
+    "L2-Fabric Read Stall (HBM)",
+    "L2-Fabric Write Stall (PCIe)",
+    "L2-Fabric Write Stall (Infinity Fabric™)",
+    "L2-Fabric Write Stall (HBM)",
+    "L2-Fabric Write Starve",
+]
 
 
 class LogLevel(str, Enum):
@@ -241,10 +292,302 @@ def get_table_dfs():
 def analyze_runner(workload_path):
     filename = str(Path(os.getcwd()).joinpath("analyze_output.csv"))
 
-    runner = RocprofRunner()
+    pass
 
-    stdout_output, stderr_output, exit_code, cmd_str = runner.run_analyze(
-        input_dir=workload_path, output_file=filename
+
+def process_panels_to_dataframes(args, runs, archConfigs, profiling_config):
+    """
+    Process panel data into pandas DataFrames.
+    Returns a nested dictionary structure with DataFrames and tui_style information.
+
+    Returns:
+        dict: Nested structure {
+            "section_name": {
+                "subsection_name": {
+                    "df": DataFrame,
+                    "tui_style": dict or None
+                }
+            }
+        }
+    """
+
+    comparable_columns = build_comparable_columns(args.time_unit)
+    filter_panel_ids = [
+        convert_metric_id_to_panel_idx(section)
+        for section in [
+            name
+            for name, type in profiling_config.get("filter_blocks", {}).items()
+            if type == "metric_id"
+        ]
+    ]
+
+    # Initialize the result structure
+    result_structure = defaultdict(dict)
+
+    for panel_id, panel in archConfigs.panel_configs.items():
+        # Skip panels that don't support baseline comparison
+        if panel_id in HIDDEN_SECTIONS:
+            continue
+
+        # Get section name (e.g., "0. Top Stats")
+        section_name = f"{panel_id // 100}. {panel['title']}"
+
+        for data_source in panel["data source"]:
+            for type, table_config in data_source.items():
+                # Check for filtering conditions
+                if (
+                    not args.filter_metrics
+                    and filter_panel_ids
+                    and table_config["id"] not in filter_panel_ids
+                    and panel_id not in filter_panel_ids
+                    and panel_id > 100
+                ):
+                    table_id_str = (
+                        str(table_config["id"] // 100)
+                        + "."
+                        + str(table_config["id"] % 100)
+                    )
+                    continue
+
+                # Process the data
+                base_run, base_data = next(iter(runs.items()))
+                base_df = base_data.dfs[table_config["id"]]
+
+                df = pd.DataFrame(index=base_df.index)
+
+                # Process columns
+                for header in list(base_df.keys()):
+                    if should_process_column(header, args, type):
+                        if header in HIDDEN_COLUMNS:
+                            pass
+                        elif header not in comparable_columns:
+                            df = process_non_comparable_column(
+                                df, header, base_df, type, table_config, runs
+                            )
+                        else:
+                            df = process_comparable_column(
+                                df,
+                                header,
+                                base_df,
+                                table_config,
+                                runs,
+                                base_run,
+                                type,
+                                args,
+                                HIDDEN_COLUMNS,
+                            )
+
+                if not df.empty:
+                    # Check for empty columns
+                    is_empty_columns_exist = check_empty_columns(df)
+
+                    if not is_empty_columns_exist:
+                        # Get subsection name
+                        table_id_str = (
+                            str(table_config["id"] // 100)
+                            + "."
+                            + str(table_config["id"] % 100)
+                        )
+                        subsection_name = table_id_str
+                        if "title" in table_config and table_config["title"]:
+                            subsection_name += " " + table_config["title"]
+
+                        # Handle special cases for top stats
+                        if type == "raw_csv_table" and (
+                            table_config["source"] == "pmc_kernel_top.csv"
+                            or table_config["source"] == "pmc_dispatch_info.csv"
+                        ):
+                            df = df.head(args.max_stat_num)
+
+                        # Check for transpose requirement
+                        transpose = (
+                            type != "raw_csv_table"
+                            and "columnwise" in table_config
+                            and table_config.get("columnwise") == True
+                        )
+
+                        if transpose:
+                            df = df.T
+
+                        # Store the DataFrame
+                        result_structure[section_name][subsection_name] = {
+                            "df": df,
+                            "tui_style": None,
+                        }
+
+                        # Check for tui_style
+                        if type == "metric_table" and "tui_style" in table_config:
+                            result_structure[section_name][subsection_name][
+                                "tui_style"
+                            ] = table_config["tui_style"]
+
+                        # Save to CSV if requested
+                        if args.df_file_dir:
+                            save_dataframe_to_csv(df, table_id_str, table_config, args)
+
+    return dict(result_structure)
+
+
+def should_process_column(header, args, type):
+    """Check if a column should be processed based on arguments."""
+    return (
+        (not args.cols)
+        or (
+            args.cols and header in args.cols
+        )  # Assuming args.cols is now a list of column names
+        or (type == "raw_csv_table")
     )
 
-    return stdout_output, stderr_output, exit_code, cmd_str
+
+def process_non_comparable_column(df, header, base_df, type, table_config, runs):
+    """Process columns that are not comparable across runs."""
+    if (
+        type == "raw_csv_table"
+        and (
+            table_config["source"] == "pmc_kernel_top.csv"
+            or table_config["source"] == "pmc_dispatch_info.csv"
+        )
+        and header == "Kernel_Name"
+    ):
+        # Adjust kernel name width based on source
+        if table_config["source"] == "pmc_kernel_top.csv":
+            adjusted_name = base_df["Kernel_Name"].apply(
+                lambda x: string_multiple_lines(x, 40, 3)
+            )
+        else:
+            adjusted_name = base_df["Kernel_Name"].apply(
+                lambda x: string_multiple_lines(x, 80, 4)
+            )
+        df = pd.concat([df, adjusted_name], axis=1)
+    elif type == "raw_csv_table" and header == "Info":
+        for run, data in runs.items():
+            cur_df = data.dfs[table_config["id"]]
+            df = pd.concat([df, cur_df[header]], axis=1)
+    else:
+        df = pd.concat([df, base_df[header]], axis=1)
+
+    return df
+
+
+def process_comparable_column(
+    df, header, base_df, table_config, runs, base_run, type, args, hidden_columns
+):
+    """Process columns that can be compared across runs."""
+    for run, data in runs.items():
+        cur_df = data.dfs[table_config["id"]]
+        if (type == "raw_csv_table") or (
+            type == "metric_table" and (header not in hidden_columns)
+        ):
+            if run != base_run:
+                # Calculate percentage over the baseline
+                base_values = [float(x) if x != "" else float(0) for x in base_df[header]]
+                cur_values = [float(x) if x != "" else float(0) for x in cur_df[header]]
+
+                base_df[header] = base_values
+                cur_df[header] = cur_values
+
+                t_df = pd.concat(
+                    [base_df[header], cur_df[header]],
+                    axis=1,
+                )
+                absolute_diff = (t_df.iloc[:, 1] - t_df.iloc[:, 0]).round(args.decimal)
+                t_df = absolute_diff / t_df.iloc[:, 0].replace(0, 1)
+
+                t_df_pretty = t_df.astype(float).mul(100).round(args.decimal)
+
+                # Show value + percentage
+                t_df = (
+                    cur_df[header].astype(float).round(args.decimal).map(str).astype(str)
+                    + " ("
+                    + t_df_pretty.map(str)
+                    + "%)"
+                )
+                df = pd.concat([df, t_df], axis=1)
+
+                # Check for threshold violations
+                if (
+                    header in ["Value", "Count", "Avg"]
+                    and t_df_pretty.abs().gt(args.report_diff).any()
+                ):
+                    df["Abs Diff"] = absolute_diff
+                    if args.report_diff:
+                        violation_idx = t_df_pretty.index[
+                            t_df_pretty.abs() > args.report_diff
+                        ]
+            else:
+                cur_df_copy = copy.deepcopy(cur_df)
+                cur_df_copy[header] = [
+                    (round(float(x), args.decimal) if x != "" else x)
+                    for x in base_df[header]
+                ]
+                df = pd.concat([df, cur_df_copy[header]], axis=1)
+
+    return df
+
+
+def check_empty_columns(df):
+    """Check if any column in the DataFrame is empty."""
+    return any(
+        [
+            df.columns[col_idx]
+            for col_idx in range(len(df.columns))
+            if df.replace("", None).iloc[:, col_idx].isnull().all()
+        ]
+    )
+
+
+def save_dataframe_to_csv(df, table_id_str, table_config, args):
+    """Save DataFrame to CSV file if directory is specified."""
+    p = Path(args.df_file_dir)
+    if not p.exists():
+        p.mkdir()
+    if p.is_dir():
+        filename = table_id_str
+        if "title" in table_config and table_config["title"]:
+            filename += "_" + table_config["title"]
+        df.to_csv(
+            p.joinpath(filename.replace(" ", "_") + ".csv"),
+            index=False,
+        )
+
+
+def string_multiple_lines(source, width, max_rows):
+    """
+    Adjust string with multiple lines by inserting '\n'
+    """
+    idx = 0
+    lines = []
+    while idx < len(source) and len(lines) < max_rows:
+        lines.append(source[idx : idx + width])
+        idx += width
+
+    if idx < len(source):
+        last = lines[-1]
+        lines[-1] = last[0:-3] + "..."
+    return "\n".join(lines)
+
+
+def convert_metric_id_to_panel_idx(metric_id):
+    # "4.02" -> 402
+    # "4.23" -> 423
+    # "4" -> 400
+    tokens = metric_id.split(".")
+    if len(tokens) == 1:
+        return int(tokens[0]) * 100
+    elif len(tokens) == 2:
+        return int(tokens[0]) * 100 + int(tokens[1])
+    else:
+        raise Exception(f"Invalid metric id: {metric_id}")
+
+
+def build_comparable_columns(time_unit):
+    """
+    Build comparable columns/headers for display
+    """
+    comparable_columns = supported_field
+    top_stat_base = ["Count", "Sum", "Mean", "Median", "Standard Deviation"]
+
+    for h in top_stat_base:
+        comparable_columns.append(h + "(" + time_unit + ")")
+
+    return comparable_columns

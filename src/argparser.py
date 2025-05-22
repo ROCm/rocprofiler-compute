@@ -600,6 +600,13 @@ Examples:
         const=8050,
         help="\t\tActivate a GUI to interate with rocprofiler-compute metrics.\n\t\tOptionally, specify port to launch application (DEFAULT: 8050)",
     )
+    analyze_group.add_argument(
+        "--tui",
+        type=int,
+        nargs="?",
+        const=8050,
+        help="\t\tActivate a TUI to interate with rocprofiler-compute metrics.",
+    )
 
     analyze_group.add_argument(
         "-R",

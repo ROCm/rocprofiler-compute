@@ -145,6 +145,8 @@ class RocProfCompute:
     def detect_analyze(self):
         if self.__args.gui:
             self.__analyze_mode = "web_ui"
+        elif self.__args.tui:
+            self.__analyze_mode = "tui"
         else:
             self.__analyze_mode = "cli"
         return
@@ -392,6 +394,10 @@ class RocProfCompute:
             from rocprof_compute_analyze.analysis_webui import webui_analysis
 
             analyzer = webui_analysis(self.__args, self.__supported_archs)
+        elif self.__analyze_mode == "tui":
+            from rocprof_compute_tui.analysis_tui import tui_analysis
+
+            analyzer = tui_analysis(self.__args, self.__supported_archs)
         else:
             console_error("Unsupported analysis mode -> %s" % self.__analyze_mode)
 

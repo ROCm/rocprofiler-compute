@@ -31,7 +31,6 @@ def create_table(df: pd.DataFrame) -> DataTable:
 
 
 def build_summary_section(dfs: Dict[str, Any]) -> Collapsible:
-    """Build the summary section exactly like the original."""
     summary_children = []
 
     try:
@@ -87,7 +86,6 @@ def build_summary_section(dfs: Dict[str, Any]) -> Collapsible:
 
 
 def build_sysinfo_section(dfs: Dict[str, Any]) -> Collapsible:
-    """Build the system info section exactly like the original."""
     sysinf_children = []
 
     try:
@@ -139,7 +137,6 @@ def build_sysinfo_section(dfs: Dict[str, Any]) -> Collapsible:
 
 
 def build_kernel_section(dfs: Dict[str, Any]) -> Collapsible:
-    """Build the kernel section exactly like the original."""
     children = []
 
     try:
@@ -167,7 +164,6 @@ def build_kernel_section(dfs: Dict[str, Any]) -> Collapsible:
 
 
 def build_source_section(dfs: Dict[str, Any]) -> Collapsible:
-    """Build the source section exactly like the original."""
     children = [Label("🚧 Under Construction", classes="section-header")]
 
     # Create and return the top-level collapsible
