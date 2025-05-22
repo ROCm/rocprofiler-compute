@@ -150,7 +150,6 @@ class MemoryChart(Static):
             finally:
                 sys.stdout = original_stdout
 
-            # Set the content
             self.update(plot_str)
 
         except Exception as e:

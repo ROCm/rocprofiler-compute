@@ -25,7 +25,7 @@ class TabsArea(Vertical):
         super().__init__()
 
         # Create text areas as instance attributes
-        self.tips_area = TextArea(id="tips-text", read_only=True)
+        self.description_area = TextArea(id="description-text", read_only=True)
         self.output_area = TextArea(id="output-text", read_only=True)
 
         # Set initial tab
@@ -33,8 +33,8 @@ class TabsArea(Vertical):
 
     def compose(self):
         with TabsTabbedContent(initial="tab-output"):
-            with TabPane("TIPS", id="tab-tips"):
-                yield (self.tips_area)
+            with TabPane("METRIC DESCRIPTION", id="tab-description"):
+                yield (self.description_area)
 
             with TabPane("OUTPUT", id="tab-output"):
                 yield (self.output_area)

@@ -57,12 +57,12 @@ class MainView(Horizontal):
 
                 self.center = center_panel
 
-                # Bottom Panel - Output, terminal, and tips
+                # Bottom Panel - Output, terminal, and metric description
                 tabs = TabsArea()
                 yield tabs
 
                 # Store references to text areas
-                self.tooltips = tabs.tips_area
+                self.metric_description = tabs.description_area
                 self.output = tabs.output_area
 
                 # Now set the output area for the logger
@@ -84,14 +84,14 @@ class MainView(Horizontal):
             content = f"Selected Row {row_idx}:\n"
             content += "\n".join(f"{val}" for val in row_data)
 
-            self.tooltips.text = content
-            self.logger.info(f"Row {row_idx} data displayed in tooltips")
+            self.metric_description.text = content
+            self.logger.info(f"Row {row_idx} data displayed in metric_description")
 
         except Exception as e:
             error_msg = f"Error displaying row {row_idx}: {str(e)}"
             table.add_column("Error")
             table.add_row(str(e))
-            self.tooltips.text = error_msg
+            self.metric_description.text = error_msg
             self.logger.error(error_msg)
 
     @work(thread=True)
