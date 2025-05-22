@@ -192,7 +192,7 @@ class OmniSoC_Base:
 
         self._mspec.num_xcd = str(
             mi_gpu_specs.get_num_xcds(
-                self._mspec.gpu_model, self._mspec.compute_partition
+                self._mspec.gpu_arch, self._mspec.gpu_model, self._mspec.compute_partition
             )
         )
 
@@ -207,10 +207,10 @@ class OmniSoC_Base:
 
         amd_smi_static = run(["amd-smi", "static", "--gpu=0"], exit_on_error=True)
 
-        # Purposely search for patterns without variants suffix to try and match a known GPU model
+        # Purposely search for patterns without variants suffix to try and match a known GPU model.
         detection_methods = [
             {
-                "name": "Marketing Name",
+                "name": "Market Name",
                 "pattern": r"MARKET_NAME:\s*.*(mi|MI\d*[a-zA-Z]*)",
             },
             {
@@ -222,14 +222,13 @@ class OmniSoC_Base:
 
         gpu_model = None
         for method in detection_methods:
-            console_warning(f"Determining GPU model using {method['name']}.")
+            console_log(f"Determining GPU model using {method['name']}.")
             gpu_model = search(method["pattern"], amd_smi_static)
             if gpu_model:
                 break
 
         if not gpu_model:
             console_error("Unable to determine the GPU model. \nrocprof-compute exiting.")
-            return None
 
         gpu_model = self._adjust_mi300_model(gpu_model.lower(), gpu_arch.lower())
 
@@ -237,6 +236,7 @@ class OmniSoC_Base:
             console_error(
                 f"Unknown GPU model detected {gpu_model.upper()}. \nrocprof-compute exiting."
             )
+
         return gpu_model.upper()
 
     def _adjust_mi300_model(self, gpu_model, gpu_arch):

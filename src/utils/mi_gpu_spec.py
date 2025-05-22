@@ -195,16 +195,30 @@ class MIGPUSpecs:
         return gpu_model.upper()
 
     @classmethod
-    def get_num_xcds(cls, gpu_model_, compute_partition_):
+    def get_num_xcds(cls, gpu_arch_, gpu_model_, compute_partition_):
         """Retrieve the number of XCDs based on the GPU model and compute partition."""
         if not gpu_model_ or not compute_partition_:
             return None
 
+        gpu_arch_lower = gpu_arch_.lower()
         gpu_model_lower = gpu_model_.lower()
         partition_lower = compute_partition_.lower()
 
         # Check if the GPU model is part of the MI series
-        if gpu_model_lower in {"mi50", "mi60", "mi100", "mi210", "mi250", "mi250x"}:
+        if gpu_model_lower in {
+            "mi50",
+            "mi60",
+            "mi100",
+            "mi210",
+            "mi250",
+            "mi250x",
+        } or gpu_arch_lower in {
+            "gfx906",
+            "gfx908",
+            "gfx90a",
+            "gfx940",
+            "gfx941",
+        }:
             return 1
 
         # Validate population of the _num_xcds_dict
@@ -222,7 +236,7 @@ class MIGPUSpecs:
 
         # Check if the compute partition is known
         if partition_lower not in model_dict:
-            console_log(f"Unknown compute partition: {compute_partition_}")
+            console_warning(f"Unknown compute partition: {compute_partition_}")
             return None
 
         num_xcds = model_dict[partition_lower]

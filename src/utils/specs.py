@@ -217,7 +217,7 @@ def generate_machine_specs(args, sysinfo: dict = None):
     soc_obj = soc_class(args, specs)
     # Update arch specific specs
     specs.total_l2_chan: str = total_l2_banks(
-        specs.gpu_model, int(specs._l2_banks), specs.compute_partition
+        specs.gpu_arch, specs.gpu_model, int(specs._l2_banks), specs.compute_partition
     )
     specs.num_hbm_channels: str = str(specs.get_hbm_channels())
     return specs
@@ -673,14 +673,16 @@ def total_sqc(archname, numCUs, numSEs):
     return int(sq_per_se) * int(numSEs)
 
 
-def total_l2_banks(archname, L2Banks, compute_partition):
-    total_l2_banks = None
-    xcd_count = mi_gpu_specs.get_num_xcds(archname, compute_partition)
+def total_l2_banks(gpu_arch, gpu_model, L2Banks, compute_partition):
+    xcd_count = mi_gpu_specs.get_num_xcds(gpu_arch, gpu_model, compute_partition)
 
     if xcd_count is not None:
-        total_l2_banks = L2Banks * xcd_count
-
-    return total_l2_banks
+        return int(L2Banks) * int(xcd_count)
+    else:
+        console_warning(
+            f"Unable to calculate Total L2 Banks due to unknown compute partition: {compute_partition}"
+        )
+        return
 
 
 if __name__ == "__main__":
