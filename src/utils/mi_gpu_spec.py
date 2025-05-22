@@ -32,11 +32,15 @@ MI_CONSTANS = {
 class MIGPUSpecs:
     _instance = None
 
-    _gpu_series_dict = {}  # key: gpu arch
+    _gpu_series_dict = {}  # key: gpu_arch
     _gpu_model_dict = {}  # key: gpu_arch
-    _num_xcds_dict = {}  # key: gpu model
-    _chip_id_dict = {}  # key: chip id (int)
-    _perfmon_config = {}  # key: gpu arch
+    _num_xcds_dict = {}  # key: gpu_model
+    _chip_id_dict = {}  # key: chip_id (int)
+    _perfmon_config = {}  # key: gpu_arch
+
+    _gpu_arch_to_compute_partition_dict = (
+        {}
+    )  # key: gpu_arch, used for gpu archs containing only one gpu model and thus one compute partition
 
     _initialized = False
 
@@ -89,9 +93,14 @@ class MIGPUSpecs:
         MI GPUs
         |-- series
             |-- architecture (list)
+                    |-- perfmon_config
                     |-- gpu model
                     |-- chip_ids
+                        | -- physical
+                        | -- virtual
                     |-- partition_mode
+                        | -- compute partition mode
+                        | -- memory partition mode
         """
 
         current_dir = os.path.dirname(__file__)
@@ -120,6 +129,28 @@ class MIGPUSpecs:
                         cls._chip_id_dict[models["chip_ids"]["physical"]] = curr_gpu_model
                     if "chip_ids" in models and "virtual" in models["chip_ids"]:
                         cls._chip_id_dict[models["chip_ids"]["virtual"]] = curr_gpu_model
+
+        # detect gpu arch to compute partition relationships
+        cls._populate_gpu_arch_to_compute_partition_dict()
+
+    @classmethod
+    def _populate_gpu_arch_to_compute_partition_dict(cls):
+        """
+        This creates a mapping of gpu_arch -> compute_partition for architectures
+        where there's only one model (and therefore one partition configuration).
+        """
+        for gpu_arch, gpu_models in cls._gpu_model_dict.items():
+            if len(gpu_models) == 1:
+                single_model = gpu_models[0]
+                compute_partition = cls._num_xcds_dict.get(single_model)
+
+                if compute_partition is not None:
+                    cls._gpu_arch_to_compute_partition_dict[gpu_arch] = compute_partition
+                    console_debug(
+                        "[populate_single_arch_partition_dict] Single model arch found: "
+                        "%s -> %s (partition: %s)"
+                        % (gpu_arch, single_model, compute_partition)
+                    )
 
     @classmethod
     def get_gpu_series_dict(cls):
@@ -195,31 +226,37 @@ class MIGPUSpecs:
         return gpu_model.upper()
 
     @classmethod
-    def get_num_xcds(cls, gpu_arch_, gpu_model_, compute_partition_):
-        """Retrieve the number of XCDs based on the GPU model and compute partition."""
-        if not gpu_model_ or not compute_partition_:
-            return None
+    def get_num_xcds(cls, gpu_arch_=None, gpu_model_=None, compute_partition_=None):
+        """
+        Retrieve the number of XCDs based on the GPU arch, or GPU model, and compute partition.
+        """
 
-        gpu_arch_lower = gpu_arch_.lower()
-        gpu_model_lower = gpu_model_.lower()
-        partition_lower = compute_partition_.lower()
+        # Handle None values safely and convert to lowercase
+        gpu_arch_lower = gpu_arch_.lower() if gpu_arch_ else ""
+        gpu_model_lower = gpu_model_.lower() if gpu_model_ else ""
+        partition_lower = compute_partition_.lower() if compute_partition_ else ""
 
-        # Check if the GPU model is part of the MI series
-        if gpu_model_lower in {
+        # Return 1 XCDs for archs/models not supporting compute partition
+        # NOTE: gpu arch is enough to verify this logic, gpu model is used as a backup.
+        if gpu_arch_lower in {"gfx906", "gfx908", "gfx90a"} or gpu_model_lower in {
             "mi50",
             "mi60",
             "mi100",
             "mi210",
             "mi250",
             "mi250x",
-        } or gpu_arch_lower in {
-            "gfx906",
-            "gfx908",
-            "gfx90a",
-            "gfx940",
-            "gfx941",
         }:
             return 1
+
+        # Handle direct architecture-to-compute_partition mapping
+        if gpu_arch_lower in cls._gpu_arch_to_compute_partition_dict:
+            xcd_count = cls._gpu_arch_to_compute_partition_dict[gpu_arch_lower]
+            if xcd_count is None:
+                console_warning(
+                    f"No Compute Partition data found for architecture {gpu_arch_}"
+                )
+                return None
+            return xcd_count
 
         # Validate population of the _num_xcds_dict
         if not cls._num_xcds_dict:
@@ -228,20 +265,24 @@ class MIGPUSpecs:
             )
             return None
 
+        # If no gpu_model provided, cannot proceed with model-based lookup
+        if not gpu_model_lower:
+            console_warning("No gpu model provided for num xcds lookup.")
+            return None
+
         # Check if the model exists in the dictionary
         if gpu_model_lower not in cls._num_xcds_dict:
+            console_warning(
+                f"Unknown gpu model provided for num xcds lookup: {gpu_model_}."
+            )
             return None
 
         model_dict = cls._num_xcds_dict[gpu_model_lower]
-
-        # Check if the compute partition is known
         if partition_lower not in model_dict:
             console_warning(f"Unknown compute partition: {compute_partition_}")
             return None
 
         num_xcds = model_dict[partition_lower]
-
-        # Handle case when num_xcds is not defined
         if num_xcds is None:
             console_warning(
                 f"Unknown compute partition found for {compute_partition_} / {gpu_model_}"
@@ -263,6 +304,10 @@ class MIGPUSpecs:
             return cls._num_xcds_dict
         else:
             console_error()
+
+    @classmethod
+    def get_gpu_arch_to_compute_partition_dict(cls):
+        return cls._gpu_arch_to_compute_partition_dict
 
 
 # pre-initialize the instance when module loads

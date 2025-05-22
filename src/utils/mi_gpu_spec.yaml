@@ -82,8 +82,6 @@ mi_gpu_spec:
           - gpu_model: mi250x
             chip_ids:
               physical: 29704
-          - gpu_model: mi250
-          - gpu_model: mi250x
 
   - gpu_series: mi300
     gpu_archs:
