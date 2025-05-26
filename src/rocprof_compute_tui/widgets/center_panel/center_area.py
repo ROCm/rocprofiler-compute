@@ -6,8 +6,9 @@ Contains the panel widgets used in the main layout.
 
 from textual.containers import Vertical
 from textual.widgets import Label, TabPane
-from widgets.center_panel.analyze_view import AnalyzeView
-from widgets.tabbed_content import TabsTabbedContent
+
+from rocprof_compute_tui.widgets.center_panel.analyze_view import AnalyzeView
+from rocprof_compute_tui.widgets.tabbed_content import TabsTabbedContent
 
 
 class CenterPanel(Vertical):

@@ -6,8 +6,9 @@ Contains the panel widgets used in the main layout.
 
 from textual.containers import Vertical
 from textual.widgets import TabPane, TextArea
-from widgets.tabbed_content import TabsTabbedContent
-from widgets.tabs.tabs_terminal import Terimnal
+
+from rocprof_compute_tui.widgets.tabbed_content import TabsTabbedContent
+from rocprof_compute_tui.widgets.tabs.tabs_terminal import Terimnal
 
 
 class TabsArea(Vertical):

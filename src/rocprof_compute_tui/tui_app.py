@@ -1,25 +1,28 @@
 """
-ROCm Compute Profiler TUI - Main Application
--------------------------------------------
-This module contains the main application for the rocprof-compute tool.
+ROCm Compute Profiler TUI - Main Application with Analysis Methods
+----------------------------------------------------------------
 """
+
+import importlib
+from typing import Any, Dict, List, Optional
 
 from textual import on, work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.widgets import Button, Footer, Header
 from textual_fspicker import SelectDirectory
-from views.main_view import MainView
-from widgets.menu_bar.menu_bar import DropdownMenu
 
-from config import APP_TITLE, VERSION
+from rocprof_compute_tui.config import APP_TITLE, VERSION
+from rocprof_compute_tui.views.main_view import MainView
+from rocprof_compute_tui.widgets.menu_bar.menu_bar import DropdownMenu
+from utils.specs import MachineSpecs, generate_machine_specs
 
 
 class RocprofTUIApp(App):
     """Main application for the performance analysis tool."""
 
     TITLE = f"{APP_TITLE} v{VERSION}"
-    SUB_TITLE = "Workload Analyze Tool"
+    SUB_TITLE = "Workload Analysis Tool"
 
     CSS_PATH = "assets/style.css"
     BINDINGS = [
@@ -28,10 +31,20 @@ class RocprofTUIApp(App):
         Binding(key="a", action="analyze", description="Analyze"),
     ]
 
-    def __init__(self):
-        """Initialize the application."""
+    def __init__(
+        self, args: Optional[Any] = None, supported_archs: Optional[Dict] = None
+    ) -> None:
+        """
+        Initialize the application.
+        """
         super().__init__()
         self.main_view = MainView()
+        self.args = args
+        self.supported_archs = supported_archs or {}
+
+        # Initialize analysis-related attributes
+        self.soc: List = []  # List to store SoC objects
+        self.mspec: Optional[MachineSpecs] = None
 
     def compose(self) -> ComposeResult:
         """Compose the application layout."""
@@ -39,13 +52,37 @@ class RocprofTUIApp(App):
         yield self.main_view
         yield Footer()
 
-    def action_analyze(self) -> None:
-        """Run analysis on the selected directory."""
-        self.main_view.run_analysis()
-
     def action_refresh(self) -> None:
         """Refresh the view."""
-        self.main_view.refresh_view()
+        try:
+            self.main_view.refresh_view()
+        except Exception as e:
+            self.notify(f"Refresh failed: {str(e)}", severity="error")
+
+    def load_soc_specs(self, sysinfo: dict = None) -> None:
+        """
+        Load OmniSoC instance for analysis.
+        """
+        self.mspec = generate_machine_specs(self.args, sysinfo)
+
+        if self.args and self.args.specs:
+            print(self.mspec)
+            return
+
+        arch = self.mspec.gpu_arch
+
+        # Dynamically import and instantiate the SoC class
+        soc_module = importlib.import_module("rocprof_compute_soc.soc_" + arch)
+        soc_class = getattr(soc_module, arch + "_soc")
+        self.soc[arch] = soc_class(self.args, self.mspec)
+
+    def get_soc(self) -> Dict:
+        """Get the SoC dictionary."""
+        return self.soc
+
+    def get_mspec(self) -> Optional[MachineSpecs]:
+        """Get the machine specifications."""
+        return self.mspec
 
     @on(Button.Pressed, "#menu-open-workload")
     @work
@@ -57,6 +94,14 @@ class RocprofTUIApp(App):
             self.main_view.run_analysis()
 
 
-if __name__ == "__main__":
-    app = RocprofTUIApp()
-    app.run()
+def run_tui(args: Optional[Any] = None, supported_archs: Optional[list] = None) -> None:
+    """
+    Run the TUI application.
+    """
+    try:
+        app = RocprofTUIApp(args, supported_archs)
+        app.run()
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        raise RuntimeError(f"Failed to run TUI application: {str(e)}") from e

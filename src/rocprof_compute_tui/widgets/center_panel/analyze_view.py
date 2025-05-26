@@ -8,7 +8,8 @@ from typing import Any, Dict
 
 from textual.containers import ScrollableContainer
 from textual.widgets import Label
-from widgets.collapsibles import (
+
+from rocprof_compute_tui.widgets.collapsibles import (
     build_kernel_section,
     build_source_section,
     build_summary_section,

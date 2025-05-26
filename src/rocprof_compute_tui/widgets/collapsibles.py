@@ -9,9 +9,9 @@ from typing import Any, Dict
 import pandas as pd
 from textual.containers import VerticalScroll
 from textual.widgets import Collapsible, DataTable, Label
-from widgets.charts import MemoryChart, RooflinePlot
 
-from config import SECTIONS_TO_SKIP
+from rocprof_compute_tui.config import SECTIONS_TO_SKIP
+from rocprof_compute_tui.widgets.charts import MemoryChart, RooflinePlot
 
 
 def create_table(df: pd.DataFrame) -> DataTable:

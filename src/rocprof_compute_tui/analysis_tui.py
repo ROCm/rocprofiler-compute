@@ -25,10 +25,10 @@
 import sys
 
 from rocprof_compute_analyze.analysis_base import OmniAnalyze_Base
+from rocprof_compute_tui.utils.tui_utils import process_panels_to_dataframes
 from utils import file_io, parser
 from utils.kernel_name_shortener import kernel_name_shortener
 from utils.logger import console_error, demarcate
-from rocprof_compute_tui.utils.tui_utils import process_panels_to_dataframes
 
 
 class tui_analysis(OmniAnalyze_Base):
@@ -95,5 +95,4 @@ class tui_analysis(OmniAnalyze_Base):
             ],
             self._profiling_config,
         )
-        print(results)
-        sys.exit(1)
+        return results

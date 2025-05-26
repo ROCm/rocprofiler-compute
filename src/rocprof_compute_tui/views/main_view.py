@@ -10,14 +10,19 @@ from textual import on, work
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.reactive import reactive
-from widgets.center_panel.center_area import CenterPanel
-from widgets.collapsibles import DataTable
-from widgets.menu_bar.menu_bar import MenuBar
-from widgets.right_panel.right import RightPanel
-from widgets.tabs.tabs_area import TabsArea
 
-from config import DEFAULT_START_PATH
-from utils.tui_utils import Logger, LogLevel, analyze_runner, get_table_dfs
+from rocprof_compute_tui.analysis_tui import tui_analysis
+from rocprof_compute_tui.config import DEFAULT_START_PATH
+from rocprof_compute_tui.utils.tui_utils import (
+    Logger,
+    LogLevel,
+)
+from rocprof_compute_tui.widgets.center_panel.center_area import CenterPanel
+from rocprof_compute_tui.widgets.collapsibles import DataTable
+from rocprof_compute_tui.widgets.menu_bar.menu_bar import MenuBar
+from rocprof_compute_tui.widgets.right_panel.right import RightPanel
+from rocprof_compute_tui.widgets.tabs.tabs_area import TabsArea
+from utils import file_io
 
 
 class MainView(Horizontal):
@@ -108,42 +113,25 @@ class MainView(Horizontal):
                 f"Running analysis on: {self.selected_path}", LogLevel.SUCCESS
             )
 
-            # Run analysis and capture results
-            stdout_output, stderr_output, exit_code, cmd_str = analyze_runner(
-                self.selected_path
+            analyzer = tui_analysis(self.app.args, self.app.supported_archs)
+            analyzer.sanitize()
+
+            sys_info = file_io.load_sys_info(
+                Path(self.selected_path).joinpath("sysinfo.csv")
             )
 
-            if exit_code == 0:
-                self._update_view("Loading analysis data...", LogLevel.SUCCESS)
-                self.logger.info(
-                    "Analysis command executed successfully, loading data..."
-                )
+            sys_info = sys_info.iloc[0].to_dict()
+            self.app.load_soc_specs(sys_info)
 
-                # Log command output if available
-                if stdout_output:
-                    self.logger.info(f"Analysis command output: {stdout_output}")
+            analyzer.set_soc(self.app.soc)
+            analyzer.pre_processing()
+            self.dfs = analyzer.run_analysis()
 
-                # Load data with error handling
-                try:
-                    self.dfs = get_table_dfs()
-                    if not self.dfs:
-                        warning_msg = "Analysis completed but no data was returned"
-                        self._update_view(warning_msg, LogLevel.WARNING)
-                        self.logger.warning(warning_msg)
-                    else:
-                        self.app.call_from_thread(self.refresh_results)
-                        self.logger.success("Analysis completed successfully")
-                except Exception as data_error:
-                    error_msg = f"Error loading analysis data: {str(data_error)}"
-                    self._update_view(error_msg, LogLevel.ERROR)
-                    self.logger.error(error_msg)
-            else:
-                error_msg = f"Analysis failed with exit code {exit_code}: {stderr_output}"
-                command_info = f"Running command: {cmd_str}"
-                self._update_view(f"{error_msg}\n{command_info}", LogLevel.ERROR)
-                self.logger.error(f"{error_msg}\n{command_info}")
         except Exception as e:
             self.logger.error(f"Unexpected error during analysis: {str(e)}")
+            self._update_view(
+                f"Unexpected error during analysis: {str(e)}", LogLevel.ERROR
+            )
 
     def _update_view(self, message: str, log_level: LogLevel) -> None:
         try:
