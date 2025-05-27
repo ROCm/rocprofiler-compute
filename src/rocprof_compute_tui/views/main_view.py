@@ -113,25 +113,114 @@ class MainView(Horizontal):
                 f"Running analysis on: {self.selected_path}", LogLevel.SUCCESS
             )
 
-            analyzer = tui_analysis(self.app.args, self.app.supported_archs)
-            analyzer.sanitize()
+            # Step 1: Create analyzer
+            try:
+                self.logger.info("Step 1: Creating analyzer")
+                self.logger.info(f"Step 1: args {self.app.args}")
+                self.logger.info(f"Step 1: arch {self.app.supported_archs}")
+                self.logger.info("Step 1: Creating analyzer")
+                analyzer = tui_analysis(self.app.args, self.app.supported_archs, self.selected_path)
+                self.logger.info("Step 1: Analyzer created successfully")
+            except Exception as e:
+                self.logger.error(f"Step 1 failed - Error creating analyzer: {str(e)}")
+                raise
 
-            sys_info = file_io.load_sys_info(
-                Path(self.selected_path).joinpath("sysinfo.csv")
-            )
+            # Step 2: Sanitize analyzer
+            try:
+                self.logger.info("Step 2: Sanitizing analyzer")
+                analyzer.sanitize()
+                self.logger.info("Step 2: Analyzer sanitized successfully")
+            except Exception as e:
+                self.logger.error(f"Step 2 failed - Error sanitizing analyzer: {str(e)}")
+                raise
 
-            sys_info = sys_info.iloc[0].to_dict()
-            self.app.load_soc_specs(sys_info)
+            # Step 3: Load sys_info
+            try:
+                self.logger.info("Step 3: Loading sys_info")
+                sysinfo_path = Path(self.selected_path).joinpath("sysinfo.csv")
+                self.logger.info(f"Step 3: sysinfo_path = {sysinfo_path}")
 
-            analyzer.set_soc(self.app.soc)
-            analyzer.pre_processing()
-            self.dfs = analyzer.run_analysis()
+                if not sysinfo_path.exists():
+                    raise FileNotFoundError(f"sysinfo.csv not found at {sysinfo_path}")
+
+                sys_info_df = file_io.load_sys_info(sysinfo_path)
+                self.logger.info(f"Step 3: sys_info_df type = {type(sys_info_df)}")
+                self.logger.info(f"Step 3: sys_info_df shape = {sys_info_df.shape if hasattr(sys_info_df, 'shape') else 'No shape attribute'}")
+                self.logger.info(f"Step 3: sys_info_df = {sys_info_df}")
+
+            except Exception as e:
+                self.logger.error(f"Step 3 failed - Error loading sys_info: {str(e)}")
+                raise
+
+            # Step 4: Convert sys_info to dict
+            try:
+                self.logger.info("Step 4: Converting sys_info to dict")
+
+                # Check if it's actually a DataFrame
+                if hasattr(sys_info_df, 'iloc'):
+                    sys_info = sys_info_df.iloc[0].to_dict()
+                elif hasattr(sys_info_df, 'to_dict'):
+                    # If it's already a Series
+                    sys_info = sys_info_df.to_dict()
+                elif isinstance(sys_info_df, dict):
+                    # If it's already a dict
+                    sys_info = sys_info_df
+                else:
+                    raise TypeError(f"Unexpected type for sys_info: {type(sys_info_df)}")
+
+                self.logger.info(f"Step 4: sys_info converted = {sys_info}")
+                self.logger.info(f"Step 4: sys_info type = {type(sys_info)}")
+
+            except Exception as e:
+                self.logger.error(f"Step 4 failed - Error converting sys_info: {str(e)}")
+                raise
+
+            # Step 5: Load SoC specs
+            try:
+                self.logger.info("Step 5: Loading SoC specs")
+                self.app.load_soc_specs(sys_info)
+                self.logger.info(f"Step 5: SoC loaded = {self.app.soc}")
+            except Exception as e:
+                self.logger.error(f"Step 5 failed - Error loading SoC specs: {str(e)}")
+                raise
+
+            # Step 6: Set SoC in analyzer
+            try:
+                self.logger.info("Step 6: Setting SoC in analyzer")
+                analyzer.set_soc(self.app.soc)
+                self.logger.info("Step 6: SoC set successfully")
+            except Exception as e:
+                self.logger.error(f"Step 6 failed - Error setting SoC: {str(e)}")
+                raise
+
+            # Step 7: Pre-processing
+            try:
+                self.logger.info("Step 7: Running pre-processing")
+                analyzer.pre_processing()
+                self.logger.info("Step 7: Pre-processing completed")
+            except Exception as e:
+                self.logger.error(f"Step 7 failed - Error in pre-processing: {str(e)}")
+                raise
+            # Step 8: Run analysis
+            try:
+                self.logger.info("Step 8: Running analysis")
+                self.dfs = analyzer.run_analysis()
+                self.logger.info("Step 8: Analysis completed successfully")
+            except Exception as e:
+                self.logger.error(f"Step 8 failed - Error running analysis: {str(e)}")
+                raise
+
+            # Success
+            success_msg = f"Analysis completed successfully for {self.selected_path}"
+            self.logger.info(success_msg)
+            self._update_view(success_msg, LogLevel.SUCCESS)
 
         except Exception as e:
-            self.logger.error(f"Unexpected error during analysis: {str(e)}")
-            self._update_view(
-                f"Unexpected error during analysis: {str(e)}", LogLevel.ERROR
-            )
+            import traceback
+            error_msg = f"Unexpected error during analysis: {str(e)}"
+            self.logger.error(error_msg)
+            self.logger.error(f"Full traceback:\n{traceback.format_exc()}")
+            self._update_view(error_msg, LogLevel.ERROR)
 
     def _update_view(self, message: str, log_level: LogLevel) -> None:
         try:

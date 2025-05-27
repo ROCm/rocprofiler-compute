@@ -43,7 +43,7 @@ class RocprofTUIApp(App):
         self.supported_archs = supported_archs or {}
 
         # Initialize analysis-related attributes
-        self.soc: List = []  # List to store SoC objects
+        self.soc: Dict = {}  # Dict to store SoC objects
         self.mspec: Optional[MachineSpecs] = None
 
     def compose(self) -> ComposeResult:
@@ -89,7 +89,7 @@ class RocprofTUIApp(App):
     async def pick_a_directory(self) -> None:
         if opened := await self.push_screen_wait(SelectDirectory()):
             self.main_view.selected_path = opened
-            dropdown = self.query_one(f"#{"file-dropdown"}", DropdownMenu)
+            dropdown = self.query_one(f"#file-dropdown", DropdownMenu)
             dropdown.add_class("hidden")
             self.main_view.run_analysis()
 

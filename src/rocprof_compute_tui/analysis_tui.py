@@ -32,55 +32,57 @@ from utils.logger import console_error, demarcate
 
 
 class tui_analysis(OmniAnalyze_Base):
+    def __init__(self, args, supported_archs, path):
+        super().__init__(args, supported_archs)
+        self.path = str(path)
+
     # -----------------------
     # Required child methods
     # -----------------------
     @demarcate
     def pre_processing(self):
         """Perform any pre-processing steps prior to analysis."""
-        super().pre_processing()
         if self.get_args().random_port:
             console_error("--gui flag is required to enable --random-port")
-        for d in self.get_args().path:
 
-            # create 'mega dataframe'
-            self._runs[d[0]].raw_pmc = file_io.create_df_pmc(
-                d[0],
-                self.get_args().nodes,
-                self.get_args().spatial_multiplexing,
-                self.get_args().kernel_verbose,
-                self.get_args().verbose,
+        # create 'mega dataframe'
+        self._runs[self.path].raw_pmc = file_io.create_df_pmc(
+            self.path,
+            self.get_args().nodes,
+            self.get_args().spatial_multiplexing,
+            self.get_args().kernel_verbose,
+            self.get_args().verbose,
+        )
+
+        if self.get_args().spatial_multiplexing:
+            self._runs[self.path].raw_pmc = self.spatial_multiplex_merge_counters(
+                self._runs[self.path].raw_pmc
             )
 
-            if self.get_args().spatial_multiplexing:
-                self._runs[d[0]].raw_pmc = self.spatial_multiplex_merge_counters(
-                    self._runs[d[0]].raw_pmc
-                )
+        file_io.create_df_kernel_top_stats(
+            df_in=self._runs[self.path].raw_pmc,
+            raw_data_dir=self.path,
+            filter_gpu_ids=self._runs[self.path].filter_gpu_ids,
+            filter_dispatch_ids=self._runs[self.path].filter_dispatch_ids,
+            filter_nodes=self._runs[self.path].filter_nodes,
+            time_unit=self.get_args().time_unit,
+            max_stat_num=self.get_args().max_stat_num,
+            kernel_verbose=self.get_args().kernel_verbose,
+        )
 
-            file_io.create_df_kernel_top_stats(
-                df_in=self._runs[d[0]].raw_pmc,
-                raw_data_dir=d[0],
-                filter_gpu_ids=self._runs[d[0]].filter_gpu_ids,
-                filter_dispatch_ids=self._runs[d[0]].filter_dispatch_ids,
-                filter_nodes=self._runs[d[0]].filter_nodes,
-                time_unit=self.get_args().time_unit,
-                max_stat_num=self.get_args().max_stat_num,
-                kernel_verbose=self.get_args().kernel_verbose,
-            )
+        # demangle and overwrite original 'Kernel_Name'
+        kernel_name_shortener(
+            self._runs[self.path].raw_pmc, self.get_args().kernel_verbose
+        )
 
-            # demangle and overwrite original 'Kernel_Name'
-            kernel_name_shortener(
-                self._runs[d[0]].raw_pmc, self.get_args().kernel_verbose
-            )
-
-            # create the loaded table
-            parser.load_table_data(
-                workload=self._runs[d[0]],
-                dir=d[0],
-                is_gui=False,
-                debug=self.get_args().debug,
-                verbose=self.get_args().verbose,
-            )
+        # create the loaded table
+        parser.load_table_data(
+            workload=self._runs[self.path],
+            dir=self.path,
+            is_gui=False,
+            debug=self.get_args().debug,
+            verbose=self.get_args().verbose,
+        )
 
     @demarcate
     def run_analysis(self):
@@ -90,9 +92,7 @@ class tui_analysis(OmniAnalyze_Base):
         results = process_panels_to_dataframes(
             self.get_args(),
             self._runs,
-            self._arch_configs[
-                self._runs[self.get_args().path[0][0]].sys_info.iloc[0]["gpu_arch"]
-            ],
+            self._arch_configs[self._runs[self.path].sys_info.iloc[0]["gpu_arch"]],
             self._profiling_config,
         )
         return results
