@@ -19,6 +19,7 @@ def create_table(df: pd.DataFrame) -> DataTable:
     table = DataTable(zebra_stripes=True)
 
     # Clean the DataFrame - remove NaN and empty cells
+    df = df.reset_index()
     df = df.dropna(how="any")
     df = df[~df.apply(lambda row: row.astype(str).str.strip().eq("").any(), axis=1)]
 
