@@ -289,19 +289,13 @@ def get_table_dfs():
     return section_dfs
 
 
-def analyze_runner(workload_path):
-    filename = str(Path(os.getcwd()).joinpath("analyze_output.csv"))
-
-    pass
-
-
 def process_panels_to_dataframes(args, runs, archConfigs, profiling_config):
     """
     Process panel data into pandas DataFrames.
     Returns a nested dictionary structure with DataFrames and tui_style information.
 
     Returns:
-        dict: Nested structure {
+        Dict[str, Dict[str, Dict[str, Any]]]: Nested structure {
             "section_name": {
                 "subsection_name": {
                     "df": DataFrame,
@@ -409,13 +403,13 @@ def process_panels_to_dataframes(args, runs, archConfigs, profiling_config):
                         if transpose:
                             df = df.T
 
-                        # Store the DataFrame
+                        # Store the DataFrame with tui_style as separate keys
                         result_structure[section_name][subsection_name] = {
                             "df": df,
                             "tui_style": None,
                         }
 
-                        # Check for tui_style
+                        # Set tui_style if available
                         if type == "metric_table" and "tui_style" in table_config:
                             result_structure[section_name][subsection_name][
                                 "tui_style"

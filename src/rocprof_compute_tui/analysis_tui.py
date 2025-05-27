@@ -22,11 +22,13 @@
 # SOFTWARE.
 ##############################################################################el
 
+import copy
 import sys
+from pathlib import Path
 
 from rocprof_compute_analyze.analysis_base import OmniAnalyze_Base
 from rocprof_compute_tui.utils.tui_utils import process_panels_to_dataframes
-from utils import file_io, parser
+from utils import file_io, parser, schema
 from utils.kernel_name_shortener import kernel_name_shortener
 from utils.logger import console_error, demarcate
 
@@ -42,6 +44,12 @@ class tui_analysis(OmniAnalyze_Base):
     @demarcate
     def pre_processing(self):
         """Perform any pre-processing steps prior to analysis."""
+        # Read profiling config
+        self._profiling_config = file_io.load_profiling_config(self.path)
+
+        # initalize runs
+        self._runs = self.initalize_runs()
+
         if self.get_args().random_port:
             console_error("--gui flag is required to enable --random-port")
 
@@ -83,6 +91,40 @@ class tui_analysis(OmniAnalyze_Base):
             debug=self.get_args().debug,
             verbose=self.get_args().verbose,
         )
+
+    def initalize_runs(self, normalization_filter=None):
+        # load required configs
+        sysinfo_path = Path(self.path)
+        sys_info = file_io.load_sys_info(sysinfo_path.joinpath("sysinfo.csv"))
+        arch = sys_info.iloc[0]["gpu_arch"]
+        args = self.get_args()
+        self.generate_configs(
+            arch,
+            args.config_dir,
+            args.list_stats,
+            args.filter_metrics,
+            sys_info.iloc[0],
+        )
+
+        self.load_options(normalization_filter)
+
+        w = schema.Workload()
+        # FIXME:
+        #    For regular single node case, load sysinfo.csv directly
+        #    For multi-node, either the default "all", or specified some,
+        #    pick up the one in the 1st sub_dir. We could fix it properly later.
+        sysinfo_path = Path(self.path)
+        w.sys_info = file_io.load_sys_info(sysinfo_path.joinpath("sysinfo.csv"))
+        arch = w.sys_info.iloc[0]["gpu_arch"]
+        mspec = self.get_socs()[arch]._mspec
+        if args.specs_correction:
+            w.sys_info = parser.correct_sys_info(mspec, args.specs_correction)
+        w.avail_ips = w.sys_info["ip_blocks"].item().split("|")
+        w.dfs = copy.deepcopy(self._arch_configs[arch].dfs)
+        w.dfs_type = self._arch_configs[arch].dfs_type
+        self._runs[self.path] = w
+
+        return self._runs
 
     @demarcate
     def run_analysis(self):

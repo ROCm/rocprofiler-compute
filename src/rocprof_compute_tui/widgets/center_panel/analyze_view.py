@@ -39,10 +39,10 @@ class AnalyzeView(ScrollableContainer):
 
         # Create and mount widgets one by one to preserve order
         try:
-            self.mount(build_summary_section(dfs))
-            self.mount(build_sysinfo_section(dfs))
-            self.mount(build_kernel_section(dfs))
-            self.mount(build_source_section(dfs))
+            self.mount(build_summary_section(self.dfs))
+            self.mount(build_sysinfo_section(self.dfs))
+            self.mount(build_kernel_section(self.dfs))
+            self.mount(build_source_section(self.dfs))
 
         except Exception as e:
             self.mount(Label(f"Error displaying results: {str(e)}", classes="error"))

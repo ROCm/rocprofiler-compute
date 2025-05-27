@@ -205,15 +205,16 @@ class MainView(Horizontal):
             try:
                 self.logger.info("Step 8: Running analysis")
                 self.dfs = analyzer.run_analysis()
-                self.logger.info("Step 8: Analysis completed successfully")
+                if not self.dfs:
+                    warning_msg = "Step 8: Analysis completed but no data was returned"
+                    self._update_view(warning_msg, LogLevel.WARNING)
+                    self.logger.warning(warning_msg)
+                else:
+                    self.app.call_from_thread(self.refresh_results)
+                    self.logger.info("Step 8: Analysis completed successfully")
             except Exception as e:
                 self.logger.error(f"Step 8 failed - Error running analysis: {str(e)}")
                 raise
-
-            # Success
-            success_msg = f"Analysis completed successfully for {self.selected_path}"
-            self.logger.info(success_msg)
-            self._update_view(success_msg, LogLevel.SUCCESS)
 
         except Exception as e:
             import traceback
@@ -253,7 +254,7 @@ class MainView(Horizontal):
                 return
 
             analyze_view.update_results(self.dfs)
-            self.logger.success("Results displayed successfully")
+            self.logger.success(f"Results displayed successfully: {str(self.dfs)}")
         except Exception as e:
             self.logger.error(f"Error refreshing results: {str(e)}")
 

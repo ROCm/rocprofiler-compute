@@ -35,7 +35,7 @@ def build_summary_section(dfs: Dict[str, Any]) -> Collapsible:
 
     try:
         # Top Kernels section
-        df = dfs["0. Top Stats"]["0.1 Top Kernels"]
+        df = dfs["0. Top Stats"]["0.1 Top Kernels"]["df"]
         summary_children.append(
             Collapsible(
                 Label("Top Kernels by Duration (ns):", classes="section-header"),
@@ -46,12 +46,12 @@ def build_summary_section(dfs: Dict[str, Any]) -> Collapsible:
         )
     except (KeyError, Exception) as e:
         summary_children.append(
-            Label(f"Top Kernels data not available", classes="warning")
+            Label(f"Top Kernels data not available: {str(e)}", classes="warning")
         )
 
     try:
         # Dispatch List
-        df = dfs["0. Top Stats"]["0.2 Dispatch List"]
+        df = dfs["0. Top Stats"]["0.2 Dispatch List"]["df"]
         summary_children.append(
             Collapsible(
                 create_table(df),
@@ -61,12 +61,12 @@ def build_summary_section(dfs: Dict[str, Any]) -> Collapsible:
         )
     except (KeyError, Exception) as e:
         summary_children.append(
-            Label(f"Dispatch List data not available", classes="warning")
+            Label(f"Dispatch List data not available: {str(e)}", classes="warning")
         )
 
     try:
         # System Info
-        df = dfs["1. System Info"]["0.2 Dispatch List"]
+        df = dfs["1. System Info"]["0.2 Dispatch List"]["df"]
         summary_children.append(
             Collapsible(
                 create_table(df),
@@ -76,7 +76,7 @@ def build_summary_section(dfs: Dict[str, Any]) -> Collapsible:
         )
     except (KeyError, Exception) as e:
         summary_children.append(
-            Label(f"System Info data not available", classes="warning")
+            Label(f"System Info data not available: {str(e)}", classes="warning")
         )
 
     # Create and return the top-level collapsible
@@ -90,7 +90,7 @@ def build_sysinfo_section(dfs: Dict[str, Any]) -> Collapsible:
 
     try:
         # Speed-of-Light section
-        df = dfs["2. System Speed-of-Light"]["2.1 Speed-of-Light"]
+        df = dfs["2. System Speed-of-Light"]["2.1 Speed-of-Light"]["df"]
         sysinf_children.append(
             Collapsible(
                 create_table(df),
@@ -100,7 +100,7 @@ def build_sysinfo_section(dfs: Dict[str, Any]) -> Collapsible:
         )
     except (KeyError, Exception) as e:
         sysinf_children.append(
-            Label(f"Speed-of-Light data not available", classes="warning")
+            Label(f"Speed-of-Light data not available: {str(e)}", classes="warning")
         )
 
     # Roofline section
@@ -115,7 +115,7 @@ def build_sysinfo_section(dfs: Dict[str, Any]) -> Collapsible:
 
     try:
         # Memory Chart section
-        df = dfs["3. Memory Chart"]["3.1 Memory Chart"]
+        df = dfs["3. Memory Chart"]["3.1 Memory Chart"]["df"]
         sysinf_children.append(
             Collapsible(
                 MemoryChart(df),
@@ -125,7 +125,7 @@ def build_sysinfo_section(dfs: Dict[str, Any]) -> Collapsible:
         )
     except (KeyError, Exception) as e:
         sysinf_children.append(
-            Label(f"Memory Chart data not available", classes="warning")
+            Label(f"Memory Chart data not available: {str(e)}", classes="warning")
         )
 
     # Create and return the top-level collapsible
@@ -146,6 +146,7 @@ def build_kernel_section(dfs: Dict[str, Any]) -> Collapsible:
 
             kernel_children = []
             for subsection_name, df in subsections.items():
+                df = df["df"]
                 kernel_children.append(
                     Collapsible(create_table(df), title=subsection_name, collapsed=True)
                 )
