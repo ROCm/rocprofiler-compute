@@ -205,6 +205,7 @@ class OmniSoC_Base:
 
         from utils.specs import run, search
 
+        # TODO: use amd-smi python api when available
         amd_smi_static = run(["amd-smi", "static", "--gpu=0"], exit_on_error=True)
 
         # Purposely search for patterns without variants suffix to try and match a known GPU model.
