@@ -10,12 +10,12 @@ from textual import on, work
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.reactive import reactive
+from textual.widgets import DataTable
 
 from rocprof_compute_tui.analysis_tui import tui_analysis
 from rocprof_compute_tui.config import DEFAULT_START_PATH
 from rocprof_compute_tui.utils.tui_utils import Logger, LogLevel
 from rocprof_compute_tui.widgets.center_panel.center_area import CenterPanel
-from rocprof_compute_tui.widgets.collapsibles import DataTable
 from rocprof_compute_tui.widgets.menu_bar.menu_bar import MenuBar
 from rocprof_compute_tui.widgets.right_panel.right import RightPanel
 from rocprof_compute_tui.widgets.tabs.tabs_area import TabsArea

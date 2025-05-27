@@ -1,12 +1,8 @@
-"""
-Collapsible Section Widgets
--------------------------
-Contains collapsible section builders that match the original structure.
-"""
-
-from typing import Any, Dict
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
+import yaml
 from textual.containers import VerticalScroll
 from textual.widgets import Collapsible, DataTable, Label
 
@@ -15,7 +11,6 @@ from rocprof_compute_tui.widgets.charts import MemoryChart, RooflinePlot
 
 
 def create_table(df: pd.DataFrame) -> DataTable:
-    """Create a data table from a DataFrame."""
     table = DataTable(zebra_stripes=True)
 
     # Clean the DataFrame - remove NaN and empty cells
@@ -31,144 +26,202 @@ def create_table(df: pd.DataFrame) -> DataTable:
     return table
 
 
-def build_summary_section(dfs: Dict[str, Any]) -> Collapsible:
-    summary_children = []
-
+def load_config(config_path) -> Dict[str, Any]:
     try:
-        # Top Kernels section
-        df = dfs["0. Top Stats"]["0.1 Top Kernels"]["df"]
-        summary_children.append(
-            Collapsible(
-                Label("Top Kernels by Duration (ns):", classes="section-header"),
-                create_table(df),
-                title="Top Kernels",
-                collapsed=True,
-            )
-        )
-    except (KeyError, Exception) as e:
-        summary_children.append(
-            Label(f"Top Kernels data not available: {str(e)}", classes="warning")
-        )
+        with open(config_path, "r") as file:
+            return yaml.safe_load(file)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Configuration file {config_path} not found")
+    except yaml.YAMLError as e:
+        raise ValueError(f"Error parsing YAML configuration: {e}")
 
+
+def get_data_from_path(dfs: Dict[str, Any], path: List[str]) -> Optional[pd.DataFrame]:
     try:
-        # Dispatch List
-        df = dfs["0. Top Stats"]["0.2 Dispatch List"]["df"]
-        summary_children.append(
-            Collapsible(
-                create_table(df),
-                title="Dispatch List",
-                collapsed=True,
-            )
-        )
-    except (KeyError, Exception) as e:
-        summary_children.append(
-            Label(f"Dispatch List data not available: {str(e)}", classes="warning")
-        )
+        current = dfs
+        for key in path:
+            current = current[key]
+        return current["df"]
+    except (KeyError, TypeError):
+        return None
 
+
+def get_tui_style_from_path(dfs: Dict[str, Any], path: List[str]) -> Optional[str]:
     try:
-        # System Info
-        df = dfs["1. System Info"]["1.1"]["df"]
-        summary_children.append(
-            Collapsible(
-                create_table(df),
-                title="System Info",
-                collapsed=True,
+        current = dfs
+        for key in path:
+            current = current[key]
+        return current.get("tui_style")
+    except (KeyError, TypeError):
+        return None
+
+
+def create_widget_from_data(df: pd.DataFrame, tui_style: Optional[str] = None) -> Any:
+    if tui_style is None:
+        return create_table(df)
+    # ####################
+    # TODO: ROOFLINE HERE
+    # ####################
+    if tui_style == "mem_chart":
+        return (
+            MemoryChart(df)
+            if df is not None
+            else Label("Memory Chart data not available")
+        )
+    return Label(f"Unknown widget type: {tui_style}")
+
+
+def build_subsection(
+    subsection_config: Dict[str, Any], dfs: Dict[str, Any]
+) -> Collapsible:
+    title = subsection_config["title"]
+    collapsed = subsection_config.get("collapsed", True)
+    tui_style = subsection_config.get("tui_style")
+
+    # Handle data-driven widgets
+    if "data_path" in subsection_config:
+        data_path = subsection_config["data_path"]
+
+        if tui_style is None:
+            tui_style = (
+                get_tui_style_from_path(dfs, data_path) if dfs is not None else None
             )
-        )
-    except (KeyError, Exception) as e:
-        summary_children.append(
-            Label(f"System Info data not available: {str(e)}", classes="warning")
-        )
 
-    # Create and return the top-level collapsible
-    summary = Collapsible(*summary_children, title="📊 Summaries", collapsed=True)
-    summary.add_class("summary-section")
-    return summary
+        df = get_data_from_path(dfs, data_path)
 
-
-def build_sysinfo_section(dfs: Dict[str, Any]) -> Collapsible:
-    sysinf_children = []
-
-    try:
-        # Speed-of-Light section
-        df = dfs["2. System Speed-of-Light"]["2.1 Speed-of-Light"]["df"]
-        sysinf_children.append(
-            Collapsible(
-                create_table(df),
-                title="System Speed-of-Light",
-                collapsed=True,
+        if df is None and tui_style is None:
+            error_msg = (
+                f"{title} data not available: Path {' -> '.join(data_path)} not found"
             )
-        )
-    except (KeyError, Exception) as e:
-        sysinf_children.append(
-            Label(f"Speed-of-Light data not available: {str(e)}", classes="warning")
-        )
-
-    # Roofline section
-    sysinf_children.append(
-        Collapsible(
-            VerticalScroll(RooflinePlot()),
-            title="Roofline",
-            collapsed=True,
-            id="roofline-plot",
-        )
-    )
-
-    try:
-        # Memory Chart section
-        df = dfs["3. Memory Chart"]["3.1 Memory Chart"]["df"]
-        sysinf_children.append(
-            Collapsible(
-                MemoryChart(df),
-                title="Memory Chart",
-                collapsed=True,
+            return Collapsible(
+                Label(error_msg, classes="warning"), title=title, collapsed=collapsed
             )
+
+
+        # Create main widget
+        widget = create_widget_from_data(df, tui_style)
+
+        # Add header label if specified
+        widgets = []
+        if "header_label" in subsection_config:
+            header_class = subsection_config.get("header_class", "")
+            widgets.append(Label(subsection_config["header_label"], classes=header_class))
+
+        widgets.append(widget)
+
+        collapsible = Collapsible(*widgets, title=title, collapsed=collapsed)
+
+    # HACK: only because no real roofline data right now
+    elif tui_style == "roofline":
+        widget = VerticalScroll(RooflinePlot())
+        collapsible = Collapsible(widget, title=title, collapsed=collapsed)
+
+    # Fallback for subsections without data or style
+    else:
+        collapsible = Collapsible(
+            Label(f"No data or style configuration for {title}"),
+            title=title,
+            collapsed=collapsed,
         )
-    except (KeyError, Exception) as e:
-        sysinf_children.append(
-            Label(f"Memory Chart data not available: {str(e)}", classes="warning")
-        )
 
-    # Create and return the top-level collapsible
-    sysinfo = Collapsible(
-        *sysinf_children, title="⚡ High Level Analysis", collapsed=True
-    )
-    sysinfo.add_class("sysinfo-section")
-    return sysinfo
+    # Add ID if specified
+    if "widget_id" in subsection_config:
+        collapsible.id = subsection_config["widget_id"]
+
+    return collapsible
 
 
-def build_kernel_section(dfs: Dict[str, Any]) -> Collapsible:
+def build_dynamic_kernel_sections(
+    dfs: Dict[str, Any], skip_sections: List[str]
+) -> List[Collapsible]:
     children = []
 
     try:
         for section_name, subsections in dfs.items():
-            if section_name in SECTIONS_TO_SKIP:
+            if section_name in skip_sections:
                 continue
 
             kernel_children = []
-            for subsection_name, df in subsections.items():
-                df = df["df"]
-                kernel_children.append(
-                    Collapsible(create_table(df), title=subsection_name, collapsed=True)
-                )
+            for subsection_name, data in subsections.items():
+                if isinstance(data, dict) and "df" in data:
+                    df = data["df"]
+                    tui_style = data.get("tui_style")
+                    widget = create_widget_from_data(df, tui_style)
+                    kernel_children.append(
+                        Collapsible(widget, title=subsection_name, collapsed=True)
+                    )
 
             if kernel_children:
                 children.append(
                     Collapsible(*kernel_children, title=section_name, collapsed=True)
                 )
+
     except Exception as e:
         children.append(Label(f"Error in Kernel Section: {str(e)}", classes="error"))
 
-    # Create and return the top-level collapsible
-    kernels = Collapsible(*children, title="🔍 Detailed Block Analysis", collapsed=True)
-    kernels.add_class("kernels-section")
-    return kernels
+    return children
 
 
-def build_source_section(dfs: Dict[str, Any]) -> Collapsible:
-    children = [Label("🚧 Under Construction", classes="section-header")]
+def build_section_from_config(
+    section_config: Dict[str, Any], dfs: Dict[str, Any]
+) -> Collapsible:
+    title = section_config["title"]
+    collapsed = section_config.get("collapsed", True)
+    css_class = section_config.get("class")
 
-    # Create and return the top-level collapsible
-    sources = Collapsible(*children, title="🚧 Source Level Analysis/PC Sampling", collapsed=True)
-    sources.add_class("source-section")
-    return sources
+    # Handle under construction sections
+    if section_config.get("under_construction", False):
+        construction_label = section_config.get(
+            "construction_label", "Under Construction"
+        )
+        construction_class = section_config.get("construction_class", "")
+        children = [Label(construction_label, classes=construction_class)]
+
+    # Handle dynamic sections (like kernel sections)
+    elif section_config.get("dynamic_sections", False):
+        skip_sections = section_config.get("skip_sections", [])
+        children = build_dynamic_kernel_sections(dfs, skip_sections)
+
+    # Handle regular sections with subsections
+    elif "subsections" in section_config:
+        children = []
+        for subsection_config in section_config["subsections"]:
+            try:
+                subsection = build_subsection(subsection_config, dfs)
+                children.append(subsection)
+            except Exception as e:
+                error_msg = f"{subsection_config.get('title', 'Unknown')} error: {str(e)}"
+                children.append(Label(error_msg, classes="warning"))
+
+    else:
+        children = [Label("No configuration provided for this section")]
+
+    # Create the main collapsible
+    collapsible = Collapsible(*children, title=title, collapsed=collapsed)
+
+    # Add CSS class if specified
+    if css_class:
+        collapsible.add_class(css_class)
+
+    return collapsible
+
+
+def build_all_sections(dfs: Dict[str, Any], config_path) -> List[Collapsible]:
+    config = load_config(config_path)
+    sections = []
+
+    for section_config in config["sections"]:
+        try:
+            section = build_section_from_config(section_config, dfs)
+            sections.append(section)
+        except Exception as e:
+            # Create error section if something goes wrong
+            error_title = section_config.get("title", "Unknown Section")
+            error_section = Collapsible(
+                Label(f"Error building section: {str(e)}", classes="error"),
+                title=f"❌ {error_title}",
+                collapsed=True,
+            )
+            sections.append(error_section)
+
+    return sections
