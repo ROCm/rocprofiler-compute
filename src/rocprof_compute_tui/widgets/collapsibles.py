@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
@@ -6,7 +5,6 @@ import yaml
 from textual.containers import VerticalScroll
 from textual.widgets import Collapsible, DataTable, Label
 
-from rocprof_compute_tui.config import SECTIONS_TO_SKIP
 from rocprof_compute_tui.widgets.charts import MemoryChart, RooflinePlot
 
 
@@ -96,7 +94,6 @@ def build_subsection(
             return Collapsible(
                 Label(error_msg, classes="warning"), title=title, collapsed=collapsed
             )
-
 
         # Create main widget
         widget = create_widget_from_data(df, tui_style)

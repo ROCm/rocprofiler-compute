@@ -16,7 +16,7 @@ class AnalyzeView(ScrollableContainer):
     """Center panel with analysis results."""
 
     def __init__(
-        self, config_path: str = "src/rocprof_compute_tui/utils/analyze_display.yaml"
+        self, config_path: str = "src/rocprof_compute_tui/utils/analyze_config.yaml"
     ):
         super().__init__(id="analyze-view")
         self.dfs = {}

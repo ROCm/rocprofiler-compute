@@ -604,7 +604,6 @@ Examples:
         "--tui",
         type=int,
         nargs="?",
-        const=8050,
         help="\t\tActivate a TUI to interate with rocprofiler-compute metrics.",
     )
 
