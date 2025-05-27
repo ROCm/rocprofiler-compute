@@ -66,7 +66,7 @@ def build_summary_section(dfs: Dict[str, Any]) -> Collapsible:
 
     try:
         # System Info
-        df = dfs["1. System Info"]["0.2 Dispatch List"]["df"]
+        df = dfs["1. System Info"]["1.1"]["df"]
         summary_children.append(
             Collapsible(
                 create_table(df),
@@ -168,6 +168,6 @@ def build_source_section(dfs: Dict[str, Any]) -> Collapsible:
     children = [Label("🚧 Under Construction", classes="section-header")]
 
     # Create and return the top-level collapsible
-    sources = Collapsible(*children, title="🚧 Source Level Analysis", collapsed=True)
+    sources = Collapsible(*children, title="🚧 Source Level Analysis/PC Sampling", collapsed=True)
     sources.add_class("source-section")
     return sources
