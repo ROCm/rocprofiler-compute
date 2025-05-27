@@ -38,7 +38,7 @@ class gfx908_soc(OmniSoC_Base):
             ["rocprofv1", "rocscope", "rocprofv3", "rocprofiler-sdk"]
         )
         # Per IP block max number of simultaneous counters. GFX IP Blocks
-        self.set_perfmon_config(mi_gpu_specs.get_perfmon_config("soc_gfx908"))
+        self.set_perfmon_config(mi_gpu_specs.get_perfmon_config("gfx908"))
 
         # Set arch specific specs
         self._mspec._l2_banks = 32

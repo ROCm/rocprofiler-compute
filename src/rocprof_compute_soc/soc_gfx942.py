@@ -33,6 +33,7 @@ from utils.utils import mibench
 
 
 class gfx942_soc(OmniSoC_Base):
+    @demarcate
     def __init__(self, args, mspec):
         super().__init__(args, mspec)
         self.set_arch("gfx942")
@@ -51,7 +52,7 @@ class gfx942_soc(OmniSoC_Base):
             ["rocprofv1", "rocprofv2", "rocprofv3", "rocprofiler-sdk"]
         )
         # Per IP block max number of simultaneous counters. GFX IP Blocks
-        self.set_perfmon_config(mi_gpu_specs.get_perfmon_config("soc_gfx942"))
+        self.set_perfmon_config(mi_gpu_specs.get_perfmon_config("gfx942"))
         # Create roofline object if mode is provided; skip for --specs
         if hasattr(self.get_args(), "mode") and self.get_args().mode:
             self.roofline_obj = Roofline(args, self._mspec)

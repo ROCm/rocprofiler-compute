@@ -1,10 +1,10 @@
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Dict
 
 import yaml
 
-from utils.logger import console_debug, console_error, console_log, console_warning
+from utils.logger import console_debug, console_error, console_warning
 
 # Constants for MI series
 # NOTE: Currently supports MI50, MI100, MI200, MI300
