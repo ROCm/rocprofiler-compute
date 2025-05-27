@@ -395,6 +395,7 @@ class RocProfCompute:
             analyzer = webui_analysis(self.__args, self.__supported_archs)
         elif self.__analyze_mode == "tui":
             from rocprof_compute_tui.tui_app import run_tui
+
             run_tui(self.__args, self.__supported_archs)
             return
         else:

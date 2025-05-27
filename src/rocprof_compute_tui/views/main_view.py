@@ -13,10 +13,7 @@ from textual.reactive import reactive
 
 from rocprof_compute_tui.analysis_tui import tui_analysis
 from rocprof_compute_tui.config import DEFAULT_START_PATH
-from rocprof_compute_tui.utils.tui_utils import (
-    Logger,
-    LogLevel,
-)
+from rocprof_compute_tui.utils.tui_utils import Logger, LogLevel
 from rocprof_compute_tui.widgets.center_panel.center_area import CenterPanel
 from rocprof_compute_tui.widgets.collapsibles import DataTable
 from rocprof_compute_tui.widgets.menu_bar.menu_bar import MenuBar
@@ -119,7 +116,9 @@ class MainView(Horizontal):
                 self.logger.info(f"Step 1: args {self.app.args}")
                 self.logger.info(f"Step 1: arch {self.app.supported_archs}")
                 self.logger.info("Step 1: Creating analyzer")
-                analyzer = tui_analysis(self.app.args, self.app.supported_archs, self.selected_path)
+                analyzer = tui_analysis(
+                    self.app.args, self.app.supported_archs, self.selected_path
+                )
                 self.logger.info("Step 1: Analyzer created successfully")
             except Exception as e:
                 self.logger.error(f"Step 1 failed - Error creating analyzer: {str(e)}")
@@ -145,7 +144,9 @@ class MainView(Horizontal):
 
                 sys_info_df = file_io.load_sys_info(sysinfo_path)
                 self.logger.info(f"Step 3: sys_info_df type = {type(sys_info_df)}")
-                self.logger.info(f"Step 3: sys_info_df shape = {sys_info_df.shape if hasattr(sys_info_df, 'shape') else 'No shape attribute'}")
+                self.logger.info(
+                    f"Step 3: sys_info_df shape = {sys_info_df.shape if hasattr(sys_info_df, 'shape') else 'No shape attribute'}"
+                )
                 self.logger.info(f"Step 3: sys_info_df = {sys_info_df}")
 
             except Exception as e:
@@ -157,9 +158,9 @@ class MainView(Horizontal):
                 self.logger.info("Step 4: Converting sys_info to dict")
 
                 # Check if it's actually a DataFrame
-                if hasattr(sys_info_df, 'iloc'):
+                if hasattr(sys_info_df, "iloc"):
                     sys_info = sys_info_df.iloc[0].to_dict()
-                elif hasattr(sys_info_df, 'to_dict'):
+                elif hasattr(sys_info_df, "to_dict"):
                     # If it's already a Series
                     sys_info = sys_info_df.to_dict()
                 elif isinstance(sys_info_df, dict):
@@ -218,6 +219,7 @@ class MainView(Horizontal):
 
         except Exception as e:
             import traceback
+
             error_msg = f"Unexpected error during analysis: {str(e)}"
             self.logger.error(error_msg)
             self.logger.error(f"Full traceback:\n{traceback.format_exc()}")
