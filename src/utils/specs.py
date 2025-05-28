@@ -216,7 +216,9 @@ def generate_machine_specs(args, sysinfo: dict = None):
     soc_obj = soc_class(args, specs)
     # Update arch specific specs
     specs.gpu_model = mi_gpu_specs.get_gpu_model(specs.gpu_arch, specs.gpu_chip_id)
-    specs.num_xcd = mi_gpu_specs.get_num_xcds(specs.gpu_arch, specs.gpu_model, specs.compute_partition)
+    specs.num_xcd = mi_gpu_specs.get_num_xcds(
+        specs.gpu_arch, specs.gpu_model, specs.compute_partition
+    )
     specs.total_l2_chan: str = total_l2_banks(
         specs.gpu_arch, specs.gpu_model, specs._l2_banks, specs.compute_partition
     )
