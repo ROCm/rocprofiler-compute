@@ -96,7 +96,7 @@ def get_num_xcds():
         num_xcds = GFX942_CHIP_IDS_TO_NUM_XCDS[str(chip_id)]
 
     if not num_xcds:
-        return 8 # Default should be 8
+        return 8  # Default to 8 if can't be determined using gpu spec
 
     return num_xcds
 
