@@ -602,11 +602,9 @@ Examples:
     )
     analyze_group.add_argument(
         "--tui",
-        type=int,
-        nargs="?",
-        help="\t\tActivate a TUI to interate with rocprofiler-compute metrics.",
+        action="store_true",
+        help="\t\tActivate a Textual User Interface (TUI) to interact with rocprofiler-compute metrics.",
     )
-
     analyze_group.add_argument(
         "-R",
         "--roofline-data-type",
