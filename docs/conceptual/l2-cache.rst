@@ -311,7 +311,7 @@ Request flow
 The following is a diagram that illustrates how L2↔Fabric requests are reported
 by ROCm Compute Profiler:
 
-.. figure:: ../data/performance-model/l2model_legend.png
+.. figure:: ../data/performance-model/l2perf_model.png
    :align: center
    :alt: L2-Fabric transaction flow on AMD Instinct MI-series accelerators
    :width: 800
