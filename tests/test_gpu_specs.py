@@ -95,6 +95,9 @@ def get_num_xcds():
     if str(chip_id) in GFX942_CHIP_IDS_TO_NUM_XCDS.keys():
         num_xcds = GFX942_CHIP_IDS_TO_NUM_XCDS[str(chip_id)]
 
+    if not num_xcds:
+        return 8 # Default should be 8
+
     return num_xcds
 
 
