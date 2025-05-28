@@ -226,70 +226,99 @@ class MIGPUSpecs:
         return gpu_model.upper()
 
     @classmethod
-    def get_num_xcds(cls, gpu_arch_=None, gpu_model_=None, compute_partition_=None):
+    def set_default_gpu_settings(self, gpu_arch, gpu_model, compute_partition):
         """
-        Retrieve the number of XCDs based on the GPU arch, or GPU model, and compute partition.
+        Set default GPU settings when model is unknown or cannot be determined.
+        NOTE: This is a fallback to gfx942 settings - consider making this architecture-specific.
         """
+        DEFAULT_COMPUTE_PARTITION = "SPX"
+        DEFAULT_NUM_XCD = 8
+        console_warning(
+            f"Unable to determine xcd count from:\n\t"
+            f"GPU arch: '{gpu_arch}', model: '{gpu_model}', partition: '{compute_partition}'"
+        )
+        console_warning(
+            f"Applying default gfx942 settings:\n"
+            f"\t- Compute partition: {DEFAULT_COMPUTE_PARTITION}\n"
+            f"\t- Number of XCDs: {DEFAULT_NUM_XCD}"
+        )
 
-        # Handle None values safely and convert to lowercase
-        gpu_arch_lower = gpu_arch_.lower() if gpu_arch_ else ""
-        gpu_model_lower = gpu_model_.lower() if gpu_model_ else ""
-        partition_lower = compute_partition_.lower() if compute_partition_ else ""
+        return DEFAULT_NUM_XCD
 
-        # Return 1 XCDs for archs/models not supporting compute partition
+    @classmethod
+    def get_num_xcds(
+        cls, gpu_arch: str = None, gpu_model: str = None, compute_partition: str = None
+    ):
+        """
+        Retrieve the number of XCDs based on GPU architecture, model, and compute partition.
+
+        Priority order:
+        1. Legacy GPU check (returns 1 XCD for older architectures/models)
+        2. Architecture-based lookup (preferred)
+        3. Model + partition-based lookup (fallback)
+        4. Default settings (last resort)
+        """
+        # Constants for legacy GPUs that don't support compute partitions
+        LEGACY_ARCHS = {"gfx906", "gfx908", "gfx90a"}
+        LEGACY_MODELS = {"mi50", "mi60", "mi100", "mi210", "mi250", "mi250x"}
+
+        # Normalize inputs to lowercase for consistent comparison
+        gpu_arch_norm = gpu_arch.lower().strip() if gpu_arch else ""
+        gpu_model_norm = gpu_model.lower().strip() if gpu_model else ""
+        partition_norm = compute_partition.lower().strip() if compute_partition else ""
+
+        # 1. Return 1 XCDs for archs/models not supporting compute partition
         # NOTE: gpu arch is enough to verify this logic, gpu model is used as a backup.
-        if gpu_arch_lower in {"gfx906", "gfx908", "gfx90a"} or gpu_model_lower in {
-            "mi50",
-            "mi60",
-            "mi100",
-            "mi210",
-            "mi250",
-            "mi250x",
-        }:
+        if gpu_arch_norm in LEGACY_ARCHS or gpu_model_norm in LEGACY_MODELS:
             return 1
 
-        # Handle direct architecture-to-compute_partition mapping
-        if gpu_arch_lower in cls._gpu_arch_to_compute_partition_dict:
-            xcd_count = cls._gpu_arch_to_compute_partition_dict[gpu_arch_lower]
-            if xcd_count is None:
-                console_warning(
-                    f"No Compute Partition data found for architecture {gpu_arch_}"
+        # 2. Try architecture-based lookup first (preferred method)
+        if gpu_arch_norm and hasattr(cls, "_gpu_arch_to_compute_partition_dict"):
+            arch_dict = cls._gpu_arch_to_compute_partition_dict
+            if gpu_arch_norm in arch_dict:
+                num_xcds = arch_dict[gpu_arch_norm]
+                if num_xcds is not None:
+                    return num_xcds
+                else:
+                    console_warning(
+                        f"No compute partition data found for architecture '{gpu_arch.upper()}'"
+                    )
+
+        # 3. Fall back to model + partition-based lookup
+        if gpu_model_norm:
+            # Validate XCD dictionary is populated
+            if not hasattr(cls, "_num_xcds_dict") or not cls._num_xcds_dict:
+                console_error(
+                    "mi300_num_xcds_dict not populated. Did you run parse_mi_gpu_spec()?"
                 )
-                return None
-            return xcd_count
+            elif gpu_model_norm not in cls._num_xcds_dict:
+                console_warning(
+                    f"Unknown gpu model provided for num xcds lookup: {gpu_model}."
+                )
+            else:
+                model_dict = cls._num_xcds_dict[gpu_model_norm]
 
-        # Validate population of the _num_xcds_dict
-        if not cls._num_xcds_dict:
-            console_error(
-                "mi300_num_xcds_dict not populated. Did you run parse_mi_gpu_spec()?"
-            )
-            return None
-
-        # If no gpu_model provided, cannot proceed with model-based lookup
-        if not gpu_model_lower:
+                if not partition_norm:
+                    console_warning(
+                        "No compute partition provided for model-based lookup"
+                    )
+                elif partition_norm not in model_dict:
+                    console_warning(
+                        f"Unknown compute partition '{compute_partition}' for model '{gpu_model}'"
+                    )
+                else:
+                    num_xcds = model_dict[partition_norm]
+                    if num_xcds is not None:
+                        return num_xcds
+                    else:
+                        console_warning(
+                            f"Unknown compute partition found for {compute_partition} / {gpu_model}"
+                        )
+        else:
             console_warning("No gpu model provided for num xcds lookup.")
-            return None
 
-        # Check if the model exists in the dictionary
-        if gpu_model_lower not in cls._num_xcds_dict:
-            console_warning(
-                f"Unknown gpu model provided for num xcds lookup: {gpu_model_}."
-            )
-            return None
-
-        model_dict = cls._num_xcds_dict[gpu_model_lower]
-        if partition_lower not in model_dict:
-            console_warning(f"Unknown compute partition: {compute_partition_}")
-            return None
-
-        num_xcds = model_dict[partition_lower]
-        if num_xcds is None:
-            console_warning(
-                f"Unknown compute partition found for {compute_partition_} / {gpu_model_}"
-            )
-            return None
-
-        return num_xcds
+        # 4. Last resort: use default settings
+        return cls.set_default_gpu_settings(gpu_arch, gpu_model, compute_partition)
 
     @classmethod
     def get_chip_id_dict(cls):

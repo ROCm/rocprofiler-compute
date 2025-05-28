@@ -43,7 +43,6 @@ from utils.logger import (
     console_error,
     console_log,
     console_warning,
-    demarcate,
 )
 from utils.mi_gpu_spec import mi_gpu_specs
 from utils.tty import get_table_string
@@ -216,8 +215,10 @@ def generate_machine_specs(args, sysinfo: dict = None):
     soc_class = getattr(soc_module, specs.gpu_arch + "_soc")
     soc_obj = soc_class(args, specs)
     # Update arch specific specs
+    specs.gpu_model = mi_gpu_specs.get_gpu_model(specs.gpu_arch, specs.gpu_chip_id)
+    specs.num_xcd = mi_gpu_specs.get_num_xcds(specs.gpu_arch, specs.gpu_model, specs.compute_partition)
     specs.total_l2_chan: str = total_l2_banks(
-        specs.gpu_arch, specs.gpu_model, int(specs._l2_banks), specs.compute_partition
+        specs.gpu_arch, specs.gpu_model, specs._l2_banks, specs.compute_partition
     )
     specs.num_hbm_channels: str = str(specs.get_hbm_channels())
     return specs
@@ -676,13 +677,10 @@ def total_sqc(archname, numCUs, numSEs):
 def total_l2_banks(gpu_arch, gpu_model, L2Banks, compute_partition):
     xcd_count = mi_gpu_specs.get_num_xcds(gpu_arch, gpu_model, compute_partition)
 
-    if xcd_count is not None:
+    # TODO: MachineSpecs and OmniSoC mspec should converge...
+    if L2Banks is not None and xcd_count is not None:
         return int(L2Banks) * int(xcd_count)
-    else:
-        console_warning(
-            f"Unable to calculate Total L2 Banks due to unknown compute partition: {compute_partition}"
-        )
-        return
+    return None
 
 
 if __name__ == "__main__":

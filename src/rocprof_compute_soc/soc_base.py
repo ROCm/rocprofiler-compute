@@ -229,14 +229,14 @@ class OmniSoC_Base:
                 break
 
         if not gpu_model:
-            console_error("Unable to determine the GPU model. \nrocprof-compute exiting.")
+            console_warning("Unable to determine the GPU model.")
+            return
 
         gpu_model = self._adjust_mi300_model(gpu_model.lower(), gpu_arch.lower())
 
         if gpu_model.lower() not in mi_gpu_specs.get_num_xcds_dict().keys():
-            console_error(
-                f"Unknown GPU model detected {gpu_model.upper()}. \nrocprof-compute exiting."
-            )
+            console_warning(f"Unknown GPU model detected: '{gpu_model}'.")
+            return
 
         return gpu_model.upper()
 
