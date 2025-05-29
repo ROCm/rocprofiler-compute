@@ -38,12 +38,7 @@ from pathlib import Path as path
 import pandas as pd
 
 import config
-from utils.logger import (
-    console_debug,
-    console_error,
-    console_log,
-    console_warning,
-)
+from utils.logger import console_debug, console_error, console_log, console_warning
 from utils.mi_gpu_spec import mi_gpu_specs
 from utils.tty import get_table_string
 from utils.utils import get_version
@@ -157,15 +152,20 @@ def generate_machine_specs(args, sysinfo: dict = None):
     rocm_version = get_rocm_ver().strip()
     # FIXME: use device
 
+    amd_smi_output = run(["amd-smi", "static"], exit_on_error=True)
+
     vbios_pattern = r"PART_NUMBER:\s*(\S+)"
     compute_partition_pattern = r"COMPUTE_PARTITION:\s*(\S+)"
+    accelerator_partition_pattern = r"ACCELERATOR_PARTITION:\s*(\S+)"
     memory_partition_pattern = r"MEMORY_PARTITION:\s*(\S+)"
 
-    vbios = search(vbios_pattern, run(["amd-smi", "static"], exit_on_error=True))
-    compute_partition = search(compute_partition_pattern, run(["amd-smi", "static"]))
+    vbios = search(vbios_pattern, amd_smi_output, exit_on_error=True)
+    compute_partition = search(compute_partition_pattern, amd_smi_output)
+    if compute_partition is None:
+        compute_partition = search(accelerator_partition_pattern, amd_smi_output)
     if compute_partition is None:
         compute_partition = "NA"
-    memory_partition = search(memory_partition_pattern, run(["amd-smi", "static"]))
+    memory_partition = search(memory_partition_pattern, amd_smi_output)
     if memory_partition is None:
         memory_partition = "NA"
 
