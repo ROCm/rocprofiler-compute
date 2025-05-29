@@ -159,7 +159,7 @@ def generate_machine_specs(args, sysinfo: dict = None):
     accelerator_partition_pattern = r"ACCELERATOR_PARTITION:\s*(\S+)"
     memory_partition_pattern = r"MEMORY_PARTITION:\s*(\S+)"
 
-    vbios = search(vbios_pattern, amd_smi_output, exit_on_error=True)
+    vbios = search(vbios_pattern, amd_smi_output)
     compute_partition = search(compute_partition_pattern, amd_smi_output)
     if compute_partition is None:
         compute_partition = search(accelerator_partition_pattern, amd_smi_output)
