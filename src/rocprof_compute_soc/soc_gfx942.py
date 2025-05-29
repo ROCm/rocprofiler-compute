@@ -33,7 +33,6 @@ from utils.utils import mibench
 
 
 class gfx942_soc(OmniSoC_Base):
-    @demarcate
     def __init__(self, args, mspec):
         super().__init__(args, mspec)
         self.set_arch("gfx942")
