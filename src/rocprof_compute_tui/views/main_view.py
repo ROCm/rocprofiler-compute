@@ -256,7 +256,7 @@ class MainView(Horizontal):
                 return
 
             analyze_view.update_results(self.dfs)
-            self.logger.success(f"Results displayed successfully: {str(self.dfs)}")
+            self.logger.success(f"Results displayed successfully.")
         except Exception as e:
             self.logger.error(f"Error refreshing results: {str(e)}")
 

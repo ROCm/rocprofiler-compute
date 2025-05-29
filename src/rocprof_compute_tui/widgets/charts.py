@@ -37,12 +37,6 @@ from textual_plotext import PlotextPlot
 
 from utils.mem_chart import plot_mem_chart
 
-# Notes:
-#   This file includes implementation of a few simple but common charts in CLI.
-#   We try to auto-size the layout to cover most of the cases as default. If it
-#   doesn't work, we could expose more controls for the ui designers with style
-#   config in yaml for each dashboard.
-
 
 def simple_bar(df, title=None):
     """
@@ -51,23 +45,23 @@ def simple_bar(df, title=None):
 
     # TODO: handle None properly
 
-    if "Metric" in df.columns and "Value" in df.columns:
+    if "Metric" in df.columns and "Avg" in df.columns:
         metric_dict = (
-            pd.DataFrame([df["Metric"], df["Value"]])
+            pd.DataFrame([df["Metric"], df["Avg"]])
             .replace("", 0)
             .replace(float("inf"), -1)  # It should not happen
             .replace(float("-inf"), -1)
             .transpose()
             .set_index("Metric")
-            .to_dict()["Value"]
+            .to_dict()["Avg"]
         )
     else:
-        raise NameError("simple_bar: No Metric or Value in df columns!")
+        raise NameError(f"simple_bar: No Metric or Avg in df columns: {str(df.columns)}")
 
     plt.clear_figure()
 
     # adjust plot size along x axis based on the max value
-    w = max(list(metric_dict.values()))
+    w = max(list(metric_dict.values())) - 40
     if w < 20 and w > 1:
         w *= 3
     elif w < 1:
@@ -147,9 +141,12 @@ def simple_box(df, orientation="v", title=None):
     )
     for index, row in t_df.iterrows():
         labels.append(row["Metric"])
-        labels_length += len(row["Metric"]) + 10
+        # TODO: need better fix for horizontal overflow
+        labels_length += len(row["Metric"]) + 8
         data.append([row["Max"], row["Q3"], row["Median"], row["Q1"], row["Min"]])
 
+    # TODO: need better fix for horizontal overflow
+    #labels_length *= 0.80
     # print("~~~~~~~~~~~~~~~~~~~~")
     # print(labels)
     # print(labels_length)
@@ -261,8 +258,65 @@ def px_simple_multi_bar(df, title=None, id=None):
     return dfigs
 
 
+class MemoryChart(Static):
+    """Memory chart visualization widget."""
+
+    DEFAULT_CSS = """
+    MemoryChart {
+        border: solid $accent;
+        padding: 0;
+        width: auto;
+        height: auto;
+        overflow-y: auto;
+        overflow-x: auto;
+        background: $surface;
+        color: $text;
+    }
+    """
+
+    def __init__(self, df: pd.DataFrame, **kwargs):
+        """Initialize the memory chart."""
+        super().__init__("", classes="mem-chart", **kwargs)
+        self.df = df
+
+        # Generate the chart content on initialization
+        try:
+            # Prepare data
+            metric_dict = (
+                self.df[["Metric", "Value"]].set_index("Metric").to_dict()["Value"]
+            )
+
+            # Capture stdout
+            original_stdout = sys.stdout
+            string_buffer = StringIO()
+            sys.stdout = string_buffer
+
+            try:
+                # Generate the chart
+                result = plot_mem_chart("", "per_kernel", metric_dict)
+                stdout_output = string_buffer.getvalue()
+
+                if stdout_output:
+                    plot_str = stdout_output
+                elif result:
+                    plot_str = str(result)
+                else:
+                    plot_str = "No chart data generated"
+            finally:
+                sys.stdout = original_stdout
+
+            self.update(plot_str)
+
+        except Exception as e:
+            error_message = f"Memory chart error: {str(e)}\n{traceback.format_exc()}"
+            self.update(f"Error: {str(error_message)}")
+
+
 class RooflinePlot(PlotextPlot):
-    """Roofline plot visualization widget."""
+    """
+    HACK: will be replaced with real roof line plot
+    Roofline plot visualization widget.
+    """
 
     DEFAULT_CSS = """
     RooflinePlot {
@@ -347,12 +401,11 @@ class RooflinePlot(PlotextPlot):
         self.refresh()
 
 
-class MemoryChart(Static):
-    """Memory chart visualization widget."""
+class SimpleBar(Static):
+    """Simple Bar visualization widget."""
 
     DEFAULT_CSS = """
-    MemoryChart {
-        border: solid $accent;
+    SimpleBar {
         padding: 0;
         width: auto;
         height: auto;
@@ -364,38 +417,102 @@ class MemoryChart(Static):
     """
 
     def __init__(self, df: pd.DataFrame, **kwargs):
-        """Initialize the memory chart."""
-        super().__init__("", classes="mem-chart", **kwargs)
+        """Initialize the simple bar."""
+        super().__init__("", classes="simple-bar", **kwargs)
         self.df = df
 
-        # Generate the chart content on initialization
         try:
-            # Prepare data
-            metric_dict = (
-                self.df[["Metric", "Value"]].set_index("Metric").to_dict()["Value"]
-            )
+            result = simple_bar(self.df)
 
-            # Capture stdout
-            original_stdout = sys.stdout
-            string_buffer = StringIO()
-            sys.stdout = string_buffer
+            if result:
+                plot_str = str(result)
+                # Escape markup characters
+                escaped_content = plot_str.replace("[", r"\[").replace("]", r"\]")
+                self.update(escaped_content)
 
-            try:
-                # Generate the chart
-                result = plot_mem_chart("", "per_kernel", metric_dict)
-                stdout_output = string_buffer.getvalue()
+                # Alternative - wrap in [pre] tags for preformatted text
+                # self.update(f"[pre]{plot_str}[/pre]")
 
-                if stdout_output:
-                    plot_str = stdout_output
-                elif result:
-                    plot_str = str(result)
-                else:
-                    plot_str = "No chart data generated"
-            finally:
-                sys.stdout = original_stdout
-
-            self.update(plot_str)
+            else:
+                self.update("No simple bar data generated")
 
         except Exception as e:
-            error_message = f"Memory chart error: {str(e)}\n{traceback.format_exc()}"
-            self.update(f"Error: {str(e)}")
+            error_message = f"Simple Bar error: {str(e)}\n{traceback.format_exc()}"
+            escaped_error = error_message.replace("[", r"\[").replace("]", r"\]")
+            self.update(f"Error: {escaped_error}")
+
+
+class SimpleBox(Static):
+    """Simple Box visualization widget."""
+
+    DEFAULT_CSS = """
+    SimpleBox {
+        padding: 0;
+        width: auto;
+        height: auto;
+        overflow-y: auto;
+        overflow-x: auto;
+        background: $surface;
+        color: $text;
+    }
+    """
+
+    def __init__(self, df: pd.DataFrame, **kwargs):
+        """Initialize the simple box."""
+        super().__init__("", classes="simple-box", **kwargs)
+        self.df = df
+
+        try:
+            result = simple_box(self.df)
+
+            if result:
+                plot_str = str(result)
+                # Escape markup characters
+                escaped_content = plot_str.replace("[", r"\[").replace("]", r"\]")
+                self.update(escaped_content)
+            else:
+                self.update("No simple box data generated")
+
+        except Exception as e:
+            error_message = f"Simple Box error: {str(e)}\n{traceback.format_exc()}"
+            escaped_error = error_message.replace("[", r"\[").replace("]", r"\]")
+            self.update(f"Error: {escaped_error}")
+
+
+class SimpleMultiBar(Static):
+    """Simple Multiple Bar visualization widget."""
+
+    DEFAULT_CSS = """
+    SimpleMultiBar {
+        padding: 0;
+        width: auto;
+        height: auto;
+        overflow-y: auto;
+        overflow-x: auto;
+        background: $surface;
+        color: $text;
+    }
+    """
+
+    def __init__(self, df: pd.DataFrame, **kwargs):
+        """Initialize the simple multiple bar."""
+        super().__init__("", classes="simple-multi-bar", **kwargs)
+        self.df = df
+
+        try:
+            result = simple_multiple_bar(self.df)
+
+            if result:
+                plot_str = str(result)
+                # Escape markup characters
+                escaped_content = plot_str.replace("[", r"\[").replace("]", r"\]")
+                self.update(escaped_content)
+            else:
+                self.update("No simple multi bar data generated")
+
+        except Exception as e:
+            error_message = (
+                f"Simple Multiple Box error: {str(e)}\n{traceback.format_exc()}"
+            )
+            escaped_error = error_message.replace("[", r"\[").replace("]", r"\]")
+            self.update(f"Error: {escaped_error}")

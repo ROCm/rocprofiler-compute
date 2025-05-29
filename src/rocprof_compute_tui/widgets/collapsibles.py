@@ -5,7 +5,13 @@ import yaml
 from textual.containers import VerticalScroll
 from textual.widgets import Collapsible, DataTable, Label
 
-from rocprof_compute_tui.widgets.charts import MemoryChart, RooflinePlot
+from rocprof_compute_tui.widgets.charts import (
+    MemoryChart,
+    RooflinePlot,
+    SimpleBar,
+    SimpleBox,
+    SimpleMultiBar,
+)
 
 
 def create_table(df: pd.DataFrame) -> DataTable:
@@ -55,18 +61,31 @@ def get_tui_style_from_path(dfs: Dict[str, Any], path: List[str]) -> Optional[st
 
 
 def create_widget_from_data(df: pd.DataFrame, tui_style: Optional[str] = None) -> Any:
-    if tui_style is None:
-        return create_table(df)
-    # ####################
-    # TODO: ROOFLINE HERE
-    # ####################
-    if tui_style == "mem_chart":
-        return (
-            MemoryChart(df)
-            if df is not None
-            else Label("Memory Chart data not available")
-        )
-    return Label(f"Unknown widget type: {tui_style}")
+    if df is not None and not df.empty:
+        match tui_style:
+            case None:
+                return create_table(df)
+
+            case "mem_chart":
+                return MemoryChart(df)
+
+            case "roofline":
+                # TODO: implement real roofline plot
+                pass
+
+            case "simple_bar":
+                return SimpleBar(df)
+
+            case "simple_box":
+                return SimpleBox(df)
+
+            case "simple_multiple_bar":
+                return SimpleMultiBar(df)
+
+            case _:
+                return Label(f"Unknown display type: {tui_style}")
+    else:
+        return Label(f"Data not available for display in {tui_style}.")
 
 
 def build_subsection(
