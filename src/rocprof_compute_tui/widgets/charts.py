@@ -146,7 +146,7 @@ def simple_box(df, orientation="v", title=None):
         data.append([row["Max"], row["Q3"], row["Median"], row["Q1"], row["Min"]])
 
     # TODO: need better fix for horizontal overflow
-    #labels_length *= 0.80
+    # labels_length *= 0.80
     # print("~~~~~~~~~~~~~~~~~~~~")
     # print(labels)
     # print(labels_length)
