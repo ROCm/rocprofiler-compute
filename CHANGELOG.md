@@ -6,19 +6,16 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 ### Added
 
-* change dependency from rocm-smi to amd-smi
-* Datatype selection option for roofline profiling
-  * --roofline-data-type / -R option added to specify which datatypes the user wants to capture in the roofline PDF plot outputs
-  * Default is FP32, but user can specify as many types as desired to overlay on the same plot output
-
-* Additional datatypes for roofline profiling
-  * Now supports FP8, FP16, BF16, FP32, FP64, I8, I32, I64 (dependent on gpu architecture)
+* Add FP8 metrics' support for MI300
+* Add additional datatype for roofline: FP8, FP16, BF16, FP32, FP64, I8, I32, I64 (dependent on gpu architecture)
+* Add datatype selection option for roofline profiling: --roofline-data-type / -R option (Default is FP32)
+* Change dependency from rocm-smi to amd-smi
 
 ### Changed
 
 
 ### Resolved issues
-
+* Fixed one crash issue with rocprofv3's "Agent ID"
 
 ## ROCm Compute Profiler 3.1.0 for ROCm 6.4.0
 
