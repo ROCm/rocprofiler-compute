@@ -399,7 +399,7 @@ Roofline options
    running a roofline benchmark on your system.
 
 ``--roofline-data-type <datatype>``
-   Allows you to specify datatypes that you want plotted in the roofline PDF output(s). Selecting more than one datatype will overlay the results onto the same plot. Default: FP32
+   Allows you to specify the data types that you want plotted in the roofline PDF output(s). Selecting more than one data type will overlay the results onto the same plot. Default data type: FP32
 
 To distinguish different kernels in your ``.pdf`` roofline plot use
 ``--kernel-names``. This will give each kernel a unique marker identifiable from
@@ -443,7 +443,7 @@ successfully.
 
 .. note::
 
-   ROCm Compute Profiler currently captures roofline profiling for all data types, but has the ability to reduce clutter in the PDF outputs by selecting datatype(s). Selecting multiple datatypes will overlay the results into the same PDF. If the user would like separate PDFs for each datatype off of the same workload run, the user can run the profiling command again with the single datatype as long as the roofline.csv still exists in the workload folder.
+   ROCm Compute Profiler currently captures roofline profiling for all data types, and you can reduce the clutter in the PDF outputs by filtering the data type(s). Selecting multiple data types will overlay the results into the same PDF. To generate results in separate PDFs for each data type from the same workload run, you can re-run the profiling command with each data type as long as the ``roofline.csv`` file still exists in the workload folder.
 
 The following image is a sample ``empirRoof_gpu-0_FP32.pdf`` roofline
 plot.
