@@ -15,7 +15,7 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 
 ### Resolved issues
-* Fixed one crash issue with rocprofv3's "Agent ID"
+* Fixed a crash related to Agent ID caused by the new format of the rocprofv3  output CSV file
 
 ## ROCm Compute Profiler 3.1.0 for ROCm 6.4.0
 
