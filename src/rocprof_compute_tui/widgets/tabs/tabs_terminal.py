@@ -44,11 +44,13 @@ class Terimnal(Container):
     def on_mount(self) -> None:
         """Initialize the terminal."""
         # Update status
-        self.add_output(f"cwd: {self.current_directory}\n")
+        self.add_output(
+            f"Support quick/simple terminal commands.\ncwd: {self.current_directory}\n"
+        )
 
-        # Update the prompt and focus the input
+        # Update the prompt
         self.update_prompt()
-        self.query_one("#terminal-input").focus()
+        # self.query_one("#terminal-input").focus()
 
     def update_prompt(self) -> None:
         """Update the command prompt in the input field."""

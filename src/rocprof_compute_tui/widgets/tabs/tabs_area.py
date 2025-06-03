@@ -40,7 +40,7 @@ class TabsArea(Vertical):
             with TabPane("OUTPUT", id="tab-output"):
                 yield (self.output_area)
 
-            with TabPane("TERMINAL(🚧)", id="tab-terminal"):
+            with TabPane("TERMINAL", id="tab-terminal"):
                 yield Terimnal()
 
     def on_mount(self) -> None:

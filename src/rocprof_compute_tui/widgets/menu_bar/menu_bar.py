@@ -47,7 +47,7 @@ class MenuBar(Container):
         """Compose the menu bar with menu buttons and dropdown menus."""
         yield Horizontal(
             MenuButton("File", "file-dropdown", id="menu-file"),
-            Button("Help (🚧)", id="menu-placeholder"),
+            # Button("Help (🚧)", id="menu-placeholder"),
             id="menu-buttons",
         )
 

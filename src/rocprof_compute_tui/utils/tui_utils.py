@@ -107,12 +107,11 @@ class Logger:
         """
         level_map = {
             LogLevel.INFO: logging.INFO,
-            LogLevel.SUCCESS: logging.INFO,  # Success is treated as INFO in Python logging
+            LogLevel.SUCCESS: logging.INFO,
             LogLevel.WARNING: logging.WARNING,
             LogLevel.ERROR: logging.ERROR,
         }
 
-        # Log to Python logger
         self.logger.log(level_map[level], message)
 
         timestamp = datetime.now().strftime("%H:%M:%S")
@@ -124,15 +123,16 @@ class Logger:
                 formatted_msg = f"[{timestamp}] [WARNING] {message}"
             elif level == LogLevel.SUCCESS:
                 formatted_msg = f"[{timestamp}] [SUCCESS] {message}"
-            else:  # INFO
+            else:
                 formatted_msg = f"[{timestamp}] [INFO] {message}"
 
-            # Append to output area
             if hasattr(self.output_area, "text"):
                 current_text = self.output_area.text
                 self.output_area.text = (
                     f"{current_text}\n{formatted_msg}" if current_text else formatted_msg
                 )
+                # HACK: moving curson to end of outpu (Is there a better way to achieve this?)
+                self.output_area.cursor_location = (999999, 0)
 
     def info(self, message, update_ui=True):
         self.log(message, LogLevel.INFO, update_ui)
