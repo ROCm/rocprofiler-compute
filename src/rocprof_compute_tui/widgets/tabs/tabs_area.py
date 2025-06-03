@@ -44,5 +44,5 @@ class TabsArea(Vertical):
                 yield Terimnal()
 
     def on_mount(self) -> None:
-        self.border_title = "BOTTOM TABS"
+        self.border_title = "TABS"
         self.add_class("section")

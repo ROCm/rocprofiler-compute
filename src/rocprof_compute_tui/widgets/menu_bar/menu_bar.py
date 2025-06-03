@@ -11,8 +11,9 @@ class DropdownMenu(Container):
     def compose(self) -> ComposeResult:
         """Compose the dropdown menu with menu items."""
         yield Button("Open Workload", id="menu-open-workload", classes="menu-item")
-        yield Button("Open Recent", id="menu-open-recent", classes="menu-item")
-        yield Button("Attach", id="menu-attach", classes="menu-item")
+        # TODO:
+        # yield Button("Open Recent", id="menu-open-recent", classes="menu-item")
+        # yield Button("Attach", id="menu-attach", classes="menu-item")
         yield Button("Exit", id="menu-exit", classes="menu-item")
 
     def on_mount(self) -> None:
@@ -47,6 +48,7 @@ class MenuBar(Container):
         """Compose the menu bar with menu buttons and dropdown menus."""
         yield Horizontal(
             MenuButton("File", "file-dropdown", id="menu-file"),
+            # TODO:
             # Button("Help (🚧)", id="menu-placeholder"),
             id="menu-buttons",
         )

@@ -140,9 +140,14 @@ def simple_box(df, orientation="v", title=None):
         df.fillna(0).replace("", 0).replace(float("inf"), -1).replace(float("-inf"), -1)
     )
     for index, row in t_df.iterrows():
-        labels.append(row["Metric"])
+        column_name = row.get("Metric") or row.get("Channel")
+
+        if column_name is None:
+            raise KeyError("Neither 'Metric' nor 'Channel' column found")
+
+        labels.append(column_name)
         # TODO: need better fix for horizontal overflow
-        labels_length += len(row["Metric"]) + 8
+        labels_length += len(str(column_name)) + 8
         data.append([row["Max"], row["Q3"], row["Median"], row["Q1"], row["Min"]])
 
     # TODO: need better fix for horizontal overflow
