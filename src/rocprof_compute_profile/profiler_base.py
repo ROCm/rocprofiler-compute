@@ -322,9 +322,6 @@ class RocProfCompute_Base:
             mspec=self._soc._mspec,
             soc=self._soc,
         )
-        
-
-
 
     @abstractmethod
     def run_profiling(self, version: str, prog: str):
