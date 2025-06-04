@@ -4,6 +4,9 @@ ROCm Compute Profiler TUI - Main Application with Analysis Methods
 """
 
 import importlib
+import json
+import os
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from textual import on, work
@@ -39,11 +42,16 @@ class RocprofTUIApp(App):
         """
         super().__init__()
         self.main_view = MainView()
-        self.args = args
-        self.supported_archs = supported_archs or {}
+
+        self.recent_file = Path.home() / ".textual_browser_recent.json"
+        self.recent_dirs: List[str] = []
+        self.current_path = ""
+        self.load_recent_directories()
 
         # Initialize analysis-related attributes
-        self.soc: Dict = {}  # Dict to store SoC objects
+        self.args = args
+        self.supported_archs = supported_archs or {}
+        self.soc: Dict = {}
         self.mspec: Optional[MachineSpecs] = None
 
     def compose(self) -> ComposeResult:
@@ -84,10 +92,51 @@ class RocprofTUIApp(App):
         """Get the machine specifications."""
         return self.mspec
 
+    def load_recent_directories(self) -> None:
+        """Load recent directories from file."""
+        try:
+            if self.recent_file.exists():
+                with open(self.recent_file, "r") as f:
+                    self.recent_dirs = json.load(f)
+        except (json.JSONDecodeError, FileNotFoundError):
+            self.recent_dirs = []
+
+    def save_recent_directories(self) -> None:
+        """Save recent directories to file."""
+        try:
+            with open(self.recent_file, "w") as f:
+                json.dump(self.recent_dirs, f, indent=2)
+        except Exception as e:
+            self.notify(f"Failed to save recent directories: {e}", severity="error")
+
+    def add_to_recent(self, directory: str) -> None:
+        """Add directory to recent list (FIFO, max 5 items)."""
+        directory = os.path.abspath(directory)
+
+        # Remove if already exists
+        if directory in self.recent_dirs:
+            self.recent_dirs.remove(directory)
+
+        # Add to front
+        # TODO: should we check to if workload dir can be successfully loaded?
+        self.recent_dirs.insert(0, directory)
+
+        # Keep only last 5
+        self.recent_dirs = self.recent_dirs[:5]
+
+        # Save to file
+        self.save_recent_directories()
+
+    def on_recent_selected(self, selected_dir: str) -> None:
+        if selected_dir:
+            self.main_view.selected_path = selected_dir
+            self.main_view.run_analysis()
+
     @on(Button.Pressed, "#menu-open-workload")
     @work
     async def pick_a_directory(self) -> None:
         if opened := await self.push_screen_wait(SelectDirectory()):
+            self.add_to_recent(str(opened))
             self.main_view.selected_path = opened
             dropdown = self.query_one(f"#file-dropdown", DropdownMenu)
             dropdown.add_class("hidden")

@@ -4,6 +4,8 @@ from textual.containers import Container, Horizontal
 from textual.reactive import reactive
 from textual.widgets import Button
 
+from rocprof_compute_tui.widgets.recent_directories import RecentDirectoriesScreen
+
 
 class DropdownMenu(Container):
     """A dropdown menu that appears when a menu button is clicked."""
@@ -11,8 +13,8 @@ class DropdownMenu(Container):
     def compose(self) -> ComposeResult:
         """Compose the dropdown menu with menu items."""
         yield Button("Open Workload", id="menu-open-workload", classes="menu-item")
+        yield Button("Open Recent", id="menu-open-recent", classes="menu-item")
         # TODO:
-        # yield Button("Open Recent", id="menu-open-recent", classes="menu-item")
         # yield Button("Attach", id="menu-attach", classes="menu-item")
         yield Button("Exit", id="menu-exit", classes="menu-item")
 
@@ -61,6 +63,24 @@ class MenuBar(Container):
     def on_mount(self) -> None:
         self.border_title = "MENU BAR"
         self.add_class("section")
+        self.parent_main_view = self.screen.query_one("#main-container", Horizontal)
+
+    @on(Button.Pressed, "#menu-open-recent")
+    def show_recent(self) -> None:
+        if not self.app.recent_dirs:
+            self.notify("No recent directories found", severity="warning")
+            return
+
+        def on_recent_selected(selected_dir: str) -> None:
+            if selected_dir:
+                self.parent_main_view.selected_path = selected_dir
+                dropdown = self.query_one(f"#file-dropdown", DropdownMenu)
+                dropdown.add_class("hidden")
+                self.parent_main_view.run_analysis()
+
+        self.app.push_screen(
+            RecentDirectoriesScreen(self.app.recent_dirs), on_recent_selected
+        )
 
     @on(Button.Pressed, "#menu-exit")
     def exit_app(self) -> None:
