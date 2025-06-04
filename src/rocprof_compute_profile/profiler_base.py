@@ -333,8 +333,8 @@ class RocProfCompute_Base:
             "profiling", "performing profiling using %s profiler" % self.__profiler
         )
         
+        # helper function to format time for readability
         def format_time(seconds):
-            """Format time as 'X hours, Y minutes, and Z seconds'."""
             hours = int(seconds // 3600)
             minutes = int((seconds % 3600) // 60)
             secs = int(seconds % 60)
@@ -387,20 +387,14 @@ class RocProfCompute_Base:
         avg_run_time = 0  
 
         for i, fname in enumerate(tqdm(input_files, disable=disable_tqdm)):  
-            
-            run_number = i + 1  # Current run number (1-based index)  
+            run_number = i + 1
             if i > 0:  
-                # Calculate average time based on previous runs  
                 avg_run_time = total_time_so_far / i  
-                # Estimate remaining time in minutes  
                 time_left_seconds = (total_runs - run_number) * avg_run_time
                 time_left = format_time(time_left_seconds)
                 console_log(f"[Run {run_number}/{total_runs}][Approximate profiling time left: {time_left}]...]")
             else:  
-                # For the first run, we can't estimate time yet  
                 console_log(f"[Run {run_number}/{total_runs}][Approximate profiling time left: pending first measurement...]")  
-
-            
             start_run_time = time.time() 
             
             # Kernel filtering (in-place replacement)
