@@ -23,6 +23,7 @@
 ##############################################################################el
 
 import os
+import textwrap
 import time
 from abc import ABC, abstractmethod
 from collections import OrderedDict
@@ -45,6 +46,14 @@ from utils.utils import mibench
 
 SYMBOLS = [0, 1, 2, 3, 4, 5, 13, 17, 18, 20]
 
+def wrap_text(text, width=60):
+    """
+    Wraps text using textwrap and joins lines with <br> for Plotly.
+    """
+    if not isinstance(text, str):
+        text = str(text)
+    wrapped_lines = textwrap.wrap(text, width=width, break_long_words=True, replace_whitespace=False)
+    return "<br>".join(wrapped_lines)
 
 class Roofline:
     def __init__(self, args, mspec, run_parameters=None):
@@ -60,6 +69,7 @@ class Roofline:
                 "mem_level": "ALL",
                 "include_kernel_names": False,
                 "is_standalone": False,
+                "roofline_data_type": ["FP32"] # default to FP32
             }
         )
         self.__ai_data = None
@@ -68,9 +78,9 @@ class Roofline:
         # Set roofline run parameters from args
         if hasattr(self.__args, "path") and not run_parameters:
             self.__run_parameters["workload_dir"] = self.__args.path
-        if hasattr(self.__args, "roof_only") and self.__args.roof_only == True:
+        if hasattr(self.__args, "roof_only") and self.__args.roof_only:
             self.__run_parameters["is_standalone"] = True
-        if hasattr(self.__args, "kernel_names") and self.__args.kernel_names == True:
+        if hasattr(self.__args, "kernel_names") and self.__args.kernel_names:
             self.__run_parameters["include_kernel_names"] = True
         if hasattr(self.__args, "mem_level") and self.__args.mem_level != "ALL":
             self.__run_parameters["mem_level"] = self.__args.mem_level
@@ -86,19 +96,23 @@ class Roofline:
             console_error("--roof-only is required for --kernel-names")
 
     def roof_setup(self):
-        # set default workload path if not specified
-        if self.__run_parameters["workload_dir"] == str(
-            Path(os.getcwd()).joinpath("workloads")
-        ):
+        # Setup the workload directory for roofline profiling.
+        workload_dir_val = self.__run_parameters.get("workload_dir")
+        if workload_dir_val and Path(workload_dir_val).name == "workloads" and Path(workload_dir_val).parent == Path(os.getcwd()):
+            app_name = getattr(self.__args, "name", "default_app_name")
+            gpu_model_name = getattr(self.__mspec, "gpu_model", "default_gpu_model")
             self.__run_parameters["workload_dir"] = str(
-                Path(self.__run_parameters["workload_dir"]).joinpath(
-                    self.__args.name,
-                    self.__mspec.gpu_model,
+                Path(workload_dir_val).joinpath(
+                    app_name,
+                    gpu_model_name,
                 )
             )
-        # create new directory for roofline if it doesn't exist
-        if not Path(self.__run_parameters["workload_dir"]).is_dir():
-            os.makedirs(self.__run_parameters["workload_dir"])
+
+        current_workload_dir = self.__run_parameters.get("workload_dir")
+        if current_workload_dir:
+            Path(current_workload_dir).mkdir(parents=True, exist_ok=True)
+        else:
+            console_error("Workload directory is not set. Cannot perform setup.", exit=False)
 
     @demarcate
     def empirical_roofline(
@@ -112,9 +126,8 @@ class Roofline:
         ):
             self.roof_setup()
 
-        # Create arithmetic intensity data that will populate the roofline model
-        console_debug("roofline", "Path: %s" % self.__run_parameters["workload_dir"])
-        self.__ai_data = calc_ai(self.__mspec, self.__run_parameters["sort_type"], ret_df)
+        console_debug("roofline", "Path: %s" % self.__run_parameters.get("workload_dir"))
+        self.__ai_data = calc_ai(self.__mspec, self.__run_parameters.get("sort_type"), ret_df)
 
         msg = "AI at each mem level:"
         for i in self.__ai_data:
@@ -124,12 +137,13 @@ class Roofline:
         # Generate a roofline figure for the datatypes
         ops_figure = flops_figure = None
         ops_dt_list = flops_dt_list = ""
-        for dt in self.__run_parameters["roofline_data_type"]:
-            # Do not generate a roofline figure if the datatype is not supported on this gpu_arch
-            if not str(dt) in SUPPORTED_DATATYPES[self.__mspec.gpu_arch]:
+
+        for dt in self.__run_parameters.get("roofline_data_type", []):
+            gpu_arch = getattr(self.__mspec, "gpu_arch", "unknown_arch")
+            if 'SUPPORTED_DATATYPES' not in globals() or gpu_arch not in SUPPORTED_DATATYPES or str(dt) not in SUPPORTED_DATATYPES[gpu_arch]:
                 console_error(
-                    "{} is not a supported datatype for roofline profiling on {}".format(
-                        str(dt), self.__mspec.gpu_model
+                    "{} is not a supported datatype for roofline profiling on {} (arch: {})".format(
+                        str(dt), getattr(self.__mspec, "gpu_model", "N/A"), gpu_arch
                     ),
                     exit=False,
                 )
@@ -158,26 +172,86 @@ class Roofline:
                     flops_figure = self.generate_plot(dtype=str(dt))
                 flops_dt_list += "_" + str(dt)
 
-        # Create a legend and distinct kernel markers. This can be saved, optionally
-        self.__figure = go.Figure(
-            go.Scatter(
-                mode="markers",
-                x=[0] * 10,
-                y=self.__ai_data["kernelNames"],
-                marker_symbol=SYMBOLS,
-                marker_size=15,
-            )
-        )
-        self.__figure.update_layout(
-            title="Kernel Names and Markers",
-            margin=dict(b=0, r=0),
-            xaxis_range=[-1, 1],
-            xaxis_side="top",
-            yaxis_side="right",
-            height=400,
-            width=1000,
-        )
-        self.__figure.update_xaxes(dtick=1)
+        if self.__run_parameters.get("include_kernel_names", False):
+            if self.__ai_data is None:
+                console_error("Roofline Error: self.__ai_data is not populated. Cannot generate kernel names info.", exit=False)
+                original_kernel_names = []
+            else:
+                original_kernel_names = self.__ai_data.get("kernelNames", [])
+
+            num_kernels = len(original_kernel_names)
+
+            self.__figure.data = []
+            self.__figure.layout = {}
+
+            if num_kernels == 0:
+                console_log("roofline", "No kernel names found to generate 'Kernel Names and Markers' info.")
+                self.__figure.add_annotation(text="No kernel names to display.",
+                                             showarrow=False, xref="paper", yref="paper", x=0.5, y=0.5)
+                self.__figure.update_layout(
+                    title_text="Kernel Names and Markers", title_x=0.5,
+                    xaxis=dict(visible=False), yaxis=dict(visible=False),
+                    plot_bgcolor='white', paper_bgcolor='white',
+                    height=200, width=400
+                )
+            else:
+                symbols_column_data = []
+                kernel_names_column_data_wrapped = []
+
+                total_text_lines_for_pdf = 0
+                CHARS_PER_LINE_FOR_TABLE_CELL = 90
+
+                for i in range(num_kernels):
+                    symbol_index = SYMBOLS[i % len(SYMBOLS)]
+                    symbols_column_data.append(f"Symbol {symbol_index}") # Text representation of the symbol
+
+                    wrapped_name = wrap_text(original_kernel_names[i], width=CHARS_PER_LINE_FOR_TABLE_CELL)
+                    kernel_names_column_data_wrapped.append(wrapped_name)
+                    total_text_lines_for_pdf += (wrapped_name.count("<br>") + 1)
+
+                # dynamic Height for the PDF page (based on table rows and wrapped content)
+                # heuristic: average lines per row * number of rows + padding
+                avg_lines_per_row = total_text_lines_for_pdf / num_kernels if num_kernels > 0 else 1
+                estimated_px_per_avg_line_in_row = 25 # Approx pixels per line of text in a cell
+                row_height_estimate = max(25, avg_lines_per_row * estimated_px_per_avg_line_in_row) # Min row height 25px
+
+                header_height_px = 40
+                padding_for_title_margins_pdf = 120
+                dynamic_pdf_height = max(400, num_kernels * row_height_estimate + padding_for_title_margins_pdf + header_height_px)
+                dynamic_pdf_height = min(dynamic_pdf_height, 8000)
+                dynamic_pdf_width = 1000
+
+                self.__figure.add_trace(go.Table(
+                    header=dict(
+                        values=['<b>Marker Symbol</b>', '<b>Kernel Name</b>'],
+                        fill_color='paleturquoise',
+                        align=['center', 'left'],
+                        font=dict(size=12, color='black'),
+                        line_color='darkslategray',
+                        height=30
+                    ),
+                    cells=dict(
+                        values=[
+                            [f"<b>{symbol}</b>" for symbol in symbols_column_data],
+                            kernel_names_column_data_wrapped
+                        ],
+                        fill_color=[['lavender', 'lightgrey'] * (len(symbols_column_data) // 2 + 1)],
+                        align=['center', 'left'],
+                        font=dict(size=11, color='black'),
+                        line_color='darkslategray',
+                        height=28
+                    ),
+                    columnwidth=[0.2, 0.8]
+                ))
+
+
+                self.__figure.update_layout(
+                    title_text="Kernel Names and Corresponding Markers", title_x=0.5,
+                    height=dynamic_pdf_height,
+                    width=dynamic_pdf_width,
+                    margin=dict(l=30, r=30, t=70, b=30)
+                )
+
         # Output will be different depending on interaction type:
         # Save PDFs if we're in "standalone roofline" mode, otherwise return HTML to be used in GUI output
         if self.__run_parameters["is_standalone"]:
@@ -239,7 +313,10 @@ class Roofline:
 
     @demarcate
     def generate_plot(self, dtype, fig=None) -> go.Figure():
-        """Create graph object from ai_data (coordinate points) and ceiling_data (peak FLOP and BW) data."""
+        """
+        Create graph object from ai_data (coordinate points) and ceiling_data
+        (peak FLOP and BW) data.
+        """
         if fig is None:
             fig = go.Figure()
         plot_mode = "lines+text" if self.__run_parameters["is_standalone"] else "lines"
@@ -252,13 +329,21 @@ class Roofline:
         #######################
         # Plot ceilings
         #######################
-        if self.__run_parameters["mem_level"] == "ALL":
+        mem_level_config = self.__run_parameters.get("mem_level", "ALL")
+        if mem_level_config == "ALL":
             cache_hierarchy = ["HBM", "L2", "L1", "LDS"]
         else:
-            cache_hierarchy = self.__run_parameters["mem_level"]
+            cache_hierarchy = mem_level_config if isinstance(mem_level_config, list) else [mem_level_config]
 
         # Plot peak BW ceiling(s)
         for cache_level in cache_hierarchy:
+
+            if (not self.__ceiling_data or cache_level.lower() not in self.__ceiling_data or
+               not isinstance(self.__ceiling_data[cache_level.lower()], (list, tuple)) or
+               len(self.__ceiling_data[cache_level.lower()]) < 3):
+                console_error(f"Ceiling data for {cache_level} is missing or malformed for dtype {dtype}.", exit=False)
+                continue
+
             fig.add_trace(
                 go.Scatter(
                     x=self.__ceiling_data[cache_level.lower()][0],
@@ -272,7 +357,7 @@ class Roofline:
                         ),
                         (
                             None
-                            if self.__run_parameters["is_standalone"]
+                            if self.__run_parameters.get("is_standalone")
                             else "{} GB/s".format(
                                 to_int(self.__ceiling_data[cache_level.lower()][2])
                             )
@@ -282,7 +367,7 @@ class Roofline:
                 )
             )
 
-        ops_flops = "OP" if (dtype[:1] == "I") else "FLOP"
+        ops_flops = "OP" if (str(dtype[:1]) == "I") else "FLOP"
 
         # Plot peak VALU ceiling
         if dtype in PEAK_OPS_DATATYPES:
