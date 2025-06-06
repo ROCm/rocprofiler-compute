@@ -11,6 +11,7 @@
 - [ ] Optimization
 - [ ] Documentation Update
 - [ ] Continuous Integration
+- [ ] Other (please specify)
 
 ## Technical Details
 <!-- Please explain the changes. -->
