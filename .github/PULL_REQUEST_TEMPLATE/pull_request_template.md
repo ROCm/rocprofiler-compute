@@ -1,6 +1,10 @@
 # rocprofiler-compute Pull Request
 Please fill out the form below when requesting a pull request.
 
+## Bug Fix or Feature?
+- [ ] Bug Fix
+- [ ] Feature
+
 ## What is the problem?
 Describe the problem being solved
 
