@@ -1,17 +1,26 @@
 # rocprofiler-compute Pull Request
-Please fill out the form below when requesting a pull request.
 
-## Bug Fix or Feature?
-- [ ] Bug Fix
+## Related Issue
+<!-- Please link to the issue(s) that this PR addresses.  -->
+- [ ] Closes #<issue number or link>
+
+## What type of PR is this? (check all that apply)
+- [ ] Refactor
 - [ ] Feature
+- [ ] Bug Fix
+- [ ] Optimization
+- [ ] Documentation Update
+- [ ] Continuous Integration
 
-## What is the problem?
-Describe the problem being solved
+## Technical Details
+<!-- Please explain the changes. -->
 
-## What is the solution?
-Describe the solution you are implementing
+## Have you added or updated tests to validate functionality?
+- [ ] Yes
+- [ ] No - does not apply to this PR
 
-## Link to GitHub Issue
-If you found a bug and there is no issue yet, create one!
-- https://github.com/ROCm/rocprofiler-compute/issues/XXX
+## Have you added or updated documentation (CHANGELOG.md)?
+<!-- Needed for Release updates for a ROCm release. -->
+- [ ] Yes
+- [ ] No - does not apply to this PR
 
