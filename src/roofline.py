@@ -134,7 +134,6 @@ class Roofline:
             msg += "\n\t%s -> %s" % (i, self.__ai_data[i])
         console_debug(msg)
 
-        # Generate a roofline figure for the datatypes
         ops_figure = flops_figure = None
         ops_dt_list = flops_dt_list = ""
 
@@ -195,7 +194,6 @@ class Roofline:
                     height=200, width=400
                 )
             else:
-                # Create actual plotly symbols for the legend
                 symbols_list = []
                 kernel_names_list = []
 
@@ -203,13 +201,11 @@ class Roofline:
                     symbols_list.append(SYMBOLS[i % len(SYMBOLS)])
                     kernel_names_list.append(original_kernel_names[i])
 
-                # Clear the figure and create symbol display with kernel names
                 self.__figure = go.Figure()
 
-                # Add scatter plot for symbols
                 self.__figure.add_trace(go.Scatter(
-                    x=[0.1] * num_kernels,  # Position symbols in left column
-                    y=list(range(num_kernels, 0, -1)),  # Reverse order to match table format
+                    x=[0.1] * num_kernels, 
+                    y=list(range(num_kernels, 0, -1)),
                     mode='markers',
                     marker=dict(
                         symbol=symbols_list,
@@ -221,11 +217,10 @@ class Roofline:
                     hoverinfo='skip'
                 ))
 
-                # Add kernel names as text annotations
                 for i, kernel_name in enumerate(kernel_names_list):
                     self.__figure.add_annotation(
-                        x=0.25,  # Position text in right column
-                        y=num_kernels - i,  # Reverse order to match symbols
+                        x=0.25,
+                        y=num_kernels - i,
                         text=kernel_name,
                         showarrow=False,
                         xanchor='left',
@@ -233,7 +228,6 @@ class Roofline:
                         font=dict(size=11, color='black')
                     )
 
-                # Add column headers
                 self.__figure.add_annotation(
                     x=0.1, y=num_kernels + 1,
                     text="<b>Symbol</b>",
@@ -251,7 +245,6 @@ class Roofline:
                     font=dict(size=12, color='black')
                 )
 
-                # Add horizontal lines to separate rows (optional)
                 for i in range(num_kernels + 1):
                     self.__figure.add_shape(
                         type="line",
@@ -260,7 +253,6 @@ class Roofline:
                         line=dict(color="lightgray", width=1)
                     )
 
-                # Add vertical line to separate columns (optional)
                 self.__figure.add_shape(
                     type="line",
                     x0=0.2, x1=0.2,
