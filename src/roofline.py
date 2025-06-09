@@ -242,115 +242,22 @@ class Roofline:
         """Create graph object from ai_data (coordinate points) and ceiling_data (peak FLOP and BW) data."""
         if fig is None:
             fig = go.Figure()
+            skipAI = False
+        else:
+            skipAI = True  # Don't repeat AI plotting
+
         plot_mode = "lines+text" if self.__run_parameters["is_standalone"] else "lines"
         self.__ceiling_data = constuct_roof(
             roofline_parameters=self.__run_parameters,
             dtype=dtype,
         )
         console_debug("roofline", "Ceiling data:\n%s" % self.__ceiling_data)
+        ops_flops = "OP" if (dtype[:1] == "I") else "FLOP"  # For printing purposes
 
-        #######################
-        # Plot ceilings
-        #######################
-        if self.__run_parameters["mem_level"] == "ALL":
-            cache_hierarchy = ["HBM", "L2", "L1", "LDS"]
-        else:
-            cache_hierarchy = self.__run_parameters["mem_level"]
-
-        # Plot peak BW ceiling(s)
-        for cache_level in cache_hierarchy:
-            fig.add_trace(
-                go.Scatter(
-                    x=self.__ceiling_data[cache_level.lower()][0],
-                    y=self.__ceiling_data[cache_level.lower()][1],
-                    name="{}-{}".format(cache_level, dtype),
-                    mode=plot_mode,
-                    hovertemplate="<b>%{text}</b>",
-                    text=[
-                        "{} GB/s".format(
-                            to_int(self.__ceiling_data[cache_level.lower()][2])
-                        ),
-                        (
-                            None
-                            if self.__run_parameters["is_standalone"]
-                            else "{} GB/s".format(
-                                to_int(self.__ceiling_data[cache_level.lower()][2])
-                            )
-                        ),
-                    ],
-                    textposition="top right",
-                )
-            )
-
-        ops_flops = "OP" if (dtype[:1] == "I") else "FLOP"
-
-        # Plot peak VALU ceiling
-        if dtype in PEAK_OPS_DATATYPES:
-            fig.add_trace(
-                go.Scatter(
-                    x=self.__ceiling_data["valu"][0],
-                    y=self.__ceiling_data["valu"][1],
-                    name="Peak VALU-{}".format(dtype),
-                    mode=plot_mode,
-                    hovertemplate="<b>%{text}</b>",
-                    text=[
-                        (
-                            None
-                            if self.__run_parameters["is_standalone"]
-                            else "{} G{}/s".format(
-                                to_int(self.__ceiling_data["valu"][2]), ops_flops
-                            )
-                        ),
-                        "{} G{}/s".format(
-                            to_int(self.__ceiling_data["valu"][2]), ops_flops
-                        ),
-                    ],
-                    textposition="top left",
-                )
-            )
-
-        # Plot peak MFMA ceiling
-        if dtype in MFMA_DATATYPES:
-            fig.add_trace(
-                go.Scatter(
-                    x=self.__ceiling_data["mfma"][0],
-                    y=self.__ceiling_data["mfma"][1],
-                    name="Peak MFMA-{}".format(dtype),
-                    mode=plot_mode,
-                    hovertemplate="<b>%{text}</b>",
-                    text=[
-                        (
-                            None
-                            if self.__run_parameters["is_standalone"]
-                            else "{} G{}/s".format(
-                                to_int(self.__ceiling_data["mfma"][2]), ops_flops
-                            )
-                        ),
-                        "{} G{}/s".format(
-                            to_int(self.__ceiling_data["mfma"][2]), ops_flops
-                        ),
-                    ],
-                    textposition="top left",
-                )
-            )
         #######################
         # Plot Application AI
         #######################
         # Plot the arithmetic intensity points for each cache level
-
-        # Check for F6F4 PC which applies to both FP4 and FP6 MFMA; avoid duplicate plotting
-        skipAI = False
-        if dtype == "FP4" or dtype == "FP6":
-            if (dtype == "FP6") and (
-                "FP4" in self.__run_parameters["roofline_data_type"]
-            ):
-                skipAI = True
-            console_debug(
-                "roofline",
-                "Datatype {} is captured through the F6F4 perfmon event".format(dtype),
-            )
-            dtype = "F6F4"
-
         if ops_flops == "FLOP":
             if not skipAI:
                 fig.add_trace(
@@ -407,6 +314,93 @@ class Roofline:
                 yaxis_title="Performance (GOP/sec)",
                 hovermode="x unified",
                 margin=dict(l=50, r=50, b=50, t=50, pad=4),
+            )
+            console_debug(
+                "roofline",
+                "Roofline analysis only supports AI for floating point calculations at this time",
+            )
+
+        #######################
+        # Plot ceilings
+        #######################
+        if self.__run_parameters["mem_level"] == "ALL":
+            cache_hierarchy = ["HBM", "L2", "L1", "LDS"]
+        else:
+            cache_hierarchy = self.__run_parameters["mem_level"]
+
+        # Plot peak BW ceiling(s)
+        for cache_level in cache_hierarchy:
+            fig.add_trace(
+                go.Scatter(
+                    x=self.__ceiling_data[cache_level.lower()][0],
+                    y=self.__ceiling_data[cache_level.lower()][1],
+                    name="{}-{}".format(cache_level, dtype),
+                    mode=plot_mode,
+                    hovertemplate="<b>%{text}</b>",
+                    text=[
+                        "{} GB/s".format(
+                            to_int(self.__ceiling_data[cache_level.lower()][2])
+                        ),
+                        (
+                            None
+                            if self.__run_parameters["is_standalone"]
+                            else "{} GB/s".format(
+                                to_int(self.__ceiling_data[cache_level.lower()][2])
+                            )
+                        ),
+                    ],
+                    textposition="top right",
+                )
+            )
+
+        # Plot peak VALU ceiling
+        if dtype in PEAK_OPS_DATATYPES:
+            fig.add_trace(
+                go.Scatter(
+                    x=self.__ceiling_data["valu"][0],
+                    y=self.__ceiling_data["valu"][1],
+                    name="Peak VALU-{}".format(dtype),
+                    mode=plot_mode,
+                    hovertemplate="<b>%{text}</b>",
+                    text=[
+                        (
+                            None
+                            if self.__run_parameters["is_standalone"]
+                            else "{} G{}/s".format(
+                                to_int(self.__ceiling_data["valu"][2]), ops_flops
+                            )
+                        ),
+                        "{} G{}/s".format(
+                            to_int(self.__ceiling_data["valu"][2]), ops_flops
+                        ),
+                    ],
+                    textposition="top left",
+                )
+            )
+
+        # Plot peak MFMA ceiling
+        if dtype in MFMA_DATATYPES:
+            fig.add_trace(
+                go.Scatter(
+                    x=self.__ceiling_data["mfma"][0],
+                    y=self.__ceiling_data["mfma"][1],
+                    name="Peak MFMA-{}".format(dtype),
+                    mode=plot_mode,
+                    hovertemplate="<b>%{text}</b>",
+                    text=[
+                        (
+                            None
+                            if self.__run_parameters["is_standalone"]
+                            else "{} G{}/s".format(
+                                to_int(self.__ceiling_data["mfma"][2]), ops_flops
+                            )
+                        ),
+                        "{} G{}/s".format(
+                            to_int(self.__ceiling_data["mfma"][2]), ops_flops
+                        ),
+                    ],
+                    textposition="top left",
+                )
             )
 
         fig.update_xaxes(type="log", autorange=True)
