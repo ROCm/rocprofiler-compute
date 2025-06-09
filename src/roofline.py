@@ -195,62 +195,98 @@ class Roofline:
                     height=200, width=400
                 )
             else:
-                symbols_column_data = []
-                kernel_names_column_data_wrapped = []
-
-                total_text_lines_for_pdf = 0
-                CHARS_PER_LINE_FOR_TABLE_CELL = 90
+                # Create actual plotly symbols for the legend
+                symbols_list = []
+                kernel_names_list = []
 
                 for i in range(num_kernels):
-                    symbol_index = SYMBOLS[i % len(SYMBOLS)]
-                    symbols_column_data.append(f"Symbol {symbol_index}") # Text representation of the symbol
+                    symbols_list.append(SYMBOLS[i % len(SYMBOLS)])
+                    kernel_names_list.append(original_kernel_names[i])
 
-                    wrapped_name = wrap_text(original_kernel_names[i], width=CHARS_PER_LINE_FOR_TABLE_CELL)
-                    kernel_names_column_data_wrapped.append(wrapped_name)
-                    total_text_lines_for_pdf += (wrapped_name.count("<br>") + 1)
+                # Clear the figure and create symbol display with kernel names
+                self.__figure = go.Figure()
 
-                # dynamic Height for the PDF page (based on table rows and wrapped content)
-                # heuristic: average lines per row * number of rows + padding
-                avg_lines_per_row = total_text_lines_for_pdf / num_kernels if num_kernels > 0 else 1
-                estimated_px_per_avg_line_in_row = 25 # Approx pixels per line of text in a cell
-                row_height_estimate = max(25, avg_lines_per_row * estimated_px_per_avg_line_in_row) # Min row height 25px
-
-                header_height_px = 40
-                padding_for_title_margins_pdf = 120
-                dynamic_pdf_height = max(400, num_kernels * row_height_estimate + padding_for_title_margins_pdf + header_height_px)
-                dynamic_pdf_height = min(dynamic_pdf_height, 8000)
-                dynamic_pdf_width = 1000
-
-                self.__figure.add_trace(go.Table(
-                    header=dict(
-                        values=['<b>Marker Symbol</b>', '<b>Kernel Name</b>'],
-                        fill_color='paleturquoise',
-                        align=['center', 'left'],
-                        font=dict(size=12, color='black'),
-                        line_color='darkslategray',
-                        height=30
+                # Add scatter plot for symbols
+                self.__figure.add_trace(go.Scatter(
+                    x=[0.1] * num_kernels,  # Position symbols in left column
+                    y=list(range(num_kernels, 0, -1)),  # Reverse order to match table format
+                    mode='markers',
+                    marker=dict(
+                        symbol=symbols_list,
+                        size=15,
+                        color='blue',
+                        line=dict(width=1, color='black')
                     ),
-                    cells=dict(
-                        values=[
-                            [f"<b>{symbol}</b>" for symbol in symbols_column_data],
-                            kernel_names_column_data_wrapped
-                        ],
-                        fill_color=[['lavender', 'lightgrey'] * (len(symbols_column_data) // 2 + 1)],
-                        align=['center', 'left'],
-                        font=dict(size=11, color='black'),
-                        line_color='darkslategray',
-                        height=28
-                    ),
-                    columnwidth=[0.2, 0.8]
+                    showlegend=False,
+                    hoverinfo='skip'
                 ))
 
+                # Add kernel names as text annotations
+                for i, kernel_name in enumerate(kernel_names_list):
+                    self.__figure.add_annotation(
+                        x=0.25,  # Position text in right column
+                        y=num_kernels - i,  # Reverse order to match symbols
+                        text=kernel_name,
+                        showarrow=False,
+                        xanchor='left',
+                        yanchor='middle',
+                        font=dict(size=11, color='black')
+                    )
+
+                # Add column headers
+                self.__figure.add_annotation(
+                    x=0.1, y=num_kernels + 1,
+                    text="<b>Symbol</b>",
+                    showarrow=False,
+                    xanchor='center',
+                    yanchor='middle',
+                    font=dict(size=12, color='black')
+                )
+                self.__figure.add_annotation(
+                    x=0.25, y=num_kernels + 1,
+                    text="<b>Kernel Name</b>",
+                    showarrow=False,
+                    xanchor='left',
+                    yanchor='middle',
+                    font=dict(size=12, color='black')
+                )
+
+                # Add horizontal lines to separate rows (optional)
+                for i in range(num_kernels + 1):
+                    self.__figure.add_shape(
+                        type="line",
+                        x0=0, x1=1,
+                        y0=i + 0.5, y1=i + 0.5,
+                        line=dict(color="lightgray", width=1)
+                    )
+
+                # Add vertical line to separate columns (optional)
+                self.__figure.add_shape(
+                    type="line",
+                    x0=0.2, x1=0.2,
+                    y0=0.5, y1=num_kernels + 1.5,
+                    line=dict(color="lightgray", width=1)
+                )
 
                 self.__figure.update_layout(
-                    title_text="Kernel Names and Corresponding Markers", title_x=0.5,
-                    height=dynamic_pdf_height,
-                    width=dynamic_pdf_width,
-                    margin=dict(l=30, r=30, t=70, b=30)
+                    title="Kernel Names and Corresponding Markers",
+                    title_x=0.5,
+                    xaxis=dict(
+                        visible=False,
+                        range=[0, 1]
+                    ),
+                    yaxis=dict(
+                        visible=False,
+                        range=[0, num_kernels + 2],
+                        autorange=False
+                    ),
+                    height=max(400, num_kernels * 40 + 150),
+                    width=1000,
+                    margin=dict(l=50, r=50, t=70, b=30),
+                    plot_bgcolor='white',
+                    paper_bgcolor='white'
                 )
+
 
         # Output will be different depending on interaction type:
         # Save PDFs if we're in "standalone roofline" mode, otherwise return HTML to be used in GUI output
