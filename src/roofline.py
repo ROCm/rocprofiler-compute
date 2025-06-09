@@ -591,7 +591,7 @@ class Roofline:
         else:
             console_warning("No MFMA measurement available for {}".format(dtype))
 
-        # # Plot Application AI,  todo: show kernel name
+        # Plot Application AI
         for cache_level in cache_hierarchy:
             key = "ai_" + cache_level.lower()
             if key in self.__ai_data:
@@ -620,7 +620,7 @@ class Roofline:
         plt.ylabel("Performance (GFLOP/sec)")
         plt.title("Roofline ({})".format(dtype))
 
-        # canvas config
+        # Canvas config
         plt.theme("pro")
         plt.xscale("log")
         plt.yscale("log")
