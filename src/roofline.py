@@ -34,7 +34,13 @@ import plotext as plt
 import plotly.graph_objects as go
 from dash import dcc, html
 
-from utils.logger import console_debug, console_error, console_log, demarcate
+from utils.logger import (
+    console_debug,
+    console_error,
+    console_log,
+    console_warning,
+    demarcate,
+)
 from utils.roofline_calc import (
     MFMA_DATATYPES,
     PEAK_OPS_DATATYPES,
@@ -415,8 +421,23 @@ class Roofline:
 
         return fig
 
+    # ----------------------------------------
+    # cli_generate_plot(self, datatype)
+    # Input: (str) one datatype
+    # Output: (str) plot.build(), or None if datatype is not valid for the architecture
+    # ----------------------------------------
+    @demarcate
     def cli_generate_plot(self, dtype):
         console_debug("roofline", "Generating roofline plot for CLI")
+
+        if not (str(dtype) in SUPPORTED_DATATYPES[self.__mspec.gpu_arch]):
+            console_error(
+                "{} is not a supported datatype for roofline profiling on {}".format(
+                    str(dtype), self.__mspec.gpu_model
+                ),
+                exit=False,
+            )
+            return
 
         # Check proper datatype input - takes single str
         if not isinstance(dtype, str):
@@ -464,6 +485,7 @@ class Roofline:
             roofline_parameters=self.__run_parameters,
             dtype=dtype,
         )
+        self.__ai_data = calc_ai(self.__mspec, self.__run_parameters["sort_type"], t_df)
 
         plt.clf()
         plt.plotsize(plt.tw(), plt.th())
@@ -534,6 +556,8 @@ class Roofline:
                     str(self.__ceiling_data["valu"][2]),
                 ),
             )
+        else:
+            console_warning("No PEAK measurement available for {}".format(dtype))
 
         if dtype in MFMA_DATATYPES:
             plt.plot(
@@ -564,6 +588,8 @@ class Roofline:
                     str(self.__ceiling_data["mfma"][2]),
                 ),
             )
+        else:
+            console_warning("No MFMA measurement available for {}".format(dtype))
 
         # # Plot Application AI,  todo: show kernel name
         for cache_level in cache_hierarchy:
