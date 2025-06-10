@@ -264,7 +264,7 @@ class Roofline:
                     go.Scatter(
                         x=self.__ai_data["ai_l1"][0],
                         y=self.__ai_data["ai_l1"][1],
-                        name=dtype + "_ai_l1",
+                        name="ai_l1",
                         mode="markers",
                         marker_symbol=(
                             SYMBOLS
@@ -277,7 +277,7 @@ class Roofline:
                     go.Scatter(
                         x=self.__ai_data["ai_l2"][0],
                         y=self.__ai_data["ai_l2"][1],
-                        name=dtype + "_ai_l2",
+                        name="ai_l2",
                         mode="markers",
                         marker_symbol=(
                             SYMBOLS
@@ -290,7 +290,7 @@ class Roofline:
                     go.Scatter(
                         x=self.__ai_data["ai_hbm"][0],
                         y=self.__ai_data["ai_hbm"][1],
-                        name=dtype + "_ai_hbm",
+                        name="ai_hbm",
                         mode="markers",
                         marker_symbol=(
                             SYMBOLS
