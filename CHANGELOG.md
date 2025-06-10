@@ -6,6 +6,14 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 ### Added
 
+* Stochastic (hardware-based) PC sampling has been enabled for AMD Instinct MI300X series and later accelerators.
+
+* Sorting of PC sampling by type: offset or count.
+
+* Add rocprof-compute Text User Interface (TUI) support for analyze mode
+  * A command line based user interface to support interactive single-run analysis
+  * launch with `--tui` option in analyze mode. i.e., `rocprof-compute analyze --tui`
+
 * Add support to be able to acquire from rocprofv3 every single channle on each XCD of TCC counters
 
 * Add Docker files to package the application and dependencies into a single portable and executable standalone binary file
@@ -47,13 +55,15 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 * Roofline support for MI350 series architecture
 
-* Setting ROCPROF=rocprofiler-sdk environment variable will use rocprofiler-sdk C++ library instead of rocprofv3 python script
+* Interface to rocprofiler-sdk
+  * Setting ROCPROF=rocprofiler-sdk environment variable will use rocprofiler-sdk C++ library instead of rocprofv3 python script
   * Add --rocprofiler-sdk-library-path runtime option to choose the path to rocprofiler-sdk library to be used
+  * Using rocprof v1 / v2 / v3 interfaces will trigger a deprecation warning to use rocprofiler-sdk interface
+
+* Support MEM chart on CLI(single run)
 
 ### Changed
 
-* Change the default rocprof version to v3 when environment variable "ROCPROF" is not set
-* Change the rocprof version for unit tests to rocprofv3 on all SoCs except MI100
 * Change normal_unit default to per_kernel
 * Change dependency from rocm-smi to amd-smi
 * Decrease profiling time by not collecting counters not used in post analysis
@@ -67,6 +77,7 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 * Fixed option specs-correction
 * Fixed kernel name and kernel dispatch filtering when using rocprof v3
 * Fixed not collecting TCC channel counters in rocprof v3
+* Fixed peak FLOPS of F8 I8 F16 and BF16 on MI300
 
 ### Known issues
 
