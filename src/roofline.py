@@ -421,13 +421,16 @@ class Roofline:
 
         return fig
 
-    # ----------------------------------------
-    # cli_generate_plot(self, datatype)
-    # Input: (str) one datatype
-    # Output: (str) plot.build(), or None if datatype is not valid for the architecture
-    # ----------------------------------------
     @demarcate
     def cli_generate_plot(self, dtype):
+        """
+        Plot CLI mode roofline analysis in terminal using plotext
+
+        :param dtype: The datatype to be profiled
+        :type method: str
+        :return: Build the current figure using plot.build(), or None if datatype is not valid for the architecture
+        :rtype: str or None
+        """
         console_debug("roofline", "Generating roofline plot for CLI")
 
         if not (str(dtype) in SUPPORTED_DATATYPES[self.__mspec.gpu_arch]):
@@ -596,7 +599,7 @@ class Roofline:
             key = "ai_" + cache_level.lower()
             if key in self.__ai_data:
                 for i in range(len(self.__ai_data["kernelNames"])):
-                    # Zero intensity level means no data reported for this cache level, skip plotting for this kernel to avoid log error
+                    # Zero intensity level means no data reported for this cache level
                     if self.__ai_data[key][0][i] > 0 and self.__ai_data[key][1][i] > 0:
                         plt.plot(
                             [self.__ai_data[key][0][i]],
