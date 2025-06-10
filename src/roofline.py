@@ -46,7 +46,7 @@ from utils.utils import mibench
 
 SYMBOLS = [0, 1, 2, 3, 4, 5, 13, 17, 18, 20]
 
-def wrap_text(text, width=60):
+def wrap_text(text, width=92):
     """
     Wraps text using textwrap and joins lines with <br> for Plotly.
     """
@@ -204,7 +204,7 @@ class Roofline:
                 self.__figure = go.Figure()
 
                 self.__figure.add_trace(go.Scatter(
-                    x=[0.1] * num_kernels, 
+                    x=[0.1] * num_kernels,
                     y=list(range(num_kernels, 0, -1)),
                     mode='markers',
                     marker=dict(
@@ -221,10 +221,11 @@ class Roofline:
                     self.__figure.add_annotation(
                         x=0.25,
                         y=num_kernels - i,
-                        text=kernel_name,
+                        text=wrap_text(kernel_name),
                         showarrow=False,
                         xanchor='left',
                         yanchor='middle',
+                        align='left',
                         font=dict(size=11, color='black')
                     )
 
