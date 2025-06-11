@@ -44,6 +44,7 @@ from utils.logger import (
 )
 from utils.utils import (
     capture_subprocess_output,
+    format_time,
     gen_sysinfo,
     pc_sampling_prof,
     print_status,
@@ -329,22 +330,6 @@ class RocProfCompute_Base:
         console_debug(
             "profiling", "performing profiling using %s profiler" % self.__profiler
         )
-        
-        # helper function to format time for readability
-        def format_time(seconds):
-            hours = int(seconds // 3600)
-            minutes = int((seconds % 3600) // 60)
-            secs = int(seconds % 60)
-
-            parts = []
-            if hours > 0:
-                parts.append(f"{hours} hour{'s' if hours != 1 else ''}")
-            if minutes > 0:
-                parts.append(f"{minutes} minute{'s' if minutes != 1 else ''}")
-            if secs > 0 or not parts:
-                parts.append(f"{secs} second{'s' if secs != 1 else ''}")
-
-            return ', '.join(parts[:-1]) + (' and ' if len(parts) > 1 else '') + parts[-1]
 
         # log basic info
         console_log(str(prog).title() + " version: " + str(version))
@@ -378,22 +363,22 @@ class RocProfCompute_Base:
         # Run profiling on each input file
         input_files = glob.glob(self.get_args().path + "/perfmon/*.txt")
         input_files.sort()
-        
-        total_runs = len(input_files)  
-        total_time_so_far = 0  
-        avg_run_time = 0  
 
-        for i, fname in enumerate(tqdm(input_files, disable=disable_tqdm)):  
+        total_runs = len(input_files)
+        total_time_so_far = 0
+        avg_run_time = 0
+
+        for i, fname in enumerate(tqdm(input_files, disable=disable_tqdm)):
             run_number = i + 1
-            if i > 0:  
-                avg_run_time = total_time_so_far / i  
+            if i > 0:
+                avg_run_time = total_time_so_far / i
                 time_left_seconds = (total_runs - run_number) * avg_run_time
                 time_left = format_time(time_left_seconds)
                 console_log(f"[Run {run_number}/{total_runs}][Approximate profiling time left: {time_left}]...]")
-            else:  
-                console_log(f"[Run {run_number}/{total_runs}][Approximate profiling time left: pending first measurement...]")  
-            start_run_time = time.time() 
-            
+            else:
+                console_log(f"[Run {run_number}/{total_runs}][Approximate profiling time left: pending first measurement...]")
+            start_run_time = time.time()
+
             # Kernel filtering (in-place replacement)
             if not self.__args.kernel == None:
                 success, output = capture_subprocess_output(
@@ -465,15 +450,15 @@ class RocProfCompute_Base:
             else:
                 # TODO: Finish logic
                 console_error("Profiler not supported")
-            end_run_time = time.time()  
-            run_duration = end_run_time - start_run_time  
-            total_time_so_far += run_duration  
+            end_run_time = time.time()
+            run_duration = end_run_time - start_run_time
+            total_time_so_far += run_duration
 
         if self.__pc_sampling == True and self.__profiler in (
             "rocprofv3",
             "rocprofiler-sdk",
         ):
-            console_log(f"[Run {total_runs+1}/{total_runs+1}][PC sampling profile run]")  
+            console_log(f"[Run {total_runs+1}/{total_runs+1}][PC sampling profile run]")
             start_run_prof = time.time()
             pc_sampling_prof(
                 interval=self.get_args().pc_sampling_interval,
