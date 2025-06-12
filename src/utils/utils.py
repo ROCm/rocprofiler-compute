@@ -60,6 +60,156 @@ def is_tcc_channel_counter(counter):
     return counter.startswith("TCC") and counter.endswith("]")
 
 
+def is_counter_existed_in_extra_input_yaml(data: dict, counter_name: str) -> bool:
+    """
+    Check if a counter with the given name exists in the rocprofiler-sdk counters.
+
+    Args:
+        data (dict): The loaded YAML dictionary.
+        counter_name (str): The name of the counter to check.
+
+    Returns:
+        bool: True if the counter exists, False otherwise.
+    """
+    counters = data.get("rocprofiler-sdk", {}).get("counters", [])
+    return any(counter.get("name") == counter_name for counter in counters)
+
+
+def add_counter_extra_config_input_yaml(
+    data: dict,
+    counter_name: str,
+    description: str,
+    expression: str,
+    architectures: list,
+    properties: list = None,
+) -> dict:
+    """
+    Add a new counter to the rocprofiler-sdk dictionary.
+    Initialize missing parts if data is empty or incomplete.
+    Enforces that 'architectures' and 'properties' are lists for correct YAML list serialization.
+    Overwrites the counter if it already exists.
+
+    Args:
+        data (dict): The loaded YAML dictionary (can be empty).
+        counter_name (str): The name of the new counter.
+        description (str): Description of the new counter.
+        architectures (list): List of architectures for the definitions.
+        expression (str): Expression string for the counter.
+        properties (list, optional): Optional list of properties, default to empty list.
+
+    Returns:
+        dict: Updated YAML dictionary.
+    """
+    if properties is None:
+        properties = []
+
+    # Enforce type checks for YAML list serialization
+    if not isinstance(architectures, list):
+        raise TypeError(
+            f"'architectures' must be a list, got {type(architectures).__name__}"
+        )
+    if not isinstance(properties, list):
+        raise TypeError(f"'properties' must be a list, got {type(properties).__name__}")
+
+    # Initialize the top-level 'rocprofiler-sdk' dict if missing
+    if "rocprofiler-sdk" not in data or not isinstance(data["rocprofiler-sdk"], dict):
+        data["rocprofiler-sdk"] = {}
+
+    sdk = data["rocprofiler-sdk"]
+
+    # Initialize schema version if missing
+    if "counters-schema-version" not in sdk:
+        sdk["counters-schema-version"] = 1
+
+    # Initialize counters list if missing or not a list
+    if "counters" not in sdk or not isinstance(sdk["counters"], list):
+        sdk["counters"] = []
+
+    # Build the new counter dictionary
+    new_counter = {
+        "name": counter_name,
+        "description": description,
+        "properties": properties,
+        "definitions": [
+            {
+                "architectures": architectures,
+                "expression": expression,
+            }
+        ],
+    }
+
+    # Check if the counter already exists and overwrite if found
+    for idx, counter in enumerate(sdk["counters"]):
+        if counter.get("name") == counter_name:
+            sdk["counters"][idx] = new_counter
+            break
+    else:
+        # Not found, append new counter
+        sdk["counters"].append(new_counter)
+
+    return data
+
+
+def extract_counter_info_extra_config_input_yaml(
+    data: dict, counter_name: str
+) -> dict | None:
+    """
+    Extract the full counter dictionary from 'data' for the given counter_name.
+
+    Args:
+        data (dict): The source YAML dict.
+        counter_name (str): The counter to find.
+
+    Returns:
+        dict | None: The full counter dict if found, else None.
+    """
+    counters = data.get("rocprofiler-sdk", {}).get("counters", [])
+    for counter in counters:
+        if counter.get("name") == counter_name:
+            return counter
+    return None
+
+
+def add_counter_from_source_to_target_extra_config_input_yaml(
+    source_data: dict, target_data: dict, counter_name: str
+) -> dict:
+    """
+    Check if counter_name exists in source_data, and if yes, add it to target_data.
+
+    Args:
+        source_data (dict): Source YAML dictionary to extract from.
+        target_data (dict): Target YAML dictionary to add to.
+        counter_name (str): Name of the counter to copy.
+
+    Returns:
+        dict: Updated target_data dictionary.
+    """
+    counter = extract_counter_info_extra_config_input_yaml(source_data, counter_name)
+    if not counter:
+        raise ValueError(f"Counter '{counter_name}' not found in source data")
+
+    # Extract required info
+    name = counter.get("name")
+    description = counter.get("description", "")
+    properties = counter.get("properties", [])
+    definitions = counter.get("definitions", [])
+
+    if not definitions:
+        raise ValueError(f"Counter '{counter_name}' has no definitions")
+
+    architectures = definitions[0].get("architectures", [])
+    expression = definitions[0].get("expression", "")
+
+    return add_counter_extra_config_input_yaml(
+        target_data,
+        counter_name=name,
+        description=description,
+        expression=expression,
+        architectures=architectures,
+        properties=properties,
+    )
+
+
 def is_spi_pipe_counter(counter):
     for pattern in spi_pipe_counter_regexs:
         if re.match(pattern, counter):
@@ -162,9 +312,18 @@ def detect_rocprof(args):
         )
         return rocprof_cmd
 
+    console_warning(
+        "rocprof v1 / v2 / v3 interfaces will be deprecated in favor of "
+        "rocprofiler-sdk interface in a future release. To use rocprofiler-sdk "
+        "interface, please set the environment variable ROCPROF to 'rocprofiler-sdk' "
+        "and optionally provide the path to librocprofiler-sdk.so library via the "
+        "--rocprofiler-sdk-library-path option."
+    )
+
     # detect rocprof
     if not "ROCPROF" in os.environ.keys():
-        rocprof_cmd = "rocprofv3"
+        # default rocprof
+        rocprof_cmd = "rocprof"
     else:
         rocprof_cmd = os.environ["ROCPROF"]
 
@@ -666,6 +825,8 @@ def run_prof(
 
     if rocprof_cmd == "rocprofiler-sdk":
         app_cmd = options.pop("APP_CMD")
+        if not new_env:
+            new_env = os.environ.copy()
         for key, value in options.items():
             new_env[key] = value
         console_debug("rocprof sdk env vars: {}".format(new_env))
@@ -756,7 +917,9 @@ def run_prof(
     if new_env and not using_v3() and not using_v1():
         # flatten tcc for applicable mi300 input
         f = path(workload_dir + "/out/pmc_1/results_" + fbase + ".csv")
-        xcds = mi_gpu_specs.get_num_xcds(mspec.gpu_model, mspec.compute_partition)
+        xcds = mi_gpu_specs.get_num_xcds(
+            mspec.gpu_arch, mspec.gpu_model, mspec.compute_partition
+        )
         df = flatten_tcc_info_across_xcds(f, xcds, int(mspec._l2_banks))
         df.to_csv(f, index=False)
 
@@ -797,12 +960,17 @@ def run_prof(
     df.to_csv(workload_dir + "/" + fbase + ".csv", index=False)
 
 
-def pc_sampling_prof(interval, workload_dir, appcmd, rocprofiler_sdk_library_path):
+def pc_sampling_prof(
+    method, interval, workload_dir, appcmd, rocprofiler_sdk_library_path
+):
     """
     Run rocprof with pc sampling. Current support v3 only.
     """
     # Todo:
     #   - precheck with rocprofv3 –-list-avail
+
+    unit = "time" if method == "host_trap" else "cycles"
+
     if rocprof_cmd == "rocprofiler-sdk":
         rocm_libdir = str(pathlib.Path(rocprofiler_sdk_library_path).parent)
         rocprofiler_sdk_tool_path = str(
@@ -823,7 +991,7 @@ def pc_sampling_prof(interval, workload_dir, appcmd, rocprofiler_sdk_library_pat
             "ROCPROF_OUTPUT_PATH": workload_dir,
             "ROCPROF_OUTPUT_FILE_NAME": "ps_file",
             "ROCPROFILER_PC_SAMPLING_BETA_ENABLED": "1",
-            "ROCPROF_PC_SAMPLING_UNIT": "time",
+            "ROCPROF_PC_SAMPLING_UNIT": unit,
             "ROCPROF_PC_SAMPLING_INTERVAL": str(interval),
             "ROCPROF_PC_SAMPLING_METHOD": "host_trap",
         }
@@ -841,7 +1009,7 @@ def pc_sampling_prof(interval, workload_dir, appcmd, rocprofiler_sdk_library_pat
             "--pc-sampling-method",
             "host_trap",
             "--pc-sampling-unit",
-            "time",
+            unit,
             "--output-format",
             "csv",
             "json",
@@ -1023,8 +1191,6 @@ def gen_sysinfo(
 def detect_roofline(mspec):
     from utils import specs
 
-    rocm_ver = mspec.rocm_version[:1]
-
     os_release = path("/etc/os-release").read_text()
     ubuntu_distro = specs.search(r'VERSION_ID="(.*?)"', os_release)
     rhel_distro = specs.search(r'PLATFORM_ID="(.*?)"', os_release)
@@ -1035,7 +1201,6 @@ def detect_roofline(mspec):
         if path(rooflineBinary).exists():
             console_warning("roofline", "Detected user-supplied binary")
             return {
-                "rocm_ver": "override",
                 "distro": "override",
                 "path": rooflineBinary,
             }
@@ -1065,7 +1230,7 @@ def detect_roofline(mspec):
     else:
         console_error("roofline", "Cannot find a valid binary for your operating system")
 
-    target_binary = {"rocm_ver": rocm_ver, "distro": distro}
+    target_binary = {"distro": distro}
     return target_binary
 
 
@@ -1106,7 +1271,7 @@ def mibench(args, mspec):
     binary_paths = []
 
     target_binary = detect_roofline(mspec)
-    if target_binary["rocm_ver"] == "override":
+    if target_binary["distro"] == "override":
         binary_paths.append(target_binary["path"])
     else:
         # check two potential locations for roofline binaries due to differences in
@@ -1117,13 +1282,7 @@ def mibench(args, mspec):
         ]
 
         for dir in potential_paths:
-            path_to_binary = (
-                dir
-                + "-"
-                + distro_map[target_binary["distro"]]
-                + "-rocm"
-                + target_binary["rocm_ver"]
-            )
+            path_to_binary = dir + "-" + distro_map[target_binary["distro"]]
             binary_paths.append(path_to_binary)
 
     # Distro is valid but cant find rocm ver

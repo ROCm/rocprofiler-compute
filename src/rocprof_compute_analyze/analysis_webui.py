@@ -164,8 +164,7 @@ class webui_analysis(OmniAnalyze_Base):
                 workload=base_data[base_run],
                 dir=self.dest_dir,
                 is_gui=True,
-                debug=self.get_args().debug,
-                verbose=self.get_args().verbose,
+                args=self.get_args(),
             )
 
             # ~~~~~~~~~~~~~~~~~~~~~~~
@@ -316,7 +315,9 @@ class webui_analysis(OmniAnalyze_Base):
                 kernel_verbose=self.get_args().kernel_verbose,
             )
             # create the loaded kernel stats
-            parser.load_kernel_top(self._runs[self.dest_dir], self.dest_dir)
+            parser.load_kernel_top(
+                self._runs[self.dest_dir], self.dest_dir, self.get_args()
+            )
             # set architecture
             self.arch = self._runs[self.dest_dir].sys_info.iloc[0]["gpu_arch"]
 
@@ -343,9 +344,7 @@ class webui_analysis(OmniAnalyze_Base):
             self._arch_configs[self.arch],
         )
         if args.random_port:
-            self.app.run_server(
-                debug=False, host="0.0.0.0", port=random.randint(1024, 49151)
-            )
+            self.app.run(debug=False, host="0.0.0.0", port=random.randint(1024, 49151))
         else:
             self.app.run(debug=False, host="0.0.0.0", port=args.gui)
 

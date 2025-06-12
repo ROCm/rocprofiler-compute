@@ -46,11 +46,14 @@ from utils.logger import (
 from utils.mi_gpu_spec import mi_gpu_specs
 from utils.parser import build_in_vars, supported_denom
 from utils.utils import (
+    add_counter_extra_config_input_yaml,
+    add_counter_from_source_to_target_extra_config_input_yaml,
     capture_subprocess_output,
     convert_metric_id_to_panel_idx,
     detect_rocprof,
     get_base_spi_pipe_counter,
     get_submodules,
+    is_counter_existed_in_extra_input_yaml,
     is_spi_pipe_counter,
     is_tcc_channel_counter,
     using_v3,
@@ -186,11 +189,72 @@ class OmniSoC_Base:
         self._mspec.gpu_model = mi_gpu_specs.get_gpu_model(
             self._mspec.gpu_arch, self._mspec.gpu_chip_id
         )
+
+        if not self._mspec.gpu_model:
+            self._mspec.gpu_model = self.detect_gpu_model(self._mspec.gpu_arch)
+
         self._mspec.num_xcd = str(
             mi_gpu_specs.get_num_xcds(
-                self._mspec.gpu_model, self._mspec.compute_partition
+                self._mspec.gpu_arch, self._mspec.gpu_model, self._mspec.compute_partition
             )
         )
+
+    @demarcate
+    def detect_gpu_model(self, gpu_arch):
+        """
+        Detects the GPU model using various identifiers from 'amd-smi static'.
+        Falls back through multiple methods if the primary method fails.
+        """
+
+        from utils.specs import run, search
+
+        # TODO: use amd-smi python api when available
+        amd_smi_static = run(["amd-smi", "static", "--gpu=0"], exit_on_error=True)
+
+        # Purposely search for patterns without variants suffix to try and match a known GPU model.
+        detection_methods = [
+            {
+                "name": "Market Name",
+                "pattern": r"MARKET_NAME:\s*.*(mi|MI\d*[a-zA-Z]*)",
+            },
+            {
+                "name": "VBIOS Name",
+                "pattern": r"NAME:\s*.*(mi|MI\d*[a-zA-Z]*)",
+            },
+            {"name": "Product Name", "pattern": r"PRODUCT_NAME:\s*.*(mi|MI\d*[a-zA-Z]*)"},
+        ]
+
+        gpu_model = None
+        for method in detection_methods:
+            console_log(f"Determining GPU model using {method['name']}.")
+            gpu_model = search(method["pattern"], amd_smi_static)
+            if gpu_model:
+                break
+
+        if not gpu_model:
+            console_warning("Unable to determine the GPU model.")
+            return
+
+        gpu_model = self._adjust_mi300_model(gpu_model.lower(), gpu_arch.lower())
+
+        if gpu_model.lower() not in mi_gpu_specs.get_num_xcds_dict().keys():
+            console_warning(f"Unknown GPU model detected: '{gpu_model}'.")
+            return
+
+        return gpu_model.upper()
+
+    def _adjust_mi300_model(self, gpu_model, gpu_arch):
+        """
+        Applies specific adjustments for MI300 series GPU models based on architecture.
+        """
+
+        if gpu_model in ["mi300a", "mi300x"]:
+            if gpu_arch in ["gfx940", "gfx941"]:
+                gpu_model += "_a0"
+            elif gpu_arch == "gfx942":
+                gpu_model += "_a1"
+
+        return gpu_model
 
     @demarcate
     def detect_counters(self):
@@ -245,14 +309,14 @@ class OmniSoC_Base:
                 section_config_text = "\n".join(
                     [
                         # Convert yaml to string
-                        yaml.dump(subsection)
+                        yaml.dump(subsection, sort_keys=False)
                         for subsection in section_config["Panel Config"]["data source"]
                         if subsection["metric_table"]["id"] in subsections
                     ]
                 )
             else:
                 # Convert yaml to string
-                section_config_text = yaml.dump(section_config)
+                section_config_text = yaml.dump(section_config, sort_keys=False)
             counters = counters.union(self.parse_counters(section_config_text))
 
         # Handle TCC channel counters: if hw_counter_matches has elements ending with '['
@@ -713,25 +777,30 @@ class OmniSoC_Base:
                 ]:
                     pmc.append(ctr)
                     if using_v3():
-                        if ctr in accum_counters_def:
-                            counter_def[ctr] = accum_counters_def[ctr]
+                        if is_counter_existed_in_extra_input_yaml(
+                            accum_counters_def, ctr
+                        ) and not is_counter_existed_in_extra_input_yaml(
+                            counter_def, ctr
+                        ):
+                            counter_def = (
+                                add_counter_from_source_to_target_extra_config_input_yaml(
+                                    accum_counters_def, counter_def, ctr
+                                )
+                            )
                         # Add TCC channel counters definitions
                         if is_tcc_channel_counter(ctr):
                             counter_name = ctr.split("[")[0]
                             idx = int(ctr.split("[")[1].split("]")[0])
                             xcd_idx = idx // int(self._mspec._l2_banks)
                             channel_idx = idx % int(self._mspec._l2_banks)
-                            counter_def.update(
-                                {
-                                    ctr: {
-                                        "architectures": {
-                                            self.__arch: {
-                                                "expression": f"select({counter_name},[DIMENSION_XCC=[{xcd_idx}], DIMENSION_INSTANCE=[{channel_idx}]])",
-                                            }
-                                        },
-                                        "description": f"{counter_name} on {xcd_idx}th XCC and {channel_idx}th channel",
-                                    }
-                                }
+                            expression = f"select({counter_name},[DIMENSION_XCC=[{xcd_idx}], DIMENSION_INSTANCE=[{channel_idx}]])"
+                            discription = f"{counter_name} on {xcd_idx}th XCC and {channel_idx}th channel"
+                            counter_def = add_counter_extra_config_input_yaml(
+                                counter_def,
+                                ctr,
+                                discription,
+                                expression,
+                                [self.__arch],
                             )
 
                 stext = "pmc: " + " ".join(pmc)
@@ -747,7 +816,7 @@ class OmniSoC_Base:
                 if using_v3():
                     with open(file_name_yaml, "w") as fp:
                         if counter_def:
-                            fp.write(yaml.dump(counter_def))
+                            fp.write(yaml.dump(counter_def, sort_keys=False))
 
         # Add a timestamp file
         # TODO: Does v3 need this?
