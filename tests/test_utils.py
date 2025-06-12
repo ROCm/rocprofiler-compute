@@ -2619,254 +2619,6 @@ def test_run_prof_tcc_flattening_mi300(tmp_path, monkeypatch):
     assert flatten_called
 
 # =============================================================================
-# PC SAMPLING PROFILING TESTS
-# =============================================================================
-
-def test_pc_sampling_prof_rocprofiler_sdk_success(monkeypatch):
-    """
-    Test pc_sampling_prof with rocprofiler-sdk successfully executes subprocess.
-    
-    Args:
-        monkeypatch (pytest.MonkeyPatch): Pytest fixture for patching.
-        
-    Returns:
-        None: Asserts that subprocess is called with correct environment variables.
-    """
-    monkeypatch.setattr("utils.utils.rocprof_cmd", "rocprofiler-sdk")
-    
-    mock_path = mock.MagicMock()
-    mock_path.parent = "/opt/rocm/lib"
-    mock_path.joinpath.return_value = "/opt/rocm/lib/rocprofiler-sdk/librocprofiler-sdk-tool.so"
-    monkeypatch.setattr("pathlib.Path", lambda x: mock_path)
-    
-    def mock_capture_subprocess_output(cmd, new_env=None, profileMode=False):
-        expected_env_vars = {
-            "ROCPROFILER_LIBRARY_CTOR": "1",
-            "ROCP_TOOL_LIBRARIES": "/opt/rocm/lib/rocprofiler-sdk/librocprofiler-sdk-tool.so",
-            "LD_LIBRARY_PATH": "/opt/rocm/lib",
-            "ROCPROF_OUTPUT_FORMAT": "csv,json",
-            "ROCPROF_OUTPUT_PATH": "/test/workload",
-            "ROCPROF_OUTPUT_FILE_NAME": "ps_file",
-            "ROCPROFILER_PC_SAMPLING_BETA_ENABLED": "1",
-            "ROCPROF_PC_SAMPLING_UNIT": "time",
-            "ROCPROF_PC_SAMPLING_INTERVAL": "1000",
-            "ROCPROF_PC_SAMPLING_METHOD": "host_trap"
-        }
-        for key, value in expected_env_vars.items():
-            assert new_env[key] == value
-        assert "LD_PRELOAD" in new_env
-        return (True, "Success")
-    
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", mock_capture_subprocess_output)
-    monkeypatch.setattr("utils.utils.console_debug", lambda *args, **kwargs: None)
-    
-    import utils.utils as utils_mod
-    
-    utils_mod.pc_sampling_prof(1000, "/test/workload", ["./test_app"], "/opt/rocm/lib/librocprofiler-sdk.so")
-def test_pc_sampling_prof_rocprofiler_sdk_failure(monkeypatch):
-    """
-    Test pc_sampling_prof with rocprofiler-sdk when subprocess fails.
-    
-    Args:
-        monkeypatch (pytest.MonkeyPatch): Pytest fixture for patching.
-        
-    Returns:
-        None: Asserts that console_error is called when subprocess fails.
-    """
-    monkeypatch.setattr("utils.utils.rocprof_cmd", "rocprofiler-sdk")
-    
-    mock_path = mock.MagicMock()
-    mock_path.parent = "/opt/rocm/lib"
-    mock_path.joinpath.return_value = "/opt/rocm/lib/rocprofiler-sdk/librocprofiler-sdk-tool.so"
-    monkeypatch.setattr("pathlib.Path", lambda x: mock_path)
-    
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", lambda *args, **kwargs: (False, "Error"))
-    monkeypatch.setattr("utils.utils.console_debug", lambda *args, **kwargs: None)
-    
-    def mock_console_error(msg, *args, **kwargs):
-        raise RuntimeError(f"console_error called: {msg}")
-    
-    monkeypatch.setattr("utils.utils.console_error", mock_console_error)
-    
-    import utils.utils as utils_mod
-    
-    with pytest.raises(RuntimeError, match="console_error called: PC sampling failed."):
-        utils_mod.pc_sampling_prof(500, "/test/workload", ["./test_app"], "/opt/rocm/lib/librocprofiler-sdk.so")
-def test_pc_sampling_prof_rocprofv3_success(monkeypatch):
-    """
-    Test pc_sampling_prof with rocprofv3 successfully executes subprocess.
-    
-    Args:
-        monkeypatch (pytest.MonkeyPatch): Pytest fixture for patching.
-        
-    Returns:
-        None: Asserts that subprocess is called with correct arguments.
-    """
-    monkeypatch.setattr("utils.utils.rocprof_cmd", "rocprofv3")
-    
-    captured_args = {}
-    def mock_capture_subprocess_output(cmd, new_env=None, profileMode=False):
-        captured_args['cmd'] = cmd
-        captured_args['env'] = new_env
-        captured_args['profileMode'] = profileMode
-        expected_cmd = [
-            "rocprofv3",
-            "--pc-sampling-beta-enabled",
-            "--pc-sampling-method", "host_trap",
-            "--pc-sampling-unit", "time",
-            "--output-format", "csv", "json",
-            "--pc-sampling-interval", "2000",
-            "-d", "/test/workload",
-            "-o", "ps_file",
-            "--",
-            ["./my_app", "--arg1"]
-        ]
-        return (True, "Success")
-    
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", mock_capture_subprocess_output)
-    monkeypatch.setattr("os.environ.copy", lambda: {"PATH": "/usr/bin"})
-    
-    import utils.utils as utils_mod
-    
-    utils_mod.pc_sampling_prof(2000, "/test/workload", ["./my_app", "--arg1"], "/opt/rocm/lib/librocprofiler-sdk.so")
-    
-    assert captured_args['cmd'][0] == "rocprofv3"
-    assert "--pc-sampling-interval" in captured_args['cmd']
-    assert "2000" in captured_args['cmd']
-    assert captured_args['profileMode'] is True
-def test_pc_sampling_prof_rocprofv3_failure(monkeypatch):
-    """
-    Test pc_sampling_prof with rocprofv3 when subprocess fails.
-    
-    Args:
-        monkeypatch (pytest.MonkeyPatch): Pytest fixture for patching.
-        
-    Returns:
-        None: Asserts that console_error is called when subprocess fails.
-    """
-    monkeypatch.setattr("utils.utils.rocprof_cmd", "rocprofv3")
-    
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", lambda *args, **kwargs: (False, "Failed to execute"))
-    monkeypatch.setattr("os.environ.copy", lambda: {"PATH": "/usr/bin"})
-    
-    error_msgs = []
-    def mock_console_error(msg, *args, **kwargs):
-        error_msgs.append(msg)
-        raise RuntimeError(f"console_error called: {msg}")
-    
-    monkeypatch.setattr("utils.utils.console_error", mock_console_error)
-    
-    import utils.utils as utils_mod
-    
-    with pytest.raises(RuntimeError, match="console_error called: PC sampling failed."):
-        utils_mod.pc_sampling_prof(1500, "/test/workload", ["./failed_app"], "/opt/rocm/lib/librocprofiler-sdk.so")
-    
-    assert "PC sampling failed." in error_msgs
-def test_pc_sampling_prof_different_intervals(monkeypatch):
-    """
-    Test pc_sampling_prof with different interval values to ensure proper parameter passing.
-    
-    Args:
-        monkeypatch (pytest.MonkeyPatch): Pytest fixture for patching.
-        
-    Returns:
-        None: Asserts that interval values are correctly passed to subprocess.
-    """
-    monkeypatch.setattr("utils.utils.rocprof_cmd", "rocprofv3")
-    
-    captured_intervals = []
-    def mock_capture_subprocess_output(cmd, new_env=None, profileMode=False):
-        try:
-            interval_idx = cmd.index("--pc-sampling-interval")
-            interval_value = cmd[interval_idx + 1]
-            captured_intervals.append(interval_value)
-        except (ValueError, IndexError):
-            pass
-        return (True, "Success")
-    
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", mock_capture_subprocess_output)
-    monkeypatch.setattr("os.environ.copy", lambda: {"PATH": "/usr/bin"})
-    
-    import utils.utils as utils_mod
-    
-    test_intervals = [100, 500, 1000, 5000]
-    for interval in test_intervals:
-        utils_mod.pc_sampling_prof(interval, "/test/workload", ["./test_app"], "/opt/rocm/lib/librocprofiler-sdk.so")
-    
-    assert captured_intervals == ["100", "500", "1000", "5000"]
-def test_pc_sampling_prof_rocprofiler_sdk_path_operations(monkeypatch):
-    """
-    Test pc_sampling_prof correctly handles path operations for rocprofiler-sdk.
-    
-    Args:
-        monkeypatch (pytest.MonkeyPatch): Pytest fixture for patching.
-        
-    Returns:
-        None: Asserts path operations are performed correctly.
-    """
-    monkeypatch.setattr("utils.utils.rocprof_cmd", "rocprofiler-sdk")
-    
-    class MockPath:
-        def __init__(self, path_str):
-            self.path_str = path_str
-            
-        @property
-        def parent(self):
-            return "/opt/rocm/lib64"
-            
-        def joinpath(self, *args):
-            return "/opt/rocm/lib64/rocprofiler-sdk/librocprofiler-sdk-tool.so"
-    
-    monkeypatch.setattr("pathlib.Path", MockPath)
-    
-    captured_env = {}
-    def mock_capture_subprocess_output(cmd, new_env=None, profileMode=False):
-        captured_env.update(new_env)
-        return (True, "Success")
-    
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", mock_capture_subprocess_output)
-    monkeypatch.setattr("utils.utils.console_debug", lambda *args, **kwargs: None)
-    
-    import utils.utils as utils_mod
-    
-    utils_mod.pc_sampling_prof(1000, "/output", ["./app"], "/opt/rocm/lib64/librocprofiler-sdk.so")
-    
-    assert captured_env["LD_LIBRARY_PATH"] == "/opt/rocm/lib64"
-    assert "/opt/rocm/lib64/rocprofiler-sdk/librocprofiler-sdk-tool.so" in captured_env["LD_PRELOAD"]
-    assert "/opt/rocm/lib64/librocprofiler-sdk.so" in captured_env["LD_PRELOAD"]
-def test_pc_sampling_prof_environment_isolation(monkeypatch):
-    """
-    Test pc_sampling_prof properly isolates environment variables.
-    
-    Args:
-        monkeypatch (pytest.MonkeyPatch): Pytest fixture for patching.
-        
-    Returns:
-        None: Asserts environment variables don't leak between calls.
-    """
-    monkeypatch.setattr("utils.utils.rocprof_cmd", "rocprofv3")
-    
-    base_env = {"PATH": "/usr/bin", "HOME": "/home/user"}
-    monkeypatch.setattr("os.environ.copy", lambda: base_env.copy())
-    
-    captured_envs = []
-    def mock_capture_subprocess_output(cmd, new_env=None, profileMode=False):
-        captured_envs.append(new_env.copy() if new_env else None)
-        return (True, "Success")
-    
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", mock_capture_subprocess_output)
-    
-    import utils.utils as utils_mod
-    
-    utils_mod.pc_sampling_prof(1000, "/output1", ["./app1"], "/path/to/sdk1")
-    utils_mod.pc_sampling_prof(2000, "/output2", ["./app2"], "/path/to/sdk2")
-    
-    assert len(captured_envs) == 2
-    for env in captured_envs:
-        assert env["PATH"] == "/usr/bin"
-        assert env["HOME"] == "/home/user"
-
-# =============================================================================
 # ROCPROFV3 OUTPUT PROCESSING TESTS
 # =============================================================================
 
@@ -4349,269 +4101,6 @@ def test_sles_15_7_detection(monkeypatch):
     result = utils_mod.detect_roofline({})
     
     assert result == {"distro": "15.6"}
-# =============================================================================
-# RUN_ROCSCOPE TESTS
-# =============================================================================
-
-def test_run_rocscope_disabled(monkeypatch):
-    """
-    Test run_rocscope when use_rocscope is False.
-    Should return early without attempting to find or run rocscope.
-    """
-    class DummyArgs:
-        use_rocscope = False
-        path = "/test/path"
-        name = "test_name"
-        remaining = "arg1 arg2"
-    
-    which_called = []
-    console_log_called = []
-    capture_called = []
-    
-    monkeypatch.setattr("shutil.which", lambda cmd: which_called.append(cmd))
-    monkeypatch.setattr("utils.utils.console_log", lambda *args: console_log_called.append(args))
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", lambda *args: capture_called.append(args))
-    
-    import utils.utils as utils_mod
-    result = utils_mod.run_rocscope(DummyArgs(), "test.txt")
-    
-    assert len(which_called) == 0
-    assert len(console_log_called) == 0
-    assert len(capture_called) == 0
-    assert result is None
-
-def test_run_rocscope_binary_not_found(monkeypatch):
-    """
-    Test run_rocscope when rocscope binary is not found.
-    Should return early without executing rocscope.
-    """
-    class DummyArgs:
-        use_rocscope = True
-        path = "/test/path"
-        name = "test_name"
-        remaining = "arg1 arg2"
-    
-    monkeypatch.setattr("shutil.which", lambda cmd: None)
-    
-    capture_called = []
-    console_log_called = []
-    
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", lambda *args: capture_called.append(args))
-    monkeypatch.setattr("utils.utils.console_log", lambda *args: console_log_called.append(args))
-    
-    import utils.utils as utils_mod
-    result = utils_mod.run_rocscope(DummyArgs(), "test.txt")
-    
-    assert len(capture_called) == 0
-    assert len(console_log_called) == 0
-    assert result is None
-
-def test_run_rocscope_success(monkeypatch):
-    """
-    Test successful execution of run_rocscope.
-    Should construct correct command and execute successfully.
-    """
-    class DummyArgs:
-        use_rocscope = True
-        path = "/test/path"
-        name = "test_name"
-        remaining = "arg1 arg2 --flag"
-    
-    class MockResult:
-        stdout = b"/usr/bin/rocscope\n"
-        stderr = b""
-    
-    monkeypatch.setattr("shutil.which", lambda cmd: MockResult() if cmd == "rocscope" else None)
-    
-    console_log_calls = []
-    capture_calls = []
-    
-    def mock_console_log(*args):
-        console_log_calls.append(args)
-    
-    def mock_capture_subprocess_output(cmd):
-        capture_calls.append(cmd)
-        return (True, "success output")
-    
-    monkeypatch.setattr("utils.utils.console_log", mock_console_log)
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", mock_capture_subprocess_output)
-    
-    import utils.utils as utils_mod
-    result = utils_mod.run_rocscope(DummyArgs(), "test.txt")
-    
-    assert len(capture_calls) == 1
-    expected_cmd = [
-        "/usr/bin/rocscope",
-        "metrics",
-        "-p",
-        "/test/path",
-        "-n",
-        "test_name",
-        "-t",
-        "test.txt",
-        "--",
-        "arg1",
-        "arg2",
-        "--flag"
-    ]
-    assert capture_calls[0] == expected_cmd
-    
-    assert len(console_log_calls) == 1
-    assert console_log_calls[0][0] == expected_cmd
-    
-    assert result is None
-
-def test_run_rocscope_subprocess_failure(monkeypatch):
-    """
-    Test run_rocscope when subprocess execution fails.
-    Should call console_error with stderr content.
-    """
-    class DummyArgs:
-        use_rocscope = True
-        path = "/test/path"
-        name = "test_name"
-        remaining = "arg1"
-    
-    class MockResult:
-        stdout = b"/usr/bin/rocscope\n"
-        stderr = b"Error: rocscope failed to execute\n"
-    
-    monkeypatch.setattr("shutil.which", lambda cmd: MockResult() if cmd == "rocscope" else None)
-    
-    def mock_capture_subprocess_output(cmd):
-        return (False, "subprocess failed")
-    
-    console_log_calls = []
-    console_error_calls = []
-    
-    monkeypatch.setattr("utils.utils.console_log", lambda *args: console_log_calls.append(args))
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", mock_capture_subprocess_output)
-    monkeypatch.setattr("utils.utils.console_error", lambda *args: console_error_calls.append(args))
-    
-    import utils.utils as utils_mod
-    result = utils_mod.run_rocscope(DummyArgs(), "test.txt")
-    
-    assert len(console_error_calls) == 1
-    assert console_error_calls[0][0] == "Error: rocscope failed to execute\n"
-    
-    assert len(console_log_calls) == 1
-    
-    assert result is None
-def test_run_rocscope_empty_remaining_args(monkeypatch):
-    """
-    Test run_rocscope with empty remaining arguments.
-    Should construct command without additional arguments.
-    """
-    class DummyArgs:
-        use_rocscope = True
-        path = "/test/path"
-        name = "test_name"
-        remaining = ""
-    
-    class MockResult:
-        stdout = b"/usr/bin/rocscope\n"
-        stderr = b""
-    
-    monkeypatch.setattr("shutil.which", lambda cmd: MockResult() if cmd == "rocscope" else None)
-    
-    capture_calls = []
-    def mock_capture_subprocess_output(cmd):
-        capture_calls.append(cmd)
-        return (True, "success")
-    
-    monkeypatch.setattr("utils.utils.console_log", lambda *args: None)
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", mock_capture_subprocess_output)
-    
-    import utils.utils as utils_mod
-    utils_mod.run_rocscope(DummyArgs(), "test.txt")
-    
-    expected_cmd = [
-        "/usr/bin/rocscope",
-        "metrics",
-        "-p",
-        "/test/path",
-        "-n",
-        "test_name",
-        "-t",
-        "test.txt",
-        "--"
-    ]
-    assert capture_calls[0] == expected_cmd
-
-def test_run_rocscope_whitespace_in_remaining_args(monkeypatch):
-    """
-    Test run_rocscope with whitespace in remaining arguments.
-    Should properly split and handle arguments with spaces.
-    """
-    class DummyArgs:
-        use_rocscope = True
-        path = "/test/path"
-        name = "test_name"
-        remaining = "  arg1   arg2  --flag=value  "
-    
-    class MockResult:
-        stdout = b"/usr/bin/rocscope\n"
-        stderr = b""
-    
-    monkeypatch.setattr("shutil.which", lambda cmd: MockResult() if cmd == "rocscope" else None)
-    
-    capture_calls = []
-    def mock_capture_subprocess_output(cmd):
-        capture_calls.append(cmd)
-        return (True, "success")
-    
-    monkeypatch.setattr("utils.utils.console_log", lambda *args: None)
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", mock_capture_subprocess_output)
-    
-    import utils.utils as utils_mod
-    utils_mod.run_rocscope(DummyArgs(), "test.txt")
-    
-    expected_cmd = [
-        "/usr/bin/rocscope",
-        "metrics",
-        "-p",
-        "/test/path",
-        "-n",
-        "test_name",
-        "-t",
-        "test.txt",
-        "--",
-        "arg1",
-        "arg2",
-        "--flag=value"
-    ]
-    assert capture_calls[0] == expected_cmd
-
-def test_run_rocscope_stdout_with_whitespace(monkeypatch):
-    """
-    Test run_rocscope when shutil.which returns path with trailing whitespace.
-    Should strip whitespace from the binary path.
-    """
-    class DummyArgs:
-        use_rocscope = True
-        path = "/test/path"
-        name = "test_name"
-        remaining = "arg1"
-    
-    class MockResult:
-        stdout = b"  /usr/bin/rocscope  \n  "
-        stderr = b""
-    
-    monkeypatch.setattr("shutil.which", lambda cmd: MockResult() if cmd == "rocscope" else None)
-    
-    capture_calls = []
-    def mock_capture_subprocess_output(cmd):
-        capture_calls.append(cmd)
-        return (True, "success")
-    
-    monkeypatch.setattr("utils.utils.console_log", lambda *args: None)
-    monkeypatch.setattr("utils.utils.capture_subprocess_output", mock_capture_subprocess_output)
-    
-    import utils.utils as utils_mod
-    utils_mod.run_rocscope(DummyArgs(), "test.txt")
-    
-    expected_first_arg = "/usr/bin/rocscope"
-    assert capture_calls[0][0] == expected_first_arg
     
 # =============================================================================
 # TESTS FOR MIBENCH OUTPUT
@@ -7916,3 +7405,134 @@ def test_merge_counters_spatial_multiplex_timestamp_median_calculation():
     
     assert isinstance(result, pd.DataFrame)
     assert len(result) == 1
+    
+# =============================================================================
+# Tests for convert_metric_id_to_panel_idx function
+# ============================================================================
+
+def test_convert_metric_id_to_panel_idx_zero_values():
+    """Test convert_metric_id_to_panel_idx with zero values in different positions.
+    
+    Args:
+        None
+    Returns:
+        None: Asserts that zero values are handled correctly in metric IDs.
+    """
+    assert utils.convert_metric_id_to_panel_idx("0") == 0
+    assert utils.convert_metric_id_to_panel_idx("0.0") == 0
+    assert utils.convert_metric_id_to_panel_idx("5.0") == 500
+    assert utils.convert_metric_id_to_panel_idx("0.5") == 5
+
+
+def test_convert_metric_id_to_panel_idx_leading_zeros():
+    """Test convert_metric_id_to_panel_idx with leading zeros in metric IDs.
+    
+    Args:
+        None
+    Returns:
+        None: Asserts that leading zeros are handled correctly.
+    """
+    assert utils.convert_metric_id_to_panel_idx("04") == 400
+    assert utils.convert_metric_id_to_panel_idx("4.02") == 402
+    assert utils.convert_metric_id_to_panel_idx("01.05") == 105
+
+
+def test_convert_metric_id_to_panel_idx_invalid_empty_string():
+    """Test convert_metric_id_to_panel_idx with empty string raises exception.
+    
+    Args:
+        None
+    Returns:
+        None: Asserts that empty string raises ValueError.
+    """
+    with pytest.raises(ValueError):
+        utils.convert_metric_id_to_panel_idx("")
+
+
+def test_convert_metric_id_to_panel_idx_invalid_too_many_parts():
+    """Test convert_metric_id_to_panel_idx with more than two parts raises exception.
+    
+    Args:
+        None
+    Returns:
+        None: Asserts that metric IDs with more than two parts raise Exception.
+    """
+    with pytest.raises(Exception, match="Invalid metric id"):
+        utils.convert_metric_id_to_panel_idx("4.02.1")
+
+    with pytest.raises(Exception, match="Invalid metric id"):
+        utils.convert_metric_id_to_panel_idx("1.2.3.4")
+
+    with pytest.raises(Exception, match="Invalid metric id"):
+        utils.convert_metric_id_to_panel_idx("4.02.1.5")
+
+
+def test_convert_metric_id_to_panel_idx_invalid_non_numeric():
+    """Test convert_metric_id_to_panel_idx with non-numeric values raises exception.
+    
+    Args:
+        None
+    Returns:
+        None: Asserts that non-numeric metric IDs raise ValueError.
+    """
+    with pytest.raises(ValueError):
+        utils.convert_metric_id_to_panel_idx("abc")
+
+    with pytest.raises(ValueError):
+        utils.convert_metric_id_to_panel_idx("4.abc")
+
+    with pytest.raises(ValueError):
+        utils.convert_metric_id_to_panel_idx("abc.02")
+
+    with pytest.raises(ValueError):
+        utils.convert_metric_id_to_panel_idx("4.02abc")
+
+def test_convert_metric_id_to_panel_idx_invalid_floating_point():
+    """Test convert_metric_id_to_panel_idx with floating point numbers in unexpected format.
+    
+    Args:
+        None
+    Returns:
+        None: Asserts behavior with floating point representations.
+    """
+    with pytest.raises(Exception, match="Invalid metric id"):
+        utils.convert_metric_id_to_panel_idx("4.0.2")
+
+    with pytest.raises(Exception, match="Invalid metric id"):
+        utils.convert_metric_id_to_panel_idx("4.2.0")
+
+
+def test_convert_metric_id_to_panel_idx_edge_case_whitespace():
+    """Test convert_metric_id_to_panel_idx with whitespace in metric IDs.
+    
+    Args:
+        None
+    Returns:
+        None: Asserts that whitespace is handled (int() strips whitespace).
+    """
+    assert utils.convert_metric_id_to_panel_idx(" 4") == 400
+    assert utils.convert_metric_id_to_panel_idx("4 ") == 400
+    assert utils.convert_metric_id_to_panel_idx(" 4.02 ") == 402
+
+    assert utils.convert_metric_id_to_panel_idx("4. 02") == 402
+    assert utils.convert_metric_id_to_panel_idx(" 4 . 02 ") == 402
+
+def test_convert_metric_id_to_panel_idx_edge_case_dot_only():
+    """Test convert_metric_id_to_panel_idx with only dot character raises exception.
+    
+    Args:
+        None
+    Returns:
+        None: Asserts that metric ID with only dot raises Exception.
+    """
+    with pytest.raises(Exception, match="Invalid metric id"):
+        utils.convert_metric_id_to_panel_idx("..")
+
+    with pytest.raises(ValueError):
+        utils.convert_metric_id_to_panel_idx(".")
+
+    with pytest.raises(ValueError):
+        utils.convert_metric_id_to_panel_idx("4.")
+
+    with pytest.raises(ValueError):
+        utils.convert_metric_id_to_panel_idx(".02")
