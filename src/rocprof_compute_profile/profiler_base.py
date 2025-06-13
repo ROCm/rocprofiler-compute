@@ -49,7 +49,6 @@ from utils.utils import (
     pc_sampling_prof,
     print_status,
     run_prof,
-    run_rocscope,
 )
 
 
@@ -444,11 +443,7 @@ class RocProfCompute_Base:
                         str((end_run_prof - start_run_prof) % 60),
                     )
                 )
-
-            elif self.__profiler == "rocscope":
-                run_rocscope(self.__args, fname)
             else:
-                # TODO: Finish logic
                 console_error("Profiler not supported")
             end_run_time = time.time()
             run_duration = end_run_time - start_run_time
@@ -461,6 +456,7 @@ class RocProfCompute_Base:
             console_log(f"[Run {total_runs+1}/{total_runs+1}][PC sampling profile run]")
             start_run_prof = time.time()
             pc_sampling_prof(
+                method=self.get_args().pc_sampling_method,
                 interval=self.get_args().pc_sampling_interval,
                 workload_dir=self.get_args().path,
                 appcmd=self.get_args().remaining,

@@ -6,6 +6,10 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 ### Added
 
+* Stochastic (hardware-based) PC sampling has been enabled for AMD Instinct MI300X series and later accelerators.
+
+* Sorting of PC sampling by type: offset or count.
+
 * Add rocprof-compute Text User Interface (TUI) support for analyze mode
   * A command line based user interface to support interactive single-run analysis
   * launch with `--tui` option in analyze mode. i.e., `rocprof-compute analyze --tui`
@@ -51,12 +55,18 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 * Roofline support for MI350 series architecture
 
-* Setting ROCPROF=rocprofiler-sdk environment variable will use rocprofiler-sdk C++ library instead of rocprofv3 python script
+* Interface to rocprofiler-sdk
+  * Setting ROCPROF=rocprofiler-sdk environment variable will use rocprofiler-sdk C++ library instead of rocprofv3 python script
   * Add --rocprofiler-sdk-library-path runtime option to choose the path to rocprofiler-sdk library to be used
+  * Using rocprof v1 / v2 / v3 interfaces will trigger a deprecation warning to use rocprofiler-sdk interface
+
+* Support MEM chart on CLI(single run)
+
+* Add deprecation warning for database update mode.
 
 ### Changed
 
-* Change the default rocprof version to v3 when environment variable "ROCPROF" is not set
+* Change the default rocprof version to rocprofv3, this is used when environment variable "ROCPROF" is not set
 * Change the rocprof version for unit tests to rocprofv3 on all SoCs except MI100
 * Change normal_unit default to per_kernel
 * Change dependency from rocm-smi to amd-smi
@@ -75,6 +85,7 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 ### Known issues
 
+* Profiling on MI 100 will not work unless ROCPROF=rocprofv1 environment variable is explictly provided
 * GPU id filtering is not supported when using rocprof v3
 
 * Analysis of previously collected workload data will not work due to sysinfo.csv schema change

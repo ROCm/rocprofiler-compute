@@ -312,8 +312,17 @@ def detect_rocprof(args):
         )
         return rocprof_cmd
 
+    console_warning(
+        "rocprof v1 / v2 / v3 interfaces will be deprecated in favor of "
+        "rocprofiler-sdk interface in a future release. To use rocprofiler-sdk "
+        "interface, please set the environment variable ROCPROF to 'rocprofiler-sdk' "
+        "and optionally provide the path to librocprofiler-sdk.so library via the "
+        "--rocprofiler-sdk-library-path option."
+    )
+
     # detect rocprof
     if not "ROCPROF" in os.environ.keys():
+        # default rocprof
         rocprof_cmd = "rocprofv3"
     else:
         rocprof_cmd = os.environ["ROCPROF"]
@@ -816,6 +825,8 @@ def run_prof(
 
     if rocprof_cmd == "rocprofiler-sdk":
         app_cmd = options.pop("APP_CMD")
+        if not new_env:
+            new_env = os.environ.copy()
         for key, value in options.items():
             new_env[key] = value
         console_debug("rocprof sdk env vars: {}".format(new_env))
@@ -949,12 +960,17 @@ def run_prof(
     df.to_csv(workload_dir + "/" + fbase + ".csv", index=False)
 
 
-def pc_sampling_prof(interval, workload_dir, appcmd, rocprofiler_sdk_library_path):
+def pc_sampling_prof(
+    method, interval, workload_dir, appcmd, rocprofiler_sdk_library_path
+):
     """
     Run rocprof with pc sampling. Current support v3 only.
     """
     # Todo:
     #   - precheck with rocprofv3 –-list-avail
+
+    unit = "time" if method == "host_trap" else "cycles"
+
     if rocprof_cmd == "rocprofiler-sdk":
         rocm_libdir = str(pathlib.Path(rocprofiler_sdk_library_path).parent)
         rocprofiler_sdk_tool_path = str(
@@ -975,7 +991,7 @@ def pc_sampling_prof(interval, workload_dir, appcmd, rocprofiler_sdk_library_pat
             "ROCPROF_OUTPUT_PATH": workload_dir,
             "ROCPROF_OUTPUT_FILE_NAME": "ps_file",
             "ROCPROFILER_PC_SAMPLING_BETA_ENABLED": "1",
-            "ROCPROF_PC_SAMPLING_UNIT": "time",
+            "ROCPROF_PC_SAMPLING_UNIT": unit,
             "ROCPROF_PC_SAMPLING_INTERVAL": str(interval),
             "ROCPROF_PC_SAMPLING_METHOD": "host_trap",
         }
@@ -993,7 +1009,7 @@ def pc_sampling_prof(interval, workload_dir, appcmd, rocprofiler_sdk_library_pat
             "--pc-sampling-method",
             "host_trap",
             "--pc-sampling-unit",
-            "time",
+            unit,
             "--output-format",
             "csv",
             "json",
@@ -1216,30 +1232,6 @@ def detect_roofline(mspec):
 
     target_binary = {"distro": distro}
     return target_binary
-
-
-def run_rocscope(args, fname):
-    # profile the app
-    if args.use_rocscope == True:
-        result = shutil.which("rocscope")
-        if result:
-            rs_cmd = [
-                result.stdout.decode("ascii").strip(),
-                "metrics",
-                "-p",
-                args.path,
-                "-n",
-                args.name,
-                "-t",
-                fname,
-                "--",
-            ]
-            for i in args.remaining.split():
-                rs_cmd.append(i)
-            console_log(rs_cmd)
-            success, output = capture_subprocess_output(rs_cmd)
-            if not success:
-                console_error(result.stderr.decode("ascii"))
 
 
 def mibench(args, mspec):
