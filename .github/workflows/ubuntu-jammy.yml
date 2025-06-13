@@ -7,14 +7,14 @@ on:
     branches: [ amd-mainline, amd-staging, release/**, develop ]
     paths-ignore:
       - '*.md'
-      - '/.github/**/*.md'
+      - '.github/**/*.md'
       - 'docs/**'
       - 'docker/**'
   pull_request:
     branches: [ amd-mainline, amd-staging, release/**, develop ]
     paths-ignore:
       - '*.md'
-      - '/.github/**/*.md'
+      - '.github/**/*.md'
       - 'docs/**'
       - 'docker/**'
 

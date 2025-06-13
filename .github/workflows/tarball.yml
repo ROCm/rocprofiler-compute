@@ -6,7 +6,7 @@ on:
   pull_request:
     paths-ignore:
       - '*.md'
-      - '/.github/**/*.md'
+      - '.github/**/*.md'
       - 'docs/**'
       - 'docker/**'
 
