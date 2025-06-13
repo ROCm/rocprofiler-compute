@@ -48,7 +48,6 @@ from utils.utils import (
     pc_sampling_prof,
     print_status,
     run_prof,
-    run_rocscope,
 )
 
 
@@ -429,11 +428,7 @@ class RocProfCompute_Base:
                         str((end_run_prof - start_run_prof) % 60),
                     )
                 )
-
-            elif self.__profiler == "rocscope":
-                run_rocscope(self.__args, fname)
             else:
-                # TODO: Finish logic
                 console_error("Profiler not supported")
 
         if self.__pc_sampling == True and self.__profiler in (
