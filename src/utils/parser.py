@@ -1070,7 +1070,9 @@ def search_pc_sampling_record(records):
         )
     )
 
-    rocp_inst_not_issued_prefix_len = len("ROCPROFILER_PC_SAMPLING_INSTRUCTION_NOT_ISSUED_REASON_")
+    rocp_inst_not_issued_prefix_len = len(
+        "ROCPROFILER_PC_SAMPLING_INSTRUCTION_NOT_ISSUED_REASON_"
+    )
 
     # Populate grouped_data
     for i, item in enumerate(records):
@@ -1215,7 +1217,15 @@ def load_pc_sampling_data_per_kernel(
 
     df = pd.DataFrame(
         search_pc_sampling_record(pc_sample_key_loc),
-        columns=["code_object_id", "inst_index", "offset", "count", "count_issued", "count_stalled", "stall_reason"],
+        columns=[
+            "code_object_id",
+            "inst_index",
+            "offset",
+            "count",
+            "count_issued",
+            "count_stalled",
+            "stall_reason",
+        ],
     )
 
     df = df[
@@ -1249,7 +1259,17 @@ def load_pc_sampling_data_per_kernel(
         return (
             df[["source_line", "instruction", "offset", "count"]]
             if method == "host_trap"
-            else df[["source_line", "instruction", "offset", "count", "count_issued", "count_stalled", "stall_reason"]]
+            else df[
+                [
+                    "source_line",
+                    "instruction",
+                    "offset",
+                    "count",
+                    "count_issued",
+                    "count_stalled",
+                    "stall_reason",
+                ]
+            ]
         )
     else:  # sort by "count"
         return (
@@ -1258,7 +1278,15 @@ def load_pc_sampling_data_per_kernel(
             )
             if method == "host_trap"
             else df[
-                ["source_line", "instruction", "offset", "count", "count_issued", "count_stalled", "stall_reason"]
+                [
+                    "source_line",
+                    "instruction",
+                    "offset",
+                    "count",
+                    "count_issued",
+                    "count_stalled",
+                    "stall_reason",
+                ]
             ].sort_values(by="count", ascending=False)
         )
     # might support sort by stall reason in the future
