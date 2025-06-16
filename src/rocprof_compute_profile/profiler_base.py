@@ -32,7 +32,6 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 
 import pandas as pd
-from tqdm import tqdm
 
 import config
 from utils.logger import (
@@ -354,29 +353,23 @@ class RocProfCompute_Base:
             else print_status(msg + " (Roofline Only)")
         )
 
-        # show status bar in error-only mode
-        disable_tqdm = True
-        if self.__args.loglevel >= logging.ERROR:
-            disable_tqdm = False
-
         # Run profiling on each input file
         input_files = glob.glob(self.get_args().path + "/perfmon/*.txt")
         input_files.sort()
 
         total_runs = len(input_files)
-        total_time_so_far = 0
-        avg_run_time = 0
+        total_profiling_time_so_far = 0  
+        avg_profiling_time = 0  
 
-        for i, fname in enumerate(tqdm(input_files, disable=disable_tqdm)):
+        for i, fname in enumerate(input_files):
             run_number = i + 1
-            if i > 0:
-                avg_run_time = total_time_so_far / i
-                time_left_seconds = (total_runs - run_number) * avg_run_time
-                time_left = format_time(time_left_seconds)
-                console_log(f"[Run {run_number}/{total_runs}][Approximate profiling time left: {time_left}]...]")
-            else:
-                console_log(f"[Run {run_number}/{total_runs}][Approximate profiling time left: pending first measurement...]")
-            start_run_time = time.time()
+            if i > 0:  
+                avg_profiling_time = total_profiling_time_so_far / i  
+                time_left_seconds = (total_runs - run_number) * avg_profiling_time  
+                time_left = format_time(time_left_seconds)  
+                console_log(f"[Run {run_number}/{total_runs}][Approximate profiling time left: {time_left}]...")  
+            else:  
+                console_log(f"[Run {run_number}/{total_runs}][Approximate profiling time left: pending first measurement...]")  
 
             # Kernel filtering (in-place replacement)
             if not self.__args.kernel == None:
@@ -436,6 +429,7 @@ class RocProfCompute_Base:
                     format_rocprof_output=self.get_args().format_rocprof_output,
                 )
                 end_run_prof = time.time()
+                actual_profiling_duration = end_run_prof - start_run_prof
                 console_debug(
                     "The time of run_prof of {} is {} m {} sec".format(
                         fname,
@@ -445,10 +439,7 @@ class RocProfCompute_Base:
                 )
             else:
                 console_error("Profiler not supported")
-            end_run_time = time.time()
-            run_duration = end_run_time - start_run_time
-            total_time_so_far += run_duration
-
+            total_profiling_time_so_far += actual_profiling_duration  
         if self.__pc_sampling == True and self.__profiler in (
             "rocprofv3",
             "rocprofiler-sdk",
@@ -463,6 +454,7 @@ class RocProfCompute_Base:
                 rocprofiler_sdk_library_path=self.get_args().rocprofiler_sdk_library_path,
             )
             end_run_prof = time.time()
+            pc_sampling_duration = end_run_prof - start_run_prof  
             console_debug(
                 "The time of pc sampling profiling is {} m {} sec".format(
                     int((end_run_prof - start_run_prof) / 60),
