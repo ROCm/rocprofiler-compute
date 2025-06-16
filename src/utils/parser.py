@@ -1258,7 +1258,7 @@ def load_pc_sampling_data_per_kernel(
             )
             if method == "host_trap"
             else df[
-                ["source_line", "instruction", "offset", "count", "count_issued", "count_stalled" "stall_reason"]
+                ["source_line", "instruction", "offset", "count", "count_issued", "count_stalled", "stall_reason"]
             ].sort_values(by="count", ascending=False)
         )
     # might support sort by stall reason in the future
