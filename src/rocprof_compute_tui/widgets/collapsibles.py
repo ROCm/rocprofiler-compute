@@ -93,10 +93,6 @@ def create_widget_from_data(df: pd.DataFrame, tui_style: Optional[str] = None) -
             case "mem_chart":
                 return MemoryChart(df)
 
-            case "roofline":
-                # TODO: implement real roofline plot
-                pass
-
             case "simple_bar":
                 return SimpleBar(df)
 
@@ -153,7 +149,7 @@ def build_subsection(
 
     # HACK: only because no real roofline data right now
     elif tui_style == "roofline":
-        widget = VerticalScroll(RooflinePlot())
+        widget = RooflinePlot(dfs)
         collapsible = Collapsible(widget, title=title, collapsed=collapsed)
 
     # Fallback for subsections without data or style

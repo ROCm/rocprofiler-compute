@@ -263,6 +263,45 @@ def px_simple_multi_bar(df, title=None, id=None):
     return dfigs
 
 
+class RooflinePlot(Static):
+    """Roofline Plot visualization widget."""
+
+    DEFAULT_CSS = """
+    RooflinePlot {
+        border: solid $accent;
+        padding: 0;
+        width: auto;
+        height: auto;
+        overflow-y: auto;
+        overflow-x: auto;
+        background: $surface;
+        color: $text;
+    }
+    """
+
+    def __init__(self, df: pd.DataFrame, **kwargs):
+        """Initialize the roofline plot"""
+        super().__init__("", classes="roofline", **kwargs)
+        self.df = df
+
+        # Disable markup rendering
+        self._render_markup = False
+
+        try:
+            plot_str = ""
+            try:
+                result = self.df["roofline"]
+                if result:
+                    plot_str = str(result)
+            except:
+                plot_str = "No roofline data generated"
+
+            self.update(plot_str)
+        except Exception as e:
+            error_message = f"Roofline plot error: {str(e)}\n{traceback.format_exc()}"
+            self.update(error_message)
+
+
 class MemoryChart(Static):
     """Memory chart visualization widget."""
 
