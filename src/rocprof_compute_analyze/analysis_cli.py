@@ -79,6 +79,7 @@ class cli_analysis(OmniAnalyze_Base):
     def run_analysis(self):
         """Run CLI analysis."""
         super().run_analysis()
+
         if self.get_args().list_stats:
             tty.show_kernel_stats(
                 self.get_args(),
@@ -89,6 +90,15 @@ class cli_analysis(OmniAnalyze_Base):
                 self._output,
             )
         else:
+            # add roofline plot to cli output
+            roof_obj = self.get_socs()[
+                self._runs[self.get_args().path[0][0]].sys_info.iloc[0]["gpu_arch"]
+            ].roofline_obj
+
+            if roof_obj:
+                # NOTE: using default data type
+                roof_plot = roof_obj.cli_generate_plot("FP32")
+
             tty.show_all(
                 self.get_args(),
                 self._runs,
@@ -97,4 +107,5 @@ class cli_analysis(OmniAnalyze_Base):
                 ],
                 self._output,
                 self._profiling_config,
+                roof_plot=roof_plot,
             )

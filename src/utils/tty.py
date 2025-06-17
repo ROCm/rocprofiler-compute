@@ -61,7 +61,7 @@ def get_table_string(df, transpose=False, decimal=2):
     )
 
 
-def show_all(args, runs, archConfigs, output, profiling_config):
+def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
     """
     Show all panels with their data in plain text mode.
     """
@@ -81,6 +81,9 @@ def show_all(args, runs, archConfigs, output, profiling_config):
         if panel_id in hidden_sections:
             continue
         ss = ""  # store content of all data_source from one pannel
+
+        if panel_id == 400 and roof_plot:
+            show_roof_plot(roof_plot)
 
         for data_source in panel["data source"]:
             for type, table_config in data_source.items():
@@ -321,6 +324,16 @@ def show_all(args, runs, archConfigs, output, profiling_config):
             print("\n" + "-" * 80, file=output)
             print(str(panel_id // 100) + ". " + panel["title"], file=output)
             print(ss, file=output)
+
+
+def show_roof_plot(roof_plot):
+    print(
+        "\n\n--------------------------------------------------------------------------------"
+    )
+    print("4. Roofline Plot")
+
+    print("4.1 Roofline Plot")
+    print(roof_plot)
 
 
 def show_kernel_stats(args, runs, archConfigs, output):
