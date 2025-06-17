@@ -608,6 +608,14 @@ class Roofline:
             self.__run_parameters["mem_level"].remove("vL1D")
             self.__run_parameters["mem_level"].append("L1")
 
+        roofline_csv = str(
+            Path(self.__run_parameters["workload_dir"][0][0]).joinpath("roofline.csv")
+        )
+        roofline_csv_exists = Path(roofline_csv).is_file()
+        if not roofline_csv_exists:
+            console_log("roofline", "{} does not exist".format(roofline_csv))
+            return
+
         app_path = str(
             Path(self.__run_parameters["workload_dir"][0][0]).joinpath("pmc_perf.csv")
         )

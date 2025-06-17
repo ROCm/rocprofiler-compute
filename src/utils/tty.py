@@ -311,6 +311,7 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
                                     .set_index("Metric")
                                     .to_dict()["Value"],
                                 )
+                                ss += "\n"
                         else:
                             ss += (
                                 get_table_string(
@@ -326,7 +327,7 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
 
 
 def show_roof_plot(roof_plot):
-    print("\n\n" + "-" * 80)
+    print("\n" + "-" * 80)
     print("4. Roofline")
     print("4.1 Roofline")
     print(roof_plot)
