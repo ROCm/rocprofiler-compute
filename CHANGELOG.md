@@ -10,7 +10,7 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 * Sorting of PC sampling by type: offset or count.
 
-* Add rocprof-compute Text User Interface (TUI) support for analyze mode (beta version)
+* Add rocprof-compute Text User Interface (TUI) support for analyze mode
   * A command line based user interface to support interactive single-run analysis
   * launch with `--tui` option in analyze mode. i.e., `rocprof-compute analyze --tui`
 
