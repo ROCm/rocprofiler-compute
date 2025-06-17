@@ -75,13 +75,14 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
     comparable_columns = parser.build_comparable_columns(args.time_unit)
 
     for panel_id, panel in archConfigs.panel_configs.items():
+        # show roofline
+        if panel_id == 400 and roof_plot:
+            show_roof_plot(roof_plot)
+
         # Skip panels that don't support baseline comparison
         if panel_id in HIDDEN_SECTIONS:
             continue
         ss = ""  # store content of all data_source from one pannel
-
-        if panel_id == 400 and roof_plot:
-            show_roof_plot(roof_plot)
 
         for data_source in panel["data source"]:
             for type, table_config in data_source.items():
@@ -325,11 +326,8 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
 
 
 def show_roof_plot(roof_plot):
-    print(
-        "\n\n--------------------------------------------------------------------------------"
-    )
+    print("\n\n" + "-" * 80)
     print("4. Roofline")
-
     print("4.1 Roofline")
     print(roof_plot)
 

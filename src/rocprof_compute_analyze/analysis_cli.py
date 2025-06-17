@@ -90,14 +90,17 @@ class cli_analysis(OmniAnalyze_Base):
                 self._output,
             )
         else:
-            # add roofline plot to cli output
-            roof_obj = self.get_socs()[
-                self._runs[self.get_args().path[0][0]].sys_info.iloc[0]["gpu_arch"]
-            ].roofline_obj
+            roof_plot = None
+            # 1. check if not baseline:
+            if (len(self.get_args().path)) == 1:
+                # add roofline plot to cli output
+                roof_obj = self.get_socs()[
+                    self._runs[self.get_args().path[0][0]].sys_info.iloc[0]["gpu_arch"]
+                ].roofline_obj
 
-            if roof_obj:
-                # NOTE: using default data type
-                roof_plot = roof_obj.cli_generate_plot("FP32")
+                if roof_obj:
+                    # NOTE: using default data type
+                    roof_plot = roof_obj.cli_generate_plot("FP32")
 
             tty.show_all(
                 self.get_args(),
