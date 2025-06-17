@@ -28,12 +28,10 @@ from pathlib import Path
 import pandas as pd
 from tabulate import tabulate
 
+from config import HIDDEN_COLUMNS, HIDDEN_SECTIONS
 from utils import mem_chart, parser
 from utils.logger import console_log, console_warning
 from utils.utils import convert_metric_id_to_panel_idx
-
-hidden_columns = ["Tips", "coll_level"]
-hidden_sections = [1900, 2000]
 
 
 def string_multiple_lines(source, width, max_rows):
@@ -78,7 +76,7 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
 
     for panel_id, panel in archConfigs.panel_configs.items():
         # Skip panels that don't support baseline comparison
-        if panel_id in hidden_sections:
+        if panel_id in HIDDEN_SECTIONS:
             continue
         ss = ""  # store content of all data_source from one pannel
 
@@ -120,7 +118,7 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
                         or (args.cols and base_df.columns.get_loc(header) in args.cols)
                         or (type == "raw_csv_table")
                     ):
-                        if header in hidden_columns:
+                        if header in HIDDEN_COLUMNS:
                             pass
                         elif header not in comparable_columns:
                             if (
@@ -152,7 +150,7 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
                                 cur_df = data.dfs[table_config["id"]]
                                 if (type == "raw_csv_table") or (
                                     type == "metric_table"
-                                    and (not header in hidden_columns)
+                                    and (not header in HIDDEN_COLUMNS)
                                 ):
                                     if run != base_run:
                                         # calc percentage over the baseline
@@ -330,9 +328,9 @@ def show_roof_plot(roof_plot):
     print(
         "\n\n--------------------------------------------------------------------------------"
     )
-    print("4. Roofline Plot")
+    print("4. Roofline")
 
-    print("4.1 Roofline Plot")
+    print("4.1 Roofline")
     print(roof_plot)
 
 
