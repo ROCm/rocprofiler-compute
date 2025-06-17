@@ -91,8 +91,16 @@ class cli_analysis(OmniAnalyze_Base):
             )
         else:
             roof_plot = None
-            # 1. check if not baseline:
-            if (len(self.get_args().path)) == 1:
+            # 1. check if not baseline && compatible soc:
+            if (len(self.get_args().path)) == 1 and self._runs[
+                self.get_args().path[0][0]
+            ].sys_info.iloc[0]["gpu_arch"] in [
+                "gfx90a",
+                "gfx940",
+                "gfx941",
+                "gfx942",
+                "gfx950",
+            ]:
                 # add roofline plot to cli output
                 roof_obj = self.get_socs()[
                     self._runs[self.get_args().path[0][0]].sys_info.iloc[0]["gpu_arch"]
