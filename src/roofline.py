@@ -851,6 +851,8 @@ class Roofline:
         if self.__run_parameters["is_standalone"]:
             self.standalone_roofline()
 
+    def get_dtype(self):
+        return self.__run_parameters["roofline_data_type"]
 
 def to_int(a):
     if str(type(a)) == "<class 'NoneType'>":

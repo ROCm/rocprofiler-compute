@@ -108,7 +108,7 @@ class cli_analysis(OmniAnalyze_Base):
 
                 if roof_obj:
                     # NOTE: using default data type
-                    roof_plot = roof_obj.cli_generate_plot("FP32")
+                    roof_plot = roof_obj.cli_generate_plot(roof_obj.get_dtype()[0])
 
             tty.show_all(
                 self.get_args(),
