@@ -155,7 +155,7 @@ class tui_analysis(OmniAnalyze_Base):
 
             if roof_obj:
                 # NOTE: using default data type
-                roof_plot = roof_obj.cli_generate_plot("FP32")
+                roof_plot = roof_obj.cli_generate_plot(roof_obj.get_dtype()[0])
 
         results = process_panels_to_dataframes(
             self.get_args(),
