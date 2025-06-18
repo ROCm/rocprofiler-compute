@@ -327,6 +327,7 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
 
 
 def show_roof_plot(roof_plot):
+    # TODO: short term solution to display roofline plot
     print("\n" + "-" * 80)
     print("4. Roofline")
     print("4.1 Roofline")
