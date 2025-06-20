@@ -414,10 +414,10 @@ def process_panels_to_dataframes(
                             result_structure[section_name][subsection_name][
                                 "tui_style"
                             ] = table_config["tui_style"]
-
+                        # TODO: need to complete this feature for TUI
                         # Save to CSV if requested
-                        if args.df_file_dir:
-                            save_dataframe_to_csv(df, table_id_str, table_config, args)
+                        # if args.df_file_dir:
+                        #    save_dataframe_to_csv(df, table_id_str, table_config, args)
     result_structure["roofline"] = roof_plot
     return dict(result_structure)
 
