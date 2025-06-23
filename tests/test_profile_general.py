@@ -28,6 +28,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from unittest.mock import patch
@@ -2642,3 +2643,33 @@ def test_list_metrics(binary_handler_profile_rocprof_compute):
     # workload dir should be empty
     assert not os.listdir(workload_dir)
     test_utils.clean_output_dir(config["cleanup"], workload_dir)
+
+@pytest.mark.misc
+def test_comprehensive_error_paths():
+    """Simplified test for error path coverage"""
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+    
+    from utils.parser import build_comparable_columns, calc_builtin_var, build_eval_string
+    
+    columns = build_comparable_columns("ms")
+    expected = ["Count(ms)", "Sum(ms)", "Mean(ms)", "Median(ms)", "Standard Deviation(ms)"]
+    for expected_col in expected:
+        assert expected_col in columns
+    
+    class MockSysInfo:
+        total_l2_chan = 16
+    
+    sys_info = MockSysInfo()
+    result = calc_builtin_var(42, sys_info)
+    assert result == 42
+    
+    result = calc_builtin_var("$total_l2_chan", sys_info)
+    assert result == 16
+    
+    try:
+        build_eval_string("test", None)
+        assert False, "Should raise exception for None coll_level"
+    except Exception as e:
+        assert "coll_level can not be None" in str(e)
