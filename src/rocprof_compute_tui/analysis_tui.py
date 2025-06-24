@@ -27,7 +27,11 @@ import sys
 from pathlib import Path
 
 from rocprof_compute_analyze.analysis_base import OmniAnalyze_Base
-from rocprof_compute_tui.utils.tui_utils import process_panels_to_dataframes
+from rocprof_compute_tui.utils.tui_utils import (
+    get_top_kernels_and_dispatch_ids,
+    process_panels_to_dataframes,
+    process_per_kernel_panels_to_dataframes,
+)
 from utils import file_io, parser, schema
 from utils.kernel_name_shortener import kernel_name_shortener
 from utils.logger import console_error, demarcate
@@ -125,9 +129,23 @@ class tui_analysis(OmniAnalyze_Base):
         return self._runs
 
     @demarcate
+    def run_kernel_analysis(self):
+        per_kernel_results = process_per_kernel_panels_to_dataframes(
+            self.get_args(),
+            self._runs,
+            self._arch_configs[self.arch],
+            self._profiling_config,
+        )
+        return per_kernel_results
+
+    @demarcate
+    def run_top_kernel(self):
+        top_kernels = get_top_kernels_and_dispatch_ids(self._runs)
+        return top_kernels
+
+    @demarcate
     def run_analysis(self):
         """Run TUI analysis."""
-        super().run_analysis()
 
         roof_plot = None
         # 1. check if not baseline && compatible soc:

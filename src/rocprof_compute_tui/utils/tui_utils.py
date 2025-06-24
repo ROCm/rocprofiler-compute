@@ -1,5 +1,6 @@
 import copy
 import logging
+import math
 import os
 import re
 from collections import defaultdict
@@ -7,9 +8,12 @@ from datetime import datetime
 from enum import Enum
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+from tabulate import tabulate
 
 from config import HIDDEN_COLUMNS, HIDDEN_SECTIONS
+from utils.utils import convert_metric_id_to_panel_idx
 
 supported_field = [
     "Value",
@@ -418,7 +422,7 @@ def process_panels_to_dataframes(
                         # Save to CSV if requested
                         # if args.df_file_dir:
                         #    save_dataframe_to_csv(df, table_id_str, table_config, args)
-    result_structure["roofline"] = roof_plot
+    result_structure["4. Roofline"] = roof_plot
     return dict(result_structure)
 
 
@@ -585,3 +589,463 @@ def build_comparable_columns(time_unit):
         comparable_columns.append(h + "(" + time_unit + ")")
 
     return comparable_columns
+
+
+def get_table_string(df, transpose=False, decimal=2):
+    return tabulate(
+        df.transpose() if transpose else df,
+        headers="keys",
+        tablefmt="fancy_grid",
+        floatfmt="." + str(decimal) + "f",
+    )
+
+
+def evaluate_metric(metric_formula, kernel_data, kernel_idx, run_data):
+    """
+    Evaluate a metric formula for a specific kernel using its performance counter data.
+
+    Args:
+        metric_formula: The formula/expression string for the metric
+        kernel_data: Performance counter data for the specific kernel (pandas Series)
+        kernel_idx: Index of the kernel in the dataframe
+        run_data: The run data object containing all necessary information
+
+    Returns:
+        The evaluated metric value
+    """
+    try:
+        import re
+
+        context = {"__builtins__": {}}
+
+        context["np"] = np
+        context["pd"] = pd
+
+        # Add SQL-like functions that work with scalars (since we're evaluating per kernel)
+        context["ROUND"] = lambda x, decimals=0: (
+            round(float(x), int(decimals)) if not pd.isna(_to_scalar(x)) else None
+        )
+        context["AVG"] = lambda x: float(
+            x
+        )  # For single kernel, AVG is just the value itself
+        context["SUM"] = lambda x: float(
+            x
+        )  # For single kernel, SUM is just the value itself
+        context["MIN"] = lambda x: float(
+            x
+        )  # For single kernel, MIN is just the value itself
+        context["MAX"] = lambda x: float(
+            x
+        )  # For single kernel, MAX is just the value itself
+
+        # Extract system info variables (ammolite__ prefixed variables)
+        if hasattr(run_data, "sys_info"):
+            sys_info = run_data.sys_info
+
+            # Add all ammolite__ variables from sys_info
+            ammolite_vars = {
+                "ammolite__se_per_gpu": (
+                    int(_to_scalar(sys_info.se_per_gpu))
+                    if hasattr(sys_info, "se_per_gpu")
+                    and not np.isnan(_to_scalar(sys_info.se_per_gpu))
+                    else 0
+                ),
+                "ammolite__pipes_per_gpu": (
+                    int(_to_scalar(sys_info.pipes_per_gpu))
+                    if hasattr(sys_info, "pipes_per_gpu")
+                    and not np.isnan(_to_scalar(sys_info.pipes_per_gpu))
+                    else 0
+                ),
+                "ammolite__cu_per_gpu": (
+                    int(_to_scalar(sys_info.cu_per_gpu))
+                    if hasattr(sys_info, "cu_per_gpu")
+                    and not np.isnan(_to_scalar(sys_info.cu_per_gpu))
+                    else 0
+                ),
+                "ammolite__simd_per_cu": (
+                    int(_to_scalar(sys_info.simd_per_cu))
+                    if hasattr(sys_info, "simd_per_cu")
+                    and not np.isnan(_to_scalar(sys_info.simd_per_cu))
+                    else 0
+                ),
+                "ammolite__sqc_per_gpu": (
+                    int(_to_scalar(sys_info.sqc_per_gpu))
+                    if hasattr(sys_info, "sqc_per_gpu")
+                    and not np.isnan(_to_scalar(sys_info.sqc_per_gpu))
+                    else 0
+                ),
+                "ammolite__lds_banks_per_cu": (
+                    int(_to_scalar(sys_info.lds_banks_per_cu))
+                    if hasattr(sys_info, "lds_banks_per_cu")
+                    and not np.isnan(_to_scalar(sys_info.lds_banks_per_cu))
+                    else 0
+                ),
+                "ammolite__cur_sclk": (
+                    float(_to_scalar(sys_info.cur_sclk))
+                    if hasattr(sys_info, "cur_sclk")
+                    and not np.isnan(_to_scalar(sys_info.cur_sclk))
+                    else 0
+                ),
+                "ammolite__cur_mclk": (
+                    float(_to_scalar(sys_info.cur_mclk))
+                    if hasattr(sys_info, "cur_mclk")
+                    and not np.isnan(_to_scalar(sys_info.cur_mclk))
+                    else 0
+                ),
+                "ammolite__max_mclk": (
+                    float(_to_scalar(sys_info.max_mclk))
+                    if hasattr(sys_info, "max_mclk")
+                    and not np.isnan(_to_scalar(sys_info.max_mclk))
+                    else 0
+                ),
+                "ammolite__max_sclk": (
+                    float(_to_scalar(sys_info.max_sclk))
+                    if hasattr(sys_info, "max_sclk")
+                    and not np.isnan(_to_scalar(sys_info.max_sclk))
+                    else 0
+                ),
+                "ammolite__max_waves_per_cu": (
+                    int(_to_scalar(sys_info.max_waves_per_cu))
+                    if hasattr(sys_info, "max_waves_per_cu")
+                    and not np.isnan(_to_scalar(sys_info.max_waves_per_cu))
+                    else 0
+                ),
+                "ammolite__num_hbm_channels": (
+                    float(_to_scalar(sys_info.num_hbm_channels))
+                    if hasattr(sys_info, "num_hbm_channels")
+                    and not np.isnan(_to_scalar(sys_info.num_hbm_channels))
+                    else 0
+                ),
+                "ammolite__num_xcd": (
+                    int(_to_scalar(sys_info.num_xcd))
+                    if hasattr(sys_info, "num_xcd")
+                    and not np.isnan(_to_scalar(sys_info.num_xcd))
+                    else 0
+                ),
+                "ammolite__wave_size": (
+                    int(_to_scalar(sys_info.wave_size))
+                    if hasattr(sys_info, "wave_size")
+                    and not np.isnan(_to_scalar(sys_info.wave_size))
+                    else 0
+                ),
+            }
+            context.update(ammolite_vars)
+
+            # Add calculated variables (if they exist in run_data)
+            if hasattr(sys_info, "total_l2_chan"):
+                context["ammolite__total_l2_chan"] = (
+                    float(sys_info.total_l2_chan)
+                    if not np.isnan(_to_scalar(sys_info.total_l2_chan))
+                    else 0
+                )
+
+        # Add built-in derived variables if they exist
+        if hasattr(run_data, "ammolite__build_in"):
+            for key, value in run_data.ammolite__build_in.items():
+                if value is not None:
+                    # For individual kernel evaluation, use scalar values
+                    if isinstance(value, pd.Series):
+                        # If it's a series, get the value for this kernel
+                        try:
+                            val = value.iloc[kernel_idx]
+                            # Ensure it's a scalar
+                            if hasattr(val, "item"):
+                                val = val.item()
+                            context[f"ammolite__{key}"] = (
+                                float(val) if not pd.isna(_to_scalar(val)) else 0
+                            )
+                        except:
+                            context[f"ammolite__{key}"] = 0
+                    else:
+                        context[f"ammolite__{key}"] = (
+                            float(value) if not pd.isna(_to_scalar(value)) else 0
+                        )
+
+        # Replace $ prefixed variables with ammolite__ prefixed ones
+        modified_formula = metric_formula
+        dollar_var_pattern = r"\$(\w+)"
+        dollar_vars = re.findall(dollar_var_pattern, modified_formula)
+        for var_name in dollar_vars:
+            ammolite_var_name = f"ammolite__{var_name}"
+            if ammolite_var_name in context:
+                modified_formula = modified_formula.replace(
+                    f"${var_name}", ammolite_var_name
+                )
+            else:
+                return None
+
+        # Handle raw_pmc_df references in the formula
+        raw_pmc_pattern = r"raw_pmc_df\['pmc_perf'\]\['(\w+)'\]"
+        matches = re.findall(raw_pmc_pattern, modified_formula)
+
+        for counter_name in matches:
+            if counter_name in kernel_data.index:
+                value = kernel_data[counter_name]
+                value = _to_scalar(value)
+                # Ensure value is scalar
+                if hasattr(value, "item"):
+                    value = value.item()
+                if pd.notna(value):
+                    modified_formula = modified_formula.replace(
+                        f"raw_pmc_df['pmc_perf']['{counter_name}']", str(float(value))
+                    )
+                else:
+                    modified_formula = modified_formula.replace(
+                        f"raw_pmc_df['pmc_perf']['{counter_name}']", "0.0"
+                    )
+            else:
+                return None
+
+        # Also handle direct counter references (without raw_pmc_df prefix)
+        # First, get all variable names from the formula
+        remaining_vars = set()
+        try:
+            # Use regex to find all word boundaries that look like variable names
+            var_pattern = r"\b([A-Za-z_]\w*)\b"
+            all_vars = re.findall(var_pattern, modified_formula)
+
+            for var_name in all_vars:
+                # Skip if it's already in context, a function name, or starts with ammolite__
+                if (
+                    var_name not in context
+                    and var_name not in ["ROUND", "AVG", "SUM", "MIN", "MAX", "np", "pd"]
+                    and not var_name.startswith("ammolite__")
+                ):
+                    remaining_vars.add(var_name)
+        except:
+            pass
+
+        # Add counter values to context
+        for var_name in remaining_vars:
+            if var_name in kernel_data.index:
+                value = kernel_data[var_name]
+                value = _to_scalar(value)
+                # Ensure value is scalar
+                if hasattr(value, "item"):
+                    value = value.item()
+                if pd.notna(value):
+                    context[var_name] = float(value)
+                else:
+                    context[var_name] = 0.0
+
+        # Compile and evaluate the modified formula
+        compiled_expr = compile(modified_formula, "<metric>", "eval")
+        result = eval(compiled_expr, {"__builtins__": {}}, context)
+
+        # Ensure result is scalar
+        if hasattr(result, "item"):
+            result = result.item()
+
+        # Handle NaN results
+        if pd.isna(_to_scalar(result)):
+            return None
+
+        return float(result)
+
+    except ZeroDivisionError:
+        return float("inf")
+    except Exception as e:
+        return None
+
+
+def process_per_kernel_panels_to_dataframes(
+    args, runs, archConfigs, profiling_config, roof_plot=None
+):
+    """
+    Process panel data into pandas DataFrames.
+    Returns a nested dictionary structure with DataFrames and tui_style information.
+
+    Returns:
+        Dict[str, Dict[str, Dict[str, Any]]]: Nested structure {
+            "kernel_name": {
+                "section_name": {
+                    "subsection_name": {
+                        "df": DataFrame,
+                        "tui_style": dict or None
+                    }
+                }
+            }
+        }
+    """
+
+    # Initialize the result structure
+    result_structure = defaultdict(dict)
+
+    filter_panel_ids = [
+        convert_metric_id_to_panel_idx(section)
+        for section in [
+            name
+            for name, type in profiling_config.get("filter_blocks", {}).items()
+            if type == "metric_id"
+        ]
+    ]
+
+    # Get the first (and only) run to extract kernel information
+    run_name, run_data = next(iter(runs.items()))
+
+    # Get list of kernels
+    if (
+        "pmc_perf" not in run_data.raw_pmc
+        or "Kernel_Name" not in run_data.raw_pmc["pmc_perf"]
+    ):
+        return result_structure
+
+    kernel_names = run_data.raw_pmc["pmc_perf"]["Kernel_Name"].tolist()
+
+    # Iterate through kernels
+    for kernel_idx, kernel_name in enumerate(kernel_names):
+        result_structure[kernel_name] = {}
+
+        # Get performance counter data for this specific kernel
+        kernel_perf_data = run_data.raw_pmc["pmc_perf"].iloc[kernel_idx]
+
+        for panel_id, panel in archConfigs.panel_configs.items():
+            # Skip panels that don't support baseline comparison
+            if panel_id in HIDDEN_SECTIONS:
+                continue
+
+            # Skip if panel filtering is active and this panel is not included
+            if (
+                not args.filter_metrics
+                and filter_panel_ids
+                and panel_id not in filter_panel_ids
+                and panel_id > 100
+            ):
+                continue
+
+            # Create panel section name
+            panel_section_name = f"{panel_id // 100}. {panel['title']}"
+
+            # Initialize panel section if needed
+            if panel_section_name not in result_structure[kernel_name]:
+                result_structure[kernel_name][panel_section_name] = {}
+
+            for data_source in panel["data source"]:
+                for type, table_config in data_source.items():
+                    # Skip if table filtering is active and this table is not included
+                    if (
+                        not args.filter_metrics
+                        and filter_panel_ids
+                        and table_config["id"] not in filter_panel_ids
+                        and panel_id not in filter_panel_ids
+                        and panel_id > 100
+                    ):
+                        table_id_str = (
+                            str(table_config["id"] // 100)
+                            + "."
+                            + str(table_config["id"] % 100)
+                        )
+                        continue
+
+                    # For metric tables, calculate metrics for this kernel
+                    if type == "metric_table" and "metric" in table_config:
+                        df_data = []
+
+                        for metric_name, metric_info in table_config["metric"].items():
+                            if "value" in metric_info:
+                                # Calculate metric value for this kernel
+                                metric_value = evaluate_metric(
+                                    metric_info["value"],
+                                    kernel_perf_data,
+                                    kernel_idx,
+                                    run_data,
+                                )
+                                metric_value = _round2(metric_value)
+
+                                if metric_value is None:
+                                    continue
+
+                                # Add metric to dataframe
+                                row_data = {
+                                    "Metric": metric_name,
+                                    "Value": metric_value,
+                                }
+
+                                df_data.append(row_data)
+
+                        if df_data:
+                            df = pd.DataFrame(df_data)
+
+                            # Handle transpose if needed
+                            transpose = (
+                                "columnwise" in table_config
+                                and table_config["columnwise"] == True
+                            )
+
+                            if transpose:
+                                df = df.transpose()
+
+                            # Build subsection name
+                            table_id_str = (
+                                str(table_config["id"] // 100)
+                                + "."
+                                + str(table_config["id"] % 100)
+                            )
+
+                            if "title" in table_config and table_config["title"]:
+                                subsection_name = (
+                                    f"{table_id_str} {table_config['title']}"
+                                )
+                            else:
+                                subsection_name = table_id_str
+
+                            result_structure[kernel_name][panel_section_name][
+                                subsection_name
+                            ] = {
+                                "df": df,
+                                "tui_style": None,
+                            }
+
+    # Clean up empty sections
+    # Remove panel sections with no subsections
+    for kernel_section in list(result_structure.keys()):
+        for panel_section in list(result_structure[kernel_section].keys()):
+            if not result_structure[kernel_section][panel_section]:
+                del result_structure[kernel_section][panel_section]
+        # Remove kernel sections with no panels
+        if not result_structure[kernel_section]:
+            del result_structure[kernel_section]
+
+    return result_structure
+
+
+def get_top_kernels_and_dispatch_ids(runs):
+    if not runs:
+        return None
+
+    base_run = next(iter(runs.values()))
+    if not hasattr(base_run, "dfs"):
+        return None
+
+    top_kernel_df = base_run.dfs.get(1)
+    dispatch_id_df = base_run.dfs.get(2)
+
+    if top_kernel_df is None or dispatch_id_df is None:
+        return None
+
+    # Merge on Kernel_Name, keep top kernel sort
+    merged_df = pd.merge(
+        top_kernel_df, dispatch_id_df, on="Kernel_Name", how="outer"
+    ).sort_values("Pct", ascending=False)
+    return merged_df.to_dict('records')
+
+def _to_scalar(v):
+    if isinstance(v, pd.Series):
+        v = v.dropna()
+        return v.iloc[0] if len(v) else np.nan
+    if isinstance(v, (np.ndarray, list, tuple)):
+        return v[0] if len(v) else np.nan
+    return v
+
+
+def _is_na(v) -> bool:
+    if v is None:
+        return True
+    if isinstance(v, str):
+        return v.strip().upper() == "N/A"
+    # covers float('nan'), numpy.nan, pandas NA scalars, etc.
+    return isinstance(v, (float, np.floating)) and math.isnan(v)
+
+
+def _round2(v):
+    return None if _is_na(v) else round(float(v), 2)

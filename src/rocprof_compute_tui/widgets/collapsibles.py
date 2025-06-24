@@ -26,7 +26,6 @@ from typing import Any, Dict, List, Optional
 
 import pandas as pd
 import yaml
-from textual.containers import VerticalScroll
 from textual.widgets import Collapsible, DataTable, Label
 
 from rocprof_compute_tui.widgets.charts import (
@@ -167,7 +166,7 @@ def build_subsection(
     return collapsible
 
 
-def build_dynamic_kernel_sections(
+def build_kernel_sections(
     dfs: Dict[str, Any], skip_sections: List[str]
 ) -> List[Collapsible]:
     children = []
@@ -216,7 +215,7 @@ def build_section_from_config(
     # Handle dynamic sections (like kernel sections)
     elif section_config.get("dynamic_sections", False):
         skip_sections = section_config.get("skip_sections", [])
-        children = build_dynamic_kernel_sections(dfs, skip_sections)
+        children = build_kernel_sections(dfs, skip_sections)
 
     # Handle regular sections with subsections
     elif "subsections" in section_config:

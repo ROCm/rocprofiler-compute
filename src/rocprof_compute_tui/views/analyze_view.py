@@ -24,7 +24,7 @@ class AnalyzeView(ScrollableContainer):
 
     def compose(self):
         """
-        Compose the initial center panel state.
+        Compose the initial analyze view state.
         """
         yield Label(
             "Open a workload directory to run analysis and view results",

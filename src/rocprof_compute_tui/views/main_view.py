@@ -51,6 +51,8 @@ class MainView(Horizontal):
 
     selected_path = reactive(None)
     dfs = reactive({})
+    per_kernel_dfs = reactive({})
+    top_kernels = reactive([])
 
     def __init__(self):
         """Initialize the main view."""
@@ -228,6 +230,9 @@ class MainView(Horizontal):
             try:
                 self.logger.info("Step 8: Running analysis")
                 self.dfs = analyzer.run_analysis()
+                self.per_kernel_dfs = analyzer.run_kernel_analysis()
+                self.top_kernels = analyzer.run_top_kernel()
+
                 if not self.dfs:
                     warning_msg = "Step 8: Analysis completed but no data was returned"
                     self._update_view(warning_msg, LogLevel.WARNING)
@@ -239,6 +244,14 @@ class MainView(Horizontal):
                         self.logger.info("Step 8: Roofline data available")
                     else:
                         self.logger.info("Step 8: Roofline data not available")
+
+                if not self.per_kernel_dfs or not self.top_kernels:
+                    warning_msg = "Step 8: Per Kernel Analysis completed but not all data was returned"
+                    self._update_view(warning_msg, LogLevel.WARNING)
+                    self.logger.warning(warning_msg)
+                else:
+                    self.app.call_from_thread(self.refresh_results)
+                    self.logger.info("Step 8: Kernel Analysis completed successfully")
             except Exception as e:
                 self.logger.error(f"Step 8 failed - Error running analysis: {str(e)}")
                 raise
@@ -282,6 +295,27 @@ class MainView(Horizontal):
                 return
 
             analyze_view.update_results(self.dfs)
+            self.logger.success(f"Results displayed successfully.")
+        except Exception as e:
+            self.logger.error(f"Error refreshing results: {str(e)}")
+
+        try:
+            self.logger.info("Refreshing kernel results")
+            kernel_view = self.query_one("#kernel-view")
+            if not kernel_view:
+                self.logger.error("Kernel view not found")
+                return
+
+            if (
+                not hasattr(self, "per_kernel_dfs")
+                or self.per_kernel_dfs is None
+                or not hasattr(self, "top_kernels")
+                or self.top_kernels is None
+            ):
+                self.logger.error("No kernel analysis data available to display")
+                return
+
+            kernel_view.update_results(self.per_kernel_dfs, self.top_kernels)
             self.logger.success(f"Results displayed successfully.")
         except Exception as e:
             self.logger.error(f"Error refreshing results: {str(e)}")
