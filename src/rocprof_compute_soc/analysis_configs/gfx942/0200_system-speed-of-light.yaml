@@ -80,7 +80,7 @@ Panel Config:
           # TODO: Fix baseline comparision logic to handle non existent metrics, then remove this
           MFMA FLOPs (F6F4):
             value: None
-            unit: None
+            unit: GFLOP/s
             peak: None
             pop: None
             tips:
