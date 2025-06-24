@@ -1027,7 +1027,8 @@ def get_top_kernels_and_dispatch_ids(runs):
     merged_df = pd.merge(
         top_kernel_df, dispatch_id_df, on="Kernel_Name", how="outer"
     ).sort_values("Pct", ascending=False)
-    return merged_df.to_dict('records')
+    return merged_df.to_dict("records")
+
 
 def _to_scalar(v):
     if isinstance(v, pd.Series):
