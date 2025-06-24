@@ -1966,36 +1966,39 @@ def format_value_for_display(value, max_length=6):
     Format values to prevent overflow in SVG text elements.
     """
     #####
-    # TODO: this is quick fix to prevent overflow.
-    # The long term solution should be dynamically adjusts
+    # TODO: this is quick fix to prevent value overflow.
+    # The long term solution should be dynamically adjust
     # SVG dimensions and positions to maintain visual
     # integrity while preventing overflow.
     #####
 
-    # Non-numeric values
-    if not isinstance(value, (int, float)):
-        str_value = str(value)
-        if len(str_value) <= max_length:
-            return str_value
-        return str_value[: max_length - 1] + "…"
-    # Numeric values
-    abs_value = abs(value)
-
-    if abs_value >= 1000000000:  # Billions
-        formatted = f"{value/1000000000:.1f}B"
-    elif abs_value >= 1000000:  # Millions
-        formatted = f"{value/1000000:.1f}M"
-    elif abs_value >= 1000:  # Thousands
-        formatted = f"{value/1000:.1f}K"
-    else:
-        # For smaller numbers, use regular formatting
-        if value == int(value):
-            formatted = str(int(value))
+    # 1. If non-numerical
+    if isinstance(value, str):
+        try:
+            if "." in value:
+                value = float(value)
+            else:
+                value = int(value)
+        except ValueError:
+            pass  # Keep as string
+    # 2. If numerical
+    if isinstance(value, (int, float)):
+        value = abs(value)
+        if value >= 1000000000:
+            value = f"{value/1000000000:.1f}B"
+        elif value >= 1000000:
+            value = f"{value/1000000:.1f}M"
+        elif value >= 1000:
+            value = f"{value/1000:.1f}K"
+        elif value == int(value):
+            value = str(int(value))
         else:
-            formatted = f"{value:.1f}"
+            value = f"{value:.1f}"
+    else:
+        value = str(value)
 
-    # Final check - truncate if still too long
-    if len(formatted) > max_length:
-        formatted = formatted[: max_length - 1] + "…"
+    # 3. Truncate if needed
+    if len(value) > max_length:
+        value = value[: max_length - 1] + "…"
 
-    return formatted
+    return value
