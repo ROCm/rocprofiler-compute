@@ -1,5 +1,5 @@
 sections:
-  - title: "📊 Summaries"
+  - title: "Summaries"
     collapsed: true
     class: "summary-section"
     subsections:
@@ -15,7 +15,7 @@ sections:
         data_path: ["1. System Info", "1.1"]
         collapsed: true
 
-  - title: "⚡ High Level Analysis"
+  - title: "High Level Analysis"
     collapsed: true
     class: "sysinfo-section"
     subsections:
@@ -31,7 +31,7 @@ sections:
         collapsed: true
         tui_style: "mem_chart"
 
-  - title: "🔍 Detailed Block Analysis"
+  - title: "Detailed Block Analysis"
     collapsed: true
     class: "kernels-section"
     dynamic_sections: true
@@ -40,8 +40,9 @@ sections:
       - "1. System Info"
       - "2. System Speed-of-Light"
       - "3. Memory Chart"
+      - "4. Roofline"
 
-  - title: "🚧 Source Level Analysis"
+  - title: "Source Level Analysis"
     collapsed: true
     class: "source-section"
     subsections:

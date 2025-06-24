@@ -171,7 +171,6 @@ class MainView(Horizontal):
                 self.logger.info(
                     f"Step 3: sys_info_df shape = {sys_info_df.shape if hasattr(sys_info_df, 'shape') else 'No shape attribute'}"
                 )
-                self.logger.info(f"Step 3: sys_info_df = {sys_info_df}")
 
             except Exception as e:
                 self.logger.error(f"Step 3 failed - Error loading sys_info: {str(e)}")
@@ -194,7 +193,6 @@ class MainView(Horizontal):
                     raise TypeError(f"Unexpected type for sys_info: {type(sys_info_df)}")
 
                 self.logger.info(f"Step 4: sys_info converted = {sys_info}")
-                self.logger.info(f"Step 4: sys_info type = {type(sys_info)}")
 
             except Exception as e:
                 self.logger.error(f"Step 4 failed - Error converting sys_info: {str(e)}")
@@ -237,7 +235,7 @@ class MainView(Horizontal):
                 else:
                     self.app.call_from_thread(self.refresh_results)
                     self.logger.info("Step 8: Analysis completed successfully")
-                    if self.dfs["roofline"]:
+                    if self.dfs["4. Roofline"]:
                         self.logger.info("Step 8: Roofline data available")
                     else:
                         self.logger.info("Step 8: Roofline data not available")
