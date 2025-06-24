@@ -6,6 +6,16 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 ### Added
 
+* Support Roofline plot on CLI (single run)
+
+* Stochastic (hardware-based) PC sampling has been enabled for AMD Instinct MI300X series and later accelerators.
+
+* Sorting of PC sampling by type: offset or count.
+
+* Add rocprof-compute Text User Interface (TUI) support for analyze mode (beta version)
+  * A command line based user interface to support interactive single-run analysis
+  * launch with `--tui` option in analyze mode. i.e., `rocprof-compute analyze --tui`
+
 * Add support to be able to acquire from rocprofv3 every single channle on each XCD of TCC counters
 
 * Add Docker files to package the application and dependencies into a single portable and executable standalone binary file
@@ -20,7 +30,7 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
   * Default is FP32, but user can specify as many types as desired to overlay on the same plot output
 
 * Additional datatypes for roofline profiling
-  * Now supports FP8, FP16, BF16, FP32, FP64, I8, I32, I64 (dependent on gpu architecture)
+  * Now supports FP4, FP6, FP8, FP16, BF16, FP32, FP64, I8, I32, I64 (dependent on gpu architecture)
 
 * Support host-trap PC Sampling on CLI (beta version)
 
@@ -47,12 +57,18 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 * Roofline support for MI350 series architecture
 
-* Setting ROCPROF=rocprofiler-sdk environment variable will use rocprofiler-sdk C++ library instead of rocprofv3 python script
+* Interface to rocprofiler-sdk
+  * Setting ROCPROF=rocprofiler-sdk environment variable will use rocprofiler-sdk C++ library instead of rocprofv3 python script
   * Add --rocprofiler-sdk-library-path runtime option to choose the path to rocprofiler-sdk library to be used
+  * Using rocprof v1 / v2 / v3 interfaces will trigger a deprecation warning to use rocprofiler-sdk interface
+
+* Support MEM chart on CLI (single run)
+
+* Add deprecation warning for database update mode.
 
 ### Changed
 
-* Change the default rocprof version to v3 when environment variable "ROCPROF" is not set
+* Change the default rocprof version to rocprofv3, this is used when environment variable "ROCPROF" is not set
 * Change the rocprof version for unit tests to rocprofv3 on all SoCs except MI100
 * Change normal_unit default to per_kernel
 * Change dependency from rocm-smi to amd-smi
@@ -60,15 +76,18 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 * Update definition of following metrics for MI 350:
   * VGPR Writes
   * Total FLOPs (consider fp6 and fp4 ops)
+* Update Dash to >=3.0.0 (for web UI)
 
 ### Resolved issues
 
 * Fixed option specs-correction
 * Fixed kernel name and kernel dispatch filtering when using rocprof v3
 * Fixed not collecting TCC channel counters in rocprof v3
+* Fixed peak FLOPS of F8 I8 F16 and BF16 on MI300
 
 ### Known issues
 
+* Profiling on MI 100 will not work unless ROCPROF=rocprofv1 environment variable is explictly provided
 * GPU id filtering is not supported when using rocprof v3
 
 * Analysis of previously collected workload data will not work due to sysinfo.csv schema change

@@ -32,12 +32,11 @@ import dash_bootstrap_components as dbc
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 
+from config import HIDDEN_COLUMNS, PROJECT_NAME
 from rocprof_compute_analyze.analysis_base import OmniAnalyze_Base
 from utils import file_io, parser
 from utils.gui import build_bar_chart, build_table_chart
 from utils.logger import console_debug, console_error, demarcate
-
-PROJECT_NAME = "rocprofiler-compute"
 
 
 class webui_analysis(OmniAnalyze_Base):
@@ -50,7 +49,7 @@ class webui_analysis(OmniAnalyze_Base):
         self.arch = None
 
         self.__hidden_sections = ["Memory Chart", "Roofline"]
-        self.__hidden_columns = ["Tips", "coll_level"]
+        self.__hidden_columns = HIDDEN_COLUMNS
         # define different types of bar charts
         self.__barchart_elements = {
             "instr_mix": [1001, 1002],
@@ -164,8 +163,7 @@ class webui_analysis(OmniAnalyze_Base):
                 workload=base_data[base_run],
                 dir=self.dest_dir,
                 is_gui=True,
-                debug=self.get_args().debug,
-                verbose=self.get_args().verbose,
+                args=self.get_args(),
             )
 
             # ~~~~~~~~~~~~~~~~~~~~~~~
@@ -316,7 +314,9 @@ class webui_analysis(OmniAnalyze_Base):
                 kernel_verbose=self.get_args().kernel_verbose,
             )
             # create the loaded kernel stats
-            parser.load_kernel_top(self._runs[self.dest_dir], self.dest_dir)
+            parser.load_kernel_top(
+                self._runs[self.dest_dir], self.dest_dir, self.get_args()
+            )
             # set architecture
             self.arch = self._runs[self.dest_dir].sys_info.iloc[0]["gpu_arch"]
 
@@ -343,9 +343,7 @@ class webui_analysis(OmniAnalyze_Base):
             self._arch_configs[self.arch],
         )
         if args.random_port:
-            self.app.run_server(
-                debug=False, host="0.0.0.0", port=random.randint(1024, 49151)
-            )
+            self.app.run(debug=False, host="0.0.0.0", port=random.randint(1024, 49151))
         else:
             self.app.run(debug=False, host="0.0.0.0", port=args.gui)
 

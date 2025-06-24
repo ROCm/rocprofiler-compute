@@ -31,7 +31,6 @@ import sys
 import time
 from pathlib import Path
 
-import pandas as pd
 import yaml
 
 import config
@@ -116,35 +115,27 @@ class RocProfCompute:
         return
 
     def detect_profiler(self):
-        if (
-            self.__args.lucky == True
-            or self.__args.summaries == True
-            or self.__args.use_rocscope
-        ):
-            if not shutil.which("rocscope"):
-                console_error("Rocscope must be in PATH")
-            else:
-                self.__profiler_mode = "rocscope"
+        profiler_mode = detect_rocprof(self.__args)
+        if str(profiler_mode).endswith("rocprof"):
+            self.__profiler_mode = "rocprofv1"
+        elif str(profiler_mode).endswith("rocprofv2"):
+            self.__profiler_mode = "rocprofv2"
+        elif str(profiler_mode).endswith("rocprofv3"):
+            self.__profiler_mode = "rocprofv3"
+        elif str(profiler_mode) == "rocprofiler-sdk":
+            self.__profiler_mode = "rocprofiler-sdk"
         else:
-            profiler_mode = detect_rocprof(self.__args)
-            if str(profiler_mode).endswith("rocprof"):
-                self.__profiler_mode = "rocprofv1"
-            elif str(profiler_mode).endswith("rocprofv2"):
-                self.__profiler_mode = "rocprofv2"
-            elif str(profiler_mode).endswith("rocprofv3"):
-                self.__profiler_mode = "rocprofv3"
-            elif str(profiler_mode) == "rocprofiler-sdk":
-                self.__profiler_mode = "rocprofiler-sdk"
-            else:
-                console_error(
-                    "Incompatible profiler: %s. Supported profilers include: %s"
-                    % (profiler_mode, get_submodules("rocprof_compute_profile"))
-                )
+            console_error(
+                "Incompatible profiler: %s. Supported profilers include: %s"
+                % (profiler_mode, get_submodules("rocprof_compute_profile"))
+            )
         return
 
     def detect_analyze(self):
         if self.__args.gui:
             self.__analyze_mode = "web_ui"
+        elif self.__args.tui:
+            self.__analyze_mode = "tui"
         else:
             self.__analyze_mode = "cli"
         return
@@ -301,15 +292,6 @@ class RocProfCompute:
                 self.__soc[self.__mspec.gpu_arch],
                 self.__supported_archs,
             )
-        elif self.__profiler_mode == "rocscope":
-            from rocprof_compute_profile.profiler_rocscope import rocscope_profiler
-
-            profiler = rocscope_profiler(
-                self.__args,
-                self.__profiler_mode,
-                self.__soc[self.__mspec.gpu_arch],
-                self.__supported_archs,
-            )
         elif self.__profiler_mode == "rocprofiler-sdk":
             from rocprof_compute_profile.profiler_rocprofiler_sdk import (
                 rocprofiler_sdk_profiler,
@@ -340,7 +322,7 @@ class RocProfCompute:
         profiler.pre_processing()
         console_debug('starting "run_profiling" and about to start rocprof\'s workload')
         time_start_prof = time.time()
-        profiler.run_profiling(self.__version["ver"], config.prog)
+        profiler.run_profiling(self.__version["ver"], config.PROJECT_NAME)
         time_end_prof = time.time()
         console_debug(
             'finished "run_profiling" and finished rocprof\'s workload, time taken was {} m {} sec'.format(
@@ -363,6 +345,12 @@ class RocProfCompute:
     @demarcate
     def update_db(self):
         self.print_graphic()
+
+        console_warning(
+            "Database update mode is deprecated and will be removed in a future release "
+            "and no fixes will be made for this mode."
+        )
+
         from utils.db_connector import DatabaseConnector
 
         db_connection = DatabaseConnector(self.__args)
@@ -392,6 +380,11 @@ class RocProfCompute:
             from rocprof_compute_analyze.analysis_webui import webui_analysis
 
             analyzer = webui_analysis(self.__args, self.__supported_archs)
+        elif self.__analyze_mode == "tui":
+            from rocprof_compute_tui.tui_app import run_tui
+
+            run_tui(self.__args, self.__supported_archs)
+            return
         else:
             console_error("Unsupported analysis mode -> %s" % self.__analyze_mode)
 
