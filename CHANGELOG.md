@@ -9,7 +9,6 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 * 8-bit floating point (FP8) metrics support for AMD Instinct MI300 GPUs.
 * Additional data types for roofline: FP8, FP16, BF16, FP32, FP64, I8, I32, I64 (dependent on the GPU architecture).
 * Data type selection option ``--roofline-data-type / -R`` for roofline profiling. The default data type is FP32.
-* Change dependency from rocm-smi to amd-smi
 
 ### Changed
 
