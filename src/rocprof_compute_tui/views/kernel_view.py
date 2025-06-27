@@ -7,14 +7,30 @@ Contains the panel widgets used in the main layout.
 from typing import Any, Dict, List
 
 from textual import on
-from textual.containers import ScrollableContainer, VerticalScroll
+from textual.containers import Container, VerticalScroll
 from textual.widgets import Label, RadioButton, RadioSet
 
 from rocprof_compute_tui.widgets.collapsibles import build_all_sections
 
 
-class KernelView(ScrollableContainer):
-    """Center panel with analysis results."""
+class KernelView(Container):
+    """Center panel with analysis results split into two scrollable sections."""
+
+    DEFAULT_CSS = """
+    KernelView {
+        layout: vertical;
+    }
+
+    #top-container {
+        height: 1fr;
+        border: none;
+    }
+
+    #bottom-container {
+        height: 4fr;
+        border: none;
+    }
+    """
 
     def __init__(
         self, config_path: str = "src/rocprof_compute_tui/utils/analyze_config.yaml"
@@ -27,38 +43,71 @@ class KernelView(ScrollableContainer):
 
     def compose(self):
         """
-        Compose the initial center panel state.
+        Compose the split panel layout with two scrollable containers.
         """
-        with ScrollableContainer(id="selector-container"):
+        # Top container (2/5 height) for radio set
+        with VerticalScroll(id="top-container"):
             yield Label(
-                "Open a workload directory to run analysis and view individual kernel results",
+                "Open a workload directory to run analysis and view kernel selection",
                 classes="placeholder",
             )
 
-    def update_results(self, dfs: Dict[str, Any], top_kernerl: List[Dict]) -> None:
+        # Bottom container (3/5 height) for detailed results
+        with VerticalScroll(id="bottom-container"):
+            yield Label(
+                "Select a kernel from above to view detailed analysis",
+                classes="placeholder",
+            )
+
+    def update_results(self, dfs: Dict[str, Any], top_kernel: List[Dict]) -> None:
         """
-        Update the center panel with analysis results.
+        Update both containers with analysis results.
         """
         self.dfs = dfs
-        self.top_kernel = top_kernerl
-        self.remove_children()
+        self.top_kernel = top_kernel
 
-        if self.dfs:
+        # Update top container with radio set
+        top_container = self.query_one("#top-container", VerticalScroll)
+        top_container.remove_children()
+
+        if self.dfs and self.top_kernel:
             try:
-                self.mount(self.build_selector())
-
+                selector = self.build_selector()
+                top_container.mount(selector)
             except Exception as e:
-                self.mount(Label(f"Error displaying results: {str(e)}", classes="error"))
+                top_container.mount(
+                    Label(f"Error displaying kernel list: {str(e)}", classes="error")
+                )
+        else:
+            top_container.mount(Label("No kernels available", classes="placeholder"))
+
+        # Clear bottom container until selection is made
+        bottom_container = self.query_one("#bottom-container", VerticalScroll)
+        bottom_container.remove_children()
+        bottom_container.mount(
+            Label(
+                "Select a kernel from above to view detailed analysis",
+                classes="placeholder",
+            )
+        )
 
     def update_view(self, message: str, log_level: str) -> None:
         """
-        Update the view with a status message.
+        Update both containers with a status message.
         """
-        self.remove_children()
+        top_container = self.query_one("#top-container", VerticalScroll)
+        bottom_container = self.query_one("#bottom-container", VerticalScroll)
+
+        top_container.remove_children()
+        bottom_container.remove_children()
+
         try:
-            self.mount(Label(f"{message}", classes=log_level))
+            top_container.mount(Label(f"{message}", classes=log_level))
+            bottom_container.mount(Label("", classes=log_level))
         except Exception as e:
-            self.mount(Label(f"Error displaying results: {str(e)}", classes="error"))
+            top_container.mount(
+                Label(f"Error displaying message: {str(e)}", classes="error")
+            )
 
     def reload_config(self, config_path: str = None) -> None:
         """
@@ -68,32 +117,57 @@ class KernelView(ScrollableContainer):
             self.config_path = config_path
 
         if self.dfs:
-            self.update_results(self.dfs)
+            self.update_results(self.dfs, self.top_kernel)
 
     def build_selector(self):
-
+        """Build the radio set for kernel selection."""
         radio_buttons = []
-        for i in range(20):
-            for kernel in self.top_kernel:
-                radio_buttons.append(RadioButton(kernel["Kernel_Name"]))
+        for kernel in self.top_kernel:
+            radio_buttons.append(RadioButton(kernel["Kernel_Name"]))
 
         selector = RadioSet(*radio_buttons)
-        container = VerticalScroll(selector)
-        return container
+        return selector
 
-    def _update_displayed_content(self):
-        self.remove_children()
+    @on(RadioSet.Changed)
+    def on_radio_changed(self, event: RadioSet.Changed) -> None:
+        """Handle radio button selection and update bottom container."""
+        if event.pressed:
+            selected_kernel = event.pressed.label.plain
+            self.current_selection = selected_kernel
+            self._update_bottom_content()
 
-        section = self.build_selector()
-        self.mount(section)
+    def _update_bottom_content(self):
+        """Update the bottom container with detailed analysis for selected kernel."""
+        bottom_container = self.query_one("#bottom-container", VerticalScroll)
+        bottom_container.remove_children()
 
-        if self.dfs:
-            if self.current_selection:
+        if self.dfs and self.current_selection:
+            # Check if current_selection exists in dfs
+            if self.current_selection in self.dfs:
                 filtered_dfs = self.dfs[self.current_selection]
 
-            try:
-                sections = build_all_sections(filtered_dfs, self.config_path)
-                for section in sections:
-                    self.mount(section)
-            except Exception as e:
-                self.mount(Label(f"Error displaying results: {str(e)}", classes="error"))
+                try:
+                    sections = build_all_sections(filtered_dfs, self.config_path)
+                    for section in sections:
+                        bottom_container.mount(section)
+                except Exception as e:
+                    bottom_container.mount(
+                        Label(f"Error displaying results: {str(e)}", classes="error")
+                    )
+            else:
+                bottom_container.mount(
+                    Label(
+                        f"No data available for kernel: {self.current_selection}",
+                        classes="error",
+                    )
+                )
+        else:
+            bottom_container.mount(
+                Label("Select a kernel to view detailed analysis", classes="placeholder")
+            )
+
+    def _update_displayed_content(self):
+        """Legacy method - functionality now handled by update_results and radio selection."""
+        # This method is kept for backward compatibility but functionality
+        # is now distributed across update_results and _update_bottom_content
+        pass
