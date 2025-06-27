@@ -6,8 +6,9 @@ Contains the panel widgets used in the main layout.
 
 from typing import Any, Dict, List
 
-from textual.containers import ScrollableContainer
-from textual.widgets import Label, Select
+from textual import on
+from textual.containers import ScrollableContainer, VerticalScroll
+from textual.widgets import Label, RadioButton, RadioSet
 
 from rocprof_compute_tui.widgets.collapsibles import build_all_sections
 
@@ -28,10 +29,11 @@ class KernelView(ScrollableContainer):
         """
         Compose the initial center panel state.
         """
-        yield Label(
-            "Open a workload directory to run analysis and view per kernel results",
-            classes="placeholder",
-        )
+        with ScrollableContainer(id="selector-container"):
+            yield Label(
+                "Open a workload directory to run analysis and view individual kernel results",
+                classes="placeholder",
+            )
 
     def update_results(self, dfs: Dict[str, Any], top_kernerl: List[Dict]) -> None:
         """
@@ -41,13 +43,12 @@ class KernelView(ScrollableContainer):
         self.top_kernel = top_kernerl
         self.remove_children()
 
-        try:
-            section = self.build_selector()
+        if self.dfs:
+            try:
+                self.mount(self.build_selector())
 
-            self.mount(section)
-
-        except Exception as e:
-            self.mount(Label(f"Error displaying results: {str(e)}", classes="error"))
+            except Exception as e:
+                self.mount(Label(f"Error displaying results: {str(e)}", classes="error"))
 
     def update_view(self, message: str, log_level: str) -> None:
         """
@@ -70,13 +71,15 @@ class KernelView(ScrollableContainer):
             self.update_results(self.dfs)
 
     def build_selector(self):
-        kernel_names = [kernel["Kernel_Name"] for kernel in self.top_kernel]
-        selector = Select.from_values(kernel_names)
-        return selector
 
-    def on_select_changed(self, event: Select.Changed):
-        self.current_selection = event.value
-        self._update_displayed_content()
+        radio_buttons = []
+        for i in range(20):
+            for kernel in self.top_kernel:
+                radio_buttons.append(RadioButton(kernel["Kernel_Name"]))
+
+        selector = RadioSet(*radio_buttons)
+        container = VerticalScroll(selector)
+        return container
 
     def _update_displayed_content(self):
         self.remove_children()
