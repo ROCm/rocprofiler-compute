@@ -107,8 +107,7 @@ def format_text(
     key_str = (
         "{key:{key_format}}".format(key=key, key_format=key_format)
         if key and isinstance(key, (int, float))
-        else str(key) if key
-        else None
+        else str(key) if key else None
     )
 
     unit_string = post_description_with_space if not "N/A" in value_str else ""
