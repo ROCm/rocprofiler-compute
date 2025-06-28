@@ -33,7 +33,7 @@ class KernelView(Container):
     """
 
     def __init__(
-        self, config_path: str = "src/rocprof_compute_tui/utils/analyze_config.yaml"
+        self, config_path: str = "src/rocprof_compute_tui/utils/kernel_view_config.yaml"
     ):
         super().__init__(id="kernel-view")
         self.dfs = {}
@@ -71,6 +71,7 @@ class KernelView(Container):
         top_container.remove_children()
 
         if self.dfs and self.top_kernel:
+            top_container.mount(Label("Select a kernel to view detailed analysis."))
             try:
                 selector = self.build_selector()
                 top_container.mount(selector)
@@ -90,24 +91,6 @@ class KernelView(Container):
                 classes="placeholder",
             )
         )
-
-    def update_view(self, message: str, log_level: str) -> None:
-        """
-        Update both containers with a status message.
-        """
-        top_container = self.query_one("#top-container", VerticalScroll)
-        bottom_container = self.query_one("#bottom-container", VerticalScroll)
-
-        top_container.remove_children()
-        bottom_container.remove_children()
-
-        try:
-            top_container.mount(Label(f"{message}", classes=log_level))
-            bottom_container.mount(Label("", classes=log_level))
-        except Exception as e:
-            top_container.mount(
-                Label(f"Error displaying message: {str(e)}", classes="error")
-            )
 
     def reload_config(self, config_path: str = None) -> None:
         """
@@ -165,9 +148,3 @@ class KernelView(Container):
             bottom_container.mount(
                 Label("Select a kernel to view detailed analysis", classes="placeholder")
             )
-
-    def _update_displayed_content(self):
-        """Legacy method - functionality now handled by update_results and radio selection."""
-        # This method is kept for backward compatibility but functionality
-        # is now distributed across update_results and _update_bottom_content
-        pass
