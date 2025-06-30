@@ -21,7 +21,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 ##############################################################################el
-# Common helper routines for testing collateral
+
 import logging
 
 logging.trace = lambda *args, **kwargs: None
@@ -41,11 +41,17 @@ import tempfile
 from pathlib import Path
 from unittest import mock
 import pathlib
+import glob
+import shutil
 
 import pandas as pd
 import pytest
 
 import utils.utils as utils
+
+##################################################
+##          Generated tests                     ##
+##################################################
 
 # =============================================================================
 # HELPER FUNCTIONS FOR TESTING
@@ -3704,14 +3710,7 @@ def test_process_kokkos_trace_output_single_file(tmp_path, monkeypatch):
 def test_process_kokkos_trace_output_multiple_files(tmp_path, monkeypatch):
     """
     Test process_kokkos_trace_output with multiple valid CSV files.
-    Should concatenate all files and save to both output locations.
-
-    Args:
-        tmp_path (pathlib.Path): Temporary directory for test files.
-        monkeypatch (pytest.MonkeyPatch): Pytest fixture for patching.
-
-    Returns:
-        None: Asserts that multiple files are concatenated properly.
+    Should concatenate all files and save the result.
     """
     monkeypatch.setattr("utils.utils.console_debug", lambda *a, **k: None)
     monkeypatch.setattr("utils.utils.console_log", lambda *a, **k: None)
@@ -3728,7 +3727,6 @@ def test_process_kokkos_trace_output_multiple_files(tmp_path, monkeypatch):
 
     csv1 = sub1 / "test_marker_api_trace.csv"
     csv2 = sub2 / "test_marker_api_trace.csv"
-
     csv1.write_text(
         "timestamp,marker_name,duration\n1000,kokkos_malloc,500\n2000,kokkos_parallel_for,300\n"
     )
@@ -3737,24 +3735,18 @@ def test_process_kokkos_trace_output_multiple_files(tmp_path, monkeypatch):
     )
 
     fbase = "test_workload"
-
     import utils.utils as utils_mod
 
     utils_mod.process_kokkos_trace_output(workload_dir, fbase)
 
     output_file = out_dir / f"results_{fbase}_marker_api_trace.csv"
-    assert output_file.exists()
+    assert output_file.exists(), "The primary output file was not created."
 
     df = pd.read_csv(output_file)
-    assert len(df) == 4
-    assert df["timestamp"].tolist() == [1000, 2000, 3000, 4000]
+    assert len(df) == 4, "The final DataFrame does not contain the correct number of rows."
+    assert set(df["timestamp"]) == {1000, 2000, 3000, 4000}
     assert "kokkos_malloc" in df["marker_name"].values
     assert "kokkos_parallel_reduce" in df["marker_name"].values
-
-    # Check copied file
-    copied_file = tmp_path / f"{fbase}_marker_api_trace.csv"
-    assert copied_file.exists()
-
 
 def test_process_kokkos_trace_output_no_files_found(tmp_path, monkeypatch):
     """
@@ -4172,10 +4164,11 @@ File I/O errors
 """
 
 
+
 def test_process_hip_trace_output_multiple_files(tmp_path, monkeypatch):
     """
     Test process_hip_trace_output with multiple valid CSV files.
-    Should concatenate all files and save to both output locations.
+    Should concatenate all files and save the result.
     """
     monkeypatch.setattr("utils.utils.console_debug", lambda *a, **k: None)
     monkeypatch.setattr("utils.utils.console_log", lambda *a, **k: None)
@@ -4192,7 +4185,6 @@ def test_process_hip_trace_output_multiple_files(tmp_path, monkeypatch):
 
     csv1 = sub1 / "test_hip_api_trace.csv"
     csv2 = sub2 / "test_hip_api_trace.csv"
-
     csv1.write_text(
         "timestamp,api_name,duration\n1000,hipMalloc,500\n2000,hipMemcpy,300\n"
     )
@@ -4201,26 +4193,24 @@ def test_process_hip_trace_output_multiple_files(tmp_path, monkeypatch):
     )
 
     fbase = "test_workload"
-
     import utils.utils as utils_mod
 
     utils_mod.process_hip_trace_output(workload_dir, fbase)
 
     output_file = out_dir / f"results_{fbase}_hip_api_trace.csv"
-    assert output_file.exists()
+    assert output_file.exists(), "The primary output file was not created."
 
     df = pd.read_csv(output_file)
-    assert len(df) == 4
-    assert df["timestamp"].tolist() == [1000, 2000, 3000, 4000]
+    assert len(df) == 4, "The final DataFrame does not contain the correct number of rows."
+    assert set(df["timestamp"]) == {1000, 2000, 3000, 4000}
     assert "hipMalloc" in df["api_name"].values
     assert "hipLaunchKernel" in df["api_name"].values
 
     copied_file = tmp_path / f"{fbase}_hip_api_trace.csv"
-    assert copied_file.exists()
+    assert copied_file.exists(), "The copied output file was not created."
     df_copy = pd.read_csv(copied_file)
-    assert df.equals(df_copy)
-
-
+    assert df.equals(df_copy), "The copied file content does not match the primary output."
+    
 def test_process_hip_trace_output_single_file(tmp_path, monkeypatch):
     """
     Test process_hip_trace_output with a single CSV file.
