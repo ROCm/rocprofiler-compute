@@ -36,17 +36,17 @@ import pandas as pd
 
 import config
 from argparser import omniarg_parser
-from utils import file_io
+from utils.file_io import find_1st_sub_dir, load_sys_info
 from utils.logger import (
+    console_debug,
+    console_log,
+    console_warning,
     setup_console_handler,
     setup_file_handler,
     setup_logging_priority,
 )
 from utils.specs import MachineSpecs, generate_machine_specs
 from utils.utils import (
-    console_debug,
-    console_error,
-    console_log,
     demarcate,
     detect_rocprof,
     get_submodules,
@@ -342,9 +342,9 @@ class RocProfCompute:
             sysinfo_path = (
                 Path(d[0])
                 if analyzer.get_args().nodes is None
-                else file_io.find_1st_sub_dir(d[0])
+                else find_1st_sub_dir(d[0])
             )
-            sys_info = file_io.load_sys_info(sysinfo_path.joinpath("sysinfo.csv"))
+            sys_info = load_sys_info(sysinfo_path.joinpath("sysinfo.csv"))
 
             sys_info = sys_info.to_dict("list")
             sys_info = {key: value[0] for key, value in sys_info.items()}

@@ -33,8 +33,12 @@ from pathlib import Path
 
 import numpy as np
 
+import utils.mi_gpu_spec
 from rocprof_compute_base import MI300_CHIP_IDS, SUPPORTED_ARCHS
-from utils.utils import console_debug, console_error, console_log, demarcate
+from utils.logger import console_debug, console_error, console_log, console_warning
+from utils.utils import demarcate
+
+mi_gpu_specs = utils.mi_gpu_spec.MIGPUSpecs()
 
 
 class OmniSoC_Base:
@@ -99,7 +103,8 @@ class OmniSoC_Base:
 
     @demarcate
     def populate_mspec(self):
-        from utils.specs import run, search, total_sqc, total_xcds
+        from utils.specs import run, search, total_sqc
+        from utils.utils import total_xcds
 
         if not hasattr(self._mspec, "_rocminfo") or self._mspec._rocminfo is None:
             return
@@ -179,21 +184,160 @@ class OmniSoC_Base:
         self._mspec.cur_sclk = self._mspec.max_sclk
         self._mspec.cur_mclk = self._mspec.max_mclk
 
-        self._mspec.gpu_series = list(SUPPORTED_ARCHS[self._mspec.gpu_arch].keys())[
-            0
-        ].upper()
-        # specify gpu name for gfx942 hardware
-        self._mspec.gpu_model = list(SUPPORTED_ARCHS[self._mspec.gpu_arch].keys())[
-            0
-        ].upper()
-        if self._mspec.gpu_model == "MI300":
-            # Use Chip ID to distinguish MI300 gpu model using the built-in dictionary
-            if self._mspec.chip_id in MI300_CHIP_IDS:
-                self._mspec.gpu_model = MI300_CHIP_IDS[self._mspec.chip_id]
+        self._mspec.gpu_series = mi_gpu_specs.get_gpu_series(self._mspec.gpu_arch)
+        # specify gpu model name for gfx942 hardware
+        self._mspec.gpu_model = mi_gpu_specs.get_gpu_model(
+            self._mspec.gpu_arch, self._mspec.chip_id
+        )
+
+        if not self._mspec.gpu_model:
+            self._mspec.gpu_model = self.detect_gpu_model(self._mspec.gpu_arch)
 
         self._mspec.num_xcd = str(
-            total_xcds(self._mspec.gpu_model, self._mspec.compute_partition)
+            mi_gpu_specs.get_num_xcds(
+                self._mspec.gpu_arch, self._mspec.gpu_model, self._mspec.compute_partition
+            )
         )
+
+    @demarcate
+    def detect_gpu_model(self, gpu_arch):
+        """
+        Detects the GPU model using various identifiers from 'amd-smi static'.
+        Falls back through multiple methods if the primary method fails.
+        """
+
+        from utils.specs import run, search
+
+        # TODO: use amd-smi python api when available
+        amd_smi_static = run(["amd-smi", "static", "--gpu=0"], exit_on_error=True)
+
+        # Purposely search for patterns without variants suffix to try and match a known GPU model.
+        detection_methods = [
+            {
+                "name": "Market Name",
+                "pattern": r"MARKET_NAME:\s*.*(mi|MI\d*[a-zA-Z]*)",
+            },
+            {
+                "name": "VBIOS Name",
+                "pattern": r"NAME:\s*.*(mi|MI\d*[a-zA-Z]*)",
+            },
+            {"name": "Product Name", "pattern": r"PRODUCT_NAME:\s*.*(mi|MI\d*[a-zA-Z]*)"},
+        ]
+
+        gpu_model = None
+        for method in detection_methods:
+            console_log(f"Determining GPU model using {method['name']}.")
+            gpu_model = search(method["pattern"], amd_smi_static)
+            if gpu_model:
+                break
+
+        if not gpu_model:
+            console_warning("Unable to determine the GPU model.")
+            return
+
+        gpu_model = self._adjust_mi300_model(gpu_model.lower(), gpu_arch.lower())
+
+        if gpu_model.lower() not in mi_gpu_specs.get_num_xcds_dict().keys():
+            console_warning(f"Unknown GPU model detected: '{gpu_model}'.")
+            return
+
+        return gpu_model.upper()
+
+    def _adjust_mi300_model(self, gpu_model, gpu_arch):
+        """
+        Applies specific adjustments for MI300 series GPU models based on architecture.
+        """
+
+        if gpu_model in ["mi300a", "mi300x"]:
+            if gpu_arch in ["gfx940", "gfx941"]:
+                gpu_model += "_a0"
+            elif gpu_arch == "gfx942":
+                gpu_model += "_a1"
+
+        return gpu_model
+
+    @demarcate
+    def detect_counters(self):
+        """
+        Create a set of counters required for the selected report sections.
+        Parse analysis report configuration files based on the selected report sections to be filtered.
+        """
+        counters = set()
+        config_filenames = {
+            filename: []
+            for filename in os.listdir(
+                Path(self.get_args().config_dir).joinpath(self.__arch)
+            )
+            if filename.endswith(".yaml")
+        }
+        metric_ids = [
+            name
+            for name, type in self.get_args().filter_blocks.items()
+            if type == "metric_id"
+        ]
+        file_ids = []
+        for section in metric_ids:
+            section_num = convert_metric_id_to_panel_idx(section)
+            file_id = str(section_num // 100)
+            # Convert "4" to "04"
+            if len(file_id) == 1:
+                file_id = f"0{file_id}"
+            file_ids.append(file_id)
+            # Apply sub section filtering
+            for config_filename in config_filenames:
+                if config_filename.startswith(file_id) and section_num % 100:
+                    config_filenames[config_filename].append(section_num)
+
+        # Apply section filters only if metric ids have been provided for filtering
+        if metric_ids:
+            # Identify yaml files corresponding to file_ids
+            config_filenames = {
+                filename: subsections
+                for filename, subsections in config_filenames.items()
+                if filename.startswith(tuple(file_ids))
+            }
+
+        for config_filename, subsections in config_filenames.items():
+            # Read the yaml file
+            with open(
+                Path(self.get_args().config_dir).joinpath(self.__arch, config_filename),
+                "r",
+            ) as stream:
+                section_config = yaml.safe_load(stream)
+            # Extract subsection if section is of the form 4.52
+            if subsections:
+                section_config_text = "\n".join(
+                    [
+                        # Convert yaml to string
+                        yaml.dump(subsection)
+                        for subsection in section_config["Panel Config"]["data source"]
+                        if subsection["metric_table"]["id"] in subsections
+                    ]
+                )
+            else:
+                # Convert yaml to string
+                section_config_text = yaml.dump(section_config)
+            counters = counters.union(self.parse_counters(section_config_text))
+
+        # Handle TCC channel counters: if hw_counter_matches has elements ending with '['
+        # Expand and interleve the TCC channel counters
+        # e.g.  TCC_HIT[0] TCC_ATOMIC[0] ... TCC_HIT[1] TCC_ATOMIC[1] ...
+        num_xcd_for_pmc_file = 1
+        if using_v3():
+            num_xcd_for_pmc_file = int(self._mspec.num_xcd)
+
+        for counter_name in counters.copy():
+            if counter_name.startswith("TCC") and counter_name.endswith("["):
+                counters.remove(counter_name)
+                counter_name = counter_name.split("[")[0]
+                counters = counters.union(
+                    {
+                        f"{counter_name}[{i}]"
+                        for i in range(num_xcd_for_pmc_file * int(self._mspec._l2_banks))
+                    }
+                )
+
+        return counters
 
     @demarcate
     def perfmon_filter(self, roofline_perfmon_only: bool):
@@ -517,9 +661,6 @@ def perfmon_coalesce(pmc_files_list, perfmon_config, workload_dir, spatial_multi
                     for ctr in f.blocks[block_name].elements:
                         if "_expand" in ctr:
                             channel_counters.append(ctr.split("_expand")[0])
-                    for i in range(0, perfmon_config["TCC_channels"]):
-                        for c in channel_counters:
-                            pmc.append("{}[{}]".format(c, i))
                     # Handle the rest of the TCC counters
                     for ctr in f.blocks[block_name].elements:
                         if "_expand" not in ctr:

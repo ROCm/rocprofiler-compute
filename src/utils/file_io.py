@@ -36,7 +36,8 @@ import yaml
 import config
 from utils import schema
 from utils.kernel_name_shortener import kernel_name_shortener
-from utils.utils import console_debug, console_error, demarcate
+from utils.logger import console_debug, console_error, console_log, console_warning
+from utils.utils import demarcate
 
 # TODO: use pandas chunksize or dask to read really large csv file
 # from dask import dataframe as dd

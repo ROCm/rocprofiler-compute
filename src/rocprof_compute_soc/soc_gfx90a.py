@@ -25,9 +25,13 @@
 from pathlib import Path
 
 import config
+import utils.mi_gpu_spec
 from rocprof_compute_soc.soc_base import OmniSoC_Base
 from roofline import Roofline
-from utils.utils import console_log, demarcate, mibench
+from utils.logger import console_log, console_warning, demarcate
+from utils.utils import mibench
+
+mi_gpu_specs = utils.mi_gpu_spec.MIGPUSpecs()
 
 
 class gfx90a_soc(OmniSoC_Base):
@@ -57,21 +61,8 @@ class gfx90a_soc(OmniSoC_Base):
             )
         self.set_compatible_profilers(["rocprofv1", "rocscope", "rocprofv2", "rocprofv3"])
         # Per IP block max number of simultaneous counters. GFX IP Blocks
-        self.set_perfmon_config(
-            {
-                "SQ": 8,
-                "TA": 2,
-                "TD": 2,
-                "TCP": 4,
-                "TCC": 4,
-                "CPC": 2,
-                "CPF": 2,
-                "SPI": 2,
-                "GRBM": 2,
-                "GDS": 4,
-                "TCC_channels": 32,
-            }
-        )
+
+        self.set_perfmon_config(mi_gpu_specs.get_perfmon_config("gfx90a"))
         # Create roofline object if mode is provided; skip for --specs
         if hasattr(self.get_args(), "mode") and self.get_args().mode:
             self.roofline_obj = Roofline(args, self._mspec)
