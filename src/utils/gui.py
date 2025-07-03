@@ -52,7 +52,7 @@ def multi_bar_chart(table_id, display_df):
         nested_bar = {"NC": {}, "UC": {}, "RW": {}, "CC": {}}
         for index, row in display_df.iterrows():
             nested_bar[row["Coherency"]][row["Xfer"]] = row["Avg"]
-    if table_id == 1704:
+    if table_id == 1705:  # L2 - Fabric Interface Stalls
         nested_bar = {"Read": {}, "Write": {}}
         for index, row in display_df.iterrows():
             nested_bar[row["Transaction"]][row["Type"]] = row["Avg"]
@@ -215,7 +215,7 @@ def build_bar_chart(display_df, table_config, barchart_elements, norm_filt):
                 ).update_xaxes(range=[0, 110], ticks="inside", title="%")
             )  # append first % chart
             hbm_bw = float(
-                display_df[display_df["Metric"] == "HBM Bandwidth"]["Avg"].iloc[0]
+                display_df[display_df["Metric"] == "Bandwidth"]["Avg"].iloc[0]
             )
             d_figs.append(
                 px.bar(
