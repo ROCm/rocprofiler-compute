@@ -1211,25 +1211,35 @@ def detect_roofline(mspec):
             msg = "user-supplied path to binary not accessible"
             msg += "--> ROOFLINE_BIN = %s\n" % target_binary
             console_error("roofline", msg)
-    elif (
+
+    # Must be a valid RHEL machine
+    elif rocm_ver == 6 and (
         rhel_distro == "platform:el8"
+        or rhel_distro == "platform:al8"
         or rhel_distro == "platform:el9"
         or rhel_distro == "platform:el10"
-        or rhel_distro == "platform:al8"
     ):
-        # Must be a valid RHEL machine
+        # RHEL8 supported up to ROCm6
         distro = "platform:el8"
+    elif rocm_ver == 7 and (
+        rhel_distro == "platform:el9" or rhel_distro == "platform:el10"
+    ):
+        # ROCm7 supports RHEL9 and above
+        distro = "platform:el8"
+
+    # Must be a valid SLES machine
     elif (
         (type(sles_distro) == str and len(sles_distro) >= 3)
         and sles_distro[:2] == "15"  # confirm string and len
         and int(sles_distro[3]) >= 6  # SLES15 and SP >= 6
     ):
-        # Must be a valid SLES machine
         # Use SP6 binary for all forward compatible service pack versions
         distro = "15.6"
+
+    # Must be a valid Ubuntu machine
     elif ubuntu_distro == "22.04" or ubuntu_distro == "24.04":
-        # Must be a valid Ubuntu machine
         distro = "22.04"
+
     else:
         console_error("roofline", "Cannot find a valid binary for your operating system")
 
@@ -1243,6 +1253,7 @@ def mibench(args, mspec):
 
     distro_map = {
         "platform:el8": "rhel8",
+        "platform:el9": "rhel9",
         "15.6": "sles15sp6",
         "22.04": "ubuntu22_04",
     }
