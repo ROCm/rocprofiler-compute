@@ -78,6 +78,7 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
   * Total FLOPs (consider fp6 and fp4 ops)
 * Update Dash to >=3.0.0 (for web UI)
 * Change when Roofline PDFs are generated- during general profiling and --roof-only profiling (skip only when --no-roof option is present)
+* Update Roofline binaries- OS distribution support minimum is now Ubuntu22.04, RHEL9, and SLES15SP6
 
 ### Resolved issues
 
