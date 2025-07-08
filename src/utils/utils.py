@@ -1171,6 +1171,8 @@ def detect_roofline(mspec):
 
     rocm_ver = mspec.rocm_version[:1]
 
+    target_binary = {"rocm_ver": rocm_ver, "distro": "override", "path": None}
+
     os_release = path("/etc/os-release").read_text()
     ubuntu_distro = specs.search(r'VERSION_ID="(.*?)"', os_release)
     rhel_distro = specs.search(r'PLATFORM_ID="(.*?)"', os_release)
@@ -1179,15 +1181,16 @@ def detect_roofline(mspec):
     if "ROOFLINE_BIN" in os.environ.keys():
         rooflineBinary = os.environ["ROOFLINE_BIN"]
         if path(rooflineBinary).exists():
-            console_warning("roofline", "Detected user-supplied binary")
-            return {
-                "rocm_ver": "override",
-                "distro": "override",
-                "path": rooflineBinary,
-            }
+            msg = "Detected user-supplied binary --> ROOFLINE_BIN = %s\n" % rooflineBinary
+            console_warning("roofline", msg)
+            # distro stays marked as override and path value is substituted in
+            target_binary["path"] = rooflineBinary
+            return target_binary
         else:
-            msg = "user-supplied path to binary not accessible"
-            msg += "--> ROOFLINE_BIN = %s\n" % target_binary
+            msg = (
+                "user-supplied path to binary not accessible --> ROOFLINE_BIN = %s\n"
+                % rooflineBinary
+            )
             console_error("roofline", msg)
 
     # Must be a valid RHEL machine
@@ -1221,7 +1224,8 @@ def detect_roofline(mspec):
     else:
         console_error("roofline", "Cannot find a valid binary for your operating system")
 
-    target_binary = {"rocm_ver": rocm_ver, "distro": distro, "path": None}
+    # distro gets assigned, to follow default roofline bin location and nomenclature
+    target_binary["distro"] = distro
     return target_binary
 
 
