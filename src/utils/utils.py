@@ -1255,7 +1255,7 @@ def mibench(args, mspec):
                 + "-"
                 + distro_map[target_binary["distro"]]
                 + "-rocm"
-                + distro_map[target_binary["rocm_ver"]]
+                + target_binary["rocm_ver"]
             )
             binary_paths.append(path_to_binary)
 
