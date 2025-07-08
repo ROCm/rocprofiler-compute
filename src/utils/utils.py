@@ -1203,7 +1203,7 @@ def detect_roofline(mspec):
         rhel_distro == "platform:el9" or rhel_distro == "platform:el10"
     ):
         # ROCm7 supports RHEL9 and above
-        distro = "platform:el8"
+        distro = "platform:el9"
 
     # Must be a valid SLES machine
     elif (
@@ -1255,7 +1255,7 @@ def mibench(args, mspec):
                 + "-"
                 + distro_map[target_binary["distro"]]
                 + "-rocm"
-                + target_binary["rocm_ver"]
+                + distro_map[target_binary["rocm_ver"]]
             )
             binary_paths.append(path_to_binary)
 
