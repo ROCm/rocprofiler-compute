@@ -2,7 +2,6 @@ import copy
 import logging
 import os
 import re
-import sys
 from collections import defaultdict
 from datetime import datetime
 from enum import Enum
@@ -10,8 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 
-HIDDEN_SECTIONS = [1900, 2000]
-HIDDEN_COLUMNS = ["Tips", "coll_level"]
+from config import HIDDEN_COLUMNS, HIDDEN_SECTIONS
 
 supported_field = [
     "Value",
@@ -289,7 +287,9 @@ def get_table_dfs():
     return section_dfs
 
 
-def process_panels_to_dataframes(args, runs, archConfigs, profiling_config):
+def process_panels_to_dataframes(
+    args, runs, archConfigs, profiling_config, roof_plot=None
+):
     """
     Process panel data into pandas DataFrames.
     Returns a nested dictionary structure with DataFrames and tui_style information.
@@ -418,7 +418,7 @@ def process_panels_to_dataframes(args, runs, archConfigs, profiling_config):
                         # Save to CSV if requested
                         if args.df_file_dir:
                             save_dataframe_to_csv(df, table_id_str, table_config, args)
-
+    result_structure["roofline"] = roof_plot
     return dict(result_structure)
 
 

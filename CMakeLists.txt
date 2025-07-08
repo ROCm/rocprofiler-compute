@@ -191,6 +191,12 @@ set(PYTEST_NUMPROCS
     CACHE STRING "Number of parallel threads to use with CPU-oriented tests")
 message(STATUS "Pytest CPU threadcount: ${PYTEST_NUMPROCS}")
 
+# 2 CPU threads available for testing(test-analyze-commands)
+set(PYTEST_NUMPROCS_ANALYSIS
+    "4"
+    CACHE STRING "Number of parallel threads to use with CPU-oriented tests")
+message(STATUS "Pytest CPU threadcount: ${PYTEST_NUMPROCS_ANALYSIS}")
+
 # ---------------------------
 # profile mode tests
 # ---------------------------
@@ -269,7 +275,7 @@ set_tests_properties(
 add_test(
     NAME test_analyze_commands
     COMMAND
-        ${Python3_EXECUTABLE} -m pytest -n ${PYTEST_NUMPROCS}
+        ${Python3_EXECUTABLE} -m pytest -n ${PYTEST_NUMPROCS_ANALYSIS} --verbose
         --junitxml=tests/test_analyze_commands.xml ${COV_OPTION}
         ${PROJECT_SOURCE_DIR}/tests/test_analyze_commands.py
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
@@ -317,6 +323,32 @@ add_test(
         --junitxml=tests/test_num_xcds_cli_output.xml ${COV_OPTION}
         ${PROJECT_SOURCE_DIR}/tests/test_gpu_specs.py
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+# ---------------------------
+# DB Connector tests
+# ---------------------------
+
+add_test(
+    NAME test_db_connector
+    COMMAND
+        ${Python3_EXECUTABLE} -m pytest
+        --junitxml=tests/test_db_connector.xml ${COV_OPTION}
+        ${PROJECT_SOURCE_DIR}/tests/test_db_connector.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+# ---------------------------
+# Utils tests
+# ---------------------------
+
+add_test(
+    NAME test_utils
+    COMMAND
+        ${Python3_EXECUTABLE} -m pytest
+        --junitxml=tests/test_utils.xml ${COV_OPTION}
+        ${PROJECT_SOURCE_DIR}/tests/test_utils.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
 
 # ---------
 # Install
@@ -522,7 +554,7 @@ set(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_REQUIRES})
 # Handle the project rebranding from omniperf to rocprofiler-compute
 set(OMNIPERF_PACKAGE_NAME "omniperf")
 set(CPACK_RPM_PACKAGE_PROVIDES ${OMNIPERF_PACKAGE_NAME})
-set(CPACK_RPM_PACKAGE_OBSOLETES ${OMNIPERF_PACKAGE_NAME})
+set(CPACK_RPM_PACKAGE_OBSOLETES "${OMNIPERF_PACKAGE_NAME} < 3.0.0")
 set(CPACK_RPM_PACKAGE_CONFLICTS ${OMNIPERF_PACKAGE_NAME})
 
 set(CPACK_DEBIAN_PACKAGE_PROVIDES ${OMNIPERF_PACKAGE_NAME})

@@ -6,11 +6,13 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 ### Added
 
+* Support Roofline plot on CLI (single run)
+
 * Stochastic (hardware-based) PC sampling has been enabled for AMD Instinct MI300X series and later accelerators.
 
 * Sorting of PC sampling by type: offset or count.
 
-* Add rocprof-compute Text User Interface (TUI) support for analyze mode
+* Add rocprof-compute Text User Interface (TUI) support for analyze mode (beta version)
   * A command line based user interface to support interactive single-run analysis
   * launch with `--tui` option in analyze mode. i.e., `rocprof-compute analyze --tui`
 
@@ -60,7 +62,7 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
   * Add --rocprofiler-sdk-library-path runtime option to choose the path to rocprofiler-sdk library to be used
   * Using rocprof v1 / v2 / v3 interfaces will trigger a deprecation warning to use rocprofiler-sdk interface
 
-* Support MEM chart on CLI(single run)
+* Support MEM chart on CLI (single run)
 
 * Add deprecation warning for database update mode.
 
@@ -75,9 +77,11 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
   * VGPR Writes
   * Total FLOPs (consider fp6 and fp4 ops)
 * Update Dash to >=3.0.0 (for web UI)
+* Change when Roofline PDFs are generated- during general profiling and --roof-only profiling (skip only when --no-roof option is present)
 
 ### Resolved issues
 
+* Fixed MI 100 counters not being collected when rocprofv3 is used
 * Fixed option specs-correction
 * Fixed kernel name and kernel dispatch filtering when using rocprof v3
 * Fixed not collecting TCC channel counters in rocprof v3
@@ -85,7 +89,9 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 ### Known issues
 
-* Profiling on MI 100 will not work unless ROCPROF=rocprofv1 environment variable is explictly provided
+* On MI 100, accumulation counters will not be collected and the following metrics will not show up in analysis: Instruction Fetch Latency, Wavefront Occupancy, LDS Latency
+  * As a workaround, use ROCPROF=rocprof environement variable, to use rocprofv1 for profiling on MI 100
+
 * GPU id filtering is not supported when using rocprof v3
 
 * Analysis of previously collected workload data will not work due to sysinfo.csv schema change
