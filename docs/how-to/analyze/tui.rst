@@ -12,9 +12,11 @@ an alternative to the standard CLI if you want to explore analysis results with 
 feedback and interactive navigation, but without the additional setup requirements or overhead
 of a full graphical interface. This analysis option is implemented as a terminal-based interface
 that offers real-time visual feedback, keyboard shortcuts for common actions, and improved
-readability with formatted output. Please note that TUI is currently in beta, so while functional,
-you may encounter minor issues or limitations.
+readability with formatted output. Please note that
 
+.. note::
+
+   TUI is currently in beta, so while functional, you may encounter minor issues or limitations.
 
 Launch the TUI analyzer
 ----------------------------------
