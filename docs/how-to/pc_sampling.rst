@@ -47,25 +47,25 @@ For using analysis options for PC sampling the configuration needed are:
 Selected single kernel host trap PC sampling:
 
 .. image:: ../../data/pc_sampling/pc_sampling_host_trap_single_kernel.png
-   :align: center
+   :align: left
    :alt: Host trap PC sampling snapshot
 
 Selected single kernel stochastic PC sampling:
 
 .. image:: ../../data/pc_sampling/pc_sampling_stochastic_single_kernel.png
-   :align: center
+   :align: left
    :alt: Stochastic PC sampling snapshot
 
 If user doesn't filter by kernel, the output will fall back to the orignal data from rocprofv3 csv output for all kernels:
 
 .. image:: ../../data/pc_sampling/pc_sampling_no_kernel_filtering.png
-   :align: center
+   :align: left
    :alt: Host trap PC sampling snapshot no_kernel_filtering
 
 Selected single kernel sorting by PC count:
 
 .. image:: ../../data/pc_sampling/pc_sampling_sort_by_count.png
-   :align: center
+   :align: left
    :alt: Host trap PC sampling sorting snapshot
 
 .. note::
