@@ -56,7 +56,7 @@ Selected single kernel stochastic PC sampling:
    :align: center
    :alt: Stochastic PC sampling snapshot
 
-If user don't filter kernel, the output will fall back to the orignal data from rocprfv3 csv output for all kernels:
+If user doesn't filter by kernel, the output will fall back to the orignal data from rocprofv3 csv output for all kernels:
 
 .. image:: ../../data/pc_sampling/pc_sampling_no_kernel_filtering.png
    :align: center
