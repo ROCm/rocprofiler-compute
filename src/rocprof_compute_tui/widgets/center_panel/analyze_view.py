@@ -4,6 +4,7 @@ Panel Widget Modules
 Contains the panel widgets used in the main layout.
 """
 
+from importlib import resources
 from typing import Any, Dict
 
 from textual.containers import ScrollableContainer
@@ -15,12 +16,17 @@ from rocprof_compute_tui.widgets.collapsibles import build_all_sections
 class AnalyzeView(ScrollableContainer):
     """Center panel with analysis results."""
 
-    def __init__(
-        self, config_path: str = "src/rocprof_compute_tui/utils/analyze_config.yaml"
-    ):
+    def __init__(self, config_path: None):
         super().__init__(id="analyze-view")
         self.dfs = {}
-        self.config_path = config_path
+
+        if config_path is None:
+            # Access as a package resource
+            config_path = (
+                resources.files("rocprof_compute_tui.utils") / "analyze_config.yaml"
+            )
+
+        self.config_path = str(config_path)
 
     def compose(self):
         """
