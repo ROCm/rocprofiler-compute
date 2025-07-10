@@ -147,7 +147,7 @@ def build_subsection(
 
         collapsible = Collapsible(*widgets, title=title, collapsed=collapsed)
     elif tui_style == "roofline":
-        if dfs["roofline"]:
+        if dfs["4. Roofline"]:
             widget = RooflinePlot(dfs)
             collapsible = Collapsible(widget, title=title, collapsed=collapsed)
         else:

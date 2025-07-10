@@ -40,7 +40,7 @@ sections:
       - "1. System Info"
       - "2. System Speed-of-Light"
       - "3. Memory Chart"
-      - "roofline"
+      - "4. Roofline"
 
   - title: "🚧 Source Level Analysis"
     collapsed: true

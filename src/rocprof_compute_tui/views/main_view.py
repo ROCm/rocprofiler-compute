@@ -239,7 +239,7 @@ class MainView(Horizontal):
                 else:
                     self.app.call_from_thread(self.refresh_results)
                     self.logger.info("Step 8: Analysis completed successfully")
-                    if self.dfs.get("roofline"):
+                    if self.dfs.get("4. Roofline"):
                         self.logger.info("Step 8: Roofline data available")
                     else:
                         self.logger.info("Step 8: Roofline data not available")
