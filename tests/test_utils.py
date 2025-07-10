@@ -41,8 +41,8 @@ import shutil
 import subprocess
 import tempfile
 from pathlib import Path
-from unittest import mock
 from types import SimpleNamespace
+from unittest import mock
 
 import pandas as pd
 import pytest
