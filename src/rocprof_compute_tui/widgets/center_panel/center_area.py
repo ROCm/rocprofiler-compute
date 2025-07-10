@@ -49,13 +49,10 @@ class CenterPanel(Vertical):
         super().__init__()
 
         self.default_tab = "center-analyze"
-        self.analyze_view = AnalyzeView()
         self.kernel_view = KernelView()
 
     def compose(self):
-        with TabsTabbedContent(initial="tab-analyze"):
-            with TabPane("Basic View", id="tab-analyze"):
-                yield self.analyze_view
+        with TabsTabbedContent(initial="tab-kernel"):
             with TabPane("Kernel View", id="tab-kernel"):
                 yield self.kernel_view
 

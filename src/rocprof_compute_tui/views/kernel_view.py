@@ -27,7 +27,7 @@ class KernelView(Container):
     }
 
     #bottom-container {
-        height: 4fr;
+        height: 5fr;
         border: none;
     }
     """
@@ -45,19 +45,15 @@ class KernelView(Container):
         """
         Compose the split panel layout with two scrollable containers.
         """
-        # Top container (2/5 height) for radio set
         with VerticalScroll(id="top-container"):
             yield Label(
                 "Open a workload directory to run analysis and view kernel selection",
                 classes="placeholder",
             )
 
-        # Bottom container (3/5 height) for detailed results
         with VerticalScroll(id="bottom-container"):
-            yield Label(
-                "Select a kernel from above to view detailed analysis",
-                classes="placeholder",
-            )
+            # empty on init
+            pass
 
     def update_results(self, dfs: Dict[str, Any], top_kernel: List[Dict]) -> None:
         """

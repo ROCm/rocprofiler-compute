@@ -274,31 +274,15 @@ class MainView(Horizontal):
 
     def _safe_update_view(self, message: str, log_level: LogLevel) -> None:
         try:
-            analyze_view = self.query_one("#analyze-view")
-            if analyze_view:
-                analyze_view.update_view(message, log_level)
+            kernel_view = self.query_one("#kernel-view")
+            if kernel_view:
+                kernel_view.update_view(message, log_level)
             else:
                 self.logger.warning("Analysis view not found when updating log")
         except Exception as e:
             self.logger.error(f"Log update error: {str(e)}")
 
     def refresh_results(self) -> None:
-        try:
-            self.logger.info("Refreshing analysis results")
-            analyze_view = self.query_one("#analyze-view")
-            if not analyze_view:
-                self.logger.error("Analysis view not found")
-                return
-
-            if not hasattr(self, "dfs") or self.dfs is None:
-                self.logger.error("No analysis data available to display")
-                return
-
-            analyze_view.update_results(self.dfs)
-            self.logger.success(f"Results displayed successfully.")
-        except Exception as e:
-            self.logger.error(f"Error refreshing results: {str(e)}")
-
         try:
             self.logger.info("Refreshing kernel results")
             kernel_view = self.query_one("#kernel-view")
