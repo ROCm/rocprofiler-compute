@@ -152,7 +152,7 @@ Analyze mode
    To generate a lightweight GUI interface, you can add the ``--gui`` flag to your
    analysis command.
 
-   Analyze mode now includes support for a lightweight Text-based User Interface (TUI) that
+   Analyze mode now supports a lightweight Text-based User Interface (TUI) that
    provides an interactive terminal experience for enhanced usability. To enable TUI mode,
    use the ``--tui`` flag when running the analyze command:
 
