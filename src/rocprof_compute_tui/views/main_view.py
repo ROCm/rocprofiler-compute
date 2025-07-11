@@ -124,7 +124,8 @@ class MainView(Horizontal):
 
     @work(thread=True)
     def run_analysis(self) -> None:
-        self.dfs = {}
+        self.per_kernel_dfs = {}
+        self.top_kernels = []
 
         if not self.selected_path:
             error_msg = "No directory selected for analysis"
@@ -231,21 +232,10 @@ class MainView(Horizontal):
             # Step 8: Run analysis
             try:
                 self.logger.info("Step 8: Running analysis")
-                self.dfs = analyzer.run_analysis()
                 self.per_kernel_dfs = analyzer.run_kernel_analysis()
                 self.top_kernels = analyzer.run_top_kernel()
 
-                if not self.dfs:
-                    warning_msg = "Step 8: Analysis completed but no data was returned"
-                    self._update_view(warning_msg, LogLevel.WARNING)
-                    self.logger.warning(warning_msg)
-                else:
-                    self.app.call_from_thread(self.refresh_results)
-                    self.logger.info("Step 8: Analysis completed successfully")
-                    if self.dfs.get("4. Roofline"):
-                        self.logger.info("Step 8: Roofline data available")
-                    else:
-                        self.logger.info("Step 8: Roofline data not available")
+                # TODO: add per kernel Roofline support when available
 
                 if not self.per_kernel_dfs or not self.top_kernels:
                     warning_msg = "Step 8: Per Kernel Analysis completed but not all data was returned"
@@ -308,7 +298,7 @@ class MainView(Horizontal):
 
     def refresh_view(self) -> None:
         self.logger.info("Refreshing view...")
-        if self.dfs:
+        if self.top_kernels:
             self.refresh_results()
         else:
             self.logger.warning("No data available for refresh")

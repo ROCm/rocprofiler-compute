@@ -29,7 +29,7 @@ class KernelView(Container):
     }
 
     #bottom-container {
-        height: 5fr;
+        height: 4fr;
         border: none;
         margin-top: 2;
     }
@@ -55,6 +55,7 @@ class KernelView(Container):
 
     def __init__(self, config_path: Optional[str] = None):
         super().__init__(id="kernel-view")
+        self.status_label = None
         self.dfs = {}
         self.top_kernel = []
 
@@ -123,10 +124,13 @@ class KernelView(Container):
         """
         Update the view with a status message.
         """
-        try:
-            self.mount(Label(f"{message}", classes=log_level))
-        except Exception as e:
-            self.mount(Label(f"Error displaying results: {str(e)}", classes="error"))
+        if self.status_label is None:
+            self.status_label = Label(f"{message}", classes=log_level)
+            self.mount(self.status_label)
+        else:
+            # Update existing label
+            self.status_label.update(f"{message}")
+            self.status_label.set_classes(log_level)
 
     def reload_config(self, config_path: str = None) -> None:
         """

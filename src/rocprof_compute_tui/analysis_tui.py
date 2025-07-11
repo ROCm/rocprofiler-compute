@@ -157,7 +157,6 @@ class tui_analysis(OmniAnalyze_Base):
             "gfx942",
             "gfx950",
         ]:
-            # add roofline plot to cli output
             self.get_socs()[self.arch].analysis_setup(
                 roofline_parameters={
                     "workload_dir": self.path,
