@@ -172,6 +172,14 @@ def generate_machine_specs(args, sysinfo: dict = None):
         compute_partition = search(
             rocm_smi_compute_partition_pattern, rocm_smi_compute_partition_output
         )
+        # DEPRECATION NOTE: rocm-smi removal in ROCm 7.1
+        if compute_partition:
+            console_warning(
+                "DEPRECATION WARNING: rocm-smi is deprecated in ROCm 7.0 and will be "
+                "removed from rocprof-compute in ROCm 7.1. Please migrate to amd-smi "
+                "for compute partition parsing. For migration help, see https://github.com/ROCm/amdsmi"
+            )
+
         console_debug(f"rocm-smi compute partition: {compute_partition}")
     # 3. get compute partition from amd-smi using keyword accelerator
     if compute_partition is None:
