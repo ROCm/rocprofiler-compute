@@ -4,12 +4,13 @@ Panel Widget Modules
 Contains the panel widgets used in the main layout.
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from textual import on
 from textual.containers import Container, VerticalScroll
 from textual.widgets import Label, RadioButton, RadioSet
 
+from config import rocprof_compute_home
 from rocprof_compute_tui.widgets.collapsibles import build_all_sections
 
 
@@ -32,13 +33,20 @@ class KernelView(Container):
     }
     """
 
-    def __init__(
-        self, config_path: str = "src/rocprof_compute_tui/utils/kernel_view_config.yaml"
-    ):
+    def __init__(self, config_path: Optional[str] = None):
         super().__init__(id="kernel-view")
         self.dfs = {}
         self.top_kernel = []
+
+        if rocprof_compute_home:
+            config_path = (
+                rocprof_compute_home
+                / "rocprof_compute_tui"
+                / "utils"
+                / "kernel_view_config.yaml"
+            )
         self.config_path = config_path
+
         self.current_selection = None
 
     def compose(self):
