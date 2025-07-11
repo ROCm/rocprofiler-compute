@@ -78,6 +78,9 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
   * Total FLOPs (consider fp6 and fp4 ops)
 * Update Dash to >=3.0.0 (for web UI)
 * Change when Roofline PDFs are generated- during general profiling and --roof-only profiling (skip only when --no-roof option is present)
+* Update Roofline binaries
+  * Rebuild using latest ROCm stack
+  * OS distribution support minimum for roofline feature is now Ubuntu22.04, RHEL9, and SLES15SP6
 
 ### Resolved issues
 
@@ -101,6 +104,8 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 * Analysis of new workloads might require providing shader/memory clock speed using
 --specs-correction operation if `amd-smi` or `rocminfo` does not provide clock speeds.
+
+* Memory chart on CLI might look corrupted if CLI width is too narrow
 
 ### Removed
 
