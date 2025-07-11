@@ -36,7 +36,7 @@ workload from ``rocprof-compute profile`` generated output directories.
    :alt: ROCm Compute Profiler TUI home screen
    :width: 800
 
-You should see the center window update with collapsed contents, uncollapse to view tables, charts,
+3. You can see the center window update with collapsed contents. Uncollapse to view tables, charts,
 and graphs visualizing the analysis data.
 
 4. After the analysis results are loaded, you can start interactive analysis with detailed metrics.
