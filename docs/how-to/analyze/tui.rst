@@ -16,7 +16,7 @@ readability with formatted output.
 
 .. note::
 
-   TUI is currently in beta, so while functional, you may encounter minor issues or limitations.
+   TUI is currently in an early access state. While functional, you may encounter minor issues or limitations. Running production workloads is not recommended.
 
 Launch the TUI analyzer
 ----------------------------------
