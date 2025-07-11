@@ -28,7 +28,7 @@ For example:
 
    $ rocprof-compute analyze --tui
 
-To start the analysis, use the dropdown menu at the top left of the screen to select a single
+2. To start the analysis, use the dropdown menu at the top left of the screen to select a single
 workload from ``rocprof-compute profile`` generated output directories.
 
 .. image:: ../../data/analyze/tui.png
