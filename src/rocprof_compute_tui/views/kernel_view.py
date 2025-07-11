@@ -25,11 +25,31 @@ class KernelView(Container):
     #top-container {
         height: 1fr;
         border: none;
+        margin-top: 1;
     }
 
     #bottom-container {
-        height: 7fr;
+        height: 5fr;
         border: none;
+        margin-top: 2;
+    }
+
+    .kernel-table-header {
+        background: $primary;
+        color: $text;
+        text-style: bold;
+        padding: 0 1;
+        offset: 5 0;
+        margin-top: 1;
+    }
+
+    .kernel-row {
+        padding: 0 1;
+        border-bottom: solid $border;
+    }
+
+    RadioSet {
+        border: solid $border;
     }
     """
 
@@ -47,6 +67,7 @@ class KernelView(Container):
             )
         self.config_path = config_path
 
+        self.keys = None
         self.current_selection = None
 
     def compose(self):
@@ -77,6 +98,8 @@ class KernelView(Container):
         if self.dfs and self.top_kernel:
             top_container.mount(Label("Select a kernel to view detailed analysis."))
             try:
+                header = self.build_header()
+                top_container.mount(header)
                 selector = self.build_selector()
                 top_container.mount(selector)
             except Exception as e:
@@ -96,6 +119,15 @@ class KernelView(Container):
             )
         )
 
+    def update_view(self, message: str, log_level: str) -> None:
+        """
+        Update the view with a status message.
+        """
+        try:
+            self.mount(Label(f"{message}", classes=log_level))
+        except Exception as e:
+            self.mount(Label(f"Error displaying results: {str(e)}", classes="error"))
+
     def reload_config(self, config_path: str = None) -> None:
         """
         Reload the configuration and update the view.
@@ -106,22 +138,77 @@ class KernelView(Container):
         if self.dfs:
             self.update_results(self.dfs, self.top_kernel)
 
+    def build_header(self):
+        if not self.top_kernel:
+            return Label()
+
+        all_keys = set()
+
+        for kernel in self.top_kernel:
+            all_keys.update(kernel.keys())
+
+        self.keys = sorted(all_keys)
+
+        if "Kernel_Name" in self.keys:
+            self.keys.remove("Kernel_Name")
+            self.keys.insert(0, "Kernel_Name")
+
+        header_text = " | ".join(f"{key:25}" for key in self.keys)
+        header_label = Label(header_text, classes="kernel-table-header")
+
+        return header_label
+
     def build_selector(self):
         """Build the radio set for kernel selection."""
+        if not self.top_kernel:
+            return RadioSet()
+
         radio_buttons = []
-        for kernel in self.top_kernel:
-            radio_buttons.append(RadioButton(kernel["Kernel_Name"]))
+
+        # Create radio buttons with formatted kernel data
+        for i, kernel in enumerate(self.top_kernel):
+            row_data = []
+            for key in self.keys:
+                value = str(kernel.get(key, "N/A"))
+                if len(value) > 18:
+                    value = value[:15] + "..."
+                row_data.append(f"{value:25}")
+
+            row_text = " | ".join(row_data)
+            radio_button = RadioButton(row_text, id=f"kernel-{i}")
+            radio_button.kernel_data = kernel
+            radio_buttons.append(radio_button)
 
         selector = RadioSet(*radio_buttons)
+
         return selector
 
     @on(RadioSet.Changed)
     def on_radio_changed(self, event: RadioSet.Changed) -> None:
         """Handle radio button selection and update bottom container."""
         if event.pressed:
-            selected_kernel = event.pressed.label.plain
-            self.current_selection = selected_kernel
-            self._update_bottom_content()
+            kernel_data = getattr(event.pressed, "kernel_data", None)
+            if kernel_data and "Kernel_Name" in kernel_data:
+                selected_kernel = kernel_data["Kernel_Name"]
+                self.current_selection = selected_kernel
+                self._update_bottom_content()
+            else:
+                # Fallback: try to parse from label if kernel_data is not available
+                self._handle_fallback_selection(event.pressed)
+
+    def _handle_fallback_selection(self, pressed_button):
+        """Fallback method to handle selection when kernel_data is not available."""
+        button_id = pressed_button.id
+        if button_id and button_id.startswith("kernel-"):
+            try:
+                index = int(button_id.split("-")[1])
+                if 0 <= index < len(self.top_kernel):
+                    kernel = self.top_kernel[index]
+                    if "Kernel_Name" in kernel:
+                        self.current_selection = kernel["Kernel_Name"]
+                        self._update_bottom_content()
+            except (ValueError, IndexError):
+                pass
 
     def _update_bottom_content(self):
         """Update the bottom container with detailed analysis for selected kernel."""
