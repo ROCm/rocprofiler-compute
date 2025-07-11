@@ -39,5 +39,5 @@ workload from ``rocprof-compute profile`` generated output directories.
 You should see the center window update with collapsed contents, uncollapse to view tables, charts,
 and graphs visualizing the analysis data.
 
-Once the analysis results are loaded, you can start interactive analysis with detailed metrics.
+4. After the analysis results are loaded, you can start interactive analysis with detailed metrics.
 The TUI supports basic keyboard shortcuts, including quit application commands for easy navigation.
