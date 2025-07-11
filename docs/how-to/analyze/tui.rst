@@ -21,7 +21,7 @@ readability with formatted output.
 Launch the TUI analyzer
 ----------------------------------
 
-To launch the ROCm Compute Profiler TUI analyzer, use the ``--tui`` flag with the analysis command.
+1. Use the ``--tui`` flag with the analysis command to launch the ROCm Compute Profiler TUI analyzer.
 For example:
 
 .. code-block:: shell-session
