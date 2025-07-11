@@ -7,16 +7,17 @@ Text-based User Interface (TUI) analysis
 ****************************************
 
 ROCm Compute Profiler's analyze mode now supports a lightweight Text-based User Interface (TUI)
-that provides an interactive terminal experience for enhanced usability. You can use the TUI interface as
-a more visually engaging and interactive alternative to explore analysis results compared to the standard CLI.
-It provides enhanced visual feedback and easy navigation without needing the extra setup of a full graphical interface.
-This analysis option is implemented as a terminal-based interface
-that offers real-time visual feedback, keyboard shortcuts for common actions, and improved
-readability with formatted output.
+that provides an interactive terminal experience for enhanced usability. You can use the TUI
+interface as a more visually engaging and interactive alternative to explore analysis results
+compared to the standard :doc:`cli`. It provides enhanced visual feedback and easy navigation without
+needing the extra setup of a full graphical interface. This analysis option is implemented as a
+terminal-based interface that offers real-time visual feedback, keyboard shortcuts for common
+actions, and improved readability with formatted output.
 
 .. note::
 
-   TUI is currently in an early access state. While functional, you may encounter minor issues or limitations. Running production workloads is not recommended.
+   TUI is currently in an early access state. While functional, you may encounter minor issues or limitations.
+   Running production workloads is not recommended.
 
 Launch the TUI analyzer
 ----------------------------------
