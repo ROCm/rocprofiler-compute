@@ -10,7 +10,7 @@ ROCm Compute Profiler's analyze mode now supports a lightweight Text-based User 
 that provides an interactive terminal experience for enhanced usability. You can use the TUI interface as
 an alternative to the standard CLI if you want to explore analysis results with improved visual
 It provides enhanced visual feedback and easy navigation without needing the extra setup of a full graphical interface.
-of a full graphical interface. This analysis option is implemented as a terminal-based interface
+This analysis option is implemented as a terminal-based interface
 that offers real-time visual feedback, keyboard shortcuts for common actions, and improved
 readability with formatted output.
 
