@@ -31,7 +31,6 @@ Contains the panel widgets used in the main layout.
 from textual.containers import Vertical
 from textual.widgets import TabPane
 
-from rocprof_compute_tui.views.analyze_view import AnalyzeView
 from rocprof_compute_tui.views.kernel_view import KernelView
 from rocprof_compute_tui.widgets.tabbed_content import TabsTabbedContent
 

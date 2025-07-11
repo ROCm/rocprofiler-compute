@@ -27,7 +27,7 @@ class KernelView(Container):
     }
 
     #bottom-container {
-        height: 5fr;
+        height: 7fr;
         border: none;
     }
     """
