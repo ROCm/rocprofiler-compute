@@ -28,7 +28,7 @@ from pathlib import Path
 import pandas as pd
 from tabulate import tabulate
 
-from config import HIDDEN_COLUMNS, HIDDEN_SECTIONS
+import config
 from utils import mem_chart, parser
 from utils.logger import console_error, console_log, console_warning
 from utils.utils import convert_metric_id_to_panel_info
@@ -59,6 +59,49 @@ def get_table_string(df, transpose=False, decimal=2):
     )
 
 
+def convert_time_columns(df, time_unit):
+    """
+    Convert time column values based on the specified time unit.
+    Uses the Unit column to identify which columns contain time data.
+    """
+    if time_unit not in config.TIME_UNITS or "Unit" not in df.columns:
+        return df
+
+    # Avoid modifying the original
+    df_copy = df.copy()
+
+    time_rows = df_copy["Unit"].str.lower().str.contains("ns", na=False)
+
+    time_value_columns = ["Avg", "Min", "Max"]
+
+    for col in time_value_columns:
+        if col in df_copy.columns:
+            mask = time_rows
+            if mask.any():
+                try:
+                    numeric_values = pd.to_numeric(
+                        df_copy.loc[mask, col], errors="coerce"
+                    )
+                    df_copy.loc[mask, col] = numeric_values / config.TIME_UNITS[time_unit]
+                except:
+                    pass
+
+    # Update the Unit column
+    if time_rows.any():
+        df_copy.loc[time_rows, "Unit"] = time_unit
+
+    return df_copy
+
+
+def has_time_data(df):
+    """
+    Check if the dataframe contains time data by looking at the Unit column.
+    """
+    if "Unit" not in df.columns:
+        return False
+    return df["Unit"].str.lower().str.contains("ns", na=False).any()
+
+
 def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
     """
     Show all panels with their data in plain text mode.
@@ -77,7 +120,7 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
 
     for panel_id, panel in archConfigs.panel_configs.items():
         # Skip panels that don't support baseline comparison
-        if len(args.path) > 1 and panel_id in HIDDEN_SECTIONS:
+        if len(args.path) > 1 and panel_id in config.HIDDEN_SECTIONS:
             continue
         ss = ""  # store content of all data_source from one panel
 
@@ -118,6 +161,9 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
                 base_run, base_data = next(iter(runs.items()))
                 base_df = base_data.dfs[table_config["id"]]
 
+                if args.time_unit and has_time_data(base_df):
+                    base_df = convert_time_columns(base_df, args.time_unit)
+
                 df = pd.DataFrame(index=base_df.index)
 
                 for header in list(base_df.keys()):
@@ -126,7 +172,7 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
                         or (args.cols and base_df.columns.get_loc(header) in args.cols)
                         or (type == "raw_csv_table")
                     ):
-                        if header in HIDDEN_COLUMNS:
+                        if header in config.HIDDEN_COLUMNS:
                             pass
                         elif header not in comparable_columns:
                             if (
@@ -156,9 +202,13 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
                         else:
                             for run, data in runs.items():
                                 cur_df = data.dfs[table_config["id"]]
+
+                                if args.time_unit and has_time_data(base_df):
+                                    cur_df = convert_time_columns(cur_df, args.time_unit)
+
                                 if (type == "raw_csv_table") or (
                                     type == "metric_table"
-                                    and (not header in HIDDEN_COLUMNS)
+                                    and (not header in config.HIDDEN_COLUMNS)
                                 ):
                                     if run != base_run:
                                         # calc percentage over the baseline
