@@ -75,10 +75,6 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
     comparable_columns = parser.build_comparable_columns(args.time_unit)
 
     for panel_id, panel in archConfigs.panel_configs.items():
-        # show roofline
-        if panel_id == 400 and roof_plot:
-            show_roof_plot(roof_plot)
-
         # Skip panels that don't support baseline comparison
         if panel_id in HIDDEN_SECTIONS:
             continue
@@ -107,6 +103,18 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
                         f"Not showing table not selected during profiling: {table_id_str} {table_config['title']}"
                     )
                     continue
+
+                # Show roofline
+                # Check if we have filter_metrics for analyze stage:
+                # no filter_metrics = show all, filter_metrics containing "4" = user requesting roofline chart
+                if (
+                    panel_id == 400
+                    and (not args.filter_metrics or "4" in args.filter_metrics)
+                    and roof_plot
+                ):
+                    show_roof_plot(roof_plot)
+                    continue
+
                 # take the 1st run as baseline
                 base_run, base_data = next(iter(runs.items()))
                 base_df = base_data.dfs[table_config["id"]]
