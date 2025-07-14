@@ -48,7 +48,7 @@ Walkthrough
       :align: left
       :alt: Memory Chart
 
-   Empirical hierarchical roofline:
+   * **Empirical hierarchical roofline:**
 
    .. code-block:: shell-session
 
