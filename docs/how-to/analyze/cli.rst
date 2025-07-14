@@ -27,46 +27,47 @@ Walkthrough
 ===========
 
 1. To begin, generate a high-level analysis report using ROCm Compute Profiler's ``-b`` (or ``--block``) flag.
- There are three high-level GPU analysis views:
- * System Speed-of-Light: Key GPU performance metrics to show overall GPU performance and utilization.
- * Memory chart: Shows memory transactions and throughput on each cache hierarchical level.
- * Empirical hierarchical roofline: Roofline model that compares achieved throughput with attainable peak hardware limits, more specifically peak compute throughput and memory bandwidth (on L1/LDS/L2/HBM).
 
+There are three high-level GPU analysis views:
 
-  * **System Speed-of-Light:**
+* System Speed-of-Light: Key GPU performance metrics to show overall GPU performance and utilization.
+* Memory chart: Shows memory transactions and throughput on each cache hierarchical level.
+* Empirical hierarchical roofline: Roofline model that compares achieved throughput with attainable peak hardware limits, more specifically peak compute throughput and memory bandwidth (on L1/LDS/L2/HBM).
 
-   .. code-block:: shell-session
+**System Speed-of-Light:**
 
-      $ rocprof-compute analyze -p workloads/vcopy/MI200/ -b 2
+.. code-block:: shell-session
 
-   .. image:: ../../data/analyze/cli/system_speed_of_light.png
-      :align: left
-      :alt: System Speed Of Light
+   $ rocprof-compute analyze -p workloads/vcopy/MI200/ -b 2
 
-   * **Memory chart:**
+.. image:: ../../data/analyze/cli/system_speed_of_light.png
+   :align: left
+   :alt: System Speed Of Light
 
-   .. code-block:: shell-session
+**Memory chart:**
 
-      $ rocprof-compute analyze -p workloads/vcopy/MI200/ -b 3
+.. code-block:: shell-session
 
-   .. image:: ../../data/analyze/cli/mem_chart.png
-      :align: left
-      :alt: Memory Chart
+   $ rocprof-compute analyze -p workloads/vcopy/MI200/ -b 3
 
-   * **Empirical hierarchical roofline:**
+.. image:: ../../data/analyze/cli/mem_chart.png
+   :align: left
+   :alt: Memory Chart
 
-   .. code-block:: shell-session
+**Empirical hierarchical roofline:**
 
-      $ rocprof-compute analyze -p workloads/vcopy/MI200/ -b 4
+.. code-block:: shell-session
 
-   .. image:: ../../data/analyze/cli/roofline_chart.png
-      :align: left
-      :alt: Roofline
+   $ rocprof-compute analyze -p workloads/vcopy/MI200/ -b 4
 
-   .. note::
-     * Visualized memory chart and Roofline chart are only supported in single run analysis. In multiple runs comparison mode, both are switched back to basic table view.
-     * Visualized memory chart requires the width of the terminal output to be greater than or equal to 234 to display the whole chart properly.
-    * Visualized Roofline chart is adapted to the initial terminal size only. If it is not clear, you may need to adjust the terminal size and regenerate it to check the display effect.
+.. image:: ../../data/analyze/cli/roofline_chart.png
+   :align: left
+   :alt: Roofline
+
+.. note::
+   * Visualized memory chart and Roofline chart are only supported in single run analysis. In multiple runs comparison mode, both are switched back to basic table view.
+   * Visualized memory chart requires the width of the terminal output to be greater than or equal to 234 to display the whole chart properly.
+   * Visualized Roofline chart is adapted to the initial terminal size only. If it is not clear, you may need to adjust the terminal size and regenerate it to check the display effect.
 
 .. _cli-list-metrics:
 
@@ -137,7 +138,7 @@ Walkthrough
       --------
 
       --------------------------------------------------------------------------------
-      0. Top Stat
+      1. Top Stat
       ╒════╤══════════════════════════════════════════╤═════════╤═══════════╤════════════╤══════════════╤════════╕
       │    │ KernelName                               │   Count │   Sum(ns) │   Mean(ns) │   Median(ns) │    Pct │
       ╞════╪══════════════════════════════════════════╪═════════╪═══════════╪════════════╪══════════════╪════════╡
