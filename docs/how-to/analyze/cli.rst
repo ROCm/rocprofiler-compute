@@ -27,6 +27,11 @@ Walkthrough
 ===========
 
 1. To begin, generate a high-level analysis report using ROCm Compute Profiler's ``-b`` (or ``--block``) flag.
+ There are three high-level GPU analysis views:
+ * System Speed-of-Light: Key GPU performance metrics to show overall GPU performance and utilization.
+ * Memory chart: Shows memory transactions and throughput on each cache hierarchical level.
+ * Empirical hierarchical roofline: Roofline model that compares achieved throughput with attainable peak hardware limits, more specifically peak compute throughput and memory bandwidth (on L1/LDS/L2/HBM).
+
 
   * **System Speed-of-Light:**
 
