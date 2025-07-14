@@ -65,7 +65,7 @@ Walkthrough
 
    .. note::
      * Visualized memory chart and Roofline chart are only supported in single run analysis. In multiple runs comparison mode, both are switched back to basic table view.
-   * Visualized Memeory chart requires the width of the terminal >= 234 to display the whole chart properly.
+     * Visualized memory chart requires the width of the terminal output to be greater than or equal to 234 to display the whole chart properly.
     * Visualized Roofline chart is adapted to the initial terminal size only. If it is not clear, you may need to adjust the terminal size and regenerate it to check the display effect.
 
 .. _cli-list-metrics:
