@@ -1405,9 +1405,7 @@ def test_edge_cases_and_error_handling():
     result = convert_time_columns(nan_df, "ms")
     assert result.loc[0, "Unit"] == "ms"
 
-    mixed_case_df = pd.DataFrame(
-        {"Avg": [1000.0, 2000.0], "Unit": ["ns", "NS"]}
-    )
+    mixed_case_df = pd.DataFrame({"Avg": [1000.0, 2000.0], "Unit": ["ns", "NS"]})
     result = convert_time_columns(mixed_case_df, "ms")
     assert result.loc[0, "Unit"] == "ms"
     assert result.loc[1, "Unit"] == "ms"
