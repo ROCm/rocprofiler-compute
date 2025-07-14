@@ -42,3 +42,28 @@ and graphs visualizing the analysis data.
 
 4. After the analysis results are loaded, you can start interactive analysis with detailed metrics.
 The TUI supports basic keyboard shortcuts, including quit application commands for easy navigation.
+
+TUI analysis structure
+----------------------------------
+
+Unlike the :doc:`cli` plain style interfaces, the TUI restructures the analysis workflow into four
+hierarchical chapters to provide a more organized, top-down analysis approach:
+
+1. Top Stat
+2. High Level analysis
+3. Detailed block analysis
+4. Source Level analysis
+
+Users are encouraged to follow this top-down hierarchical structure to conduct thorough performance
+analysis, starting with the broad overview and progressively drilling down into specific details.
+
+Current limitations
+----------------------------------
+The TUI implementation has several limitations that will be addressed in future releases:
+
+* PC sampling: Source Level analysis does not have PC sampling enabled by default during the
+  profiling stage. Refer to :doc:`../pc_sampling` for details on how to build and enable PC sampling
+  manually.
+
+* Filtering capabilities: Advanced filtering options such as kernel filtering and dispatch
+  filtering are not currently supported. These features will be available in upcoming releases.
