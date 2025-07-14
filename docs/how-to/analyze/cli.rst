@@ -38,7 +38,7 @@ Walkthrough
       :align: left
       :alt: System Speed Of Light
 
-   Memeory Chart:
+   * **Memory chart:**
 
    .. code-block:: shell-session
 
