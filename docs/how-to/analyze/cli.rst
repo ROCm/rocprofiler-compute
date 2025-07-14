@@ -28,7 +28,7 @@ Walkthrough
 
 1. To begin, generate a high-level analysis report using ROCm Compute Profiler's ``-b`` (or ``--block``) flag.
 
-   System Speed of Light:
+  * **System Speed-of-Light:**
 
    .. code-block:: shell-session
 
