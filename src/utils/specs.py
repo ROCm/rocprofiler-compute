@@ -171,9 +171,7 @@ def generate_machine_specs(args, sysinfo: dict = None):
 
     # Apply default compute partition is above fails
     if compute_partition is None:
-        console_warning(
-            f"Can not detect compute/accelerator partition from amd-smi."
-        )
+        console_warning(f"Can not detect compute/accelerator partition from amd-smi.")
         console_warning(f"Applying default compute partition: SPX")
         compute_partition = "SPX"
 
