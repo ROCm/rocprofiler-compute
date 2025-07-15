@@ -23,22 +23,22 @@ The table provides key details and support available for the different architect
 .. table::
   :widths: 30 30 30 30 30
 
-  +--------------------+-----------------+---------------------------------+--------------------------------------+-------------+
-  |Architecture        |CDNA             |CDNA 2                           |CDNA 3                                |CDNA 4       |
-  +====================+=================+=================================+======================================+=============+
-  |Chip packaging      |Single Die       |Two graphics Compute Dies (GCDs) |One logical processor with dozen      |             |
-  |                    |                 |into single package.             |chiplets, configurable with partition |             |
-  |                    |                 |                                 |modes.                                |             |
-  +--------------------+-----------------+---------------------------------+--------------------------------------+-------------+
-  |Supported series    |MI100            |MI200                            |MI300A                                |MI350X       |
-  |                    |                 +---------------------------------+--------------------------------------+-------------+                         
-  |                    |                 |MI210                            |MI300X                                |MI355X       |
-  |                    |                 +---------------------------------+--------------------------------------+-------------+ 
-  |                    |                 |MI250                            |MI325X                                |             |
-  +--------------------+-----------------+---------------------------------+--------------------------------------+-------------+
-  |Spatial partition   |❌               |❌                               |Compute partition mode and            |             |
-  |mode                |                 |                                 |Memory partition mode                 |             |
-  +--------------------+-----------------+---------------------------------+--------------------------------------+-------------+
+  +-----------------+-----------+---------------------------------+--------------------------------------+------------------------+
+  |Architecture     |CDNA       |CDNA 2                           |CDNA 3                                |CDNA 4                  |
+  +=================+===========+=================================+======================================+========================+
+  |Chip packaging   |Single Die |Two graphics Compute Dies (GCDs) |One logical processor with dozen      |Similar to CDNA3,       |
+  |                 |           |into single package.             |chiplets, configurable with partition |Multi-Die chiplet, but  |
+  |                 |           |                                 |modes.                                |with two I/O Dies (IODs)|
+  +-----------------+-----------+---------------------------------+--------------------------------------+------------------------+
+  |Supported series |MI100      |MI200                            |MI300A                                |MI350X                  |
+  |                 |           +---------------------------------+--------------------------------------+------------------------+
+  |                 |           |MI210                            |MI300X                                |MI355X                  |
+  |                 |           +---------------------------------+--------------------------------------+------------------------+
+  |                 |           |MI250                            |MI325X                                |                        |
+  +-----------------+-----------+---------------------------------+--------------------------------------+------------------------+
+  |Spatial partition|❌         |❌                               |Compute partition mode and            |                        |
+  |mode             |           |                                 |Memory partition mode                 |                        |
+  +-----------------+-----------+---------------------------------+--------------------------------------+------------------------+
 
 **Datatype support**
 
@@ -162,7 +162,7 @@ to use ROCm Compute Profiler to optimize your code.
 
    In this documentation, **MI2XX** refers to any of the CDNA2 architecture-based MI200 series accelerators such as AMD
    Instinct MI250X, MI250, and MI210 accelerators interchangeably in cases
-   where the exact product at hand is not relevant. Likewise **MI3XX** refers to any of the CDNA3 or CDNA4 architecture-based  MI300 series accelerators such as AMD Instinct MI300A, MI300X, MI325X, MI350X, and MI355X.
+   where the exact product at hand is not relevant. For product details, see `AMD Instinct GPUs <https://www.amd.com/en/products/accelerators/instinct.html>`_.
 
    For a comparison of AMD Instinct accelerator specifications, refer to
    :doc:`Hardware specifications <rocm:reference/gpu-arch-specs>`. For product
