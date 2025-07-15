@@ -110,13 +110,7 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
                 if panel_id == 400 and (
                     not args.filter_metrics or "4" in args.filter_metrics
                 ):
-                    if roof_plot:
-                        show_roof_plot(roof_plot)
-                    else:
-                        console_error(
-                            "Roofline profiling is incomplete, cannot create plot for CLI.",
-                            exit=False,
-                        )
+                    show_roof_plot(roof_plot)
                     continue
 
                 # take the 1st run as baseline
@@ -343,7 +337,13 @@ def show_roof_plot(roof_plot):
     print("\n" + "-" * 80)
     print("4. Roofline")
     print("4.1 Roofline")
-    print(roof_plot)
+    if roof_plot:
+        print(roof_plot)
+    else:
+        console_error(
+            "Cannot create roofline plot for CLI with incomplete/missing roofline profiling data.",
+            exit=False,
+        )
 
 
 def show_kernel_stats(args, runs, archConfigs, output):
