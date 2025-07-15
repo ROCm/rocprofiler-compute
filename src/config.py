@@ -29,4 +29,4 @@ rocprof_compute_home = Path(__file__).resolve().parent
 PROJECT_NAME = "rocprofiler-compute"
 
 HIDDEN_COLUMNS = ["Tips", "coll_level"]
-HIDDEN_SECTIONS = [1900, 2000]
+HIDDEN_SECTIONS = [400, 1900, 2000]

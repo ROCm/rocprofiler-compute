@@ -30,7 +30,7 @@ from tabulate import tabulate
 
 from config import HIDDEN_COLUMNS, HIDDEN_SECTIONS
 from utils import mem_chart, parser
-from utils.logger import console_log, console_warning
+from utils.logger import console_error, console_log, console_warning
 from utils.utils import convert_metric_id_to_panel_idx
 
 
@@ -76,9 +76,9 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
 
     for panel_id, panel in archConfigs.panel_configs.items():
         # Skip panels that don't support baseline comparison
-        if panel_id in HIDDEN_SECTIONS:
+        if args.path > 1 and panel_id in HIDDEN_SECTIONS:
             continue
-        ss = ""  # store content of all data_source from one pannel
+        ss = ""  # store content of all data_source from one panel
 
         for data_source in panel["data source"]:
             for type, table_config in data_source.items():
@@ -339,7 +339,12 @@ def show_roof_plot(roof_plot):
     print("\n" + "-" * 80)
     print("4. Roofline")
     print("4.1 Roofline")
-    print(roof_plot)
+    if roof_plot:
+        print(roof_plot)
+    else:
+        console_error(
+            "Roofline profiling is incomplete, cannot create plot for CLI.", exit=False
+        )
 
 
 def show_kernel_stats(args, runs, archConfigs, output):
