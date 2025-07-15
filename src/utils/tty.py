@@ -76,7 +76,7 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
 
     for panel_id, panel in archConfigs.panel_configs.items():
         # Skip panels that don't support baseline comparison
-        if args.path > 1 and panel_id in HIDDEN_SECTIONS:
+        if len(args.path) > 1 and panel_id in HIDDEN_SECTIONS:
             continue
         ss = ""  # store content of all data_source from one panel
 
@@ -107,12 +107,16 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
                 # Show roofline
                 # Check if we have filter_metrics for analyze stage:
                 # no filter_metrics = show all, filter_metrics containing "4" = user requesting roofline chart
-                if (
-                    panel_id == 400
-                    and (not args.filter_metrics or "4" in args.filter_metrics)
-                    and roof_plot
+                if panel_id == 400 and (
+                    not args.filter_metrics or "4" in args.filter_metrics
                 ):
-                    show_roof_plot(roof_plot)
+                    if roof_plot:
+                        show_roof_plot(roof_plot)
+                    else:
+                        console_error(
+                            "Roofline profiling is incomplete, cannot create plot for CLI.",
+                            exit=False,
+                        )
                     continue
 
                 # take the 1st run as baseline
@@ -339,12 +343,7 @@ def show_roof_plot(roof_plot):
     print("\n" + "-" * 80)
     print("4. Roofline")
     print("4.1 Roofline")
-    if roof_plot:
-        print(roof_plot)
-    else:
-        console_error(
-            "Roofline profiling is incomplete, cannot create plot for CLI.", exit=False
-        )
+    print(roof_plot)
 
 
 def show_kernel_stats(args, runs, archConfigs, output):
