@@ -244,6 +244,7 @@ class MainView(Horizontal):
                 else:
                     self.app.call_from_thread(self.refresh_results)
                     self.logger.info("Step 8: Kernel Analysis completed successfully")
+                    # self.logger.info(f"{self.per_kernel_dfs}")
             except Exception as e:
                 self.logger.error(f"Step 8 failed - Error running analysis: {str(e)}")
                 raise

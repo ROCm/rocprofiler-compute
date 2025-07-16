@@ -196,23 +196,6 @@ class KernelView(Container):
                 selected_kernel = kernel_data["Kernel_Name"]
                 self.current_selection = selected_kernel
                 self._update_bottom_content()
-            else:
-                # Fallback: try to parse from label if kernel_data is not available
-                self._handle_fallback_selection(event.pressed)
-
-    def _handle_fallback_selection(self, pressed_button):
-        """Fallback method to handle selection when kernel_data is not available."""
-        button_id = pressed_button.id
-        if button_id and button_id.startswith("kernel-"):
-            try:
-                index = int(button_id.split("-")[1])
-                if 0 <= index < len(self.top_kernel):
-                    kernel = self.top_kernel[index]
-                    if "Kernel_Name" in kernel:
-                        self.current_selection = kernel["Kernel_Name"]
-                        self._update_bottom_content()
-            except (ValueError, IndexError):
-                pass
 
     def _update_bottom_content(self):
         """Update the bottom container with detailed analysis for selected kernel."""

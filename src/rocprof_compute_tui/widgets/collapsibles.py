@@ -40,9 +40,7 @@ from rocprof_compute_tui.widgets.charts import (
 def create_table(df: pd.DataFrame) -> DataTable:
     table = DataTable(zebra_stripes=True)
 
-    # Clean the DataFrame - remove NaN and empty cells
     df = df.reset_index()
-    df = df.dropna(how="any")
     df = df[~df.apply(lambda row: row.astype(str).str.strip().eq("").any(), axis=1)]
 
     # Add columns and rows
@@ -291,7 +289,6 @@ def build_section_from_config(
             except Exception as e:
                 error_msg = f"{subsection_config.get('title', 'Unknown')} error: {str(e)}"
                 children.append(Label(error_msg, classes="warning"))
-
     else:
         children = [Label("No configuration provided for this section")]
 
