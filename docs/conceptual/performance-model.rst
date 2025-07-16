@@ -1,7 +1,7 @@
 .. meta::
    :description: ROCm Compute Profiler performance model
    :keywords: Omniperf, ROCm Compute Profiler, ROCm, performance, model, profiler, tool, Instinct,
-              accelerator, AMD
+              accelerator, AMD, CDNA
 
 *****************
 Performance model
@@ -165,10 +165,7 @@ to use ROCm Compute Profiler to optimize your code.
    where the exact product at hand is not relevant. For product details, see `AMD Instinct GPUs <https://www.amd.com/en/products/accelerators/instinct.html>`_.
 
    For a comparison of AMD Instinct accelerator specifications, refer to
-   :doc:`Hardware specifications <rocm:reference/gpu-arch-specs>`. For product
-   details, see the :prod-page:`MI250X <mi200/mi250x>`,
-   :prod-page:`MI250 <mi200/mi250>`, and :prod-page:`MI210 <mi200/mi210>`
-   product pages.
+   :doc:`Hardware specifications <rocm:reference/gpu-arch-specs>`.
 
 In this chapter, the AMD Instinct performance model used by ROCm Compute Profiler is divided into a handful of
 key hardware blocks, each detailed in the following sections:
