@@ -52,7 +52,7 @@ class CenterPanel(Vertical):
 
     def compose(self):
         with TabsTabbedContent(initial="tab-kernel"):
-            with TabPane("Kernel View", id="tab-kernel"):
+            with TabPane("Basic View", id="tab-kernel"):
                 yield self.kernel_view
 
     def on_mount(self) -> None:

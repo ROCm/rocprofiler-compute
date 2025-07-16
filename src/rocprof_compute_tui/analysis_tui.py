@@ -23,13 +23,11 @@
 ##############################################################################el
 
 import copy
-import sys
 from pathlib import Path
 
 from rocprof_compute_analyze.analysis_base import OmniAnalyze_Base
 from rocprof_compute_tui.utils.tui_utils import (
     get_top_kernels_and_dispatch_ids,
-    process_panels_to_dataframes,
     process_per_kernel_panels_to_dataframes,
 )
 from utils import file_io, parser, schema

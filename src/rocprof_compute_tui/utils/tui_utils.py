@@ -1,66 +1,32 @@
-import copy
+import ast
 import logging
 import math
-import os
 import re
+import warnings
 from collections import defaultdict
 from datetime import datetime
 from enum import Enum
-from pathlib import Path
 
+import astunparse
 import numpy as np
 import pandas as pd
-from tabulate import tabulate
 
-from config import HIDDEN_COLUMNS, HIDDEN_SECTIONS
+import config
+from utils.parser import (
+    CodeTransformer,
+    supported_denom,
+    to_avg,
+    to_concat,
+    to_int,
+    to_max,
+    to_median,
+    to_min,
+    to_mod,
+    to_quantile,
+    to_round,
+    to_std,
+)
 from utils.utils import convert_metric_id_to_panel_idx
-
-supported_field = [
-    "Value",
-    "Minimum",
-    "Maximum",
-    "Average",
-    "Median",
-    "Min",
-    "Max",
-    "Avg",
-    "Pct of Peak",
-    "Peak",
-    "Count",
-    "Mean",
-    "Pct",
-    "Std Dev",
-    "Q1",
-    "Q3",
-    "Expression",
-    # Special keywords for L2 channel
-    "Channel",
-    "L2 Cache Hit Rate",
-    "Requests",
-    "L2 Read",
-    "L2 Write",
-    "L2 Atomic",
-    "L2-Fabric Requests",
-    "L2-Fabric Read",
-    "L2-Fabric Write and Atomic",
-    "L2-Fabric Atomic",
-    "L2 Read Req",
-    "L2 Write Req",
-    "L2 Atomic Req",
-    "L2-Fabric Read Req",
-    "L2-Fabric Write and Atomic Req",
-    "L2-Fabric Atomic Req",
-    "L2-Fabric Read Latency",
-    "L2-Fabric Write Latency",
-    "L2-Fabric Atomic Latency",
-    "L2-Fabric Read Stall (PCIe)",
-    "L2-Fabric Read Stall (Infinity Fabric™)",
-    "L2-Fabric Read Stall (HBM)",
-    "L2-Fabric Write Stall (PCIe)",
-    "L2-Fabric Write Stall (Infinity Fabric™)",
-    "L2-Fabric Write Stall (HBM)",
-    "L2-Fabric Write Starve",
-]
 
 
 class LogLevel(str, Enum):
@@ -69,7 +35,7 @@ class LogLevel(str, Enum):
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
-    SUCCESS = "success"  # Maintained for UI compatibility
+    SUCCESS = "success"
 
 
 class Logger:
@@ -149,707 +115,320 @@ class Logger:
         self.log(message, LogLevel.ERROR, update_ui)
 
 
-def split_table_line(line):
+def build_eval_string(equation):
     """
-    Splits a table row line into a list of cell strings (trimmed). For example:
-
-    │    │ Kernel_Name                              │   Count │ ...
-    """
-
-    cells = line.split("│")
-    if cells and cells[0] == "":
-        cells = cells[1:]
-    if cells and cells[-1] == "":
-        cells = cells[:-1]
-    return [cell.strip() for cell in cells]
-
-
-def parse_ascii_table(table_lines):
-    """
-    Given a list of lines belonging to one ASCII table (including border rows),
-    return a tuple (header, data_rows) where header is a list of column names and
-    data_rows is a list of rows (each a list of cell strings).
-
-    Skips border/separator lines and also checks for continuation
-    rows (which have an empty first cell). Continuation rows get merged into the previous row.
+    Convert user defined equation string to eval executable string
+    For example,
+        input: AVG(100  * SQ_ACTIVE_INST_SCA / ( GRBM_GUI_ACTIVE * $numCU ))
+        output: to_avg(100 * kernel_data["SQ_ACTIVE_INST_SCA"] / \
+                 (kernel_data["GRBM_GUI_ACTIVE"] * numCU))
+        input: AVG(((TCC_EA_RDREQ_LEVEL_31 / TCC_EA_RDREQ_31) if (TCC_EA_RDREQ_31 != 0) else (0)))
+        output: to_avg((kernel_data["TCC_EA_RDREQ_LEVEL_31"] / kernel_data["TCC_EA_RDREQ_31"]).where(kernel_data["TCC_EA_RDREQ_31"] != 0, 0))
+        We can not handle the below for now,
+        input: AVG((0 if (TCC_EA_RDREQ_31 == 0) else (TCC_EA_RDREQ_LEVEL_31 / TCC_EA_RDREQ_31)))
+        But potential workaound is,
+        output: to_avg(kernel_data["TCC_EA_RDREQ_31"].where(kernel_data["TCC_EA_RDREQ_31"] == 0, kernel_data["TCC_EA_RDREQ_LEVEL_31"] / kernel_data["TCC_EA_RDREQ_31"]))
     """
 
-    header = None
-    data_rows = []
+    if not equation:
+        return ""
 
-    for line in table_lines:
-        if re.match(r"^[╒╞╘├└─]+", line):
-            continue
-        if "│" not in line:
-            continue
+    s = str(equation)
+    s = re.sub(r"\$", "ammolite__", s)
 
-        cells = split_table_line(line)
+    ast_node = ast.parse(s)
+    transformer = CodeTransformer()
+    transformer.visit(ast_node)
 
-        if header is None:
-            header = cells
-            continue
+    s = astunparse.unparse(ast_node)
 
-        if cells and cells[0] == "":
-            if data_rows:  # There should be at least one row already.
-                for i, cell in enumerate(cells):
-                    if cell:
-                        data_rows[-1][i] += " " + cell
-            else:
-                continue
+    s = re.sub(r"\'\]\[(\d+)\]", r"[\g<1>]']", s)
+    s = re.sub(r"raw_pmc_df\['(.*?)']", r'kernel_data.get("\1")', s)
+    s = re.sub(
+        r'kernel_data\.get\("([^"]*Timestamp)"\)', r'kernel_data.get("\1").iloc[0]', s
+    )
+    s = re.sub(r"\.where\(([^,]+),\s*([^)]+)\)", r", \1, \2)", s)
+    s = re.sub(r"([^,\s]+), ([^,]+), ([^)]+)\)", r"safe_where(\1, \2, \3)", s)
+
+    return s
+
+
+def safe_where(series_data, condition, else_value):
+    """
+    Safely apply where condition, handling both Series and scalar conditions.
+    """
+    if pd.isna(condition) or condition is None:
+        return else_value
+
+    if np.isscalar(condition):
+        if condition:
+            return series_data
         else:
-            data_rows.append(cells)
-    return header, data_rows
+            return else_value
+
+    return series_data.where(condition, else_value)
 
 
-def parse_file(filename):
-    """
-    Returns nested structure:
-    {
-        "0. Top Stats": {
-            "0.1 Top Kernels": {header: [...], data: [...]},
-            "0.2 Dispatch List": {header: [...], data: [...]}
-        },
-        "1. System Info": {
-            "1.1 System Information": {header: [...], data: [...]}
-        },
-        ...
-    }
-    """
-    with open(filename, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-
-    sections = {}
-    current_section = None
-    current_subsection = None
-    table_lines = []
-    in_table = False
-
-    for line in lines:
-        line = line.rstrip("\n")
-
-        # Skip separator lines
-        if line.startswith(
-            "--------------------------------------------------------------------------------"
-        ):
-            continue
-
-        # Check for section header (e.g., "0. Top Stats")
-        section_match = re.match(r"^\s*(\d+\. .+)$", line)
-        if section_match:
-            current_section = section_match.group(1).strip()
-            sections[current_section] = {}
-            continue
-
-        # Check for subsection header (e.g., "0.1 Top Kernels")
-        # FIXME: 1. System Info is an exception, no subsection
-        subsection_match = re.match(r"^\s*(\d+\.\d+ .+)$", line)
-        if subsection_match:
-            current_subsection = subsection_match.group(1).strip()
-            if current_section is None:
-                current_section = "Uncategorized"
-                sections[current_section] = {}
-            continue
-
-        # Table parsing logic
-        if line.startswith("╒"):
-            in_table = True
-            table_lines = [line]
-            continue
-
-        if in_table:
-            table_lines.append(line)
-            if line.startswith("╘"):
-                if current_section and current_subsection:
-                    header, data = parse_ascii_table(table_lines)
-                    sections[current_section][current_subsection] = {
-                        "header": header,
-                        "data": data,
-                    }
-                in_table = False
-                table_lines = []
-
-    return sections
-
-
-def get_table_dfs():
-    filename = str(Path(os.getcwd()).joinpath("analyze_output.csv"))
-    sections_info = parse_file(filename)
-
-    # Convert to DataFrames while maintaining nested structure
-    section_dfs = {}
-    for section_name, subsections in sections_info.items():
-        section_dfs[section_name] = {}
-        for subsection_name, table_data in subsections.items():
-            if table_data and table_data["data"]:
-                try:
-                    df = pd.DataFrame(table_data["data"], columns=table_data["header"])
-                    section_dfs[section_name][subsection_name] = df
-                except Exception as e:
-                    print(f"Error creating DataFrame for {subsection_name}: {e}")
-                    continue
-
-    return section_dfs
-
-
-def process_panels_to_dataframes(
-    args, runs, archConfigs, profiling_config, roof_plot=None
+def evaluate_metric(
+    metric_formula, kernel_data, kernel_idx, run_data, normalization_unit="per_kernel"
 ):
-    """
-    Process panel data into pandas DataFrames.
-    Returns a nested dictionary structure with DataFrames and tui_style information.
-
-    Returns:
-        Dict[str, Dict[str, Dict[str, Any]]]: Nested structure {
-            "section_name": {
-                "subsection_name": {
-                    "df": DataFrame,
-                    "tui_style": dict or None
-                }
-            }
-        }
-    """
-
-    comparable_columns = build_comparable_columns(args.time_unit)
-    filter_panel_ids = [
-        convert_metric_id_to_panel_idx(section)
-        for section in [
-            name
-            for name, type in profiling_config.get("filter_blocks", {}).items()
-            if type == "metric_id"
-        ]
-    ]
-
-    # Initialize the result structure
-    result_structure = defaultdict(dict)
-
-    for panel_id, panel in archConfigs.panel_configs.items():
-        # Skip panels that don't support baseline comparison
-        if panel_id in HIDDEN_SECTIONS:
-            continue
-
-        # Get section name (e.g., "0. Top Stats")
-        section_name = f"{panel_id // 100}. {panel['title']}"
-
-        for data_source in panel["data source"]:
-            for type, table_config in data_source.items():
-                # Check for filtering conditions
-                if (
-                    not args.filter_metrics
-                    and filter_panel_ids
-                    and table_config["id"] not in filter_panel_ids
-                    and panel_id not in filter_panel_ids
-                    and panel_id > 100
-                ):
-                    table_id_str = (
-                        str(table_config["id"] // 100)
-                        + "."
-                        + str(table_config["id"] % 100)
-                    )
-                    continue
-
-                # Process the data
-                base_run, base_data = next(iter(runs.items()))
-                base_df = base_data.dfs[table_config["id"]]
-
-                df = pd.DataFrame(index=base_df.index)
-
-                # Process columns
-                for header in list(base_df.keys()):
-                    if should_process_column(header, args, type):
-                        if header in HIDDEN_COLUMNS:
-                            pass
-                        elif header not in comparable_columns:
-                            df = process_non_comparable_column(
-                                df, header, base_df, type, table_config, runs
-                            )
-                        else:
-                            df = process_comparable_column(
-                                df,
-                                header,
-                                base_df,
-                                table_config,
-                                runs,
-                                base_run,
-                                type,
-                                args,
-                                HIDDEN_COLUMNS,
-                            )
-
-                if not df.empty:
-                    # Check for empty columns
-                    is_empty_columns_exist = check_empty_columns(df)
-
-                    if not is_empty_columns_exist:
-                        # Get subsection name
-                        table_id_str = (
-                            str(table_config["id"] // 100)
-                            + "."
-                            + str(table_config["id"] % 100)
-                        )
-                        subsection_name = table_id_str
-                        if "title" in table_config and table_config["title"]:
-                            subsection_name += " " + table_config["title"]
-
-                        # Handle special cases for top stats
-                        if type == "raw_csv_table" and (
-                            table_config["source"] == "pmc_kernel_top.csv"
-                            or table_config["source"] == "pmc_dispatch_info.csv"
-                        ):
-                            df = df.head(args.max_stat_num)
-
-                        # Check for transpose requirement
-                        transpose = (
-                            type != "raw_csv_table"
-                            and "columnwise" in table_config
-                            and table_config.get("columnwise") == True
-                        )
-
-                        if transpose:
-                            df = df.T
-
-                        # Store the DataFrame with tui_style as separate keys
-                        result_structure[section_name][subsection_name] = {
-                            "df": df,
-                            "tui_style": None,
-                        }
-
-                        # Set tui_style if available
-                        if type == "metric_table" and "tui_style" in table_config:
-                            result_structure[section_name][subsection_name][
-                                "tui_style"
-                            ] = table_config["tui_style"]
-                        # TODO: need to complete this feature for TUI
-                        # Save to CSV if requested
-                        if args.df_file_dir:
-                            save_dataframe_to_csv(df, table_id_str, table_config, args)
-    result_structure["4. Roofline"] = roof_plot
-    return dict(result_structure)
-
-
-def should_process_column(header, args, type):
-    """Check if a column should be processed based on arguments."""
-    return (
-        (not args.cols)
-        or (
-            args.cols and header in args.cols
-        )  # Assuming args.cols is now a list of column names
-        or (type == "raw_csv_table")
-    )
-
-
-def process_non_comparable_column(df, header, base_df, type, table_config, runs):
-    """Process columns that are not comparable across runs."""
-    if (
-        type == "raw_csv_table"
-        and (
-            table_config["source"] == "pmc_kernel_top.csv"
-            or table_config["source"] == "pmc_dispatch_info.csv"
-        )
-        and header == "Kernel_Name"
-    ):
-        # Adjust kernel name width based on source
-        if table_config["source"] == "pmc_kernel_top.csv":
-            adjusted_name = base_df["Kernel_Name"].apply(
-                lambda x: string_multiple_lines(x, 40, 3)
-            )
-        else:
-            adjusted_name = base_df["Kernel_Name"].apply(
-                lambda x: string_multiple_lines(x, 80, 4)
-            )
-        df = pd.concat([df, adjusted_name], axis=1)
-    elif type == "raw_csv_table" and header == "Info":
-        for run, data in runs.items():
-            cur_df = data.dfs[table_config["id"]]
-            df = pd.concat([df, cur_df[header]], axis=1)
-    else:
-        df = pd.concat([df, base_df[header]], axis=1)
-
-    return df
-
-
-def process_comparable_column(
-    df, header, base_df, table_config, runs, base_run, type, args, hidden_columns
-):
-    """Process columns that can be compared across runs."""
-    for run, data in runs.items():
-        cur_df = data.dfs[table_config["id"]]
-        if (type == "raw_csv_table") or (
-            type == "metric_table" and (header not in hidden_columns)
-        ):
-            if run != base_run:
-                # Calculate percentage over the baseline
-                base_values = [float(x) if x != "" else float(0) for x in base_df[header]]
-                cur_values = [float(x) if x != "" else float(0) for x in cur_df[header]]
-
-                base_df[header] = base_values
-                cur_df[header] = cur_values
-
-                t_df = pd.concat(
-                    [base_df[header], cur_df[header]],
-                    axis=1,
-                )
-                absolute_diff = (t_df.iloc[:, 1] - t_df.iloc[:, 0]).round(args.decimal)
-                t_df = absolute_diff / t_df.iloc[:, 0].replace(0, 1)
-
-                t_df_pretty = t_df.astype(float).mul(100).round(args.decimal)
-
-                # Show value + percentage
-                t_df = (
-                    cur_df[header].astype(float).round(args.decimal).map(str).astype(str)
-                    + " ("
-                    + t_df_pretty.map(str)
-                    + "%)"
-                )
-                df = pd.concat([df, t_df], axis=1)
-
-                # Check for threshold violations
-                if (
-                    header in ["Value", "Count", "Avg"]
-                    and t_df_pretty.abs().gt(args.report_diff).any()
-                ):
-                    df["Abs Diff"] = absolute_diff
-                    if args.report_diff:
-                        violation_idx = t_df_pretty.index[
-                            t_df_pretty.abs() > args.report_diff
-                        ]
-            else:
-                cur_df_copy = copy.deepcopy(cur_df)
-                cur_df_copy[header] = [
-                    (round(float(x), args.decimal) if x != "" else x)
-                    for x in base_df[header]
-                ]
-                df = pd.concat([df, cur_df_copy[header]], axis=1)
-
-    return df
-
-
-def check_empty_columns(df):
-    """Check if any column in the DataFrame is empty."""
-    return any(
-        [
-            df.columns[col_idx]
-            for col_idx in range(len(df.columns))
-            if df.replace("", None).iloc[:, col_idx].isnull().all()
-        ]
-    )
-
-
-def save_dataframe_to_csv(df, table_id_str, table_config, args):
-    """Save DataFrame to CSV file if directory is specified."""
-    p = Path(args.df_file_dir)
-    if not p.exists():
-        p.mkdir()
-    if p.is_dir():
-        filename = table_id_str
-        if "title" in table_config and table_config["title"]:
-            filename += "_" + table_config["title"]
-        df.to_csv(
-            p.joinpath(filename.replace(" ", "_") + ".csv"),
-            index=False,
-        )
-
-
-def string_multiple_lines(source, width, max_rows):
-    """
-    Adjust string with multiple lines by inserting '\n'
-    """
-    idx = 0
-    lines = []
-    while idx < len(source) and len(lines) < max_rows:
-        lines.append(source[idx : idx + width])
-        idx += width
-
-    if idx < len(source):
-        last = lines[-1]
-        lines[-1] = last[0:-3] + "..."
-    return "\n".join(lines)
-
-
-def convert_metric_id_to_panel_idx(metric_id):
-    # "4.02" -> 402
-    # "4.23" -> 423
-    # "4" -> 400
-    tokens = metric_id.split(".")
-    if len(tokens) == 1:
-        return int(tokens[0]) * 100
-    elif len(tokens) == 2:
-        return int(tokens[0]) * 100 + int(tokens[1])
-    else:
-        raise Exception(f"Invalid metric id: {metric_id}")
-
-
-def build_comparable_columns(time_unit):
-    """
-    Build comparable columns/headers for display
-    """
-    comparable_columns = supported_field
-    top_stat_base = ["Count", "Sum", "Mean", "Median", "Standard Deviation"]
-
-    for h in top_stat_base:
-        comparable_columns.append(h + "(" + time_unit + ")")
-
-    return comparable_columns
-
-
-def get_table_string(df, transpose=False, decimal=2):
-    return tabulate(
-        df.transpose() if transpose else df,
-        headers="keys",
-        tablefmt="fancy_grid",
-        floatfmt="." + str(decimal) + "f",
-    )
-
-
-def evaluate_metric(metric_formula, kernel_data, kernel_idx, run_data):
     """
     Evaluate a metric formula for a specific kernel using its performance counter data.
-
-    Args:
-        metric_formula: The formula/expression string for the metric
-        kernel_data: Performance counter data for the specific kernel (pandas Series)
-        kernel_idx: Index of the kernel in the dataframe
-        run_data: The run data object containing all necessary information
-
-    Returns:
-        The evaluated metric value
     """
-    try:
-        import re
-
-        context = {"__builtins__": {}}
-
-        context["np"] = np
-        context["pd"] = pd
-
-        # Add SQL-like functions that work with scalars (since we're evaluating per kernel)
-        context["ROUND"] = lambda x, decimals=0: (
-            round(float(x), int(decimals)) if not pd.isna(_to_scalar(x)) else None
-        )
-        context["AVG"] = lambda x: float(
-            x
-        )  # For single kernel, AVG is just the value itself
-        context["SUM"] = lambda x: float(
-            x
-        )  # For single kernel, SUM is just the value itself
-        context["MIN"] = lambda x: float(
-            x
-        )  # For single kernel, MIN is just the value itself
-        context["MAX"] = lambda x: float(
-            x
-        )  # For single kernel, MAX is just the value itself
-
-        # Extract system info variables (ammolite__ prefixed variables)
-        if hasattr(run_data, "sys_info"):
-            sys_info = run_data.sys_info
-
-            # Add all ammolite__ variables from sys_info
-            ammolite_vars = {
-                "ammolite__se_per_gpu": (
-                    int(_to_scalar(sys_info.se_per_gpu))
-                    if hasattr(sys_info, "se_per_gpu")
-                    and not np.isnan(_to_scalar(sys_info.se_per_gpu))
-                    else 0
-                ),
-                "ammolite__pipes_per_gpu": (
-                    int(_to_scalar(sys_info.pipes_per_gpu))
-                    if hasattr(sys_info, "pipes_per_gpu")
-                    and not np.isnan(_to_scalar(sys_info.pipes_per_gpu))
-                    else 0
-                ),
-                "ammolite__cu_per_gpu": (
-                    int(_to_scalar(sys_info.cu_per_gpu))
-                    if hasattr(sys_info, "cu_per_gpu")
-                    and not np.isnan(_to_scalar(sys_info.cu_per_gpu))
-                    else 0
-                ),
-                "ammolite__simd_per_cu": (
-                    int(_to_scalar(sys_info.simd_per_cu))
-                    if hasattr(sys_info, "simd_per_cu")
-                    and not np.isnan(_to_scalar(sys_info.simd_per_cu))
-                    else 0
-                ),
-                "ammolite__sqc_per_gpu": (
-                    int(_to_scalar(sys_info.sqc_per_gpu))
-                    if hasattr(sys_info, "sqc_per_gpu")
-                    and not np.isnan(_to_scalar(sys_info.sqc_per_gpu))
-                    else 0
-                ),
-                "ammolite__lds_banks_per_cu": (
-                    int(_to_scalar(sys_info.lds_banks_per_cu))
-                    if hasattr(sys_info, "lds_banks_per_cu")
-                    and not np.isnan(_to_scalar(sys_info.lds_banks_per_cu))
-                    else 0
-                ),
-                "ammolite__cur_sclk": (
-                    float(_to_scalar(sys_info.cur_sclk))
-                    if hasattr(sys_info, "cur_sclk")
-                    and not np.isnan(_to_scalar(sys_info.cur_sclk))
-                    else 0
-                ),
-                "ammolite__cur_mclk": (
-                    float(_to_scalar(sys_info.cur_mclk))
-                    if hasattr(sys_info, "cur_mclk")
-                    and not np.isnan(_to_scalar(sys_info.cur_mclk))
-                    else 0
-                ),
-                "ammolite__max_mclk": (
-                    float(_to_scalar(sys_info.max_mclk))
-                    if hasattr(sys_info, "max_mclk")
-                    and not np.isnan(_to_scalar(sys_info.max_mclk))
-                    else 0
-                ),
-                "ammolite__max_sclk": (
-                    float(_to_scalar(sys_info.max_sclk))
-                    if hasattr(sys_info, "max_sclk")
-                    and not np.isnan(_to_scalar(sys_info.max_sclk))
-                    else 0
-                ),
-                "ammolite__max_waves_per_cu": (
-                    int(_to_scalar(sys_info.max_waves_per_cu))
-                    if hasattr(sys_info, "max_waves_per_cu")
-                    and not np.isnan(_to_scalar(sys_info.max_waves_per_cu))
-                    else 0
-                ),
-                "ammolite__num_hbm_channels": (
-                    float(_to_scalar(sys_info.num_hbm_channels))
-                    if hasattr(sys_info, "num_hbm_channels")
-                    and not np.isnan(_to_scalar(sys_info.num_hbm_channels))
-                    else 0
-                ),
-                "ammolite__num_xcd": (
-                    int(_to_scalar(sys_info.num_xcd))
-                    if hasattr(sys_info, "num_xcd")
-                    and not np.isnan(_to_scalar(sys_info.num_xcd))
-                    else 0
-                ),
-                "ammolite__wave_size": (
-                    int(_to_scalar(sys_info.wave_size))
-                    if hasattr(sys_info, "wave_size")
-                    and not np.isnan(_to_scalar(sys_info.wave_size))
-                    else 0
-                ),
-            }
-            context.update(ammolite_vars)
-
-            # Add calculated variables (if they exist in run_data)
-            if hasattr(sys_info, "total_l2_chan"):
-                context["ammolite__total_l2_chan"] = (
-                    float(sys_info.total_l2_chan)
-                    if not np.isnan(_to_scalar(sys_info.total_l2_chan))
-                    else 0
-                )
-
-        # Add built-in derived variables if they exist
-        if hasattr(run_data, "ammolite__build_in"):
-            for key, value in run_data.ammolite__build_in.items():
-                if value is not None:
-                    # For individual kernel evaluation, use scalar values
-                    if isinstance(value, pd.Series):
-                        # If it's a series, get the value for this kernel
-                        try:
-                            val = value.iloc[kernel_idx]
-                            # Ensure it's a scalar
-                            if hasattr(val, "item"):
-                                val = val.item()
-                            context[f"ammolite__{key}"] = (
-                                float(val) if not pd.isna(_to_scalar(val)) else 0
-                            )
-                        except:
-                            context[f"ammolite__{key}"] = 0
-                    else:
-                        context[f"ammolite__{key}"] = (
-                            float(value) if not pd.isna(_to_scalar(value)) else 0
-                        )
-
-        # Replace $ prefixed variables with ammolite__ prefixed ones
-        modified_formula = metric_formula
-        dollar_var_pattern = r"\$(\w+)"
-        dollar_vars = re.findall(dollar_var_pattern, modified_formula)
-        for var_name in dollar_vars:
-            ammolite_var_name = f"ammolite__{var_name}"
-            if ammolite_var_name in context:
-                modified_formula = modified_formula.replace(
-                    f"${var_name}", ammolite_var_name
-                )
-            else:
-                return None
-
-        # Handle raw_pmc_df references in the formula
-        raw_pmc_pattern = r"raw_pmc_df\['pmc_perf'\]\['(\w+)'\]"
-        matches = re.findall(raw_pmc_pattern, modified_formula)
-
-        for counter_name in matches:
-            if counter_name in kernel_data.index:
-                value = kernel_data[counter_name]
-                value = _to_scalar(value)
-                # Ensure value is scalar
-                if hasattr(value, "item"):
-                    value = value.item()
-                if pd.notna(value):
-                    modified_formula = modified_formula.replace(
-                        f"raw_pmc_df['pmc_perf']['{counter_name}']", str(float(value))
-                    )
-                else:
-                    modified_formula = modified_formula.replace(
-                        f"raw_pmc_df['pmc_perf']['{counter_name}']", "0.0"
-                    )
-            else:
-                return None
-
-        # Also handle direct counter references (without raw_pmc_df prefix)
-        # First, get all variable names from the formula
-        remaining_vars = set()
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
         try:
-            # Use regex to find all word boundaries that look like variable names
-            var_pattern = r"\b([A-Za-z_]\w*)\b"
-            all_vars = re.findall(var_pattern, modified_formula)
+            if not metric_formula or metric_formula == "None":
+                return None
 
-            for var_name in all_vars:
-                # Skip if it's already in context, a function name, or starts with ammolite__
-                if (
-                    var_name not in context
-                    and var_name not in ["ROUND", "AVG", "SUM", "MIN", "MAX", "np", "pd"]
-                    and not var_name.startswith("ammolite__")
-                ):
-                    remaining_vars.add(var_name)
-        except:
-            pass
+            if "$denom" in metric_formula:
+                metric_formula = metric_formula.replace(
+                    "$denom", supported_denom.get(normalization_unit, "1")
+                )
 
-        # Add counter values to context
-        for var_name in remaining_vars:
-            if var_name in kernel_data.index:
-                value = kernel_data[var_name]
-                value = _to_scalar(value)
-                # Ensure value is scalar
-                if hasattr(value, "item"):
-                    value = value.item()
-                if pd.notna(value):
-                    context[var_name] = float(value)
+            context = {"__builtins__": {}}
+            context["np"] = np
+            context["pd"] = pd
+
+            context.update(
+                {
+                    "to_min": to_min,
+                    "to_max": to_max,
+                    "to_avg": to_avg,
+                    "to_median": to_median,
+                    "to_std": to_std,
+                    "to_int": to_int,
+                    "to_round": to_round,
+                    "to_quantile": to_quantile,
+                    "to_mod": to_mod,
+                    "to_concat": to_concat,
+                    "safe_where": safe_where,
+                }
+            )
+
+            if hasattr(run_data, "sys_info"):
+                sys_info = run_data.sys_info
+
+                ammolite_vars = {
+                    "ammolite__se_per_gpu": (
+                        int(_to_scalar(sys_info.se_per_gpu))
+                        if hasattr(sys_info, "se_per_gpu")
+                        and not np.isnan(_to_scalar(sys_info.se_per_gpu))
+                        else 0
+                    ),
+                    "ammolite__pipes_per_gpu": (
+                        int(_to_scalar(sys_info.pipes_per_gpu))
+                        if hasattr(sys_info, "pipes_per_gpu")
+                        and not np.isnan(_to_scalar(sys_info.pipes_per_gpu))
+                        else 0
+                    ),
+                    "ammolite__cu_per_gpu": (
+                        int(_to_scalar(sys_info.cu_per_gpu))
+                        if hasattr(sys_info, "cu_per_gpu")
+                        and not np.isnan(_to_scalar(sys_info.cu_per_gpu))
+                        else 0
+                    ),
+                    "ammolite__simd_per_cu": (
+                        int(_to_scalar(sys_info.simd_per_cu))
+                        if hasattr(sys_info, "simd_per_cu")
+                        and not np.isnan(_to_scalar(sys_info.simd_per_cu))
+                        else 0
+                    ),
+                    "ammolite__sqc_per_gpu": (
+                        int(_to_scalar(sys_info.sqc_per_gpu))
+                        if hasattr(sys_info, "sqc_per_gpu")
+                        and not np.isnan(_to_scalar(sys_info.sqc_per_gpu))
+                        else 0
+                    ),
+                    "ammolite__lds_banks_per_cu": (
+                        int(_to_scalar(sys_info.lds_banks_per_cu))
+                        if hasattr(sys_info, "lds_banks_per_cu")
+                        and not np.isnan(_to_scalar(sys_info.lds_banks_per_cu))
+                        else 0
+                    ),
+                    "ammolite__cur_sclk": (
+                        float(_to_scalar(sys_info.cur_sclk))
+                        if hasattr(sys_info, "cur_sclk")
+                        and not np.isnan(_to_scalar(sys_info.cur_sclk))
+                        else 0
+                    ),
+                    "ammolite__cur_mclk": (
+                        float(_to_scalar(sys_info.cur_mclk))
+                        if hasattr(sys_info, "cur_mclk")
+                        and not np.isnan(_to_scalar(sys_info.cur_mclk))
+                        else 0
+                    ),
+                    "ammolite__max_mclk": (
+                        float(_to_scalar(sys_info.max_mclk))
+                        if hasattr(sys_info, "max_mclk")
+                        and not np.isnan(_to_scalar(sys_info.max_mclk))
+                        else 0
+                    ),
+                    "ammolite__max_sclk": (
+                        float(_to_scalar(sys_info.max_sclk))
+                        if hasattr(sys_info, "max_sclk")
+                        and not np.isnan(_to_scalar(sys_info.max_sclk))
+                        else 0
+                    ),
+                    "ammolite__max_waves_per_cu": (
+                        int(_to_scalar(sys_info.max_waves_per_cu))
+                        if hasattr(sys_info, "max_waves_per_cu")
+                        and not np.isnan(_to_scalar(sys_info.max_waves_per_cu))
+                        else 0
+                    ),
+                    "ammolite__num_hbm_channels": (
+                        float(_to_scalar(sys_info.num_hbm_channels))
+                        if hasattr(sys_info, "num_hbm_channels")
+                        and not np.isnan(_to_scalar(sys_info.num_hbm_channels))
+                        else 0
+                    ),
+                    "ammolite__num_xcd": (
+                        int(_to_scalar(sys_info.num_xcd))
+                        if hasattr(sys_info, "num_xcd")
+                        and not np.isnan(_to_scalar(sys_info.num_xcd))
+                        else 0
+                    ),
+                    "ammolite__wave_size": (
+                        int(_to_scalar(sys_info.wave_size))
+                        if hasattr(sys_info, "wave_size")
+                        and not np.isnan(_to_scalar(sys_info.wave_size))
+                        else 0
+                    ),
+                }
+
+                # Add total_l2_chan
+                if hasattr(sys_info, "total_l2_chan"):
+                    total_l2_chan_value = _to_scalar(sys_info.total_l2_chan)
+                    ammolite_vars["ammolite__total_l2_chan"] = (
+                        float(total_l2_chan_value)
+                        if not np.isnan(total_l2_chan_value)
+                        else 0
+                    )
+
+                context.update(ammolite_vars)
+
+            if "pmc_perf" in run_data.raw_pmc and hasattr(
+                run_data.raw_pmc["pmc_perf"], "GRBM_GUI_ACTIVE"
+            ):
+                if "GRBM_GUI_ACTIVE" in kernel_data.columns:
+                    grbm_gui_active = _to_scalar(kernel_data["GRBM_GUI_ACTIVE"].iloc[0])
+                    if (
+                        pd.notna(grbm_gui_active)
+                        and context.get("ammolite__num_xcd", 0) > 0
+                    ):
+                        context["ammolite__GRBM_GUI_ACTIVE_PER_XCD"] = (
+                            grbm_gui_active / context["ammolite__num_xcd"]
+                        )
+                    else:
+                        context["ammolite__GRBM_GUI_ACTIVE_PER_XCD"] = 0
                 else:
-                    context[var_name] = 0.0
+                    context["ammolite__GRBM_GUI_ACTIVE_PER_XCD"] = 0
 
-        # Compile and evaluate the modified formula
-        compiled_expr = compile(modified_formula, "<metric>", "eval")
-        result = eval(compiled_expr, {"__builtins__": {}}, context)
+                if "GRBM_COUNT" in kernel_data.columns:
+                    grbm_count = _to_scalar(kernel_data["GRBM_COUNT"].iloc[0])
+                    if pd.notna(grbm_count) and context.get("ammolite__num_xcd", 0) > 0:
+                        context["ammolite__GRBM_COUNT_PER_XCD"] = (
+                            grbm_count / context["ammolite__num_xcd"]
+                        )
+                    else:
+                        context["ammolite__GRBM_COUNT_PER_XCD"] = 0
+                else:
+                    context["ammolite__GRBM_COUNT_PER_XCD"] = 0
 
-        # Ensure result is scalar
-        if hasattr(result, "item"):
-            result = result.item()
+                if "GRBM_SPI_BUSY" in kernel_data.columns:
+                    grbm_spi_busy = _to_scalar(kernel_data["GRBM_SPI_BUSY"].iloc[0])
+                    if (
+                        pd.notna(grbm_spi_busy)
+                        and context.get("ammolite__num_xcd", 0) > 0
+                    ):
+                        context["ammolite__GRBM_SPI_BUSY_PER_XCD"] = (
+                            grbm_spi_busy / context["ammolite__num_xcd"]
+                        )
+                    else:
+                        context["ammolite__GRBM_SPI_BUSY_PER_XCD"] = 0
+                else:
+                    context["ammolite__GRBM_SPI_BUSY_PER_XCD"] = 0
 
-        # Handle NaN results
-        if pd.isna(_to_scalar(result)):
+            # Calculate numActiveCUs for this kernel
+            if (
+                "SQ_BUSY_CU_CYCLES" in kernel_data.columns
+                and context.get("ammolite__GRBM_GUI_ACTIVE_PER_XCD", 0) > 0
+            ):
+                sq_busy = _to_scalar(kernel_data["SQ_BUSY_CU_CYCLES"].iloc[0])
+                if pd.notna(sq_busy):
+                    max_waves = context.get("ammolite__max_waves_per_cu", 1)
+                    cu_per_gpu = context.get("ammolite__cu_per_gpu", 1)
+                    grbm_active = context.get("ammolite__GRBM_GUI_ACTIVE_PER_XCD", 1)
+
+                    val = round((4 * sq_busy) / grbm_active, 0) if grbm_active > 0 else 0
+                    active_cus = min(
+                        (val / max_waves * 8) + min(val % max_waves, 8), cu_per_gpu
+                    )
+                    context["ammolite__numActiveCUs"] = int(active_cus)
+                else:
+                    context["ammolite__numActiveCUs"] = 0
+            else:
+                context["ammolite__numActiveCUs"] = 0
+
+            # TODO: Calculate kernelBusyCycles for this kernel
+
+            # Calculate hbmBandwidth for this kernel
+            max_mclk = context.get("ammolite__max_mclk", 0)
+            num_hbm_channels = context.get("ammolite__num_hbm_channels", 0)
+            if max_mclk > 0 and num_hbm_channels > 0:
+                context["ammolite__hbmBandwidth"] = max_mclk / (
+                    1000 * 32 * num_hbm_channels
+                )
+            else:
+                context["ammolite__hbmBandwidth"] = 0
+
+            ammolite__se_per_gpu = context["ammolite__se_per_gpu"]
+            ammolite__pipes_per_gpu = context["ammolite__pipes_per_gpu"]
+            ammolite__cu_per_gpu = context["ammolite__cu_per_gpu"]
+            ammolite__simd_per_cu = context["ammolite__simd_per_cu"]
+            ammolite__sqc_per_gpu = context["ammolite__sqc_per_gpu"]
+            ammolite__lds_banks_per_cu = context["ammolite__lds_banks_per_cu"]
+            ammolite__cur_sclk = context["ammolite__cur_sclk"]
+            ammolite__cur_mclk = context["ammolite__cur_mclk"]
+            ammolite__max_mclk = context["ammolite__max_mclk"]
+            ammolite__max_sclk = context["ammolite__max_sclk"]
+            ammolite__max_waves_per_cu = context["ammolite__max_waves_per_cu"]
+            ammolite__num_hbm_channels = context["ammolite__num_hbm_channels"]
+            ammolite__num_xcd = context["ammolite__num_xcd"]
+            ammolite__wave_size = context["ammolite__wave_size"]
+            ammolite__total_l2_chan = context["ammolite__total_l2_chan"]
+            ammolite__GRBM_GUI_ACTIVE_PER_XCD = context[
+                "ammolite__GRBM_GUI_ACTIVE_PER_XCD"
+            ]
+            ammolite__GRBM_COUNT_PER_XCD = context["ammolite__GRBM_COUNT_PER_XCD"]
+            ammolite__GRBM_SPI_BUSY_PER_XCD = context["ammolite__GRBM_SPI_BUSY_PER_XCD"]
+            ammolite__numActiveCUs = context["ammolite__numActiveCUs"]
+            ammolite__hbmBandwidth = context["ammolite__hbmBandwidth"]
+
+            s = build_eval_string(metric_formula)
+
+            try:
+                result = eval(compile(s, "<string>", "eval"))
+                if hasattr(result, "item"):
+                    result = result.item()
+                if pd.isna(_to_scalar(result)):
+                    return None
+                return float(result)
+            except TypeError as e:
+                result = None
+            except AttributeError as ae:
+                if ae == "'NoneType' object has no attribute 'get'":
+                    result = None
+            except Exception as e:
+                print(f"something is wrong 6: {str(e)}")
+                print(f"Failed expression: {s}")
+                return None
+        except Exception as e:
             return None
-
-        return float(result)
-
-    except ZeroDivisionError:
-        return float("inf")
-    except Exception as e:
-        return None
 
 
 def process_per_kernel_panels_to_dataframes(
-    args, runs, archConfigs, profiling_config, roof_plot=None
+    args, runs, archConfigs, profiling_config, roof_plot=None, debug=False
 ):
     """
     Process panel data into pandas DataFrames.
@@ -867,23 +446,19 @@ def process_per_kernel_panels_to_dataframes(
             }
         }
     """
-
-    # Initialize the result structure
     result_structure = defaultdict(dict)
 
     filter_panel_ids = [
         convert_metric_id_to_panel_idx(section)
         for section in [
             name
-            for name, type in profiling_config.get("filter_blocks", {}).items()
-            if type == "metric_id"
+            for name, data_type in profiling_config.get("filter_blocks", {}).items()
+            if data_type == "metric_id"
         ]
     ]
 
-    # Get the first (and only) run to extract kernel information
     run_name, run_data = next(iter(runs.items()))
 
-    # Get list of kernels
     if (
         "pmc_perf" not in run_data.raw_pmc
         or "Kernel_Name" not in run_data.raw_pmc["pmc_perf"]
@@ -892,19 +467,15 @@ def process_per_kernel_panels_to_dataframes(
 
     kernel_names = run_data.raw_pmc["pmc_perf"]["Kernel_Name"].tolist()
 
-    # Iterate through kernels
     for kernel_idx, kernel_name in enumerate(kernel_names):
         result_structure[kernel_name] = {}
 
-        # Get performance counter data for this specific kernel
-        kernel_perf_data = run_data.raw_pmc["pmc_perf"].iloc[kernel_idx]
+        kernel_perf_data = run_data.raw_pmc["pmc_perf"].iloc[[kernel_idx]]
 
         for panel_id, panel in archConfigs.panel_configs.items():
-            # Skip panels that don't support baseline comparison
-            if panel_id in HIDDEN_SECTIONS:
+            if panel_id in config.HIDDEN_SECTIONS:
                 continue
 
-            # Skip if panel filtering is active and this panel is not included
             if (
                 not args.filter_metrics
                 and filter_panel_ids
@@ -913,100 +484,151 @@ def process_per_kernel_panels_to_dataframes(
             ):
                 continue
 
-            # Create panel section name
-            panel_section_name = f"{panel_id // 100}. {panel['title']}"
+            section_name = f"{panel_id // 100}. {panel['title']}"
 
-            # Initialize panel section if needed
-            if panel_section_name not in result_structure[kernel_name]:
-                result_structure[kernel_name][panel_section_name] = {}
+            if section_name not in result_structure[kernel_name]:
+                result_structure[kernel_name][section_name] = {}
 
             for data_source in panel["data source"]:
-                for type, table_config in data_source.items():
-                    # Skip if table filtering is active and this table is not included
+                for data_type, table_config in data_source.items():
+                    if not isinstance(table_config, dict) or "id" not in table_config:
+                        continue
                     if (
-                        not args.filter_metrics
-                        and filter_panel_ids
-                        and table_config["id"] not in filter_panel_ids
-                        and panel_id not in filter_panel_ids
-                        and panel_id > 100
+                        data_type != "metric_table"
+                        or "metric" not in table_config
+                        or "header" not in table_config
                     ):
-                        table_id_str = (
-                            str(table_config["id"] // 100)
-                            + "."
-                            + str(table_config["id"] % 100)
-                        )
                         continue
 
-                    # For metric tables, calculate metrics for this kernel
-                    if type == "metric_table" and "metric" in table_config:
-                        df_data = []
+                    table_id = table_config["id"]
+                    table_title = table_config.get("title", "")
+                    table_id_str = f"{table_id // 100}.{table_id % 100}"
 
-                        for metric_name, metric_info in table_config["metric"].items():
-                            if "value" in metric_info:
-                                # Calculate metric value for this kernel
-                                metric_value = evaluate_metric(
-                                    metric_info["value"],
-                                    kernel_perf_data,
-                                    kernel_idx,
-                                    run_data,
-                                )
-                                metric_value = _round2(metric_value)
+                    if table_title:
+                        subsection_name = f"{table_id_str} {table_title}"
+                    else:
+                        subsection_name = table_id_str
 
-                                if metric_value is None:
-                                    continue
+                    df = generate_subsection_df(
+                        table_config, kernel_perf_data, kernel_idx, run_data, debug=debug
+                    )
 
-                                # Add metric to dataframe
-                                row_data = {
-                                    "Metric": metric_name,
-                                    "Value": metric_value,
-                                }
+                    if df is not None and not df.empty:
+                        if table_config.get("columnwise", False) == True:
+                            df = df.transpose()
 
-                                df_data.append(row_data)
+                        result_structure[kernel_name][section_name][subsection_name] = {
+                            "df": df,
+                            "tui_style": table_config.get("tui_style", None),
+                        }
 
-                        if df_data:
-                            df = pd.DataFrame(df_data)
+            if (
+                section_name in result_structure[kernel_name]
+                and not result_structure[kernel_name][section_name]
+            ):
+                del result_structure[kernel_name][section_name]
 
-                            # Handle transpose if needed
-                            transpose = (
-                                "columnwise" in table_config
-                                and table_config["columnwise"] == True
-                            )
-
-                            if transpose:
-                                df = df.transpose()
-
-                            # Build subsection name
-                            table_id_str = (
-                                str(table_config["id"] // 100)
-                                + "."
-                                + str(table_config["id"] % 100)
-                            )
-
-                            if "title" in table_config and table_config["title"]:
-                                subsection_name = (
-                                    f"{table_id_str} {table_config['title']}"
-                                )
-                            else:
-                                subsection_name = table_id_str
-
-                            result_structure[kernel_name][panel_section_name][
-                                subsection_name
-                            ] = {
-                                "df": df,
-                                "tui_style": None,
-                            }
-
-    # Clean up empty sections
-    # Remove panel sections with no subsections
     for kernel_section in list(result_structure.keys()):
-        for panel_section in list(result_structure[kernel_section].keys()):
-            if not result_structure[kernel_section][panel_section]:
-                del result_structure[kernel_section][panel_section]
-        # Remove kernel sections with no panels
         if not result_structure[kernel_section]:
             del result_structure[kernel_section]
 
     return result_structure
+
+
+def generate_subsection_df(
+    table_config, kernel_perf_data, kernel_idx, run_data, debug=False
+):
+    """
+    Generate a DataFrame for a subsection based on table_config.
+    """
+
+    if "metric" not in table_config or "header" not in table_config:
+        return None
+
+    header = table_config["header"]
+    metrics = table_config["metric"]
+    table_id = table_config.get("id", 0)
+
+    df_data = []
+
+    for metric_idx, (metric_key, metric_values) in enumerate(metrics.items()):
+        major_id = table_id // 100
+        minor_id = table_id % 100
+        metric_id = f"{major_id}.{minor_id}.{metric_idx}"
+
+        row_data = {"Metric_ID": metric_id}
+
+        base_expression_value = None
+        if isinstance(metric_values, dict):
+            expr_keys = ["expr", "expression", "value", "formula"]
+            for expr_key in expr_keys:
+                if expr_key in metric_values:
+                    formula = metric_values[expr_key]
+
+                    if formula is not None:
+                        base_expression_value = evaluate_metric(
+                            formula, kernel_perf_data, kernel_idx, run_data, "per_kernel"
+                        )
+
+                        if base_expression_value is not None:
+                            base_expression_value = _round2(base_expression_value)
+                    break
+
+        for header_key, column_name in header.items():
+            if header_key == "metric":
+                try:
+                    numeric_value = float(metric_key)
+                    row_data[column_name] = numeric_value
+                except ValueError:
+                    row_data[column_name] = metric_key
+            elif header_key in ["unit", "units", "tips"] and isinstance(
+                metric_values, dict
+            ):
+                if header_key in metric_values:
+                    value = metric_values[header_key]
+                    if header_key == "unit" and isinstance(value, str):
+                        value = value.capitalize()
+                    row_data[column_name] = value
+                else:
+                    row_data[column_name] = None
+            elif header_key in ["peak"]:
+                # TODO
+                continue
+            elif header_key in metric_values:
+                formula = metric_values[header_key]
+
+                if formula is None:
+                    evaluated_value = None
+                else:
+                    evaluated_value = evaluate_metric(
+                        formula, kernel_perf_data, kernel_idx, run_data, "per_kernel"
+                    )
+
+                    if evaluated_value is not None:
+                        evaluated_value = _round2(evaluated_value)
+
+                row_data[column_name] = evaluated_value
+            else:
+                if base_expression_value is not None and column_name in [
+                    "Min",
+                    "Q1",
+                    "Median",
+                    "Q3",
+                    "Max",
+                    "Expression",
+                ]:
+                    row_data[column_name] = base_expression_value
+                else:
+                    row_data[column_name] = None
+        df_data.append(row_data)
+
+    if df_data:
+        df = pd.DataFrame(df_data)
+        if "Metric_ID" in df.columns:
+            df.set_index("Metric_ID", inplace=True)
+        return df
+    else:
+        return None
 
 
 def get_top_kernels_and_dispatch_ids(runs):
@@ -1023,7 +645,6 @@ def get_top_kernels_and_dispatch_ids(runs):
     if top_kernel_df is None or dispatch_id_df is None:
         return None
 
-    # Merge on Kernel_Name, keep top kernel sort
     merged_df = pd.merge(
         top_kernel_df, dispatch_id_df, on="Kernel_Name", how="outer"
     ).sort_values("Pct", ascending=False)
@@ -1044,7 +665,6 @@ def _is_na(v) -> bool:
         return True
     if isinstance(v, str):
         return v.strip().upper() == "N/A"
-    # covers float('nan'), numpy.nan, pandas NA scalars, etc.
     return isinstance(v, (float, np.floating)) and math.isnan(v)
 
 
