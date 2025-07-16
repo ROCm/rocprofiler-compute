@@ -40,7 +40,7 @@ The table provides key details and support available for the different architect
   |mode             |           |                                 |Memory partition mode                |and Memory partition mode|
   +-----------------+-----------+---------------------------------+-------------------------------------+-------------------------+
 
-**Datatype support**
+**Data type support**
 
 .. list-table::
       :header-rows: 1
