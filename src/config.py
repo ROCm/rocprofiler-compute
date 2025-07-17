@@ -22,11 +22,19 @@
 # SOFTWARE.
 ##############################################################################el
 
+import re
 from pathlib import Path
 
 # NB: Creating a new module to share global vars across modules
 rocprof_compute_home = Path(__file__).resolve().parent
 PROJECT_NAME = "rocprofiler-compute"
+
+with open("../VERSION", encoding="utf-8") as f:
+    match = re.search(r"([0-9.]+)[^0-9.]+", f.read())
+    if not match:
+        raise ValueError("VERSION not found!")
+    version_number = match[1]
+VERSION = version_number
 
 HIDDEN_COLUMNS = ["Tips", "coll_level"]
 HIDDEN_SECTIONS = [400, 1900, 2000]

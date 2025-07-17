@@ -81,6 +81,7 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 * Update Roofline binaries
   * Rebuild using latest ROCm stack
   * OS distribution support minimum for roofline feature is now Ubuntu22.04, RHEL9, and SLES15SP6
+* Change the basic (default) view of TUI from aggregated analysis to kernel analysis
 
 ### Optimized
 
@@ -115,6 +116,7 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 * Roofline support for Ubuntu 20.04 and SLES below 15.6
 * Usage of rocm-smi
+* Aggregated analysis view from TUI mode
 
 ## ROCm Compute Profiler 3.1.0 for ROCm 6.4.0
 
