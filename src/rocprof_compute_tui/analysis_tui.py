@@ -40,6 +40,7 @@ class tui_analysis(OmniAnalyze_Base):
         super().__init__(args, supported_archs)
         self.path = str(path)
         self.arch = None
+        self.kernel_dfs = {}
 
     # -----------------------
     # Required child methods
@@ -86,13 +87,17 @@ class tui_analysis(OmniAnalyze_Base):
             self._runs[self.path].raw_pmc, self.get_args().kernel_verbose
         )
 
-        # create the loaded table
-        parser.load_table_data(
-            workload=self._runs[self.path],
-            dir=self.path,
-            is_gui=False,
-            args=self.get_args(),
-        )
+        # create the loaded table for each kernel
+
+        for idx in self._runs[self.path].raw_pmc.index:
+            kernel_df = self._runs[self.path].raw_pmc.loc[[idx]]
+            parser.eval_metric(
+                self._runs[self.path].dfs,
+                self._runs[self.path].dfs_type,
+                self._runs[self.path].sys_info.iloc[0],
+                kernel_df,
+                self.get_args().debug,
+            )
 
     def initalize_runs(self, normalization_filter=None):
         # load required configs
@@ -111,10 +116,6 @@ class tui_analysis(OmniAnalyze_Base):
         self.load_options(normalization_filter)
 
         w = schema.Workload()
-        # FIXME:
-        #    For regular single node case, load sysinfo.csv directly
-        #    For multi-node, either the default "all", or specified some,
-        #    pick up the one in the 1st sub_dir. We could fix it properly later.
         w.sys_info = file_io.load_sys_info(sysinfo_path.joinpath("sysinfo.csv"))
         mspec = self.get_socs()[self.arch]._mspec
         if args.specs_correction:
@@ -130,7 +131,7 @@ class tui_analysis(OmniAnalyze_Base):
     def run_kernel_analysis(self):
         per_kernel_results = process_per_kernel_panels_to_dataframes(
             self.get_args(),
-            self._runs,
+            self._runs[self.path],
             self._arch_configs[self.arch],
             self._profiling_config,
         )
@@ -140,43 +141,3 @@ class tui_analysis(OmniAnalyze_Base):
     def run_top_kernel(self):
         top_kernels = get_top_kernels_and_dispatch_ids(self._runs)
         return top_kernels
-
-    @demarcate
-    def run_analysis(self):
-        """Run TUI analysis."""
-
-        roof_plot = None
-        # 1. check if not baseline && compatible soc:
-        if self.arch in [
-            # >= MI200
-            "gfx90a",
-            "gfx940",
-            "gfx941",
-            "gfx942",
-            "gfx950",
-        ]:
-            self.get_socs()[self.arch].analysis_setup(
-                roofline_parameters={
-                    "workload_dir": self.path,
-                    "device_id": 0,
-                    "sort_type": "kernels",
-                    "mem_level": "ALL",
-                    "include_kernel_names": False,
-                    "is_standalone": False,
-                    "roofline_data_type": "FP32",
-                }
-            )
-            roof_obj = self.get_socs()[self.arch].roofline_obj
-
-            if roof_obj:
-                # NOTE: using default data type
-                roof_plot = roof_obj.cli_generate_plot(roof_obj.get_dtype()[0])
-
-        results = process_panels_to_dataframes(
-            self.get_args(),
-            self._runs,
-            self._arch_configs[self.arch],
-            self._profiling_config,
-            roof_plot=roof_plot,
-        )
-        return results

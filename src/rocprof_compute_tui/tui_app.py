@@ -56,7 +56,8 @@ class RocprofTUIApp(App):
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit"),
         Binding(key="r", action="refresh", description="Refresh"),
-        Binding(key="a", action="analyze", description="Analyze"),
+        # TODO
+        # Binding(key="a", action="analyze", description="Analyze"),
     ]
 
     def __init__(

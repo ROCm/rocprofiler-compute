@@ -14,6 +14,8 @@ import pandas as pd
 import config
 from utils.parser import (
     CodeTransformer,
+    build_eval_string,
+    eval_metric,
     supported_denom,
     to_avg,
     to_concat,
@@ -115,7 +117,7 @@ class Logger:
         self.log(message, LogLevel.ERROR, update_ui)
 
 
-def build_eval_string(equation):
+def build_eval_string_self(equation):
     """
     Convert user defined equation string to eval executable string
     For example,
@@ -149,7 +151,7 @@ def build_eval_string(equation):
     )
     s = re.sub(r"\.where\(([^,]+),\s*([^)]+)\)", r", \1, \2)", s)
     s = re.sub(r"([^,\s]+), ([^,]+), ([^)]+)\)", r"safe_where(\1, \2, \3)", s)
-
+    print("--- build_eval_string, return: ", s)
     return s
 
 
@@ -405,8 +407,8 @@ def evaluate_metric(
             ammolite__numActiveCUs = context["ammolite__numActiveCUs"]
             ammolite__hbmBandwidth = context["ammolite__hbmBandwidth"]
 
-            s = build_eval_string(metric_formula)
-
+            s = build_eval_string_self(metric_formula, "")
+            """
             try:
                 result = eval(compile(s, "<string>", "eval"))
                 if hasattr(result, "item"):
@@ -423,6 +425,7 @@ def evaluate_metric(
                 print(f"something is wrong 6: {str(e)}")
                 print(f"Failed expression: {s}")
                 return None
+            """
         except Exception as e:
             return None
 
@@ -457,7 +460,14 @@ def process_per_kernel_panels_to_dataframes(
         ]
     ]
 
-    run_name, run_data = next(iter(runs.items()))
+    df = runs.raw_pmc
+    for idx in df.index:
+        row_df = df.loc[[idx]]  # Double brackets keep it as DataFrame
+        print(f"Row {idx}:")
+        print(row_df)
+        print (type(row_df))
+    import sys
+    sys.exit(1)
 
     if (
         "pmc_perf" not in run_data.raw_pmc
@@ -566,7 +576,7 @@ def generate_subsection_df(
                     formula = metric_values[expr_key]
 
                     if formula is not None:
-                        base_expression_value = evaluate_metric(
+                        base_expression_value = eval_metric(
                             formula, kernel_perf_data, kernel_idx, run_data, "per_kernel"
                         )
 
@@ -600,7 +610,7 @@ def generate_subsection_df(
                 if formula is None:
                     evaluated_value = None
                 else:
-                    evaluated_value = evaluate_metric(
+                    evaluated_value = eval_metric(
                         formula, kernel_perf_data, kernel_idx, run_data, "per_kernel"
                     )
 

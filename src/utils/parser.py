@@ -1454,7 +1454,7 @@ def load_kernel_top(workload, dir, args):
 def load_table_data(workload, dir, is_gui, args, skipKernelTop=False):
     """
     - Load data for all "raw_csv_table"
-    - Load dat for "pc_sampling_table"
+    - Load data for "pc_sampling_table"
     - Calculate mertric value for all "metric_table"
     """
     if not skipKernelTop:
