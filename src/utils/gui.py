@@ -213,9 +213,11 @@ def build_bar_chart(display_df, table_config, barchart_elements, norm_filt):
                     height=220,
                     orientation="h",
                 ).update_xaxes(range=[0, 110], ticks="inside", title="%")
-            )  # append first % chart
+            )  # append first % chart$
+
+            # Unless `max_mclk` is set, `hbm_bw` is always zero (at least on gfx950).
             hbm_bw = float(
-                display_df[display_df["Metric"] == "Bandwidth"]["Avg"].iloc[0]
+                display_df[display_df["Metric"] == "HBM Bandwidth"]["Avg"].iloc[0]
             )
             d_figs.append(
                 px.bar(
