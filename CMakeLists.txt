@@ -92,6 +92,11 @@ if(CHECK_PYTHON_DEPS)
         if(${ARGV0} STREQUAL "pyyaml")
             set(PACKAGE "yaml")
         endif()
+        # Skip check for textual-fspicker
+        if(${package} STREQUAL "textual-fspicker")
+            message(STATUS "Skipping check for textual-fspicker")
+            return()
+        endif()
         execute_process(
             COMMAND ${Python3_EXECUTABLE} -c "import ${PACKAGE}"
             OUTPUT_QUIET ERROR_QUIET
@@ -210,14 +215,6 @@ add_test(
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 add_test(
-    NAME test_profile_ipblocks
-    COMMAND
-        ${Python3_EXECUTABLE} -m pytest -m block --junitxml=tests/test_profile_blocks.xml
-        ${COV_OPTION} ${PROJECT_SOURCE_DIR}/tests/test_profile_general.py
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-set_property(TEST test_profile_ipblocks PROPERTY COST 11)
-
-add_test(
     NAME test_profile_dispatch
     COMMAND
         ${Python3_EXECUTABLE} -m pytest -m dispatch
@@ -330,12 +327,9 @@ add_test(
 
 add_test(
     NAME test_db_connector
-    COMMAND
-        ${Python3_EXECUTABLE} -m pytest
-        --junitxml=tests/test_db_connector.xml ${COV_OPTION}
-        ${PROJECT_SOURCE_DIR}/tests/test_db_connector.py
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-)
+    COMMAND ${Python3_EXECUTABLE} -m pytest --junitxml=tests/test_db_connector.xml
+            ${COV_OPTION} ${PROJECT_SOURCE_DIR}/tests/test_db_connector.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 # ---------------------------
 # Utils tests
@@ -343,12 +337,9 @@ add_test(
 
 add_test(
     NAME test_utils
-    COMMAND
-        ${Python3_EXECUTABLE} -m pytest
-        --junitxml=tests/test_utils.xml ${COV_OPTION}
-        ${PROJECT_SOURCE_DIR}/tests/test_utils.py
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-)
+    COMMAND ${Python3_EXECUTABLE} -m pytest --junitxml=tests/test_utils.xml ${COV_OPTION}
+            ${PROJECT_SOURCE_DIR}/tests/test_utils.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 # ---------
 # Install
@@ -399,6 +390,12 @@ install(
 # src/rocprof_compute_profile
 install(
     DIRECTORY src/rocprof_compute_profile
+    DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${PROJECT_NAME}
+    COMPONENT main
+    PATTERN "__pycache__" EXCLUDE)
+# src/rocprof_compute_tui
+install(
+    DIRECTORY src/rocprof_compute_tui
     DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/${PROJECT_NAME}
     COMPONENT main
     PATTERN "__pycache__" EXCLUDE)

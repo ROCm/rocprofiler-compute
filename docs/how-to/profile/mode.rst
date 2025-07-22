@@ -197,8 +197,8 @@ an Instinct MI210 vs an Instinct MI250.
    ``sysinfo.csv``, is created to reflect the target device settings. All
    profiling output is stored in ``log.txt``. Roofline-specific benchmark
    results are stored in ``roofline.csv`` and roofline plots are outputted into PDFs as
-   ``empirRoof_gpu-0_[datatype1]_..._[datatypeN].pdf`` where datatypes requested through
-    --roofline-data-type option are listed in the file name.
+   ``empirRoof_gpu-0_[datatype1]_..._[datatypeN].pdf`` where data types requested through
+   ``--roofline-data-type`` option are listed in the file name.
 
 .. code-block:: shell-session
 
@@ -232,7 +232,7 @@ Filtering options
 -----------------
 
 ``-b``, ``--block <block-name>``
-   Allows system profiling on one or more selected hardware report blocks to speed
+   Allows system profiling on one or more selected analysis report blocks to speed
    up the profiling process. See :ref:`profiling-hw-component-filtering`.
 
 ``-k``, ``--kernel <kernel-substr>``
@@ -253,11 +253,11 @@ Filtering options
 
 .. _profiling-hw-component-filtering:
 
-Hardware report block filtering
+Analysis report block filtering
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can profile specific hardware report blocks to speed up the profiling process.
-In ROCm Compute Profiler, the term hardware report block refers to a section of the
+In ROCm Compute Profiler, the term analysis report block refers to a section of the
 analysis report which focuses on metrics associated with a hardware component or
 a group of hardware components. All profiling results are accumulated in the same
 target directory without overwriting those for other hardware components.
@@ -332,54 +332,6 @@ To see a list of available hardware report blocks, use the ``--list-metrics`` op
                   6.1.2 -> Workgroup Manager Utilization
 
 
-It is also possible to filter counter collection by hardware component such as Shader Sequencer (SQ)
-and L2 cache (TCC) as shown below.
-
-.. code-block:: shell-session
-
-   $ rocprof-compute profile --name vcopy -b 10 7 -- ./vcopy -n 1048576 -b 256
-
-                                    __                                       _
-    _ __ ___   ___ _ __  _ __ ___  / _|       ___ ___  _ __ ___  _ __  _   _| |_ ___
-   | '__/ _ \ / __| '_ \| '__/ _ \| |_ _____ / __/ _ \| '_ ` _ \| '_ \| | | | __/ _ \
-   | | | (_) | (__| |_) | | | (_) |  _|_____| (_| (_) | | | | | | |_) | |_| | ||  __/
-   |_|  \___/ \___| .__/|_|  \___/|_|        \___\___/|_| |_| |_| .__/ \__,_|\__\___|
-                  |_|                                           |_|
-
-   fname: pmc_cpc_perf: Skipped
-   fname: pmc_spi_perf: Skipped
-   fname: pmc_cpf_perf: Skipped
-   fname: pmc_tcp_perf: Skipped
-   fname: pmc_sq_perf4: Added
-   fname: pmc_tcc_perf: Added
-   fname: pmc_sq_perf8: Added
-   fname: pmc_ta_perf: Skipped
-   fname: pmc_sq_perf1: Added
-   fname: pmc_sq_perf3: Added
-   fname: pmc_td_perf: Skipped
-   fname: pmc_tcc2_perf: Skipped
-   fname: pmc_sqc_perf1: Skipped
-   fname: pmc_sq_perf6: Added
-   fname: pmc_sq_perf2: Added
-   rocprofiler-compute version: 2.0.0
-   Profiler choice: rocprofv1
-   Path: /home/auser/repos/rocprofiler-compute/sample/workloads/vcopy/MI200
-   Target: MI200
-   Command: ./vcopy -n 1048576 -b 256
-   Kernel Selection: None
-   Dispatch Selection: None
-   Hardware Blocks: ['sq', 'tcc']
-   Report Sections: []
-
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   Collecting Performance Counters
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   ...
-
-.. warning::
-
-   Filtering by hardware components (e.g. SQ, TCC) will soon be deprecated.
-   It is recommended to use hardware report block based filtering.
 
 .. _profiling-kernel-filtering:
 
@@ -477,7 +429,11 @@ Roofline options
    running a roofline benchmark on your system.
 
 ``--roofline-data-type <datatype>``
-   Allows you to specify datatypes that you want plotted in the roofline PDF output(s). Selecting more than one datatype will overlay the results onto the same plot. Default: FP32
+   Allows you to specify data types that you want plotted in the roofline PDF output(s). Selecting more than one data type will overlay the results onto the same plot. Default: FP32
+
+.. note::
+
+  For more information on data types supported based on the GPU architecture, see :doc:`../../conceptual/performance-model`
 
 To distinguish different kernels in your ``.pdf`` roofline plot use
 ``--kernel-names``. This will give each kernel a unique marker identifiable from
@@ -521,7 +477,8 @@ successfully.
 
 .. note::
 
-   ROCm Compute Profiler currently captures roofline profiling for all data types, but has the ability to reduce clutter in the PDF outputs by selecting datatype(s). Selecting multiple datatypes will overlay the results into the same PDF. If the user would like separate PDFs for each datatype off of the same workload run, the user can run the profiling command again with the single datatype as long as the roofline.csv still exists in the workload folder.
+   * ROCm Compute Profiler currently captures roofline profiling for all data types, and you can reduce the clutter in the PDF outputs by filtering the data type(s). Selecting multiple data types will overlay the results into the same PDF. To generate results in separate PDFs for each data type from the same workload run, you can re-run the profiling command with each data type as long as the ``roofline.csv`` file still exists in the workload folder.
+   * Roofline feature is currently not enabled on AMD Instinct MI350.
 
 The following image is a sample ``empirRoof_gpu-0_FP32.pdf`` roofline
 plot.

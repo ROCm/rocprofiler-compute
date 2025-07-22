@@ -1142,9 +1142,7 @@ def replace_timestamps(workload_dir):
         )
 
 
-def gen_sysinfo(
-    workload_name, workload_dir, ip_blocks, app_cmd, skip_roof, roof_only, mspec, soc
-):
+def gen_sysinfo(workload_name, workload_dir, app_cmd, skip_roof, mspec, soc):
     console_debug("[gen_sysinfo]")
     df = mspec.get_class_members()
 
@@ -1152,12 +1150,7 @@ def gen_sysinfo(
     df["command"] = app_cmd
     df["workload_name"] = workload_name
 
-    blocks = []
-    if not ip_blocks:
-        t = ["SQ", "LDS", "SQC", "TA", "TD", "TCP", "TCC", "SPI", "CPC", "CPF"]
-        blocks += t
-    else:
-        blocks += ip_blocks
+    blocks = ["SQ", "LDS", "SQC", "TA", "TD", "TCP", "TCC", "SPI", "CPC", "CPF"]
     if hasattr(soc, "roofline_obj") and (not skip_roof):
         blocks.append("roofline")
     df["ip_blocks"] = "|".join(blocks)
@@ -1169,6 +1162,10 @@ def gen_sysinfo(
 def detect_roofline(mspec):
     from utils import specs
 
+    rocm_ver = int(mspec.rocm_version[:1])
+
+    target_binary = {"rocm_ver": rocm_ver, "distro": "override", "path": None}
+
     os_release = path("/etc/os-release").read_text()
     ubuntu_distro = specs.search(r'VERSION_ID="(.*?)"', os_release)
     rhel_distro = specs.search(r'PLATFORM_ID="(.*?)"', os_release)
@@ -1177,38 +1174,51 @@ def detect_roofline(mspec):
     if "ROOFLINE_BIN" in os.environ.keys():
         rooflineBinary = os.environ["ROOFLINE_BIN"]
         if path(rooflineBinary).exists():
-            console_warning("roofline", "Detected user-supplied binary")
-            return {
-                "distro": "override",
-                "path": rooflineBinary,
-            }
+            msg = "Detected user-supplied binary --> ROOFLINE_BIN = %s\n" % rooflineBinary
+            console_warning("roofline", msg)
+            # distro stays marked as override and path value is substituted in
+            target_binary["path"] = rooflineBinary
+            return target_binary
         else:
-            msg = "user-supplied path to binary not accessible"
-            msg += "--> ROOFLINE_BIN = %s\n" % target_binary
+            msg = (
+                "user-supplied path to binary not accessible --> ROOFLINE_BIN = %s\n"
+                % rooflineBinary
+            )
             console_error("roofline", msg)
-    elif (
+
+    # Must be a valid RHEL machine
+    elif rocm_ver == 6 and (
         rhel_distro == "platform:el8"
+        or rhel_distro == "platform:al8"
         or rhel_distro == "platform:el9"
         or rhel_distro == "platform:el10"
-        or rhel_distro == "platform:al8"
     ):
-        # Must be a valid RHEL machine
+        # RHEL8 supported up to ROCm6
         distro = "platform:el8"
+    elif rocm_ver == 7 and (
+        rhel_distro == "platform:el9" or rhel_distro == "platform:el10"
+    ):
+        # ROCm7 supports RHEL9 and above
+        distro = "platform:el9"
+
+    # Must be a valid SLES machine
     elif (
         (type(sles_distro) == str and len(sles_distro) >= 3)
         and sles_distro[:2] == "15"  # confirm string and len
         and int(sles_distro[3]) >= 6  # SLES15 and SP >= 6
     ):
-        # Must be a valid SLES machine
         # Use SP6 binary for all forward compatible service pack versions
         distro = "15.6"
+
+    # Must be a valid Ubuntu machine
     elif ubuntu_distro == "22.04" or ubuntu_distro == "24.04":
-        # Must be a valid Ubuntu machine
         distro = "22.04"
+
     else:
         console_error("roofline", "Cannot find a valid binary for your operating system")
 
-    target_binary = {"distro": distro}
+    # distro gets assigned, to follow default roofline bin location and nomenclature
+    target_binary["distro"] = distro
     return target_binary
 
 
@@ -1218,6 +1228,7 @@ def mibench(args, mspec):
 
     distro_map = {
         "platform:el8": "rhel8",
+        "platform:el9": "rhel9",
         "15.6": "sles15sp6",
         "22.04": "ubuntu22_04",
     }
@@ -1236,7 +1247,13 @@ def mibench(args, mspec):
         ]
 
         for dir in potential_paths:
-            path_to_binary = dir + "-" + distro_map[target_binary["distro"]]
+            path_to_binary = (
+                dir
+                + "-"
+                + distro_map[target_binary["distro"]]
+                + "-rocm"
+                + str(target_binary["rocm_ver"])
+            )
             binary_paths.append(path_to_binary)
 
     # Distro is valid but cant find rocm ver
@@ -1526,10 +1543,9 @@ def convert_metric_id_to_panel_idx(metric_id):
     tokens = metric_id.split(".")
     if len(tokens) == 1:
         return int(tokens[0]) * 100
-    elif len(tokens) == 2:
+    if len(tokens) == 2:
         return int(tokens[0]) * 100 + int(tokens[1])
-    else:
-        raise Exception(f"Invalid metric id: {metric_id}")
+    raise Exception(f"Invalid metric id: {metric_id}")
 
 
 def format_time(seconds):
