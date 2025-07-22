@@ -36,7 +36,7 @@ from config import HIDDEN_COLUMNS, PROJECT_NAME
 from rocprof_compute_analyze.analysis_base import OmniAnalyze_Base
 from utils import file_io, parser
 from utils.gui import build_bar_chart, build_table_chart
-from utils.logger import console_debug, console_error, demarcate, console_warning
+from utils.logger import console_debug, console_error, console_warning, demarcate
 
 
 class webui_analysis(OmniAnalyze_Base):
@@ -372,7 +372,9 @@ def determine_chart_type(
     # Determine chart type:
     # a) Barchart
     if original_df.empty:
-        console_warning(f"The dataframe with id={table_config['id']} is empty! Not displaying it.")
+        console_warning(
+            f"The dataframe with id={table_config['id']} is empty! Not displaying it."
+        )
     elif table_config["id"] in [x for i in barchart_elements.values() for x in i]:
         d_figs = build_bar_chart(display_df, table_config, barchart_elements, norm_filt)
         # Smaller formatting if barchart yeilds several graphs
