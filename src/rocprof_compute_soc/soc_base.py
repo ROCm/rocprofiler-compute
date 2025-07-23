@@ -436,7 +436,6 @@ class OmniSoC_Base:
                 "--rocprofiler-sdk-library-path option."
             )
 
-
         rocprof_counters = set()
 
         if str(rocprof_cmd).endswith("rocprof"):
