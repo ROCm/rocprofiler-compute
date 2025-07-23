@@ -320,36 +320,6 @@ Panel Config:
 
     - metric_table:
         id: 1704
-        title: L2 Cache Stalls
-        header:
-          metric: Metric
-          avg: Avg
-          min: Min
-          max: Max
-          unit: Unit
-          tips: Tips
-        metric:
-          Stalled on Latency FIFO:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
-            unit: (Cycles + $normUnit)
-            tips:
-          Stalled on Write Data FIFO:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
-            unit: (Cycles + $normUnit)
-            tips:
-          Input Buffer Stalled on L2:
-            avg: None # Missing perfmon
-            min: None # Missing perfmon
-            max: None # Missing perfmon
-            unit: (Cycles + $normUnit)
-            tips:
-
-    - metric_table:
-        id: 1705
         title: L2 - Fabric Interface Stalls
         header:
           metric: Metric
@@ -421,7 +391,7 @@ Panel Config:
             tips:
 
     - metric_table:
-        id: 1706
+        id: 1705
         title: L2 - Fabric Detailed Transaction Breakdown
         header:
           metric: Metric
