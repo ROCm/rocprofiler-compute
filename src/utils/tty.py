@@ -182,7 +182,7 @@ def show_all(args, runs, archConfigs, output, profiling_config, roof_plot=None):
                             .loc[lambda d: d["Metric"].isin(common_metrics)]
                         )
                         if initial_index is None:
-                            initial_index= runs[key].dfs[table_config["id"]].index
+                            initial_index = runs[key].dfs[table_config["id"]].index
                         else:
                             runs[key].dfs[table_config["id"]].index = initial_index
 
