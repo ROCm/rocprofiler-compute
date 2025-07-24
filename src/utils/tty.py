@@ -99,6 +99,7 @@ def has_time_data(df):
     """
     if "Unit" not in df.columns:
         return False
+    # NOTE: "ns" / "NS" / "nS" / "Ns" are reserved for Nanosec time unit
     return df["Unit"].str.lower().str.contains("ns", na=False).any()
 
 
