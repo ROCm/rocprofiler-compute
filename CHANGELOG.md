@@ -81,11 +81,16 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 * Update Roofline binaries
   * Rebuild using latest ROCm stack
   * OS distribution support minimum for roofline feature is now Ubuntu22.04, RHEL9, and SLES15SP6
+* Improve analysis block based filtering to accept metric id level filtering
+  * This can be used to collect individual metrics from various sections of analysis config
+* CLI analysis mode baseline comparison will now only compare common metrics across workloads and will not show Metric ID
+  * Remove metrics from analysis configuration files which are explicitly marked as empty or None
 * Change the basic (default) view of TUI from aggregated analysis to kernel analysis
 
 ### Optimized
 
 * ROCm Compute Profiler CLI has been improved to better display the GPU architecture analytics
+* Improved `--time-unit` option in analyze mode to apply time unit conversion across all analysis sections, not just kernel top stats.
 
 ### Resolved issues
 
@@ -94,6 +99,9 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 * Fixed kernel name and kernel dispatch filtering when using rocprof v3
 * Fixed not collecting TCC channel counters in rocprof v3
 * Fixed peak FLOPS of F8 I8 F16 and BF16 on MI300
+* Fixed not detecting memory clock issue when using amd-smi
+* Fixed standalone GUI crashing
+* Fixed L2 read/write/atomic bandwidths on MI350
 
 ### Known issues
 
@@ -116,7 +124,9 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 * Roofline support for Ubuntu 20.04 and SLES below 15.6
 * Usage of rocm-smi
-* Aggregated analysis view from TUI mode
+* Remove support for MI50/MI60 in accordance with the documentation
+* Hardware IP block based filtering has been removed in favor of analysis report block based filtering
+* Remove aggregated analysis view from TUI mode
 
 ## ROCm Compute Profiler 3.1.0 for ROCm 6.4.0
 
