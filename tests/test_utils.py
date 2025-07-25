@@ -27,7 +27,6 @@ import logging
 logging.trace = lambda *args, **kwargs: None
 
 import builtins
-import glob
 import inspect
 import io
 import json
@@ -36,10 +35,8 @@ import logging
 import os
 import pathlib
 import re
-import selectors
 import shutil
 import subprocess
-import tempfile
 from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock

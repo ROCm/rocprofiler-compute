@@ -25,13 +25,10 @@
 import inspect
 import os
 import re
-import shutil
 import subprocess
 import sys
-import tempfile
-from importlib.machinery import SourceFileLoader
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import mock_open, patch
 
 import pandas as pd
 import pytest
@@ -1617,3 +1614,270 @@ def test_comprehensive_error_paths():
         assert False, "Should raise exception for None coll_level"
     except Exception as e:
         assert "coll_level can not be None" in str(e)
+
+
+class TestSetsYAMLParsing:
+
+    @pytest.fixture
+    def sample_yaml_content(self):
+        """Sample YAML content for testing"""
+        return """---
+                Sets:
+                - title: Compute Throughput Utilization
+                    set_option: compute_thruput_util
+                    description: Monitor compute unit utilization
+                    header:
+                    metric: Metric
+                    id: ID
+                    metric:
+                    SALU Utilization:
+                        id: 11.2.3
+                    VALU Utilization:
+                        id: 11.2.4
+                    VMEM Utilization:
+                        id: 11.2.6
+                - title: Memory Throughput
+                    set_option: mem_thruput
+                    description: Analyze memory performance
+                    header:
+                    metric: Metric
+                    id: ID
+                    metric:
+                    LDS Bandwidth:
+                        id: 2.1.17
+                    Cache Utilization:
+                        id: 16.1.2
+                """
+
+    @patch("builtins.open", new_callable=mock_open)
+    def test_parse_sets_from_file_success(self, mock_file, sample_yaml_content):
+        from utils.utils import parse_sets_from_file
+
+        mock_file.return_value.read.return_value = sample_yaml_content
+
+        set_choices, sets_dict = parse_sets_from_file()
+
+        expected_choices = ["compute_thruput_util", "mem_thruput"]
+        assert set_choices == expected_choices
+
+        assert "compute_thruput_util" in sets_dict
+        assert "mem_thruput" in sets_dict
+
+        compute_ids = sets_dict["compute_thruput_util"]
+        assert compute_ids == ["11.2.3", "11.2.4", "11.2.6"]
+
+        memory_ids = sets_dict["mem_thruput"]
+        assert memory_ids == ["2.1.17", "16.1.2"]
+
+    @patch("builtins.open", side_effect=FileNotFoundError("File not found"))
+    def test_parse_sets_from_file_not_found(self, mock_file):
+        from utils.utils import parse_sets_from_file
+
+        with patch("your_module.console_error") as mock_console_error:
+            result = parse_sets_from_file()
+
+            mock_console_error.assert_called_once()
+            error_call = mock_console_error.call_args[0][0]
+            assert "Could not parse sets file" in error_call
+
+
+@pytest.mark.sets_func
+class TestSetsIntegration:
+
+    def test_valid_set_single_pass(self, binary_handler_profile_rocprof_compute):
+        options = ["--set", "mem_thruput"]
+        workload_dir = test_utils.get_output_dir()
+
+        return_code, stdout_output = binary_handler_profile_rocprof_compute(
+            config,
+            workload_dir,
+            options,
+            check_success=True,
+            roof=False,
+            capture_output=True,
+        )
+
+        file_dict = test_utils.check_csv_files(workload_dir, 1, num_kernels)
+
+        validate(
+            "test_valid_set_single_pass",
+            workload_dir,
+            file_dict,
+        )
+
+        assert (
+            "[Run 1/1]" in stdout_output
+        ), "Expected single pass execution not found in output"
+
+        assert (
+            not "[Run 2/" in stdout_output
+        ), "Unexpected multiple pass execution detected"
+
+        test_utils.clean_output_dir(config["cleanup"], workload_dir)
+
+    def test_memory_throughput_set(self, binary_handler_profile_rocprof_compute):
+        options = ["--set", "mem_thruput"]
+        workload_dir = test_utils.get_output_dir()
+
+        return_code, stdout_output = binary_handler_profile_rocprof_compute(
+            config,
+            workload_dir,
+            options,
+            check_success=True,
+            roof=False,
+            capture_output=True,
+        )
+
+        file_dict = test_utils.check_csv_files(workload_dir, 1, num_kernels)
+
+        validate(
+            "test_memory_throughput_set",
+            workload_dir,
+            file_dict,
+        )
+
+        assert (
+            "[Run 1/1]" in stdout_output
+        ), "Expected single pass execution not found in output"
+
+        memory_metrics = ["2.1.17", "16.1.2"]  # From mem_thruput set
+        for metric_id in memory_metrics:
+            assert (
+                metric_id in stdout_output
+            ), f"Expected memory metric {metric_id} not found"
+
+        test_utils.clean_output_dir(config["cleanup"], workload_dir)
+
+    def test_launch_stats_set(self, binary_handler_profile_rocprof_compute):
+        options = ["--set", "launch_stats"]
+        workload_dir = test_utils.get_output_dir()
+
+        return_code, stdout_output = binary_handler_profile_rocprof_compute(
+            config,
+            workload_dir,
+            options,
+            check_success=True,
+            roof=False,
+            capture_output=True,
+        )
+
+        file_dict = test_utils.check_csv_files(workload_dir, 1, num_kernels)
+
+        validate(
+            "test_launch_stats_set",
+            workload_dir,
+            file_dict,
+        )
+
+        assert (
+            "[Run 1/1]" in stdout_output
+        ), "Expected single pass execution not found in output"
+
+        launch_metrics = ["7.1.0", "7.1.1", "7.1.2"]
+        for metric_id in launch_metrics:
+            assert (
+                metric_id in stdout_output
+            ), f"Expected memory metric {metric_id} not found"
+
+        test_utils.clean_output_dir(config["cleanup"], workload_dir)
+
+    def test_invalid_set_error_handling(self, binary_handler_profile_rocprof_compute):
+        options = ["--set", "nonexistent_set"]
+        workload_dir = test_utils.get_output_dir()
+
+        return_code, stdout_output = binary_handler_profile_rocprof_compute(
+            config,
+            workload_dir,
+            options,
+            check_success=False,
+            roof=False,
+            capture_output=True,
+        )
+
+        assert any(
+            phrase in stdout_output
+            for phrase in ["invalid choice", "not found", "nonexistent_set"]
+        ), f"Expected error message not found"
+
+        test_utils.clean_output_dir(config["cleanup"], workload_dir)
+
+    def test_set_and_block_mutual_exclusion(self, binary_handler_profile_rocprof_compute):
+        options = ["--set", "compute_thruput_util", "--block", "12"]
+        workload_dir = test_utils.get_output_dir()
+
+        return_code, stdout_output = binary_handler_profile_rocprof_compute(
+            config,
+            workload_dir,
+            options,
+            check_success=False,
+            roof=False,
+            capture_output=True,
+        )
+        assert (
+            "exclusive" in stdout_output or "conflict" in stdout_output
+        ), f"Expected mutual exclusion error."
+
+        test_utils.clean_output_dir(config["cleanup"], workload_dir)
+
+    def test_list_sets_functionality(self, binary_handler_profile_rocprof_compute):
+        options = ["--list-sets"]
+        workload_dir = test_utils.get_output_dir()
+
+        return_code, stdout_output = binary_handler_profile_rocprof_compute(
+            config,
+            workload_dir,
+            options,
+            check_success=True,
+            roof=False,
+            capture_output=True,
+        )
+
+        expected_patterns = [
+            "Available Sets",
+            "compute_thruput_util",
+            "mem_thruput",
+            "launch_stats",
+            "Metric(s)                      ID",
+        ]
+
+        for pattern in expected_patterns:
+            assert (
+                pattern in stdout_output
+            ), f"Expected pattern '{pattern}' not found in list-sets output"
+
+        test_utils.clean_output_dir(config["cleanup"], workload_dir)
+
+
+@pytest.mark.sets_perf
+class TestSetsPerformance:
+
+    def test_sets_vs_manual_block_performance(
+        self, binary_handler_profile_rocprof_compute
+    ):
+        import time
+
+        workload_dir = test_utils.get_output_dir()
+
+        start_time = time.time()
+        options_set = ["--set", "compute_thruput_util"]
+        binary_handler_profile_rocprof_compute(
+            config, workload_dir, options_set, check_success=True, roof=False
+        )
+        set_time = time.time() - start_time
+
+        test_utils.clean_output_dir(True, workload_dir)
+
+        start_time = time.time()
+        options_manual = ["--block", "11"]
+        binary_handler_profile_rocprof_compute(
+            config, workload_dir, options_manual, check_success=True, roof=False
+        )
+        manual_time = time.time() - start_time
+
+        # Sets should not be significantly slower than manual selection
+        # Allow 50% overhead for sets processing
+        assert (
+            set_time <= manual_time * 1.5
+        ), f"Sets execution took too long: {set_time}s vs manual {manual_time}s"
+
+        test_utils.clean_output_dir(config["cleanup"], workload_dir)
