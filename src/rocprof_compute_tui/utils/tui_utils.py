@@ -451,13 +451,16 @@ def process_per_kernel_panels_to_dataframes(
     """
     result_structure = defaultdict(dict)
 
-    filter_panel_ids = [
-        convert_metric_id_to_panel_idx(section)
-        for section in [
-            name
-            for name, data_type in profiling_config.get("filter_blocks", {}).items()
-            if data_type == "metric_id"
+    comparable_columns = build_comparable_columns(args.time_unit)
+    filter_panel_ids = profiling_config.get("filter_blocks", [])
+    if isinstance(filter_panel_ids, dict):
+        # For backward compatibility
+        filter_panel_ids = [
+            name for name, type in filter_panel_ids.items() if type == "metric_id"
         ]
+    filter_panel_ids = [
+        int(convert_metric_id_to_panel_info(metric_id)[0])
+        for metric_id in filter_panel_ids
     ]
 
     df = runs.raw_pmc
@@ -637,6 +640,65 @@ def generate_subsection_df(
         if "Metric_ID" in df.columns:
             df.set_index("Metric_ID", inplace=True)
         return df
+
+def string_multiple_lines(source, width, max_rows):
+    """
+    Adjust string with multiple lines by inserting '\n'
+    """
+    idx = 0
+    lines = []
+    while idx < len(source) and len(lines) < max_rows:
+        lines.append(source[idx : idx + width])
+        idx += width
+
+    if idx < len(source):
+        last = lines[-1]
+        lines[-1] = last[0:-3] + "..."
+    return "\n".join(lines)
+
+
+def convert_metric_id_to_panel_info(metric_id):
+    """
+    Convert metric id into panel information.
+    Output is a tuples of the form (file_id, panel_id, metric_id).
+
+    For example:
+
+    Input: "2"
+    Output: ("0200", None, None)
+
+    Input: "11"
+    Output: ("1100", None, None)
+
+    Input: "11.1"
+    Output: ("1100", 1101, None)
+
+    Input: "11.1.1"
+    Output: ("1100", 1101, 1)
+
+    Raises exception for invalid metric id.
+    """
+    tokens = metric_id.split(".")
+    if 0 < len(tokens) < 4:
+        # File id
+        file_id = str(int(tokens[0]))
+        # 4 -> 04
+        if len(file_id) < 2:
+            file_id = f"0{file_id}"
+        # Multiply integer by 100
+        file_id = f"{file_id}00"
+        # Panel id
+        if len(tokens) > 1:
+            panel_id = int(tokens[0]) * 100
+            panel_id += int(tokens[1])
+        else:
+            panel_id = None
+        # Metric id
+        if len(tokens) > 2:
+            metric_id = int(tokens[2])
+        else:
+            metric_id = None
+        return (file_id, panel_id, metric_id)
     else:
         return None
 

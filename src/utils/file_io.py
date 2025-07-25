@@ -22,11 +22,8 @@
 # SOFTWARE.
 ##############################################################################el
 
-import collections
-import glob
 import os
 import re
-import sys
 from collections import OrderedDict
 from pathlib import Path
 
@@ -55,8 +52,6 @@ top_stats_build_in_config = {
     },
 }
 
-time_units = {"s": 10**9, "ms": 10**6, "us": 10**3, "ns": 1}
-
 
 def load_sys_info(f):
     """
@@ -75,6 +70,12 @@ def load_panel_configs(dir):
             if f.endswith(".yaml"):
                 with open(str(Path(root).joinpath(f))) as file:
                     config = yaml.safe_load(file)
+                    # metric key can be None due to some metric tables not having any metrics
+                    # metric key should be empty dict instead of None
+                    for data_source in config["Panel Config"]["data source"]:
+                        metric_table = data_source.get("metric_table")
+                        if metric_table and metric_table["metric"] is None:
+                            metric_table["metric"] = {}
                     d[config["Panel Config"]["id"]] = config["Panel Config"]
 
     # TODO: sort metrics as the header order in case they are not defined in the same order
@@ -167,11 +168,11 @@ def create_df_kernel_top_stats(
     ]
 
     key = "Sum" + time_unit_str
-    grouped[key] = grouped[key].div(time_units[time_unit])
+    grouped[key] = grouped[key].div(config.TIME_UNITS[time_unit])
     key = "Mean" + time_unit_str
-    grouped[key] = grouped[key].div(time_units[time_unit])
+    grouped[key] = grouped[key].div(config.TIME_UNITS[time_unit])
     key = "Median" + time_unit_str
-    grouped[key] = grouped[key].div(time_units[time_unit])
+    grouped[key] = grouped[key].div(config.TIME_UNITS[time_unit])
 
     grouped = grouped.reset_index()  # Remove special group indexing
 
