@@ -18,8 +18,25 @@ Sets:
         id: 11.2.6
       Branch Utilization:
         id: 11.2.7
-      MFMA Utilization:
-        id: 11.2.9
+  - title: Compute Throughput FLOPS
+    set_option: compute_thruput_flops
+    description: Placeholder
+    header:
+      metric: Metric(s)
+      id: ID
+    metric:
+      MFMA FLOPs (F8):
+        id: 2.1.2
+      MFMA FLOPs (BF16):
+        id: 2.1.3
+      MFMA FLOPs (F16):
+        id: 2.1.4
+      MFMA FLOPs (F32):
+        id: 2.1.5
+      MFMA FLOPs (F64):
+        id: 2.1.6
+      MFMA IOPs (Int8):
+        id: 2.1.7
   - title: Memory Throughput
     set_option: mem_thruput
     description: Placeholder
