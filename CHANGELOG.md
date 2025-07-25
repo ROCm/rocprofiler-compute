@@ -66,6 +66,8 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 * Add deprecation warning for database update mode.
 
+* Add `--set` and `--list-sets` to enable single pass counter collection for predefined subsets of metrics
+
 ### Changed
 
 * Change the default rocprof version to rocprofv3, this is used when environment variable "ROCPROF" is not set
