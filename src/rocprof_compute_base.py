@@ -25,7 +25,6 @@
 import argparse
 import importlib
 import os
-import shutil
 import socket
 import sys
 import time
@@ -50,9 +49,11 @@ from utils.mi_gpu_spec import mi_gpu_specs
 from utils.specs import MachineSpecs, generate_machine_specs
 from utils.utils import (
     detect_rocprof,
+    format_table_row,
     get_submodules,
     get_version,
     get_version_display,
+    parse_sets_for_list_sets,
     set_locale_encoding,
 )
 
@@ -234,12 +235,57 @@ class RocProfCompute:
             console_error("Unsupported arch")
 
     @demarcate
+    def list_sets(self):
+        """Display formatted information about available sets"""
+        sets_info = parse_sets_for_list_sets(arch=self.__mspec.gpu_arch)
+
+        if not sets_info:
+            print("No sets configuration found.")
+            sys.exit(0)
+
+        print("\nAvailable Sets:")
+        print("=" * 70)
+
+        for set_option, set_data in sets_info.items():
+            title = set_data.get("title", set_option)
+            description = set_data.get("description", "No description available")
+            header = set_data.get("header", {})
+            metrics = set_data.get("metric", {})
+
+            print(f"Title: {title}")
+            print(f"\nSet: {set_option}")
+            print(f"Description: {description}")
+            print()
+
+            metric_header = header.get("metric", "Metric(s)")
+            id_header = header.get("id", "ID")
+
+            print(format_table_row(metric_header, id_header))
+            print(format_table_row("-" * 30, "-" * 15))
+
+            for metric_name, metric_data in metrics.items():
+                metric_id = str(metric_data.get("id", "N/A"))
+                print(format_table_row(metric_name, metric_id))
+
+            print("-" * 50)
+
+        print(f"\nUsage Examples:")
+        if sets_info:
+            first_set = list(sets_info.keys())[0]
+            print(f"  rocprof-compute profile --set {first_set}\t# Profile this set")
+        print(f"  rocprof-compute profile --list-sets\t\t\t# Show this help")
+        print()
+        sys.exit(0)
+
+    @demarcate
     def run_profiler(self):
         self.print_graphic()
         self.load_soc_specs()
 
         if self.__args.list_metrics is not None:
             self.list_metrics()
+        elif self.__args.list_sets:
+            self.list_sets()
         elif self.__args.name is None:
             sys.exit("Either --list-name or --name is required")
 

@@ -22,7 +22,6 @@
 # SOFTWARE.
 ##############################################################################el
 
-import ctypes
 import glob
 import json
 import math
@@ -30,7 +29,6 @@ import os
 import re
 import shutil
 import sys
-import threading
 from abc import abstractmethod
 from pathlib import Path
 
@@ -54,6 +52,7 @@ from utils.utils import (
     detect_rocprof,
     get_submodules,
     is_tcc_channel_counter,
+    parse_sets_from_file,
     using_v3,
 )
 
@@ -268,15 +267,30 @@ class OmniSoC_Base:
             Path(filename).name.split("_")[0]: filename
             for filename in glob.glob(f"{config_root_dir}/*.yaml")
         }
+
         texts = list()
 
-        if not self.get_args().filter_blocks:
-            # Read all config files if no filter_blocks are specified
+        set_selected = self.get_args().set_selected
+
+        if set_selected:
+            set_choices, sets_dict = parse_sets_from_file(arch=self.__arch)
+
+            if set_selected not in set_choices:
+                console_error(
+                    f"argument --set: invalid choice: '{set_selected}' (choose from {set_choices})"
+                )
+
+            if self.get_args().filter_blocks:
+                console_error("--block and --set are exclusive options.")
+
+            self.__args.filter_blocks = sets_dict[set_selected]
+
+        if not self.__args.filter_blocks:
             for filename in config_filename_dict.values():
                 with open(filename, "r") as stream:
                     texts.append(stream.read())
 
-        for block_id in self.get_args().filter_blocks:
+        for block_id in self.__args.filter_blocks:
             file_id, panel_id, metric_id = convert_metric_id_to_panel_info(block_id)
 
             # File id filtering

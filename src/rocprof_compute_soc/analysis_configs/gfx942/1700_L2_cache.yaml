@@ -31,9 +31,8 @@ Panel Config:
             unit: pct
             tips:
           L2-Fabric Read BW:
-            value: AVG((128 * TCC_BUBBLE_sum +
-                        64 * (TCC_EA0_RDREQ_sum - TCC_BUBBLE_sum - TCC_EA0_RDREQ_32B_sum) +
-                        32 * TCC_EA0_RDREQ_32B_sum) / (End_Timestamp - Start_Timestamp))
+            value: AVG((((TCC_EA0_RDREQ_32B_sum * 32) + (TCC_EA0_RDREQ_64B_sum * 64) + (TCC_EA0_RDREQ_128B_sum
+              * 128)) / (End_Timestamp - Start_Timestamp)))
             unit: GB/s
             tips:
           L2-Fabric Write and Atomic BW:

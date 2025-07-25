@@ -67,7 +67,7 @@ def load_panel_configs(dir):
     d = {}
     for root, dirs, files in os.walk(dir):
         for f in files:
-            if f.endswith(".yaml"):
+            if f.endswith(".yaml") and not f.startswith("sets"):
                 with open(str(Path(root).joinpath(f))) as file:
                     config = yaml.safe_load(file)
                     # metric key can be None due to some metric tables not having any metrics
