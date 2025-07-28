@@ -196,9 +196,10 @@ def build_kernel_sections(
             return None
 
         try:
-            df = data["df"]
+            if data["df"] is None or data["df"].empty:
+                return None
             tui_style = data.get("tui_style")
-            widget = create_widget_from_data(df, tui_style)
+            widget = create_widget_from_data(data["df"], tui_style)
 
             if widget is None:
                 add_warning(f"Widget creation returned None for '{subsection_name}'")
