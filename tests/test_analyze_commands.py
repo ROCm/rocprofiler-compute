@@ -500,7 +500,15 @@ def test_col_2(binary_handler_analyze_rocprof_compute):
     for dir in indirs:
         workload_dir = test_utils.setup_workload_dir(dir)
         code = binary_handler_analyze_rocprof_compute(
-            ["analyze", "--path", workload_dir, "--cols", "2", "--include-cols", "Description"]
+            [
+                "analyze",
+                "--path",
+                workload_dir,
+                "--cols",
+                "2",
+                "--include-cols",
+                "Description",
+            ]
         )
         assert code == 0
 

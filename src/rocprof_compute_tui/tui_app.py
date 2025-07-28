@@ -50,7 +50,7 @@ from utils.utils import get_version
 class RocprofTUIApp(App):
     """Main application for the performance analysis tool."""
 
-    VERSION = get_version(config.rocprof_compute_home)['version']
+    VERSION = get_version(config.rocprof_compute_home)["version"]
     TITLE = f"{APP_TITLE} v{VERSION}"
     SUB_TITLE = "Workload Analysis Tool"
 
