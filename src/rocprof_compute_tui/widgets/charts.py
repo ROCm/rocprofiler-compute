@@ -103,7 +103,7 @@ def simple_multiple_bar(df, title=None):
         h *= 300
 
     plt.plot_size(height=h)
-    plt.multiple_bar(labels, data, color=["blue", "blue+", 68, 63])
+    plt.multiple_bar(labels, data)
 
     # plt.show()
     plot_content = plt.build()
