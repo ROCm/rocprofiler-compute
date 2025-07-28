@@ -106,7 +106,7 @@ class MainView(Horizontal):
             row_data = table.get_row_at(row_idx)
             content = f"Selected Metric ID: {row_data[0]}\n"
             content += f"Selected Metric: {row_data[1]}\n"
-            content += f"Metric Description:\n\t{row_data[-1]}"
+            # content += f"Metric Description:\n\t{row_data[-1]}"
 
             self.metric_description.text = content
             self.logger.info(f"Row {row_idx} data displayed in metric_description")

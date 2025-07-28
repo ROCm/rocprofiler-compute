@@ -77,7 +77,7 @@ class KernelView(Container):
         """
         with VerticalScroll(id="top-container"):
             yield Label(
-                "Open a workload directory to run analysis and view kernel selection",
+                "Open a workload directory to run analysis and view individual kernel analysis results.",
                 classes="placeholder",
             )
 
@@ -93,7 +93,6 @@ class KernelView(Container):
         top_container.remove_children()
 
         if self.top_kernel:
-            top_container.mount(Label("Select a kernel to view detailed analysis."))
             try:
                 header = self.build_header()
                 top_container.mount(header)
@@ -105,9 +104,6 @@ class KernelView(Container):
                 )
         else:
             top_container.mount(Label("No kernels available", classes="placeholder"))
-
-        bottom_container = self.query_one("#bottom-container", VerticalScroll)
-        bottom_container.remove_children()
 
         self.current_selection = self.top_kernel[0]["Kernel_Name"]
         self._update_bottom_content()
@@ -180,7 +176,14 @@ class KernelView(Container):
         bottom_container = self.query_one("#bottom-container", VerticalScroll)
         bottom_container.remove_children()
 
+        bottom_container.mount(
+            Label(
+                f"Toggle kernel selection to view detailed analysis."
+            )
+        )
+
         if self.current_selection and self.current_selection in self.dfs:
+            bottom_container.mount(Label(f"Current kernel selection: {self.current_selection}"))
             filtered_dfs = self.dfs[self.current_selection]
 
             try:
