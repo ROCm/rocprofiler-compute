@@ -44,12 +44,14 @@ from rocprof_compute_tui.config import APP_TITLE
 from rocprof_compute_tui.views.main_view import MainView
 from rocprof_compute_tui.widgets.menu_bar.menu_bar import DropdownMenu
 from utils.specs import MachineSpecs, generate_machine_specs
+from utils.utils import get_version
 
 
 class RocprofTUIApp(App):
     """Main application for the performance analysis tool."""
 
-    TITLE = f"{APP_TITLE} v{config.VERSION}"
+    VERSION = get_version(config.rocprof_compute_home)['version']
+    TITLE = f"{APP_TITLE} v{VERSION}"
     SUB_TITLE = "Workload Analysis Tool"
 
     CSS_PATH = "assets/style.css"
