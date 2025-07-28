@@ -148,7 +148,7 @@ def process_panels_to_dataframes(args, kernel_df, archConfigs, roof_plot=None):
                 df = pd.DataFrame(index=base_df.index)
 
                 for header in list(base_df.columns):
-                    if header in config.HIDDEN_COLUMNS:
+                    if header in config.HIDDEN_COLUMNS_TUI:
                         continue
                     else:
                         df[header] = base_df[header]

@@ -79,7 +79,6 @@ class MainView(Horizontal):
                 # Center Panel - Analysis results display
                 center_panel = CenterPanel()
                 yield center_panel
-
                 self.center = center_panel
 
                 # Bottom Panel - Output, terminal, and metric description
@@ -105,8 +104,9 @@ class MainView(Horizontal):
 
         try:
             row_data = table.get_row_at(row_idx)
-            content = f"Selected Row {row_idx}:\n"
-            content += "\n".join(f"{val}" for val in row_data)
+            content = f"Selected Metric ID: {row_data[0]}\n"
+            content += f"Selected Metric: {row_data[1]}\n"
+            content += f"Metric Description:\n\t{row_data[-1]}"
 
             self.metric_description.text = content
             self.logger.info(f"Row {row_idx} data displayed in metric_description")
