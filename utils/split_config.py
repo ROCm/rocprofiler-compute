@@ -6,9 +6,9 @@
 # Read utils/unified_config.yaml and split it into metric tables per documentation section
 # WARNING: This script will overwrite existing docs/data/metrics_description.yaml
 
+import copy
 import hashlib
 import re
-import copy
 from pathlib import Path
 
 import yaml
