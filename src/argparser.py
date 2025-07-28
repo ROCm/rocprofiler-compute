@@ -202,7 +202,7 @@ Examples:
         nargs="?",
         const="",
         # Argument to --list-metrics is optional
-        choices=[""] + list(supported_archs.keys()),  # ["gfx906", "gfx908", "gfx90a"],
+        choices=[""] + list(supported_archs.keys()),  # ["gfx908", "gfx90a"],
         help=print_avail_arch(supported_archs.keys()),
     )
     profile_group.add_argument(
@@ -249,7 +249,7 @@ Examples:
         required=False,
         metavar="",
         dest="format_rocprof_output",
-        choices=["json", "csv"],
+        choices=["json", "csv", "rocpd"],
         default="csv",
         help="\t\t\tSet the format of output file of rocprof.",
     )
@@ -279,6 +279,13 @@ Examples:
         required=False,
         default="/opt/rocm/lib/librocprofiler-sdk.so",
         help="\t\t\tSet the path to rocprofiler SDK library.",
+    )
+    profile_group.add_argument(
+        "--retain-rocpd-output",
+        required=False,
+        default=False,
+        action="store_true",
+        help="\t\t\tRetain the large raw rocpd database in workload directory.\n\t\t\tThis option requires --format-rocprof-output rocpd.",
     )
 
     ## Roofline Command Line Options
@@ -623,7 +630,18 @@ Examples:
         dest="cols",
         metavar="",
         nargs="+",
-        help="\t\tSpecify column indices to display.",
+        help="\t\tSpecify column indices to display.\n\t\tDefaults to display all columns.",
+    )
+    analyze_advanced_group.add_argument(
+        "--include-cols",
+        dest="include_cols",
+        metavar="",
+        nargs="+",
+        help=(
+            "\t\tSpecify which hidden column names should be included in cli output.\n"
+            "\t\tFor example, to show 'Description' column which is hidden by default in cli output,\n"
+            "\t\tuse the option --include-cols Description."
+        ),
     )
     analyze_advanced_group.add_argument(
         "-g", dest="debug", action="store_true", help="\t\tDebug single metric."

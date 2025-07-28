@@ -1146,8 +1146,8 @@ class MemChart:
         block_const_L1.y_max = block_vector_L1.y_min - 3
         block_const_L1.y_min = block_const_L1.y_max - 5
 
-        block_const_L1.hit = metric_dict.get("VL1D Hit", "n/a")
-        block_const_L1.latency = metric_dict.get("VL1D Lat", "n/a")
+        block_const_L1.hit = metric_dict.get("sL1D Hit", "n/a")
+        block_const_L1.latency = metric_dict.get("sL1D Lat", "n/a")
 
         block_const_L1.draw(canvas)
 
@@ -1331,9 +1331,9 @@ if __name__ == "__main__":
     metric_dict["VL1 Coalesce"] = 27
     metric_dict["VL1 Stall"] = 28
 
-    metric_dict["VL1D Rd"] = 29
-    metric_dict["VL1D Hit"] = 30
-    metric_dict["VL1D Lat"] = 31
+    metric_dict["sL1D Rd"] = 29
+    metric_dict["sL1D Hit"] = 30
+    metric_dict["sL1D Lat"] = 31
 
     metric_dict["IL1 Fetch"] = 32
     metric_dict["IL1 Hit"] = 33
@@ -1344,9 +1344,9 @@ if __name__ == "__main__":
     metric_dict["VL1_L2 Wr"] = 37
     metric_dict["VL1_L2 Atomic"] = 38
 
-    metric_dict["VL1D_L2 Rd"] = 39
-    metric_dict["VL1D_L2 Wr"] = 40
-    metric_dict["VL1D_L2 Atomic"] = 41
+    metric_dict["sL1D_L2 Rd"] = 39
+    metric_dict["sL1D_L2 Wr"] = 40
+    metric_dict["sL1D_L2 Atomic"] = 41
     metric_dict["IL1_L2 Rd"] = 42
 
     metric_dict["L2 Hit"] = 43

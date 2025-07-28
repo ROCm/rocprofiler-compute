@@ -285,7 +285,7 @@ class CodeTransformer(ast.NodeTransformer):
         return node
 
 
-def build_eval_string(equation, coll_level):
+def build_eval_string(equation, coll_level, config):
     """
     Convert user defined equation string to eval executable string
     For example,
@@ -329,7 +329,14 @@ def build_eval_string(equation, coll_level):
     s = re.sub(r"raw_pmc_df\['(.*?)']", r'raw_pmc_df.get("\1")', s)
     # print("--- intermediate string: ", s)
     # apply coll_level
-    s = re.sub(r"raw_pmc_df", "raw_pmc_df.get('" + coll_level + "')", s)
+    if config.get("format_rocprof_output") == "rocpd":
+        # Replace SQ_ACCUM_PREV_HIRES with coll_level_ACCUM then ignore coll_level df
+        s = re.sub(f"SQ_ACCUM_PREV_HIRES", f"{coll_level}_ACCUM", s)
+        s = re.sub(
+            r"raw_pmc_df", "raw_pmc_df.get('" + schema.pmc_perf_file_prefix + "')", s
+        )
+    else:
+        s = re.sub(r"raw_pmc_df", "raw_pmc_df.get('" + coll_level + "')", s)
     # print("--- build_eval_string, return: ", s)
     return s
 
@@ -524,17 +531,19 @@ def build_dfs(archConfigs, filter_metrics, sys_info):
                             headers.append(k)
 
                         for key, tile in data_config["header"].items():
-                            if key != "metric" and key != "tips" and key != "expr":
+                            if key != "metric" and key != "expr":
                                 headers.append(tile)
                     else:
+                        headers.append(data_config["header"]["metric"])
                         for key, tile in data_config["header"].items():
-                            if key != "tips":
+                            if key != "metric":
                                 headers.append(tile)
 
-                    # do we always need one?
                     headers.append("coll_level")
-                    if "tips" in data_config["header"].keys():
-                        headers.append(data_config["header"]["tips"])
+
+                    # Only add Metrics Description column if it is defined in the panel
+                    if "metrics_description" in panel:
+                        headers.append("Description")
 
                     df = pd.DataFrame(columns=headers)
 
@@ -578,16 +587,12 @@ def build_dfs(archConfigs, filter_metrics, sys_info):
                                         for bk, bv in simple_box.items():
                                             values.append(bv[0] + v + bv[1])
                                     else:
-                                        if (
-                                            k != "tips"
-                                            and k != "coll_level"
-                                            and k != "alias"
-                                        ):
+                                        if k != "coll_level" and k != "alias":
                                             values.append(v)
 
                             else:
                                 for k, v in entries.items():
-                                    if k != "tips" and k != "coll_level" and k != "alias":
+                                    if k != "coll_level" and k != "alias":
                                         values.append(v)
                                         eqn_content.append(v)
 
@@ -599,8 +604,11 @@ def build_dfs(archConfigs, filter_metrics, sys_info):
                             else:
                                 values.append(schema.pmc_perf_file_prefix)
 
-                            if "tips" in entries.keys():
-                                values.append(entries["tips"])
+                            if "metrics_description" in panel:
+                                if key in panel["metrics_description"]:
+                                    values.append(panel["metrics_description"][key])
+                                else:
+                                    values.append("")
 
                             # print(headers, values)
                             # print(key, entries)
@@ -667,7 +675,7 @@ def build_dfs(archConfigs, filter_metrics, sys_info):
     setattr(archConfigs, "metric_counters", metric_counters)
 
 
-def build_metric_value_string(dfs, dfs_type, normal_unit):
+def build_metric_value_string(dfs, dfs_type, normal_unit, profiling_config):
     """
     Apply the real eval string to its field in the metric_table df.
     """
@@ -688,6 +696,7 @@ def build_metric_value_string(dfs, dfs_type, normal_unit):
                                 df.at[row_idx_label, expr] = build_eval_string(
                                     df.at[row_idx_label, expr],
                                     df.at[row_idx_label, "coll_level"],
+                                    profiling_config,
                                 )
 
                 elif expr.lower() == "unit" or expr.lower() == "units":
@@ -697,7 +706,7 @@ def build_metric_value_string(dfs, dfs_type, normal_unit):
 
 
 @demarcate
-def eval_metric(dfs, dfs_type, sys_info, raw_pmc_df, debug):
+def eval_metric(dfs, dfs_type, sys_info, raw_pmc_df, debug, config):
     """
     Execute the expr string for each metric in the df.
     """
@@ -798,7 +807,7 @@ def eval_metric(dfs, dfs_type, sys_info, raw_pmc_df, debug):
         if "PER_XCD" not in key:
             continue
         # NB: assume all built-in vars from pmc_perf.csv for now
-        s = build_eval_string(value, schema.pmc_perf_file_prefix)
+        s = build_eval_string(value, schema.pmc_perf_file_prefix, config)
         try:
             ammolite__build_in[key] = eval(compile(s, "<string>", "eval"))
         except TypeError:
@@ -815,7 +824,7 @@ def eval_metric(dfs, dfs_type, sys_info, raw_pmc_df, debug):
         if "PER_XCD" in key:
             continue
         # NB: assume all built-in vars from pmc_perf.csv for now
-        s = build_eval_string(value, schema.pmc_perf_file_prefix)
+        s = build_eval_string(value, schema.pmc_perf_file_prefix, config)
         try:
             ammolite__build_in[key] = eval(compile(s, "<string>", "eval"))
         except TypeError:
@@ -1451,7 +1460,7 @@ def load_kernel_top(workload, dir, args):
 
 
 @demarcate
-def load_table_data(workload, dir, is_gui, args, skipKernelTop=False):
+def load_table_data(workload, dir, is_gui, args, config, skipKernelTop=False):
     """
     - Load data for all "raw_csv_table"
     - Load data for "pc_sampling_table"
@@ -1466,6 +1475,7 @@ def load_table_data(workload, dir, is_gui, args, skipKernelTop=False):
         workload.sys_info.iloc[0],
         apply_filters(workload, dir, is_gui, args.debug),
         args.debug,
+        config,
     )
 
 
@@ -1474,7 +1484,14 @@ def build_comparable_columns(time_unit):
     Build comparable columns/headers for display
     """
     comparable_columns = schema.supported_field
-    top_stat_base = ["Count", "Sum", "Mean", "Median", "Standard Deviation"]
+    top_stat_base = [
+        "Count",
+        "Sum",
+        "Mean",
+        "Median",
+        "Standard Deviation",
+        "Description",
+    ]
 
     for h in top_stat_base:
         comparable_columns.append(h + "(" + time_unit + ")")

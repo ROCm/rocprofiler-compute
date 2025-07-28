@@ -29,29 +29,8 @@ from pathlib import Path
 rocprof_compute_home = Path(__file__).resolve().parent
 PROJECT_NAME = "rocprofiler-compute"
 
-
-def read_version() -> str:
-    version_file = rocprof_compute_home / ".." / "VERSION"
-
-    try:
-        with open(version_file, encoding="utf-8") as f:
-            content = f.read().strip()
-    except FileNotFoundError:
-        raise FileNotFoundError(f"VERSION file not found at: {version_file}")
-
-    match = re.search(r"(\d+\.\d+\.\d+(?:-[\w.]+)?)", content)
-
-    if not match:
-        raise ValueError(
-            f"No valid version number found in {version_file}. Content: '{content}'"
-        )
-
-    return match.group(1)
-
-
-VERSION = read_version()
-
-HIDDEN_COLUMNS = ["Tips", "coll_level"]
+HIDDEN_COLUMNS = ["coll_level"]
+HIDDEN_COLUMNS_CLI = ["Description", "coll_level"]
 HIDDEN_SECTIONS = [400, 1900, 2000]
 
 TIME_UNITS = {"s": 10**9, "ms": 10**6, "us": 10**3, "ns": 1}
