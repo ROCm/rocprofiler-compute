@@ -100,6 +100,7 @@ class tui_analysis(OmniAnalyze_Base):
                 self._runs[self.path].sys_info.iloc[0],
                 kernel_df,
                 self.get_args().debug,
+                self._profiling_config,
             )
 
             self.raw_dfs[kernel_name] = self._runs[self.path].dfs

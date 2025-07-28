@@ -4,7 +4,7 @@ sections:
     class: "sysinfo-section"
     subsections:
       - title: "System Speed-of-Light"
-        data_path: ["2. System Speed-of-Light", "2.1 Speed-of-Light"]
+        data_path: ["2. System Speed-of-Light", "2.1 System Speed-of-Light"]
         collapsed: true
       - title: "Memory Chart"
         data_path: ["3. Memory Chart", "3.1 Memory Chart"]
