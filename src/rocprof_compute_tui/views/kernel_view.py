@@ -4,7 +4,7 @@ Panel Widget Modules
 Contains the panel widgets used in the main layout.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 from textual import on
 from textual.containers import Container, VerticalScroll
@@ -85,18 +85,14 @@ class KernelView(Container):
             # empty on init
             pass
 
-    def update_results(self, dfs: Dict[str, Any], top_kernel: List[Dict]) -> None:
-        """
-        Update both containers with analysis results.
-        """
-        self.dfs = dfs
-        self.top_kernel = top_kernel
+    def update_results(self, per_kernel_dfs, top_kernels) -> None:
+        self.dfs = per_kernel_dfs
+        self.top_kernel = top_kernels
 
-        # Update top container with radio set
         top_container = self.query_one("#top-container", VerticalScroll)
         top_container.remove_children()
 
-        if self.dfs and self.top_kernel:
+        if self.top_kernel:
             top_container.mount(Label("Select a kernel to view detailed analysis."))
             try:
                 header = self.build_header()
@@ -110,15 +106,11 @@ class KernelView(Container):
         else:
             top_container.mount(Label("No kernels available", classes="placeholder"))
 
-        # Clear bottom container until selection is made
         bottom_container = self.query_one("#bottom-container", VerticalScroll)
         bottom_container.remove_children()
-        bottom_container.mount(
-            Label(
-                "Select a kernel from above to view detailed analysis",
-                classes="placeholder",
-            )
-        )
+
+        self.current_selection = self.top_kernel[0]["Kernel_Name"]
+        self._update_bottom_content()
 
     def update_view(self, message: str, log_level: str) -> None:
         """
@@ -128,24 +120,17 @@ class KernelView(Container):
             self.status_label = Label(f"{message}", classes=log_level)
             self.mount(self.status_label)
         else:
-            # Update existing label
             self.status_label.update(f"{message}")
             self.status_label.set_classes(log_level)
 
     def reload_config(self, config_path: str = None) -> None:
-        """
-        Reload the configuration and update the view.
-        """
         if config_path:
             self.config_path = config_path
 
-        if self.dfs:
-            self.update_results(self.dfs, self.top_kernel)
+        if self.dfs and self.top_kernel:
+            self.update_results()
 
     def build_header(self):
-        if not self.top_kernel:
-            return Label()
-
         all_keys = set()
 
         for kernel in self.top_kernel:
@@ -163,13 +148,8 @@ class KernelView(Container):
         return header_label
 
     def build_selector(self):
-        """Build the radio set for kernel selection."""
-        if not self.top_kernel:
-            return RadioSet()
-
         radio_buttons = []
 
-        # Create radio buttons with formatted kernel data
         for i, kernel in enumerate(self.top_kernel):
             row_data = []
             for key in self.keys:
@@ -189,7 +169,6 @@ class KernelView(Container):
 
     @on(RadioSet.Changed)
     def on_radio_changed(self, event: RadioSet.Changed) -> None:
-        """Handle radio button selection and update bottom container."""
         if event.pressed:
             kernel_data = getattr(event.pressed, "kernel_data", None)
             if kernel_data and "Kernel_Name" in kernel_data:
@@ -198,31 +177,24 @@ class KernelView(Container):
                 self._update_bottom_content()
 
     def _update_bottom_content(self):
-        """Update the bottom container with detailed analysis for selected kernel."""
         bottom_container = self.query_one("#bottom-container", VerticalScroll)
         bottom_container.remove_children()
 
-        if self.dfs and self.current_selection:
-            # Check if current_selection exists in dfs
-            if self.current_selection in self.dfs:
-                filtered_dfs = self.dfs[self.current_selection]
+        if self.current_selection and self.current_selection in self.dfs:
+            filtered_dfs = self.dfs[self.current_selection]
 
-                try:
-                    sections = build_all_sections(filtered_dfs, self.config_path)
-                    for section in sections:
-                        bottom_container.mount(section)
-                except Exception as e:
-                    bottom_container.mount(
-                        Label(f"Error displaying results: {str(e)}", classes="error")
-                    )
-            else:
+            try:
+                sections = build_all_sections(filtered_dfs, self.config_path)
+                for section in sections:
+                    bottom_container.mount(section)
+            except Exception as e:
                 bottom_container.mount(
-                    Label(
-                        f"No data available for kernel: {self.current_selection}",
-                        classes="error",
-                    )
+                    Label(f"Error displaying results: {str(e)}", classes="error")
                 )
         else:
             bottom_container.mount(
-                Label("Select a kernel to view detailed analysis", classes="placeholder")
+                Label(
+                    f"No data available for kernel: {self.current_selection}",
+                    classes="error",
+                )
             )

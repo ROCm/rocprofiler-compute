@@ -43,7 +43,6 @@ def create_table(df: pd.DataFrame) -> DataTable:
     df = df.reset_index()
     df = df[~df.apply(lambda row: row.astype(str).str.strip().eq("").any(), axis=1)]
 
-    # Add columns and rows
     str_columns = [str(col) for col in df.columns]
     table.add_columns(*str_columns)
     table.add_rows([tuple(str(x) for x in row) for row in df.itertuples(index=False)])

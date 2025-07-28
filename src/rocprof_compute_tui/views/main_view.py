@@ -50,12 +50,10 @@ class MainView(Horizontal):
     """Main view layout for the application."""
 
     selected_path = reactive(None)
-    dfs = reactive({})
     per_kernel_dfs = reactive({})
     top_kernels = reactive([])
 
     def __init__(self):
-        """Initialize the main view."""
         super().__init__(id="main-container")
         self.start_path = (
             # NOTE: is cwd the best choice?
@@ -72,7 +70,6 @@ class MainView(Horizontal):
         pass
 
     def compose(self) -> ComposeResult:
-        """Compose the main view layout."""
         self.logger.info("Composing main view layout", update_ui=False)
         yield MenuBar()
 
@@ -93,7 +90,6 @@ class MainView(Horizontal):
                 self.metric_description = tabs.description_area
                 self.output = tabs.output_area
 
-                # Now set the output area for the logger
                 self.logger.set_output_area(self.output)
                 self.logger.info("Main view layout composed")
 
@@ -259,10 +255,8 @@ class MainView(Horizontal):
 
     def _update_view(self, message: str, log_level: LogLevel) -> None:
         try:
-            # Use call_from_thread to safely update UI from background thread
             self.app.call_from_thread(self._safe_update_view, message, log_level)
         except Exception as e:
-            # Capture errors that might occur when scheduling the UI update
             self.logger.error(f"View update scheduling error: {str(e)}")
 
     def _safe_update_view(self, message: str, log_level: LogLevel) -> None:
