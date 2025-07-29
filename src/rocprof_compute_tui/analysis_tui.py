@@ -93,9 +93,10 @@ class tui_analysis(OmniAnalyze_Base):
         self.raw_dfs.clear()
         for idx in self._runs[self.path].raw_pmc.index:
             kernel_df = self._runs[self.path].raw_pmc.loc[[idx]]
-            kernel_name = kernel_df.pmc_perf["Kernel_Name"][0]
+            kernel_name = kernel_df.pmc_perf["Kernel_Name"].loc[idx]
+            this_dfs = copy.deepcopy(self._runs[self.path].dfs)
             parser.eval_metric(
-                self._runs[self.path].dfs,
+                this_dfs,
                 self._runs[self.path].dfs_type,
                 self._runs[self.path].sys_info.iloc[0],
                 kernel_df,
@@ -103,7 +104,7 @@ class tui_analysis(OmniAnalyze_Base):
                 self._profiling_config,
             )
 
-            self.raw_dfs[kernel_name] = self._runs[self.path].dfs
+            self.raw_dfs[kernel_name] = this_dfs
 
     def initalize_runs(self, normalization_filter=None):
         sysinfo_path = Path(self.path)

@@ -373,7 +373,7 @@ class SimpleBar(Static):
         try:
             result = simple_bar(self.df)
 
-            if result and not result.empty:
+            if result:
                 plot_str = str(result)
                 escaped_content = plot_str.replace("[", r"\[").replace("]", r"\]")
                 self.update(escaped_content)
