@@ -177,13 +177,13 @@ class KernelView(Container):
         bottom_container.remove_children()
 
         bottom_container.mount(
-            Label(
-                f"Toggle kernel selection to view detailed analysis."
-            )
+            Label(f"Toggle kernel selection to view detailed analysis.")
         )
 
         if self.current_selection and self.current_selection in self.dfs:
-            bottom_container.mount(Label(f"Current kernel selection: {self.current_selection}"))
+            bottom_container.mount(
+                Label(f"Current kernel selection: {self.current_selection}")
+            )
             filtered_dfs = self.dfs[self.current_selection]
 
             try:
