@@ -167,7 +167,8 @@ Analyze mode
    .. code-block:: shell
 
       $ rocprof-compute analyze --tui
-See :doc:`analyze/mode` to learn about this mode in depth and to get started
+
+See :doc:`analyze/mode` to learn about these modes in depth and to get started
 with analysis using ROCm Compute Profiler.
 
 .. _modes-database:
