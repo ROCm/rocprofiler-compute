@@ -172,9 +172,10 @@ class OmniSoC_Base:
         amd_smi_mclk = json.loads(amd_smi_mclk)
 
         if isinstance(amd_smi_mclk, dict):
-            # TODO: is there really a case where this is a dict?
+            # The output of `amd-smi static --clock --json` is a dict with amd-smi>=26.0.0.
             amd_smi_mclk = amd_smi_mclk["gpu_data"][0]["clock"]["mem"]["frequency_levels"]
         else:
+            # For backward compatibility: the output of `amd-smi static --clock --json` used to be a list for amd-smi<26.0.0.
             amd_smi_mclk = amd_smi_mclk[0]["clock"]["mem"]["frequency_levels"]
 
         # Choose the highest level of memory clock frequency
