@@ -280,24 +280,25 @@ class OmniSoC_Base:
         set_selected = self.get_args().set_selected
 
         if set_selected:
-            set_choices, sets_dict = parse_sets_from_file(arch=self.__arch)
-
-            if set_selected not in set_choices:
-                console_error(
-                    f"argument --set: invalid choice: '{set_selected}' (choose from {set_choices})"
-                )
-
+            # NOTE: --blocks and --set are mutually exclusive
             if self.get_args().filter_blocks:
                 console_error("--block and --set are exclusive options.")
 
-            self.__args.filter_blocks = sets_dict[set_selected]
+            sets_info = parse_sets_from_file(self.__arch)
+            if set_selected not in set(sets_info.keys()):
+                console_error(
+                    f"argument --set: invalid choice: '{set_selected}' (choose from {sets_info.keys()})"
+                )
+            self.__args.filter_blocks = [
+                next(iter(metric.keys())) for metric in sets_info[set_selected]["metric"]
+            ]
 
-        if not self.__args.filter_blocks:
+        if not self.get_args().filter_blocks:
             for filename in config_filename_dict.values():
                 with open(filename, "r") as stream:
                     texts.append(stream.read())
 
-        for block_id in self.__args.filter_blocks:
+        for block_id in self.get_args().filter_blocks:
             file_id, panel_id, metric_id = convert_metric_id_to_panel_info(block_id)
 
             # File id filtering

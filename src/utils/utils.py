@@ -1613,84 +1613,23 @@ def format_time(seconds):
     return ", ".join(parts[:-1]) + (" and " if len(parts) > 1 else "") + parts[-1]
 
 
-def parse_sets_from_file(
-    arch,
-    filename=None,
-):
-    # Use the global variable to construct the absolute path
-    if filename is None:
-        filename = (
-            config.rocprof_compute_home
-            / "rocprof_compute_soc"
-            / "profile_configs"
-            / "sets"
-            / f"{arch}_sets.yaml"
-        )
-    try:
-        with open(filename, "r") as file:
-            content = file.read()
+def parse_sets_from_file(arch):
+    filename = (
+        config.rocprof_compute_home
+        / "rocprof_compute_soc"
+        / "profile_configs"
+        / "sets"
+        / f"{arch}_sets.yaml"
+    )
+    with open(filename, "r") as file:
+        content = file.read()
+    data = yaml.safe_load(content)
 
-        data = yaml.safe_load(content)
-        sets_data = data.get("Sets", [])
+    sets_data = data.get("sets", [])
 
-        set_choices = []
-        sets_dict = {}
-
-        for set_item in sets_data:
-            set_option = set_item.get("set_option", "")
-            if not set_option:
-                continue
-
-            set_choices.append(set_option)
-
-            metrics = set_item.get("metric", {})
-            metric_ids = []
-
-            for metric_name, metric_data in metrics.items():
-                if isinstance(metric_data, dict) and "id" in metric_data:
-                    metric_ids.append(str(metric_data["id"]))
-            sets_dict[set_option] = metric_ids
-        return set_choices, sets_dict
-
-    except (FileNotFoundError, yaml.YAMLError) as e:
-        console_error(
-            f"Warning: Could not parse sets file ({e}). Check sets.yaml is defined to use option --set."
-        )
-
-
-def parse_sets_for_list_sets(
-    arch,
-    filename=None,
-):
-    # Use the global variable to construct the absolute path
-    if filename is None:
-        filename = (
-            config.rocprof_compute_home
-            / "rocprof_compute_soc"
-            / "analysis_configs"
-            / arch
-            / "sets.yaml"
-        )
-    try:
-        with open(filename, "r") as file:
-            content = file.read()
-
-        data = yaml.safe_load(content)
-        sets_data = data.get("Sets", [])
-
-        sets_info = {}
-        for set_item in sets_data:
-            set_option = set_item.get("set_option", "")
-            if set_option:
-                sets_info[set_option] = set_item
-
-        return sets_info
-
-    except (FileNotFoundError, yaml.YAMLError) as e:
-        console_error(
-            f"Warning: Could not parse sets file ({e}). Check sets.yaml is defined to use option --set."
-        )
-
-
-def format_table_row(col1, col2, col1_width=30, col2_width=15):
-    return f"  {col1:<{col1_width}} {col2:<{col2_width}}"
+    sets_info = {}
+    for set_item in sets_data:
+        set_option = set_item.get("set_option", "")
+        if set_option:
+            sets_info[set_option] = set_item
+    return sets_info
