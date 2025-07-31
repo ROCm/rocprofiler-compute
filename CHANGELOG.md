@@ -9,7 +9,8 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 * Add `rocpd` choice for `--format-rocprof-output` option in profile mode
 * Add `--retain-rocpd-output` option in profile mode to save large raw rocpd databases in workload directory
 * Show description of metrics during analysis
-  * Use `--include-cols Description` to show `Description` column which is excluded by default from cli output
+  * Use `--include-cols Description` to show the Description column, which is excluded by default from the
+  ROCm Compute Profiler CLI output.
 
 ### Changed
 
