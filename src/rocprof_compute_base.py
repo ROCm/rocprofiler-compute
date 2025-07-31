@@ -52,7 +52,7 @@ from utils.utils import (
     get_submodules,
     get_version,
     get_version_display,
-    parse_sets_from_file,
+    parse_sets_yaml,
     set_locale_encoding,
 )
 
@@ -243,7 +243,7 @@ class RocProfCompute:
 
     @demarcate
     def list_sets(self):
-        sets_info = parse_sets_from_file(self.__mspec.gpu_arch)
+        sets_info = parse_sets_yaml(self.__mspec.gpu_arch)
 
         if not sets_info:
             console_error("No sets configuration found.")

@@ -52,7 +52,7 @@ from utils.utils import (
     detect_rocprof,
     get_submodules,
     is_tcc_channel_counter,
-    parse_sets_from_file,
+    parse_sets_yaml,
     using_v3,
 )
 
@@ -284,7 +284,7 @@ class OmniSoC_Base:
             if self.get_args().filter_blocks:
                 console_error("--block and --set are exclusive options.")
 
-            sets_info = parse_sets_from_file(self.__arch)
+            sets_info = parse_sets_yaml(self.__arch)
             if set_selected not in set(sets_info.keys()):
                 console_error(
                     f"argument --set: invalid choice: '{set_selected}' (choose from {sets_info.keys()})"

@@ -23,9 +23,7 @@
 ##############################################################################el
 
 import subprocess
-import sys
 from importlib.machinery import SourceFileLoader
-from io import StringIO
 from unittest.mock import patch
 
 import pytest
@@ -52,13 +50,7 @@ def pytest_addoption(parser):
 @pytest.fixture
 def binary_handler_profile_rocprof_compute(request):
     def _handler(
-        config,
-        workload_dir,
-        options=[],
-        check_success=True,
-        roof=False,
-        app_name="app_1",
-        capture_output=False,
+        config, workload_dir, options=[], check_success=True, roof=False, app_name="app_1"
     ):
         if request.config.getoption("--rocprofiler-sdk-library-path"):
             options.extend(
@@ -77,72 +69,34 @@ def binary_handler_profile_rocprof_compute(request):
             ]
             if not roof:
                 baseline_opts.append("--no-roof")
-            if capture_output:
-                process = subprocess.run(
-                    baseline_opts
-                    + options
-                    + ["--path", workload_dir, "--"]
-                    + config[app_name],
-                    text=True,
-                    capture_output=True,
-                )
-                if check_success:
-                    assert process.returncode == 0
-
-                return process.returncode, process.stdout
-            else:
-                process = subprocess.run(
-                    baseline_opts
-                    + options
-                    + ["--path", workload_dir, "--"]
-                    + config[app_name],
-                    text=True,
-                )
-                if check_success:
-                    assert process.returncode == 0
-                return process.returncode
+            process = subprocess.run(
+                baseline_opts
+                + options
+                + ["--path", workload_dir, "--"]
+                + config[app_name],
+                text=True,
+            )
+            # verify run status
+            if check_success:
+                assert process.returncode == 0
+            return process.returncode
         else:
             baseline_opts = ["rocprof-compute", "profile", "-n", app_name, "-VVV"]
             if not roof:
                 baseline_opts.append("--no-roof")
-            if capture_output:
-                original_stdout = sys.stdout
-                captured_stdout = StringIO()
-
-                try:
-                    sys.stdout = captured_stdout
-
-                    with pytest.raises(SystemExit) as e:
-                        with patch(
-                            "sys.argv",
-                            baseline_opts
-                            + options
-                            + ["--path", workload_dir, "--"]
-                            + config[app_name],
-                        ):
-                            rocprof_compute.main()
-
-                    stdout_content = captured_stdout.getvalue()
-
-                finally:
-                    sys.stdout = original_stdout
-                if check_success:
-                    print(stdout_content)
-                    assert e.value.code == 0
-                return e.value.code, stdout_content
-            else:
-                with pytest.raises(SystemExit) as e:
-                    with patch(
-                        "sys.argv",
-                        baseline_opts
-                        + options
-                        + ["--path", workload_dir, "--"]
-                        + config[app_name],
-                    ):
-                        rocprof_compute.main()
-                if check_success:
-                    assert e.value.code == 0
-                return e.value.code
+            with pytest.raises(SystemExit) as e:
+                with patch(
+                    "sys.argv",
+                    baseline_opts
+                    + options
+                    + ["--path", workload_dir, "--"]
+                    + config[app_name],
+                ):
+                    rocprof_compute.main()
+            # verify run status
+            if check_success:
+                assert e.value.code == 0
+            return e.value.code
 
     return _handler
 

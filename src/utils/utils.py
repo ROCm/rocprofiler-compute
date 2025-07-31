@@ -1613,7 +1613,7 @@ def format_time(seconds):
     return ", ".join(parts[:-1]) + (" and " if len(parts) > 1 else "") + parts[-1]
 
 
-def parse_sets_from_file(arch):
+def parse_sets_yaml(arch):
     filename = (
         config.rocprof_compute_home
         / "rocprof_compute_soc"
