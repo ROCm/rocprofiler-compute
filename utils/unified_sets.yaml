@@ -1,0 +1,180 @@
+---
+# Pre-defined sets containing a collection of relevant metrics that can be collected in a single pass.
+# To profile customized set(s), append to this yaml file.
+
+sets:
+- title: Compute Throughput Utilization
+  set_option: compute_thruput_util
+  description: Placeholder
+  metric:
+    gfx90a:
+      11.2.3: SALU Utilization
+      11.2.4: VALU Utilization
+      11.2.6: VMEM Utilization
+      11.2.7: Branch Utilization
+    gfx908:
+      11.2.3: SALU Utilization
+      11.2.4: VALU Utilization
+      11.2.6: VMEM Utilization
+      11.2.7: Branch Utilization
+    gfx940:
+      11.2.3: SALU Utilization
+      11.2.4: VALU Utilization
+      11.2.6: VMEM Utilization
+      11.2.7: Branch Utilization
+    gfx941:
+      11.2.3: SALU Utilization
+      11.2.4: VALU Utilization
+      11.2.6: VMEM Utilization
+      11.2.7: Branch Utilization
+    gfx942:
+      11.2.3: SALU Utilization
+      11.2.4: VALU Utilization
+      11.2.6: VMEM Utilization
+      11.2.7: Branch Utilization
+    gfx950:
+      11.2.3: SALU Utilization
+      11.2.4: VALU Utilization
+      11.2.6: VMEM Utilization
+      11.2.7: Branch Utilization
+
+- title: Compute Throughput FLOPS
+  set_option: compute_thruput_flops
+  description: Placeholder
+  metric:
+    gfx90a:
+      2.1.2: MFMA FLOPs (F8)
+      2.1.3: MFMA FLOPs (BF16)
+      2.1.4: MFMA FLOPs (F16)
+      2.1.5: MFMA FLOPs (F32)
+      2.1.6: MFMA FLOPs (F64)
+      2.1.7: MFMA IOPs (Int8)
+    gfx908:
+      2.1.2: MFMA FLOPs (F8)
+      2.1.3: MFMA FLOPs (BF16)
+      2.1.4: MFMA FLOPs (F16)
+      2.1.5: MFMA FLOPs (F32)
+      2.1.6: MFMA FLOPs (F64)
+      2.1.7: MFMA IOPs (Int8)
+    gfx940:
+      2.1.2: MFMA FLOPs (F8)
+      2.1.3: MFMA FLOPs (BF16)
+      2.1.4: MFMA FLOPs (F16)
+      2.1.5: MFMA FLOPs (F32)
+      2.1.6: MFMA FLOPs (F64)
+      2.1.7: MFMA IOPs (Int8)
+    gfx941:
+      2.1.2: MFMA FLOPs (F8)
+      2.1.3: MFMA FLOPs (BF16)
+      2.1.4: MFMA FLOPs (F16)
+      2.1.5: MFMA FLOPs (F32)
+      2.1.6: MFMA FLOPs (F64)
+      2.1.7: MFMA IOPs (Int8)
+    gfx942:
+      2.1.2: MFMA FLOPs (F8)
+      2.1.3: MFMA FLOPs (BF16)
+      2.1.4: MFMA FLOPs (F16)
+      2.1.5: MFMA FLOPs (F32)
+      2.1.6: MFMA FLOPs (F64)
+      2.1.7: MFMA IOPs (Int8)
+    gfx950:
+      2.1.2: MFMA FLOPs (F8)
+      2.1.3: MFMA FLOPs (BF16)
+      2.1.4: MFMA FLOPs (F16)
+      2.1.5: MFMA FLOPs (F32)
+      2.1.6: MFMA FLOPs (F64)
+      2.1.7: MFMA IOPs (Int8)
+
+- title: Memory Throughput
+  set_option: mem_thruput
+  description: Placeholder
+  metric:
+    gfx90a:
+      2.1.17: Theoretical LDS Bandwidth
+      2.1.18: LDS Bank Conflicts/Access
+      16.1.2: vL1D Cache Utilization
+      17.1.0: L2 Cache utilization
+    gfx908:
+      2.1.17: Theoretical LDS Bandwidth
+      2.1.18: LDS Bank Conflicts/Access
+      16.1.2: vL1D Cache Utilization
+      17.1.0: L2 Cache utilization
+    gfx940:
+      2.1.17: Theoretical LDS Bandwidth
+      2.1.18: LDS Bank Conflicts/Access
+      16.1.2: vL1D Cache Utilization
+      17.1.0: L2 Cache utilization
+    gfx941:
+      2.1.17: Theoretical LDS Bandwidth
+      2.1.18: LDS Bank Conflicts/Access
+      16.1.2: vL1D Cache Utilization
+      17.1.0: L2 Cache utilization
+    gfx942:
+      2.1.17: Theoretical LDS Bandwidth
+      2.1.18: LDS Bank Conflicts/Access
+      16.1.2: vL1D Cache Utilization
+      17.1.0: L2 Cache utilization
+    gfx950:
+      2.1.17: Theoretical LDS Bandwidth
+      2.1.18: LDS Bank Conflicts/Access
+      16.1.2: vL1D Cache Utilization
+      17.1.0: L2 Cache utilization
+
+- title: Launch Stats
+  set_option: launch_stats
+  description: Placeholder
+  metric:
+    gfx90a:
+      7.1.0: Grid Size
+      7.1.1: Workgroup Size
+      7.1.2: Total Wavefronts
+      7.1.5: VGPRs
+      7.1.6: AGPRs
+      7.1.7: SGPRs
+      7.1.8: LDS Allocation
+      7.1.9: Scratch Allocation
+    gfx908:
+      7.1.0: Grid Size
+      7.1.1: Workgroup Size
+      7.1.2: Total Wavefronts
+      7.1.5: VGPRs
+      7.1.6: AGPRs
+      7.1.7: SGPRs
+      7.1.8: LDS Allocation
+      7.1.9: Scratch Allocation
+    gfx940:
+      7.1.0: Grid Size
+      7.1.1: Workgroup Size
+      7.1.2: Total Wavefronts
+      7.1.5: VGPRs
+      7.1.6: AGPRs
+      7.1.7: SGPRs
+      7.1.8: LDS Allocation
+      7.1.9: Scratch Allocation
+    gfx941:
+      7.1.0: Grid Size
+      7.1.1: Workgroup Size
+      7.1.2: Total Wavefronts
+      7.1.5: VGPRs
+      7.1.6: AGPRs
+      7.1.7: SGPRs
+      7.1.8: LDS Allocation
+      7.1.9: Scratch Allocation
+    gfx942:
+      7.1.0: Grid Size
+      7.1.1: Workgroup Size
+      7.1.2: Total Wavefronts
+      7.1.5: VGPRs
+      7.1.6: AGPRs
+      7.1.7: SGPRs
+      7.1.8: LDS Allocation
+      7.1.9: Scratch Allocation
+    gfx950:
+      7.1.0: Grid Size
+      7.1.1: Workgroup Size
+      7.1.2: Total Wavefronts
+      7.1.5: VGPRs
+      7.1.6: AGPRs
+      7.1.7: SGPRs
+      7.1.8: LDS Allocation
+      7.1.9: Scratch Allocation

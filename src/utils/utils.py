@@ -1622,9 +1622,9 @@ def parse_sets_from_file(
         filename = (
             config.rocprof_compute_home
             / "rocprof_compute_soc"
-            / "analysis_configs"
-            / arch
-            / "sets.yaml"
+            / "profile_configs"
+            / "sets"
+            / f"{arch}_sets.yaml"
         )
     try:
         with open(filename, "r") as file:
