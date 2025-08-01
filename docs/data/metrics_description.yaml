@@ -718,8 +718,8 @@ Vector L1 data-return path or Texture Data (TD):
     unit: Percent
   Write Ack Instructions:
     rst: The total number of write acknowledgements submitted by :ref:`data-return
-      unit <desc-td>` to SQ not SP, summed over all compute units on the accelerator,
-      per normalization unit.
+      unit <desc-td>` to SQ, summed over all compute units on the accelerator, per
+      normalization unit.
     unit: Instructions per normalization unit
   Write Instructions:
     rst: The number of store instructions submitted to the  :ref:`data-return unit
