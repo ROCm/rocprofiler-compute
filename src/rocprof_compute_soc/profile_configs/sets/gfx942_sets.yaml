@@ -4,10 +4,10 @@ sets:
   set_option: compute_thruput_util
   description: Placeholder
   metric:
-  - 11.2.3: SALU Utilization
-  - 11.2.4: VALU Utilization
-  - 11.2.6: VMEM Utilization
-  - 11.2.7: Branch Utilization
+  - 11.2.2: SALU Utilization
+  - 11.2.3: VALU Utilization
+  - 11.2.4: VMEM Utilization
+  - 11.2.5: Branch Utilization
 - title: Compute Throughput FLOPS
   set_option: compute_thruput_flops
   description: Placeholder
