@@ -8,170 +8,169 @@ sets:
   description: Placeholder
   metric:
     gfx908:
-      11.2.2: SALU Utilization
-      11.2.3: VALU Utilization
+      - 11.2.2
+      - 11.2.3
     gfx90a:
-      11.2.3: SALU Utilization
-      11.2.4: VALU Utilization
-      11.2.5: VMEM Utilization
-      11.2.6: Branch Utilization
+      - 11.2.3
+      - 11.2.4
+      - 11.2.5
+      - 11.2.6
     gfx940:
-      11.2.2: SALU Utilization
-      11.2.3: VALU Utilization
-      11.2.4: VMEM Utilization
-      11.2.5: Branch Utilization
+      - 11.2.2
+      - 11.2.3
+      - 11.2.4
+      - 11.2.5
     gfx941:
-      11.2.2: SALU Utilization
-      11.2.3: VALU Utilization
-      11.2.4: VMEM Utilization
-      11.2.5: Branch Utilization
+      - 11.2.2
+      - 11.2.3
+      - 11.2.4
+      - 11.2.5
     gfx942:
-      11.2.2: SALU Utilization
-      11.2.3: VALU Utilization
-      11.2.4: VMEM Utilization
-      11.2.5: Branch Utilization
+      - 11.2.2
+      - 11.2.3
+      - 11.2.4
+      - 11.2.5
     gfx950:
-      11.2.2: SALU Utilization
-      11.2.3: VALU Utilization
-      11.2.5: VMEM Utilization
-      11.2.6: Branch Utilization
+      - 11.2.2
+      - 11.2.3
+      - 11.2.5
+      - 11.2.6
 
 - title: Compute Throughput FLOPS
   set_option: compute_thruput_flops
   description: Placeholder
   metric:
     gfx908:
-      2.1.2: MFMA FLOPs (BF16)
-      2.1.3: MFMA FLOPs (F16)
-      2.1.4: MFMA FLOPs (F32)
-      2.1.5: MFMA FLOPs (F64)
-      2.1.6: MFMA IOPs (Int8)
+      - 2.1.2
+      - 2.1.3
+      - 2.1.4
+      - 2.1.5
+      - 2.1.6
     gfx90a:
-      2.1.2: MFMA FLOPs (F8)
-      2.1.3: MFMA FLOPs (BF16)
-      2.1.4: MFMA FLOPs (F16)
-      2.1.5: MFMA FLOPs (F32)
-      2.1.6: MFMA FLOPs (F64)
-      2.1.7: MFMA IOPs (Int8)
+      - 2.1.2
+      - 2.1.3
+      - 2.1.4
+      - 2.1.5
+      - 2.1.6
     gfx940:
-      2.1.2: MFMA FLOPs (F8)
-      2.1.3: MFMA FLOPs (BF16)
-      2.1.4: MFMA FLOPs (F16)
-      2.1.5: MFMA FLOPs (F32)
-      2.1.6: MFMA FLOPs (F64)
-      2.1.7: MFMA IOPs (Int8)
+      - 2.1.2
+      - 2.1.3
+      - 2.1.4
+      - 2.1.5
+      - 2.1.6
+      - 2.1.7
     gfx941:
-      2.1.2: MFMA FLOPs (F8)
-      2.1.3: MFMA FLOPs (BF16)
-      2.1.4: MFMA FLOPs (F16)
-      2.1.5: MFMA FLOPs (F32)
-      2.1.6: MFMA FLOPs (F64)
-      2.1.7: MFMA IOPs (Int8)
+      - 2.1.2
+      - 2.1.3
+      - 2.1.4
+      - 2.1.5
+      - 2.1.6
+      - 2.1.7
     gfx942:
-      2.1.2: MFMA FLOPs (F8)
-      2.1.3: MFMA FLOPs (BF16)
-      2.1.4: MFMA FLOPs (F16)
-      2.1.5: MFMA FLOPs (F32)
-      2.1.6: MFMA FLOPs (F64)
-      2.1.7: MFMA IOPs (Int8)
+      - 2.1.2
+      - 2.1.3
+      - 2.1.4
+      - 2.1.5
+      - 2.1.6
+      - 2.1.7
     gfx950:
-      2.1.2: MFMA FLOPs (F8)
-      2.1.3: MFMA FLOPs (BF16)
-      2.1.4: MFMA FLOPs (F16)
-      2.1.5: MFMA FLOPs (F32)
-      2.1.6: MFMA FLOPs (F64)
-      2.1.8: MFMA IOPs (Int8)
+      - 2.1.2
+      - 2.1.3
+      - 2.1.4
+      - 2.1.5
+      - 2.1.6
+      - 2.1.8
 
 - title: Memory Throughput
   set_option: mem_thruput
   description: Placeholder
   metric:
     gfx908:
-      2.1.16: Theoretical LDS Bandwidth
-      2.1.17: LDS Bank Conflicts/Access
-      16.1.2: vL1D Cache Utilization
-      17.1.0: L2 Cache utilization
+      - 2.1.16
+      - 2.1.17
+      - 16.1.2
+      - 17.1.0
     gfx90a:
-      2.1.16: Theoretical LDS Bandwidth
-      2.1.17: LDS Bank Conflicts/Access
-      16.1.2: vL1D Cache Utilization
-      17.1.0: L2 Cache utilization
+      - 2.1.16
+      - 2.1.17
+      - 16.1.2
+      - 17.1.0
     gfx940:
-      2.1.17: Theoretical LDS Bandwidth
-      2.1.18: LDS Bank Conflicts/Access
-      16.1.2: vL1D Cache Utilization
-      17.1.0: L2 Cache utilization
+      - 2.1.17
+      - 2.1.18
+      - 16.1.2
+      - 17.1.0
     gfx941:
-      2.1.17: Theoretical LDS Bandwidth
-      2.1.18: LDS Bank Conflicts/Access
-      16.1.2: vL1D Cache Utilization
-      17.1.0: L2 Cache utilization
+      - 2.1.17
+      - 2.1.18
+      - 16.1.2
+      - 17.1.0
     gfx942:
-      2.1.17: Theoretical LDS Bandwidth
-      2.1.18: LDS Bank Conflicts/Access
-      16.1.2: vL1D Cache Utilization
-      17.1.0: L2 Cache utilization
+      - 2.1.17
+      - 2.1.18
+      - 16.1.2
+      - 17.1.0
     gfx950:
-      2.1.18: Theoretical LDS Bandwidth
-      2.1.19: LDS Bank Conflicts/Access
-      16.1.2: vL1D Cache Utilization
-      17.1.0: L2 Cache utilization
+      - 2.1.18
+      - 2.1.19
+      - 16.1.2
+      - 17.1.0
 
 - title: Launch Stats
   set_option: launch_stats
   description: Placeholder
   metric:
     gfx908:
-      7.1.0: Grid Size
-      7.1.1: Workgroup Size
-      7.1.2: Total Wavefronts
-      7.1.5: VGPRs
-      7.1.6: AGPRs
-      7.1.7: SGPRs
-      7.1.8: LDS Allocation
-      7.1.9: Scratch Allocation
+      - 7.1.0
+      - 7.1.1
+      - 7.1.2
+      - 7.1.5
+      - 7.1.6
+      - 7.1.7
+      - 7.1.8
+      - 7.1.9
     gfx90a:
-      7.1.0: Grid Size
-      7.1.1: Workgroup Size
-      7.1.2: Total Wavefronts
-      7.1.5: VGPRs
-      7.1.6: AGPRs
-      7.1.7: SGPRs
-      7.1.8: LDS Allocation
-      7.1.9: Scratch Allocation
+      - 7.1.0
+      - 7.1.1
+      - 7.1.2
+      - 7.1.5
+      - 7.1.6
+      - 7.1.7
+      - 7.1.8
+      - 7.1.9
     gfx940:
-      7.1.0: Grid Size
-      7.1.1: Workgroup Size
-      7.1.2: Total Wavefronts
-      7.1.5: VGPRs
-      7.1.6: AGPRs
-      7.1.7: SGPRs
-      7.1.8: LDS Allocation
-      7.1.9: Scratch Allocation
+      - 7.1.0
+      - 7.1.1
+      - 7.1.2
+      - 7.1.5
+      - 7.1.6
+      - 7.1.7
+      - 7.1.8
+      - 7.1.9
     gfx941:
-      7.1.0: Grid Size
-      7.1.1: Workgroup Size
-      7.1.2: Total Wavefronts
-      7.1.5: VGPRs
-      7.1.6: AGPRs
-      7.1.7: SGPRs
-      7.1.8: LDS Allocation
-      7.1.9: Scratch Allocation
+      - 7.1.0
+      - 7.1.1
+      - 7.1.2
+      - 7.1.5
+      - 7.1.6
+      - 7.1.7
+      - 7.1.8
+      - 7.1.9
     gfx942:
-      7.1.0: Grid Size
-      7.1.1: Workgroup Size
-      7.1.2: Total Wavefronts
-      7.1.5: VGPRs
-      7.1.6: AGPRs
-      7.1.7: SGPRs
-      7.1.8: LDS Allocation
-      7.1.9: Scratch Allocation
+      - 7.1.0
+      - 7.1.1
+      - 7.1.2
+      - 7.1.5
+      - 7.1.6
+      - 7.1.7
+      - 7.1.8
+      - 7.1.9
     gfx950:
-      7.1.0: Grid Size
-      7.1.1: Workgroup Size
-      7.1.2: Total Wavefronts
-      7.1.5: VGPRs
-      7.1.6: AGPRs
-      7.1.7: SGPRs
-      7.1.8: LDS Allocation
-      7.1.9: Scratch Allocation
+      - 7.1.0
+      - 7.1.1
+      - 7.1.2
+      - 7.1.5
+      - 7.1.6
+      - 7.1.7
+      - 7.1.8
+      - 7.1.9

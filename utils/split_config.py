@@ -24,6 +24,7 @@ DOC_TARGET_DIR = ROOT_DIR.joinpath("docs", "data")
 HASH_FILE = ROOT_DIR.joinpath("utils", "autogen_hash.yaml")
 HASH_FILE_MAP = {}
 GFX_VERSIONS = ["gfx908", "gfx90a", "gfx940", "gfx941", "gfx942", "gfx950"]
+METRIC_ID_TO_NAME_MAP = {gfx_version: {} for gfx_version in GFX_VERSIONS}
 
 
 def get_autogen_text(config_file="utils/unified_config.yaml"):
@@ -31,6 +32,8 @@ def get_autogen_text(config_file="utils/unified_config.yaml"):
 
 
 def update_analysis_config():
+    global METRIC_ID_TO_NAME_MAP
+
     # Read the unified config file
     with open(SOURCE_DIR.joinpath("unified_config.yaml")) as file:
         unified_config = yaml.safe_load(file)
@@ -44,6 +47,7 @@ def update_analysis_config():
             key: value["plain"]
             for key, value in panel_config.get("metrics_description", {}).items()
         }
+        panel_id_int = panel_config["id"]
         # Convert int into str with 4 digits
         panel_id = str(panel_config["id"]).zfill(4)
         # Replace parentehsis, hyphen, slash and space with underscore
@@ -63,12 +67,21 @@ def update_analysis_config():
 
             # Select metrics from current gfx arch
             new_panel_config["Panel Config"]["data source"] = []
-            for data_source_config in panel_config["data source"]:
+            for data_source_index, data_source_config in enumerate(
+                panel_config["data source"]
+            ):
                 data_source_config = copy.deepcopy(data_source_config)
                 if "metric_table" in data_source_config:
                     data_source_config["metric_table"]["metric"] = data_source_config[
                         "metric_table"
                     ]["metric"][gfx_version]
+
+                    build_metric_id_mapping(
+                        panel_id_int,
+                        data_source_index,
+                        data_source_config["metric_table"]["metric"],
+                        gfx_version,
+                    )
                 new_panel_config["Panel Config"]["data source"].append(data_source_config)
             # Write panel config to file
             filename = Path(
@@ -82,6 +95,14 @@ def update_analysis_config():
             HASH_FILE_MAP[str(filename.relative_to(ROOT_DIR))] = hashlib.sha256(
                 filename.read_bytes()
             ).hexdigest()
+
+
+def build_metric_id_mapping(panel_id, data_source_index, metrics, gfx_version):
+    # Build metric id to metric name mapping
+    global METRIC_ID_TO_NAME_MAP
+    for metric_index, metric_name in enumerate(metrics.keys()):
+        metric_id = f"{panel_id // 100}.{data_source_index + 1}.{metric_index}"
+        METRIC_ID_TO_NAME_MAP[gfx_version][str(metric_id)] = metric_name
 
 
 def update_sets_config():
@@ -107,8 +128,10 @@ def update_sets_config():
                 "metric": [],
             }
 
-            for metric_id, metric_name in sets["metric"][gfx_version].items():
-                current_set["metric"].append({metric_id: metric_name})
+            for metric_id in sets["metric"][gfx_version]:
+                current_set["metric"].append(
+                    {metric_id: METRIC_ID_TO_NAME_MAP[gfx_version][str(metric_id)]}
+                )
 
             new_sets["sets"].append(current_set)
 
