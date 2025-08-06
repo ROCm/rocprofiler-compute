@@ -1663,7 +1663,7 @@ class TestSetsIntegration:
 
         assert test_utils.get_num_pmc_file(workload_dir) == 1
 
-        memory_metrics = ["2.1.17", "16.1.2"]
+        memory_metrics = ["16.1.2", "17.1.0"]
         for metric_id in memory_metrics:
             assert (
                 metric_id in open(Path(workload_dir) / "log.txt", "r").read()
