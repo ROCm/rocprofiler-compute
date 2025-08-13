@@ -2,7 +2,7 @@
 
 Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.amd.com/projects/rocprofiler-compute/en/latest/](https://rocm.docs.amd.com/projects/rocprofiler-compute/en/latest/).
 
-## ROCm Compute Profiler 3.2.2 for ROCm 7.0.0
+## ROCm Compute Profiler 3.2.3 for ROCm 7.0.0
 
 ### Added
 
@@ -82,7 +82,7 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 * Changed the condition when Roofline PDFs are generated during general profiling and ``--roof-only`` profiling (skip only when ``--no-roof`` option is present).
 * Updated Roofline binaries:
   * Rebuild using latest ROCm stack
-  * Minimum OS distribution support minimum for roofline feature is now Ubuntu 22.04, RHEL 9, and SLES15 SP6.
+  * Minimum OS distribution support minimum for roofline feature is now Ubuntu 22.04, RHEL 8, and SLES15 SP6.
 
 ### Optimized
 
