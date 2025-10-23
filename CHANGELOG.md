@@ -5,6 +5,10 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 ## Unreleased
 
 ### Added
+* Add support for multi-kernel applications' pc sampling.
+  * PC Sampling's outputs' instructions are displayed with the name of the kernel that individual instruction belongs to.
+  * Single kernel selection is supported so that the pc samples of selected kernel can be displayed.  
+
 * Add `--list-blocks <arch>` option to general options to list available IP blocks on specified arch (similar to `--list-metrics`), cannot be used with `--block`.
 * Added `config_delta/gfx950_diff.yaml` to analysis config yamls to track the revision between a gfx9 architecture against the latest supported architecture gfx950
 
