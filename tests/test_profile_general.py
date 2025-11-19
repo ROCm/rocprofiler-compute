@@ -586,7 +586,7 @@ def test_path_rocpd(
     test_utils.clean_output_dir(config["cleanup"], workload_dir)
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_1
 def test_roof_basic_validation(binary_handler_profile_rocprof_compute):
     """
     Test basic roofline PDF generation with full validation pipeline.
@@ -622,7 +622,7 @@ def test_roof_basic_validation(binary_handler_profile_rocprof_compute):
     test_utils.clean_output_dir(config["cleanup"], workload_dir)
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_1
 def test_roof_multiple_data_types(binary_handler_profile_rocprof_compute):
     """Test roofline with multiple data types"""
     if soc in ("MI100"):
@@ -659,7 +659,7 @@ def test_roof_multiple_data_types(binary_handler_profile_rocprof_compute):
             test_utils.clean_output_dir(config["cleanup"], workload_dir)
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_1
 def test_roof_invalid_data_type(binary_handler_profile_rocprof_compute):
     """Test roofline with invalid data type"""
     if soc in ("MI100"):
@@ -688,7 +688,7 @@ def test_roof_invalid_data_type(binary_handler_profile_rocprof_compute):
         test_utils.clean_output_dir(config["cleanup"], workload_dir)
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_1
 def test_roof_file_validation(binary_handler_profile_rocprof_compute):
     """Test file validation paths in roofline"""
     if soc in ("MI100"):
@@ -717,7 +717,7 @@ def test_roof_file_validation(binary_handler_profile_rocprof_compute):
         test_utils.clean_output_dir(config["cleanup"], workload_dir)
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_1
 def test_roof_rocpd(binary_handler_profile_rocprof_compute):
     if soc == "MI100":
         pytest.skip("Roofline not supported on MI100")
@@ -798,7 +798,7 @@ def test_analyze_rocpd(
     test_utils.clean_output_dir(config["cleanup"], workload_dir)
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_1
 def test_roofline_workload_dir_not_set_error():
     """
     Test roof_setup() error: "Workload directory is not set. Cannot perform setup."
@@ -855,7 +855,7 @@ def test_roofline_workload_dir_not_set_error():
         pytest.skip("Could not import roofline module for direct testing")
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_1
 def test_roof_workload_dir_validation(binary_handler_profile_rocprof_compute):
     if soc in ("MI100"):
         assert True
@@ -879,7 +879,7 @@ def test_roof_workload_dir_validation(binary_handler_profile_rocprof_compute):
     test_utils.clean_output_dir(config["cleanup"], workload_dir)
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_1
 def test_roofline_empty_kernel_names_handling(binary_handler_profile_rocprof_compute):
     """
     Test roofline behavior when kernel filter doesn't match any
@@ -919,7 +919,7 @@ def test_roofline_empty_kernel_names_handling(binary_handler_profile_rocprof_com
     test_utils.clean_output_dir(config["cleanup"], workload_dir)
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_1
 def test_roofline_kernel_filter(binary_handler_profile_rocprof_compute):
     """
     Test roofline multi-attempt profiling with `--kernel`
@@ -957,7 +957,7 @@ def test_roofline_kernel_filter(binary_handler_profile_rocprof_compute):
     test_utils.clean_output_dir(config["cleanup"], workload_dir)
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_1
 def test_roofline_unsupported_datatype_error(binary_handler_profile_rocprof_compute):
     """
     Test datatype validation error in empirical_roofline()
@@ -983,7 +983,7 @@ def test_roofline_unsupported_datatype_error(binary_handler_profile_rocprof_comp
     test_utils.clean_output_dir(config["cleanup"], workload_dir)
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_2
 def test_roof_plot_modes(binary_handler_profile_rocprof_compute):
     if soc in ("MI100"):
         assert True
@@ -1029,7 +1029,7 @@ def test_roof_plot_modes(binary_handler_profile_rocprof_compute):
         test_utils.clean_output_dir(config["cleanup"], workload_dir)
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_2
 def test_roof_cli_plot_generation(binary_handler_profile_rocprof_compute):
     if soc in ("MI100"):
         assert True
@@ -1055,7 +1055,7 @@ def test_roof_cli_plot_generation(binary_handler_profile_rocprof_compute):
         pytest.skip("plotext not available for CLI testing")
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_2
 def test_roof_error_handling(binary_handler_profile_rocprof_compute):
     if soc in ("MI100"):
         assert True
@@ -1075,7 +1075,7 @@ def test_roof_error_handling(binary_handler_profile_rocprof_compute):
     test_utils.clean_output_dir(config["cleanup"], workload_dir)
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_2
 def test_roofline_missing_file_handling(binary_handler_profile_rocprof_compute):
     """
     Test handling of missing roofline.csv file
@@ -1127,7 +1127,7 @@ def test_roofline_missing_file_handling(binary_handler_profile_rocprof_compute):
         pytest.skip("Could not import roofline module for direct testing")
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_2
 def test_roofline_invalid_datatype_cli(binary_handler_profile_rocprof_compute):
     """
     Test CLI plot generation with invalid datatype
@@ -1177,7 +1177,7 @@ def test_roofline_invalid_datatype_cli(binary_handler_profile_rocprof_compute):
         pytest.skip("Could not import roofline module for direct testing")
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_2
 def test_roofline_ceiling_data_validation(binary_handler_profile_rocprof_compute):
     """
     Test ceiling data validation in generate_plot()
@@ -1197,7 +1197,7 @@ def test_roofline_ceiling_data_validation(binary_handler_profile_rocprof_compute
     test_utils.clean_output_dir(config["cleanup"], workload_dir)
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_2
 def test_roofline_plot_points_data_generation():
     """
     Test that plot points data structure is correctly generated with:
@@ -1297,7 +1297,7 @@ def test_roofline_plot_points_data_generation():
         pytest.skip("Could not import roofline module for direct testing")
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_2
 def test_roofline_bound_status_calculation():
     """
     Test _determine_kernel_bound_status() correctly classifies kernels as
@@ -1369,7 +1369,7 @@ def test_roofline_bound_status_calculation():
         pytest.skip("Could not import roofline module for direct testing")
 
 
-@pytest.mark.roofline
+@pytest.mark.roofline_2
 def test_roofline_many_kernels_dynamic_height(binary_handler_profile_rocprof_compute):
     """
     Test roofline PDF generation with many kernels (10+) to verify:
