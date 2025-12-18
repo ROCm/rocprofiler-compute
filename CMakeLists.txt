@@ -589,6 +589,7 @@ install(
         "execute_process(
     COMMAND bash -c \"set -e
     cd \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}
+    mkdir -p ${CMAKE_INSTALL_BINDIR}
     ln -sf ../${CMAKE_INSTALL_LIBEXECDIR}/${PROJECT_NAME}/${EXECUTABLE_NAME} ${CMAKE_INSTALL_BINDIR}/${EXECUTABLE_NAME}
     \")"
     COMPONENT main
