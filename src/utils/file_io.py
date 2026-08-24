@@ -30,6 +30,10 @@ from collections import OrderedDict
 from pathlib import Path
 
 import pandas as pd
+
+from packaging.version import Version
+
+PANDAS_VERSION = Version(pd.__version__)
 import yaml
 
 import config
@@ -230,7 +234,10 @@ def create_df_pmc(
                     coll_levels.append(f[:-4])
 
         # TODO: double check the case if all tmp_df.shape[0] are not on the same page
-        final_df = pd.concat(dfs, keys=coll_levels, axis=1, join="inner", copy=False)
+        if PANDAS_VERSION < Version("3.0"):
+            final_df = pd.concat(dfs, keys=coll_levels, axis=1, join="inner", copy=False)
+        else:
+            final_df = pd.concat(dfs, keys=coll_levels, axis=1, join="inner")
         if verbose >= 2:
             console_debug("pmc_raw_data final_single_df %s" % final_df.info)
         return final_df
@@ -306,7 +313,10 @@ def collect_wave_occu_per_cu(in_dir, out_dir, numSE):
                 all = tmp_df[{"CU", SE_idx}]
                 all.sort_index(axis=1, inplace=True)
             else:
-                all = pd.concat([all, tmp_df[SE_idx]], axis=1, copy=False)
+                if PANDAS_VERSION < Version("3.0"):
+                    all = pd.concat([all, tmp_df[SE_idx]], axis=1, copy=False)
+                else:
+                    all = pd.concat([all, tmp_df[SE_idx]], axis=1)
 
     if not all.empty:
         # print(all.transpose())
