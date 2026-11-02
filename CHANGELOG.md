@@ -2,6 +2,21 @@
 
 Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.amd.com/projects/rocprofiler-compute/en/latest/](https://rocm.docs.amd.com/projects/rocprofiler-compute/en/latest/).
 
+## ROCm Compute Profiler 3.2.4 for ROCm 7.0.2.1
+
+### Added
+
+#### Roofline
+
+* New roofline_detailed.csv output: per-kernel roofline summary including limiter classification (Memory/Compute, at which cache level), performance (GFLOPs/s and % of roofline peak), arithmetic intensity per cache level, bandwidth used/peak, dispatch counts, and duration.
+* MXFP8 datatype support to roofline profiling (benchmarking, counters, supported datatypes table, --roofline-data-types option).
+
+### Resolved issues
+
+* Fix typo in gfx950 SoL YAML: MXF8 and F6F4 MFMA peak multiplier was 16834, should be 16384.
+* Fix BF16 and FP8 FLOPs incorrectly included in total flops for roofline.
+* Fix pandas 2.0+ compatibility: StringDtype columns no longer treated as object, preventing Agent_Id merge failures.
+
 ## ROCm Compute Profiler 3.2.3 for ROCm 7.0.0
 
 ### Added
