@@ -48,6 +48,8 @@ from utils.roofline_calc import (
     SUPPORTED_DATATYPES,
     calc_ai,
     constuct_roof,
+    generate_detailed_csv,
+    load_benchmark_data,
 )
 from utils.utils import mibench
 
@@ -351,6 +353,28 @@ class Roofline:
                     plot_bgcolor="white",
                     paper_bgcolor="white",
                 )
+
+        # Generate roofline_detailed.csv
+        workload_dir = self.__run_parameters.get("workload_dir")
+        if workload_dir:
+            base_dir = (
+                workload_dir[0][0]
+                if isinstance(workload_dir, list) and isinstance(workload_dir[0], (list, tuple))
+                else workload_dir[0] if isinstance(workload_dir, list)
+                else workload_dir
+            )
+            csv_path = str(Path(base_dir) / "roofline_detailed.csv")
+            gpu_arch = getattr(self.__mspec, "gpu_arch", "")
+            benchmark_data = load_benchmark_data(self.__run_parameters)
+            if benchmark_data and gpu_arch not in ("gfx908", "gfx90a"):
+                generate_detailed_csv(
+                    csv_path,
+                    self.__ai_data,
+                    self.__ceiling_data,
+                    benchmark_data,
+                    self.__run_parameters.get("device_id", 0),
+                )
+                console_log("roofline", "roofline_detailed.csv saved to {}".format(csv_path))
 
         # Output will be different depending on interaction type:
         # Save PDFs if we're in "standalone roofline" mode, otherwise return HTML to be used in GUI output
@@ -835,6 +859,21 @@ class Roofline:
         plt.theme("pro")
         plt.xscale("log")
         plt.yscale("log")
+
+        # Generate roofline_detailed.csv (only for architectures that support it)
+        gpu_arch = getattr(self.__mspec, "gpu_arch", "")
+        if gpu_arch not in ("gfx908", "gfx90a"):
+            benchmark_data = load_benchmark_data(self.__run_parameters)
+            if benchmark_data and self.__ai_data:
+                csv_path = str(base_path / "roofline_detailed.csv")
+                generate_detailed_csv(
+                    csv_path,
+                    self.__ai_data,
+                    self.__ceiling_data,
+                    benchmark_data,
+                    self.__run_parameters.get("device_id", 0),
+                )
+                console_log("roofline", "roofline_detailed.csv saved to {}".format(csv_path))
 
         # Build figure
         # Print plot using `plt._utility.write(self.cli_generate_plot(dtype))`

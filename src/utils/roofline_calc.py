@@ -52,7 +52,7 @@ SUPPORTED_DATATYPES = {
         "I8",
         "I32",
         "I64",
-    ],  # Unsupported: F4, F6, F8
+    ],  # Unsupported: F4, F6, F8, MXFP8
     "gfx940": [
         "FP8",
         "FP16",
@@ -62,7 +62,7 @@ SUPPORTED_DATATYPES = {
         "I8",
         "I32",
         "I64",
-    ],  # Unsupported: F4, F6
+    ],  # Unsupported: F4, F6, MXFP8
     "gfx941": [
         "FP8",
         "FP16",
@@ -72,7 +72,7 @@ SUPPORTED_DATATYPES = {
         "I8",
         "I32",
         "I64",
-    ],  # Unsupported: F4, F6
+    ],  # Unsupported: F4, F6, MXFP8
     "gfx942": [
         "FP8",
         "FP16",
@@ -82,11 +82,12 @@ SUPPORTED_DATATYPES = {
         "I8",
         "I32",
         "I64",
-    ],  # Unsupported: F4, F6
+    ],  # Unsupported: F4, F6, MXFP8
     "gfx950": [
         "FP4",
         "FP6",
         "FP8",
+        "MXFP8",
         "FP16",
         "BF16",
         "FP32",
@@ -97,8 +98,8 @@ SUPPORTED_DATATYPES = {
     ],  # Unsupported:
 }
 
-PEAK_OPS_DATATYPES = ["FP8", "FP16", "BF16", "FP32", "FP64", "I8", "I32", "I64"]
-MFMA_DATATYPES = ["FP4", "FP6", "FP8", "FP16", "BF16", "FP32", "FP64", "I8"]
+PEAK_OPS_DATATYPES = ["FP16", "FP32", "FP64", "I8", "I32", "I64"]
+MFMA_DATATYPES = ["FP4", "FP6", "FP8", "MXFP8", "FP16", "BF16", "FP32", "FP64", "I8"]
 
 TOP_N = 10
 
@@ -115,6 +116,7 @@ class AI_Data:
     valu_flops: float
     mfma_flops_f6f4: float
     mfma_flops_f8: float
+    mfma_flops_mxf8: float
     mfma_flops_f16: float
     mfma_flops_bf16: float
     mfma_flops_f32: float
@@ -191,7 +193,12 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
             y1_mfma = peakOps
 
         if dtype in MFMA_DATATYPES:
-            target_precision = (dtype) if (dtype[:1] == "I") else ("F" + dtype[2:])
+            if dtype[:1] == "I" or dtype[:1] == "B":
+                target_precision = dtype
+            elif dtype[:1] == "F":
+                target_precision = "F" + dtype[2:]
+            else:  # MX format
+                target_precision = "MXF" + dtype[4:]
 
             peakMFMA = float(
                 benchmark_data["MFMA{}{}".format(target_precision, ops_flops)][
@@ -259,11 +266,11 @@ def calc_ai(mspec, sort_type, ret_df):
     df = df.sort_values(by=["Kernel_Name"])
     df = df.reset_index(drop=True)
 
-    total_flops = valu_flops = mfma_flops_f6f4 = mfma_flops_f8 = mfma_flops_bf16 = (
-        mfma_flops_f16
-    ) = mfma_iops_i8 = mfma_flops_f32 = mfma_flops_f64 = lds_data = L1cache_data = (
-        L2cache_data
-    ) = hbm_data = calls = totalDuration = avgDuration = 0.0
+    total_flops = valu_flops = mfma_flops_f6f4 = mfma_flops_f8 = mfma_flops_mxf8 = (
+        mfma_flops_bf16
+    ) = mfma_flops_f16 = mfma_iops_i8 = mfma_flops_f32 = mfma_flops_f64 = lds_data = (
+        L1cache_data
+    ) = L2cache_data = hbm_data = calls = totalDuration = avgDuration = 0.0
 
     kernelName = ""
 
@@ -362,6 +369,8 @@ def calc_ai(mspec, sort_type, ret_df):
         try:
             if "FP8" in supported_dt:
                 mfma_flops_f8 += df["SQ_INSTS_VALU_MFMA_MOPS_F8"][idx] * 512
+            if "MXFP8" in supported_dt:
+                mfma_flops_mxf8 += df["SQ_INSTS_VALU_MFMA_MOPS_F8"][idx] * 512
             if ("FP4" in supported_dt) or ("FP6" in supported_dt):
                 mfma_flops_f6f4 += df["SQ_INSTS_VALU_MFMA_MOPS_F6F4"][idx] * 512
             mfma_flops_f16 += df["SQ_INSTS_VALU_MFMA_MOPS_F16"][idx] * 512
@@ -466,6 +475,7 @@ def calc_ai(mspec, sort_type, ret_df):
                     valu_flops / calls,
                     mfma_flops_f6f4 / calls,
                     mfma_flops_f8 / calls,
+                    mfma_flops_mxf8 / calls,
                     mfma_flops_f16 / calls,
                     mfma_flops_bf16 / calls,
                     mfma_flops_f32 / calls,
@@ -484,6 +494,7 @@ def calc_ai(mspec, sort_type, ret_df):
                     kernelName, idx, calls
                 )
             )
+            # Do not add mfma_flops_mxf8, it is a duplicate count of mfma_flops_f8
             total_flops = valu_flops = mfma_flops_f6f4 = mfma_flops_f8 = (
                 mfma_flops_bf16
             ) = mfma_flops_f16 = mfma_iops_i8 = mfma_flops_f32 = mfma_flops_f64 = (
@@ -501,6 +512,7 @@ def calc_ai(mspec, sort_type, ret_df):
                     valu_flops,
                     mfma_flops_f6f4,
                     mfma_flops_f8,
+                    mfma_flops_mxf8,
                     mfma_flops_f16,
                     mfma_flops_bf16,
                     mfma_flops_f32,
@@ -514,6 +526,7 @@ def calc_ai(mspec, sort_type, ret_df):
                     avgDuration,
                 )
             )
+            # Do not add mfma_flops_mxf8, it is a duplicate count of mfma_flops_f8
             total_flops = valu_flops = mfma_flops_f6f4 = mfma_flops_f8 = (
                 mfma_flops_bf16
             ) = mfma_flops_f16 = mfma_iops_i8 = mfma_flops_f32 = mfma_flops_f64 = (
@@ -528,7 +541,7 @@ def calc_ai(mspec, sort_type, ret_df):
     curr_perf = []
     kernelNames = []
     i = 0
-    # Create list of top 5 intensities
+    # Create list of top TOP_N intensities
     while i < TOP_N and i != len(myList):
         if myList[i].total_flops == 0:
             console_debug(
@@ -585,11 +598,239 @@ def calc_ai(mspec, sort_type, ret_df):
 
     # Add an entry for kernel names
     intensityPoints["kernelNames"] = kernelNames
+    # Expose full sorted kernel list for detailed CSV output
+    intensityPoints["_all_kernels"] = myList
 
     return intensityPoints
 
 
-def constuct_roof(roofline_parameters, dtype):
+def _determine_limiter(kernel, peak_bw_l1, peak_bw_l2, peak_bw_hbm, peak_ops, peak_bw_lds=None):
+    """
+    Determine whether a kernel is memory-bound (and at which level) or compute-bound.
+
+    Returns (limiter_category, limiter_detail, roofline_peak_gflops) where
+    roofline_peak_gflops is the per-kernel roofline ceiling:
+      - Memory-bound: AI_at_limiter_level * peak_bw_at_limiter_level / 1e9
+      - Compute-bound: peak_ops / 1e9
+    """
+    ai_lds = kernel.total_flops / kernel.lds_data if kernel.lds_data else None
+    ai_l1 = kernel.total_flops / kernel.L1cache_data if kernel.L1cache_data else None
+    ai_l2 = kernel.total_flops / kernel.L2cache_data if kernel.L2cache_data else None
+    ai_hbm = kernel.total_flops / kernel.hbm_data if kernel.hbm_data else None
+
+    compute_peak_gflops = peak_ops / 1e9 if peak_ops else None
+
+    if not kernel.total_flops or not kernel.avgDuration:
+        return "Unknown", "Unknown", None
+
+    achieved_gflops = (kernel.total_flops / (kernel.avgDuration * 1e-9)) / 1e9
+
+    if compute_peak_gflops and achieved_gflops >= compute_peak_gflops * 0.9:
+        return "Compute", "Peak", compute_peak_gflops
+
+    # Check from closest (LDS) to furthest (HBM) — report the first binding level
+    if ai_lds is not None and peak_bw_lds:
+        ridge_lds = compute_peak_gflops / (peak_bw_lds / 1e9) if compute_peak_gflops else None
+        if ridge_lds and ai_lds < ridge_lds:
+            roof_peak = ai_lds * (peak_bw_lds / 1e9)  # GFLOPs/s
+            return "Memory", "LDS", roof_peak
+
+    if ai_l1 is not None and peak_bw_l1:
+        ridge_l1 = compute_peak_gflops / (peak_bw_l1 / 1e9) if compute_peak_gflops else None
+        if ridge_l1 and ai_l1 < ridge_l1:
+            roof_peak = ai_l1 * (peak_bw_l1 / 1e9)  # GFLOPs/s
+            return "Memory", "L1", roof_peak
+
+    if ai_l2 is not None and peak_bw_l2:
+        ridge_l2 = compute_peak_gflops / (peak_bw_l2 / 1e9) if compute_peak_gflops else None
+        if ridge_l2 and ai_l2 < ridge_l2:
+            roof_peak = ai_l2 * (peak_bw_l2 / 1e9)  # GFLOPs/s
+            return "Memory", "L2", roof_peak
+
+    if ai_hbm is not None and peak_bw_hbm:
+        ridge_hbm = compute_peak_gflops / (peak_bw_hbm / 1e9) if compute_peak_gflops else None
+        if ridge_hbm and ai_hbm < ridge_hbm:
+            roof_peak = ai_hbm * (peak_bw_hbm / 1e9)  # GFLOPs/s
+            return "Memory", "HBM", roof_peak
+
+    return "Compute", "Peak", compute_peak_gflops
+
+
+def generate_detailed_csv(output_path, intensity_points, graphPoints, benchmark_data, device_id):
+    """
+    Write roofline_detailed.csv summarizing per-kernel roofline metrics.
+
+    Columns populated depend on data availability:
+    - Kernel, Limiter Category, Limiter Detail, Performance (GFLOPs/s), Performance (%)
+    - Roofline Peak (GFLOPs/s)
+    - L1/L2/HBM/LDS AI, Bandwidth Used (%), Bandwidth Used (TB/s), Bandwidth Peak (TB/s)
+    - Dispatch Count (%), Dispatch Count, Dispatch Count Total
+    - Duration (%), Duration (ns), Duration Total (ns)
+    """
+    all_kernels = intensity_points.get("_all_kernels", [])
+    if not all_kernels:
+        return
+
+    # Extract peak bandwidth values from benchmark_data (values are in GB/s)
+    def _bw(key):
+        try:
+            return float(benchmark_data[key][device_id]) * 1e9  # bytes/s
+        except (KeyError, IndexError, TypeError, ValueError):
+            return None
+
+    def _ops(key):
+        try:
+            return float(benchmark_data[key][device_id]) * 1e9  # flops/s
+        except (KeyError, IndexError, TypeError, ValueError):
+            return None
+
+    peak_bw_hbm = _bw("HBMBw")   # bytes/s
+    peak_bw_l2 = _bw("L2Bw")
+    peak_bw_l1 = _bw("L1Bw")
+    peak_bw_lds = _bw("LDSBw")
+    # Use MFMA FP32 as representative compute peak for limiter determination
+    peak_ops = _ops("MFMAF32Flops") or _ops("FP32Flops")
+
+    # Aggregate totals across all kernels
+    total_dispatch_count = sum(k.numCalls for k in all_kernels)
+    total_duration_ns = sum(k.totalDuration for k in all_kernels)
+
+    headers = [
+        "Kernel",
+        "Limiter Category",
+        "Limiter Detail",
+        "Performance (GFLOPs/s)",
+        "Performance (%)",
+        "Roofline Peak (GFLOPs/s)",
+        "L1 AI",
+        "L1 Bandwidth Used (%)",
+        "L1 Bandwidth Used (TB/s)",
+        "L1 Bandwidth Peak (TB/s)",
+        "L2 AI",
+        "L2 Bandwidth Used (%)",
+        "L2 Bandwidth Used (TB/s)",
+        "L2 Bandwidth Peak (TB/s)",
+        "HBM AI",
+        "HBM Bandwidth Used (%)",
+        "HBM Bandwidth Used (TB/s)",
+        "HBM Bandwidth Peak (TB/s)",
+        "LDS AI",
+        "LDS Bandwidth Used (%)",
+        "LDS Bandwidth Used (TB/s)",
+        "LDS Bandwidth Peak (TB/s)",
+        "Dispatch Count (%)",
+        "Dispatch Count",
+        "Dispatch Count Total",
+        "Duration (%)",
+        "Duration (ns)",
+        "Duration Total (ns)",
+    ]
+
+    rows = []
+    for kernel in all_kernels:
+        duration_s = kernel.avgDuration * 1e-9 if kernel.avgDuration else None
+
+        # Performance
+        if kernel.total_flops and duration_s:
+            perf_gflops = (kernel.total_flops / duration_s) / 1e9
+        else:
+            perf_gflops = None
+
+        # Limiter + per-kernel roofline ceiling
+        limiter_cat, limiter_detail, roofline_peak_gflops = _determine_limiter(
+            kernel, peak_bw_l1, peak_bw_l2, peak_bw_hbm, peak_ops, peak_bw_lds
+        )
+        perf_pct = (perf_gflops / roofline_peak_gflops * 100) if (perf_gflops and roofline_peak_gflops) else None
+
+        # Per-level helpers
+        def _ai(data):
+            return kernel.total_flops / data if (data and kernel.total_flops) else None
+
+        def _bw_used_tbs(data):
+            # bytes transferred / duration => bytes/s => TB/s
+            return (data / duration_s) / 1e12 if (data and duration_s) else None
+
+        def _bw_pct(data, peak):
+            used = _bw_used_tbs(data)
+            peak_tb = peak / 1e12 if peak else None
+            return (used / peak_tb * 100) if (used and peak_tb) else None
+
+        # L1
+        ai_l1 = _ai(kernel.L1cache_data)
+        l1_bw_tbs = _bw_used_tbs(kernel.L1cache_data)
+        l1_bw_pct = _bw_pct(kernel.L1cache_data, peak_bw_l1)
+        l1_peak_tbs = peak_bw_l1 / 1e12 if peak_bw_l1 else None
+
+        # L2
+        ai_l2 = _ai(kernel.L2cache_data)
+        l2_bw_tbs = _bw_used_tbs(kernel.L2cache_data)
+        l2_bw_pct = _bw_pct(kernel.L2cache_data, peak_bw_l2)
+        l2_peak_tbs = peak_bw_l2 / 1e12 if peak_bw_l2 else None
+
+        # HBM
+        ai_hbm = _ai(kernel.hbm_data)
+        hbm_bw_tbs = _bw_used_tbs(kernel.hbm_data)
+        hbm_bw_pct = _bw_pct(kernel.hbm_data, peak_bw_hbm)
+        hbm_peak_tbs = peak_bw_hbm / 1e12 if peak_bw_hbm else None
+
+        # LDS
+        ai_lds = _ai(kernel.lds_data)
+        lds_bw_tbs = _bw_used_tbs(kernel.lds_data)
+        lds_bw_pct = _bw_pct(kernel.lds_data, peak_bw_lds)
+        lds_peak_tbs = peak_bw_lds / 1e12 if peak_bw_lds else None
+
+        # Dispatch counts
+        dispatch_count = int(kernel.numCalls)
+        dispatch_pct = (dispatch_count / total_dispatch_count * 100) if total_dispatch_count else None
+
+        # Duration
+        duration_ns = kernel.totalDuration
+        duration_pct = (duration_ns / total_duration_ns * 100) if total_duration_ns else None
+
+        def _fmt(val, decimals=2):
+            if val is None:
+                return ""
+            return round(val, decimals)
+
+        rows.append([
+            kernel.KernelName,
+            limiter_cat,
+            limiter_detail,
+            _fmt(perf_gflops, 0),
+            _fmt(perf_pct, 2),
+            _fmt(roofline_peak_gflops, 0),
+            _fmt(ai_l1, 5),
+            _fmt(l1_bw_pct, 2),
+            _fmt(l1_bw_tbs, 3),
+            _fmt(l1_peak_tbs, 3),
+            _fmt(ai_l2, 5),
+            _fmt(l2_bw_pct, 2),
+            _fmt(l2_bw_tbs, 3),
+            _fmt(l2_peak_tbs, 3),
+            _fmt(ai_hbm, 5),
+            _fmt(hbm_bw_pct, 2),
+            _fmt(hbm_bw_tbs, 3),
+            _fmt(hbm_peak_tbs, 3),
+            _fmt(ai_lds, 5),
+            _fmt(lds_bw_pct, 2),
+            _fmt(lds_bw_tbs, 3),
+            _fmt(lds_peak_tbs, 3),
+            _fmt(dispatch_pct, 2),
+            dispatch_count,
+            int(total_dispatch_count),
+            _fmt(duration_pct, 2),
+            _fmt(duration_ns, 0),
+            _fmt(total_duration_ns, 0),
+        ])
+
+    with open(output_path, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(headers)
+        writer.writerows(rows)
+
+
+def load_benchmark_data(roofline_parameters):
+    """Load roofline.csv benchmark data and return as a dict. Returns empty dict on failure."""
     workload_dir = roofline_parameters.get("workload_dir")
     if isinstance(workload_dir, list):
         base_dir = (
@@ -601,13 +842,7 @@ def constuct_roof(roofline_parameters, dtype):
         base_dir = workload_dir
 
     benchmark_results = str(Path(base_dir) / "roofline.csv")
-
-    # -----------------------------------------------------
-    # Initialize roofline data dictionary from roofline.csv
-    # -----------------------------------------------------
-    benchmark_data = (
-        {}
-    )  # TODO: consider changing this to an ordered dict for consistency over py versions
+    benchmark_data = {}
     headers = []
     try:
         with open(benchmark_results, "r") as csvfile:
@@ -622,10 +857,16 @@ def constuct_roof(roofline_parameters, dtype):
                 else:
                     for i, key in enumerate(headers):
                         benchmark_data[key].append(row[i])
-
                 rowCount += 1
         csvfile.close()
-    except:
+    except Exception:
+        return {}
+    return benchmark_data
+
+
+def constuct_roof(roofline_parameters, dtype):
+    benchmark_data = load_benchmark_data(roofline_parameters)
+    if not benchmark_data:
         graphPoints = {
             "hbm": [None, None, None],
             "l2": [None, None, None],
