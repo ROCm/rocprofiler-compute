@@ -8,14 +8,24 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 
 #### Roofline
 
-* New roofline_detailed.csv output: per-kernel roofline summary including limiter classification (Memory/Compute, at which cache level), performance (GFLOPs/s and % of roofline peak), arithmetic intensity per cache level, bandwidth used/peak, dispatch counts, and duration.
-* MXFP8 datatype support to roofline profiling (benchmarking, counters, supported datatypes table, --roofline-data-types option).
+* ``roofline_detailed.csv`` output with one row per kernel on AMD Instinct MI350 series: the limiting roof (compute or a memory level), performance against that roof, arithmetic intensity and bandwidth at each memory level, dispatch count, and duration.
+
+* MXFP8 data type for roofline on AMD Instinct MI350 series (``--roofline-data-type MXFP8``).
+
+### Changed
+
+* The roofline benchmark now reports the best of its runs instead of the average.
+* FP8 and BF16 rooflines no longer show a VALU peak.
 
 ### Resolved issues
 
-* Fix typo in gfx950 SoL YAML: MXF8 and F6F4 MFMA peak multiplier was 16834, should be 16384.
-* Fix BF16 and FP8 FLOPs incorrectly included in total flops for roofline.
-* Fix pandas 2.0+ compatibility: StringDtype columns no longer treated as object, preventing Agent_Id merge failures.
+* Fixed the MFMA FLOPs (F6F4) peak on AMD Instinct MI350 series.
+* Fixed the BF16 roofline, which used the FP16 MFMA peak.
+* Fixed profiling and analysis with pandas 3.0.
+
+### Known issues
+
+* MXFP8 roofline and the updated roofline benchmark are only in the RHEL 8 roofline binary.
 
 ## ROCm Compute Profiler 3.2.3 for ROCm 7.0.0
 

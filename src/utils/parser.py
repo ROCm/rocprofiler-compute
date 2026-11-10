@@ -816,14 +816,10 @@ def eval_metric(dfs, dfs_type, sys_info, raw_pmc_df, debug):
     # df['Value'] = df['Value'].apply(lambda s: eval(compile(str(s), '<string>', 'eval')))
     for id, df in dfs.items():
         if dfs_type[id] == "metric_table":
-            # pandas 2.0+ infers string columns as StringDtype, which rejects
-            # float assignment. Convert to object dtype so eval results can be stored.
-            for col in df.columns:
-                if col in schema.supported_field and df[col].dtype.name in (
-                    "string",
-                    "str",
-                ):
-                    df[col] = df[col].astype(object)
+            # pandas 3.0+ gives str dtype to the columns that build_metric_value_string
+            # fills with apply(), and a str column rejects floats.
+            metric_columns = [col for col in df.columns if col in schema.supported_field]
+            df[metric_columns] = df[metric_columns].astype(object)
             for idx, row in df.iterrows():
                 for expr in df.columns:
                     if expr in schema.supported_field:
@@ -906,8 +902,12 @@ def eval_metric(dfs, dfs_type, sys_info, raw_pmc_df, debug):
                                         df.at[idx, expr] = ""
                                     else:
                                         console_error("analysis", str(ae))
-                                except Exception:
+                                except Exception as e:
                                     df.at[idx, expr] = ""
+                                    console_warning(
+                                        "analysis",
+                                        f"Could not evaluate metric {expr}: {e}",
+                                    )
 
                             else:
                                 # If not insert nan, the whole col might be treated

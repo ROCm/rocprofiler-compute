@@ -46,10 +46,11 @@ from utils.roofline_calc import (
     MFMA_DATATYPES,
     PEAK_OPS_DATATYPES,
     SUPPORTED_DATATYPES,
+    aggregate_kernels,
     calc_ai,
     constuct_roof,
-    generate_detailed_csv,
-    load_benchmark_data,
+    detailed_csv_rows,
+    write_detailed_csv,
 )
 from utils.utils import mibench
 
@@ -86,6 +87,7 @@ class Roofline:
             }
         )
         self.__ai_data = None
+        self.__kernels = None
         self.__ceiling_data = None
         self.__figure = go.Figure()
         # Set roofline run parameters from args
@@ -107,6 +109,19 @@ class Roofline:
             not self.__run_parameters["is_standalone"]
         ):
             console_error("--kernel-names cannot be used with --no-roof option")
+
+    def _write_detailed_csv(self, dtype, base_dir):
+        """Compute and write roofline_detailed_<dtype>.csv for gfx950 only."""
+        if getattr(self.__mspec, "gpu_arch", "") != "gfx950":
+            return
+        if not self.__ceiling_data or not self.__kernels:
+            return
+        rows = detailed_csv_rows(self.__kernels, self.__ceiling_data)
+        if not rows:
+            return
+        csv_path = str(Path(base_dir) / f"roofline_detailed_{dtype}.csv")
+        write_detailed_csv(csv_path, rows)
+        console_log("roofline", f"roofline_detailed_{dtype}.csv saved to {csv_path}")
 
     def roof_setup(self):
         # Setup the workload directory for roofline profiling.
@@ -176,9 +191,10 @@ class Roofline:
             self.roof_setup()
 
         console_debug("roofline", "Path: %s" % self.__run_parameters.get("workload_dir"))
-        self.__ai_data = calc_ai(
+        self.__kernels = aggregate_kernels(
             self.__mspec, self.__run_parameters.get("sort_type"), ret_df
         )
+        self.__ai_data = calc_ai(self.__kernels)
 
         msg = "AI at each mem level:"
         for i in self.__ai_data:
@@ -225,6 +241,17 @@ class Roofline:
                 else:
                     flops_figure = self.generate_plot(dtype=str(dt))
                 flops_dt_list += "_" + str(dt)
+
+            # Generate one roofline_detailed_<dtype>.csv per dtype
+            workload_dir = self.__run_parameters.get("workload_dir")
+            if workload_dir:
+                base_dir = (
+                    workload_dir[0][0]
+                    if isinstance(workload_dir, list) and isinstance(workload_dir[0], (list, tuple))
+                    else workload_dir[0] if isinstance(workload_dir, list)
+                    else workload_dir
+                )
+                self._write_detailed_csv(dt, base_dir)
 
         if self.__run_parameters.get("include_kernel_names", False):
             if self.__ai_data is None:
@@ -353,28 +380,6 @@ class Roofline:
                     plot_bgcolor="white",
                     paper_bgcolor="white",
                 )
-
-        # Generate roofline_detailed.csv
-        workload_dir = self.__run_parameters.get("workload_dir")
-        if workload_dir:
-            base_dir = (
-                workload_dir[0][0]
-                if isinstance(workload_dir, list) and isinstance(workload_dir[0], (list, tuple))
-                else workload_dir[0] if isinstance(workload_dir, list)
-                else workload_dir
-            )
-            csv_path = str(Path(base_dir) / "roofline_detailed.csv")
-            gpu_arch = getattr(self.__mspec, "gpu_arch", "")
-            benchmark_data = load_benchmark_data(self.__run_parameters)
-            if benchmark_data and gpu_arch not in ("gfx908", "gfx90a"):
-                generate_detailed_csv(
-                    csv_path,
-                    self.__ai_data,
-                    self.__ceiling_data,
-                    benchmark_data,
-                    self.__run_parameters.get("device_id", 0),
-                )
-                console_log("roofline", "roofline_detailed.csv saved to {}".format(csv_path))
 
         # Output will be different depending on interaction type:
         # Save PDFs if we're in "standalone roofline" mode, otherwise return HTML to be used in GUI output
@@ -720,7 +725,10 @@ class Roofline:
             roofline_parameters=self.__run_parameters,
             dtype=dtype,
         )
-        self.__ai_data = calc_ai(self.__mspec, self.__run_parameters["sort_type"], t_df)
+        self.__kernels = aggregate_kernels(
+            self.__mspec, self.__run_parameters["sort_type"], t_df
+        )
+        self.__ai_data = calc_ai(self.__kernels)
 
         plt.clf()
         plt.plotsize(plt.tw(), plt.th())
@@ -860,20 +868,8 @@ class Roofline:
         plt.xscale("log")
         plt.yscale("log")
 
-        # Generate roofline_detailed.csv (only for architectures that support it)
-        gpu_arch = getattr(self.__mspec, "gpu_arch", "")
-        if gpu_arch not in ("gfx908", "gfx90a"):
-            benchmark_data = load_benchmark_data(self.__run_parameters)
-            if benchmark_data and self.__ai_data:
-                csv_path = str(base_path / "roofline_detailed.csv")
-                generate_detailed_csv(
-                    csv_path,
-                    self.__ai_data,
-                    self.__ceiling_data,
-                    benchmark_data,
-                    self.__run_parameters.get("device_id", 0),
-                )
-                console_log("roofline", "roofline_detailed.csv saved to {}".format(csv_path))
+        # Generate roofline_detailed_<dtype>.csv
+        self._write_detailed_csv(dtype, base_path)
 
         # Build figure
         # Print plot using `plt._utility.write(self.cli_generate_plot(dtype))`
