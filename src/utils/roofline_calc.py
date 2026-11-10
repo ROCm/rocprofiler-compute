@@ -101,8 +101,15 @@ SUPPORTED_DATATYPES = {
 PEAK_OPS_DATATYPES = ["FP16", "FP32", "FP64", "I8", "I32", "I64"]
 MFMA_DATATYPES = ["FP4", "FP6", "FP8", "MXFP8", "FP16", "BF16", "FP32", "FP64", "I8"]
 MFMA_BENCHMARK_KEYS = {
-    "FP4": "F4", "FP6": "F6", "FP8": "F8", "MXFP8": "MXF8", "FP16": "F16",
-    "BF16": "BF16", "FP32": "F32", "FP64": "F64", "I8": "I8",
+    "FP4": "F4",
+    "FP6": "F6",
+    "FP8": "F8",
+    "MXFP8": "MXF8",
+    "FP16": "F16",
+    "BF16": "BF16",
+    "FP32": "F32",
+    "FP64": "F64",
+    "I8": "I8",
 }
 
 TOP_N = 10
@@ -261,11 +268,11 @@ def aggregate_kernels(mspec, sort_type, ret_df):
     df = df.sort_values(by=["Kernel_Name"])
     df = df.reset_index(drop=True)
 
-    total_flops = valu_flops = mfma_flops_f6f4 = mfma_flops_f8 = (
-        mfma_flops_bf16
-    ) = mfma_flops_f16 = mfma_iops_i8 = mfma_flops_f32 = mfma_flops_f64 = lds_data = (
-        L1cache_data
-    ) = L2cache_data = hbm_data = calls = totalDuration = avgDuration = 0.0
+    total_flops = valu_flops = mfma_flops_f6f4 = mfma_flops_f8 = mfma_flops_bf16 = (
+        mfma_flops_f16
+    ) = mfma_iops_i8 = mfma_flops_f32 = mfma_flops_f64 = lds_data = L1cache_data = (
+        L2cache_data
+    ) = hbm_data = calls = totalDuration = avgDuration = 0.0
 
     kernelName = ""
 
@@ -591,8 +598,8 @@ def calc_ai(kernels):
 # Memory levels ordered closest-to-furthest: label -> (graphPoints key, AI_Data field)
 MEMORY_LEVELS = {
     "LDS": ("lds", "lds_data"),
-    "L1":  ("l1",  "L1cache_data"),
-    "L2":  ("l2",  "L2cache_data"),
+    "L1": ("l1", "L1cache_data"),
+    "L2": ("l2", "L2cache_data"),
     "HBM": ("hbm", "hbm_data"),
 }
 
@@ -608,12 +615,16 @@ def _determine_limiter(kernel, compute_peak, bw_peaks):
     if not kernel.total_flops or not kernel.avgDuration:
         return "Unknown", None
 
-    roofs = {"Compute": compute_peak}
+    roofs = {}
+    if compute_peak:
+        roofs["Compute"] = compute_peak
     for level, (_, data_field) in MEMORY_LEVELS.items():
         data_bytes = getattr(kernel, data_field)
         if data_bytes and bw_peaks.get(level):
             roofs[level] = kernel.total_flops / data_bytes * bw_peaks[level]
 
+    if not roofs:
+        return "Unknown", None
     limiter = min(roofs, key=roofs.get)
     return limiter, roofs[limiter]
 
@@ -652,7 +663,9 @@ def detailed_csv_rows(all_kernels, graphPoints):
                 pass
         return max(vals) if vals else None
 
-    bw_peaks = {label: _gp_bw(gp_key) for label, (gp_key, _) in MEMORY_LEVELS.items()}  # GB/s
+    bw_peaks = {
+        label: _gp_bw(gp_key) for label, (gp_key, _) in MEMORY_LEVELS.items()
+    }  # GB/s
     peak_ops = _gp_ops()  # GFLOPs/s
 
     if not any(list(bw_peaks.values()) + [peak_ops]):
@@ -669,15 +682,25 @@ def detailed_csv_rows(all_kernels, graphPoints):
     rows = []
     for kernel in all_kernels:
         # flops / ns = GFLOPs/s
-        perf_gflops = kernel.total_flops / kernel.avgDuration if (kernel.total_flops and kernel.avgDuration) else None
+        perf_gflops = (
+            kernel.total_flops / kernel.avgDuration
+            if (kernel.total_flops and kernel.avgDuration)
+            else None
+        )
 
         limiter, roofline_peak_gflops = _determine_limiter(kernel, peak_ops, bw_peaks)
         limiter_cat = "Compute" if limiter in ("Compute", "Unknown") else "Memory"
         limiter_detail = "Peak" if limiter == "Compute" else limiter
-        perf_pct = (perf_gflops / roofline_peak_gflops * 100) if (perf_gflops and roofline_peak_gflops) else None
+        perf_pct = (
+            (perf_gflops / roofline_peak_gflops * 100)
+            if (perf_gflops and roofline_peak_gflops)
+            else None
+        )
 
         def _bw_gbs(data):
-            return data / kernel.avgDuration if (data and kernel.avgDuration) else None  # bytes / ns = GB/s
+            return (
+                data / kernel.avgDuration if (data and kernel.avgDuration) else None
+            )  # bytes / ns = GB/s
 
         dispatch_count = int(kernel.numCalls)
         duration_ns = kernel.totalDuration
@@ -694,18 +717,38 @@ def detailed_csv_rows(all_kernels, graphPoints):
             data = getattr(kernel, data_field)
             peak = bw_peaks[label]
             bw_used = _bw_gbs(data)
-            row[f"{label} AI"] = _fmt(kernel.total_flops / data if (data and kernel.total_flops) else None, 5)
-            row[f"{label} Bandwidth Used (%)"] = _fmt((bw_used / peak * 100) if (bw_used and peak) else None, 2)
+            row[f"{label} AI"] = _fmt(
+                kernel.total_flops / data if (data and kernel.total_flops) else None, 5
+            )
+            row[f"{label} Bandwidth Used (%)"] = _fmt(
+                (bw_used / peak * 100) if (bw_used and peak) else None, 2
+            )
             row[f"{label} Bandwidth Used (GB/s)"] = _fmt(bw_used, 3)
             row[f"{label} Bandwidth Peak (GB/s)"] = _fmt(peak, 3)
-        row.update({
-            "Dispatch Count (%)": _fmt((dispatch_count / total_dispatch_count * 100) if total_dispatch_count else None, 2),
-            "Dispatch Count": dispatch_count,
-            "Dispatch Count Total": int(total_dispatch_count),
-            "Duration (%)": _fmt((duration_ns / total_duration_ns * 100) if total_duration_ns else None, 2),
-            "Duration (ns)": _fmt(duration_ns, 0),
-            "Duration Total (ns)": _fmt(total_duration_ns, 0),
-        })
+        row.update(
+            {
+                "Dispatch Count (%)": _fmt(
+                    (
+                        (dispatch_count / total_dispatch_count * 100)
+                        if total_dispatch_count
+                        else None
+                    ),
+                    2,
+                ),
+                "Dispatch Count": dispatch_count,
+                "Dispatch Count Total": int(total_dispatch_count),
+                "Duration (%)": _fmt(
+                    (
+                        (duration_ns / total_duration_ns * 100)
+                        if total_duration_ns
+                        else None
+                    ),
+                    2,
+                ),
+                "Duration (ns)": _fmt(duration_ns, 0),
+                "Duration Total (ns)": _fmt(total_duration_ns, 0),
+            }
+        )
         rows.append(row)
 
     return rows

@@ -247,9 +247,13 @@ class Roofline:
             if workload_dir:
                 base_dir = (
                     workload_dir[0][0]
-                    if isinstance(workload_dir, list) and isinstance(workload_dir[0], (list, tuple))
-                    else workload_dir[0] if isinstance(workload_dir, list)
-                    else workload_dir
+                    if isinstance(workload_dir, list)
+                    and isinstance(workload_dir[0], (list, tuple))
+                    else (
+                        workload_dir[0]
+                        if isinstance(workload_dir, list)
+                        else workload_dir
+                    )
                 )
                 self._write_detailed_csv(dt, base_dir)
 
