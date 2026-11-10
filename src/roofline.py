@@ -111,8 +111,10 @@ class Roofline:
             console_error("--kernel-names cannot be used with --no-roof option")
 
     def _write_detailed_csv(self, dtype, base_dir):
-        """Compute and write roofline_detailed_<dtype>.csv for gfx950 only."""
+        """Write roofline_detailed_<dtype>.csv for gfx950 floating-point dtypes."""
         if getattr(self.__mspec, "gpu_arch", "") != "gfx950":
+            return
+        if dtype.startswith("I"):
             return
         if not self.__ceiling_data or not self.__kernels:
             return

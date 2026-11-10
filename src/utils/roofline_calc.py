@@ -629,6 +629,22 @@ def _determine_limiter(kernel, compute_peak, bw_peaks):
     return limiter, roofs[limiter]
 
 
+def _graph_peak(graphPoints, key):
+    """Return the peak in graphPoints[key][2] as a float, or None if missing."""
+    try:
+        peak = graphPoints[key][2]
+        return float(peak) if peak is not None else None
+    except (KeyError, IndexError, TypeError):
+        return None
+
+
+def _round_or_blank(value, decimals=2):
+    """Round value for the CSV, or return "" when it is None."""
+    if value is None:
+        return ""
+    return round(value, decimals)
+
+
 def detailed_csv_rows(all_kernels, graphPoints):
     """
     Compute per-kernel roofline metrics and return them as a list of dicts.
@@ -645,39 +661,22 @@ def detailed_csv_rows(all_kernels, graphPoints):
     # Extract peaks from graphPoints (already computed for the current dtype).
     # Memory levels: graphPoints[level][2] is peak BW in GB/s.
     # Compute: take the higher of mfma and valu peaks in GFLOPs/s.
-    def _gp_bw(level):
-        try:
-            val = graphPoints[level][2]
-            return float(val) if val is not None else None
-        except (KeyError, IndexError, TypeError):
-            return None
-
-    def _gp_ops():
-        vals = []
-        for roof in ("mfma", "valu"):
-            try:
-                v = graphPoints[roof][2]
-                if v is not None:
-                    vals.append(float(v))
-            except (KeyError, IndexError, TypeError):
-                pass
-        return max(vals) if vals else None
-
     bw_peaks = {
-        label: _gp_bw(gp_key) for label, (gp_key, _) in MEMORY_LEVELS.items()
+        label: _graph_peak(graphPoints, gp_key)
+        for label, (gp_key, _) in MEMORY_LEVELS.items()
     }  # GB/s
-    peak_ops = _gp_ops()  # GFLOPs/s
+    compute_peaks = [
+        peak
+        for peak in (_graph_peak(graphPoints, "mfma"), _graph_peak(graphPoints, "valu"))
+        if peak is not None
+    ]
+    peak_ops = max(compute_peaks) if compute_peaks else None  # GFLOPs/s
 
     if not any(list(bw_peaks.values()) + [peak_ops]):
         return []
 
     total_dispatch_count = sum(k.numCalls for k in all_kernels)
     total_duration_ns = sum(k.totalDuration for k in all_kernels)
-
-    def _fmt(val, decimals=2):
-        if val is None:
-            return ""
-        return round(val, decimals)
 
     rows = []
     for kernel in all_kernels:
@@ -689,18 +688,13 @@ def detailed_csv_rows(all_kernels, graphPoints):
         )
 
         limiter, roofline_peak_gflops = _determine_limiter(kernel, peak_ops, bw_peaks)
-        limiter_cat = "Compute" if limiter in ("Compute", "Unknown") else "Memory"
+        limiter_cat = limiter if limiter in ("Compute", "Unknown") else "Memory"
         limiter_detail = "Peak" if limiter == "Compute" else limiter
         perf_pct = (
             (perf_gflops / roofline_peak_gflops * 100)
             if (perf_gflops and roofline_peak_gflops)
             else None
         )
-
-        def _bw_gbs(data):
-            return (
-                data / kernel.avgDuration if (data and kernel.avgDuration) else None
-            )  # bytes / ns = GB/s
 
         dispatch_count = int(kernel.numCalls)
         duration_ns = kernel.totalDuration
@@ -709,25 +703,27 @@ def detailed_csv_rows(all_kernels, graphPoints):
             "Kernel": kernel.KernelName,
             "Limiter Category": limiter_cat,
             "Limiter Detail": limiter_detail,
-            "Performance (GFLOPs/s)": _fmt(perf_gflops, 0),
-            "Performance (%)": _fmt(perf_pct, 2),
-            "Roofline Peak (GFLOPs/s)": _fmt(roofline_peak_gflops, 0),
+            "Performance (GFLOPs/s)": _round_or_blank(perf_gflops, 0),
+            "Performance (%)": _round_or_blank(perf_pct, 2),
+            "Roofline Peak (GFLOPs/s)": _round_or_blank(roofline_peak_gflops, 0),
         }
         for label, (_, data_field) in MEMORY_LEVELS.items():
             data = getattr(kernel, data_field)
             peak = bw_peaks[label]
-            bw_used = _bw_gbs(data)
-            row[f"{label} AI"] = _fmt(
+            bw_used = (
+                data / kernel.avgDuration if (data and kernel.avgDuration) else None
+            )  # bytes / ns = GB/s
+            row[f"{label} AI"] = _round_or_blank(
                 kernel.total_flops / data if (data and kernel.total_flops) else None, 5
             )
-            row[f"{label} Bandwidth Used (%)"] = _fmt(
+            row[f"{label} Bandwidth Used (%)"] = _round_or_blank(
                 (bw_used / peak * 100) if (bw_used and peak) else None, 2
             )
-            row[f"{label} Bandwidth Used (GB/s)"] = _fmt(bw_used, 3)
-            row[f"{label} Bandwidth Peak (GB/s)"] = _fmt(peak, 3)
+            row[f"{label} Bandwidth Used (GB/s)"] = _round_or_blank(bw_used, 3)
+            row[f"{label} Bandwidth Peak (GB/s)"] = _round_or_blank(peak, 3)
         row.update(
             {
-                "Dispatch Count (%)": _fmt(
+                "Dispatch Count (%)": _round_or_blank(
                     (
                         (dispatch_count / total_dispatch_count * 100)
                         if total_dispatch_count
@@ -737,7 +733,7 @@ def detailed_csv_rows(all_kernels, graphPoints):
                 ),
                 "Dispatch Count": dispatch_count,
                 "Dispatch Count Total": int(total_dispatch_count),
-                "Duration (%)": _fmt(
+                "Duration (%)": _round_or_blank(
                     (
                         (duration_ns / total_duration_ns * 100)
                         if total_duration_ns
@@ -745,8 +741,8 @@ def detailed_csv_rows(all_kernels, graphPoints):
                     ),
                     2,
                 ),
-                "Duration (ns)": _fmt(duration_ns, 0),
-                "Duration Total (ns)": _fmt(total_duration_ns, 0),
+                "Duration (ns)": _round_or_blank(duration_ns, 0),
+                "Duration Total (ns)": _round_or_blank(total_duration_ns, 0),
             }
         )
         rows.append(row)
