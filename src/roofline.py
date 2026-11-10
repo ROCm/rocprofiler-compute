@@ -121,8 +121,11 @@ class Roofline:
         rows = detailed_csv_rows(self.__kernels, self.__ceiling_data)
         if not rows:
             return
-        csv_path = str(Path(base_dir) / f"roofline_detailed_{dtype}.csv")
-        write_detailed_csv(csv_path, rows)
+        csv_path = Path(base_dir) / f"roofline_detailed_{dtype}.csv"
+        if csv_path.exists():
+            console_log("roofline", f"roofline_detailed_{dtype}.csv already exists, skipping")
+            return
+        write_detailed_csv(str(csv_path), rows)
         console_log("roofline", f"roofline_detailed_{dtype}.csv saved to {csv_path}")
 
     def roof_setup(self):

@@ -9,6 +9,9 @@ Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.
 #### Roofline
 
 * ``roofline_detailed_<datatype>.csv`` output on AMD Instinct MI350 series, one file per floating-point data type in ``--roofline-data-type``, with one row per kernel: the limiting roof (compute or a memory level), performance against that roof, arithmetic intensity and bandwidth at each memory level, dispatch count, and duration.
+  * ``roofline_detailed_<datatype>.csv`` is captured in profile and analyze mode automatically if the file does not already exist.
+  * Default data type is FP32 if the user does not specify a ``--roofline-data-type``.
+  * Note: ``roofline_detailed_<datatype>.csv`` is only generated for the first data type provided with ``--roofline-data-type``. To generate an additional detailed roofline csv specific to a different data type, repeat the analyze process with the different data type in ``--roofline-data-type``.  
 
 * MXFP8 data type for roofline on AMD Instinct MI350 series (``--roofline-data-type MXFP8``).
 
