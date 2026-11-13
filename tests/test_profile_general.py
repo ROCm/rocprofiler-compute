@@ -173,6 +173,14 @@ ROOF_ONLY_FILES = sorted(
     ]
 )
 
+ROOF_ONLY_FILES_MI350 = sorted(ROOF_ONLY_FILES + ["roofline_detailed_FP32.csv"])
+
+
+def roof_only_expected():
+    """Return the expected ROOF_ONLY file list for the current soc."""
+    return ROOF_ONLY_FILES_MI350 if "MI350" in soc else ROOF_ONLY_FILES
+
+
 METRIC_THRESHOLDS = {
     "2.1.12": {"absolute": 0, "relative": 8},
     "3.1.1": {"absolute": 0, "relative": 10},
@@ -595,9 +603,9 @@ def test_roof_kernel_names(binary_handler_profile_rocprof_compute):
         assert sorted(list(file_dict.keys())) == ALL_CSVS_MI100
     else:
         expected_files = (
-            [f for f in ROOF_ONLY_FILES if f != "timestamps.csv"]
+            [f for f in roof_only_expected() if f != "timestamps.csv"]
             if using_v3()
-            else ROOF_ONLY_FILES
+            else roof_only_expected()
         ) + ["kernelName_legend.pdf"]
         assert sorted(list(file_dict.keys())) == sorted(expected_files)
 
@@ -642,9 +650,9 @@ def test_roof_multiple_data_types(binary_handler_profile_rocprof_compute):
 
                 file_dict = test_utils.check_csv_files(workload_dir, 1, num_kernels)
                 expected_files = (
-                    [f for f in ROOF_ONLY_FILES if f != "timestamps.csv"]
+                    [f for f in roof_only_expected() if f != "timestamps.csv"]
                     if using_v3()
-                    else ROOF_ONLY_FILES
+                    else roof_only_expected()
                 ) + ["kernelName_legend.pdf"]
                 assert sorted(list(file_dict.keys())) == sorted(expected_files)
             else:
@@ -2334,9 +2342,9 @@ def test_roof_sort_dispatches(binary_handler_profile_rocprof_compute):
     file_dict = test_utils.check_csv_files(workload_dir, 1, num_kernels)
     assert (
         sorted(list(file_dict.keys()))
-        == [f for f in ROOF_ONLY_FILES if f != "timestamps.csv"]
+        == [f for f in roof_only_expected() if f != "timestamps.csv"]
         if using_v3()
-        else ROOF_ONLY_FILES
+        else roof_only_expected()
     )
 
     validate(
@@ -2369,9 +2377,9 @@ def test_roof_sort_kernels(binary_handler_profile_rocprof_compute):
 
     assert (
         sorted(list(file_dict.keys()))
-        == [f for f in ROOF_ONLY_FILES if f != "timestamps.csv"]
+        == [f for f in roof_only_expected() if f != "timestamps.csv"]
         if using_v3()
-        else ROOF_ONLY_FILES
+        else roof_only_expected()
     )
 
     validate(
@@ -2404,9 +2412,9 @@ def test_roof_mem_levels_vL1D(binary_handler_profile_rocprof_compute):
 
     assert (
         sorted(list(file_dict.keys()))
-        == [f for f in ROOF_ONLY_FILES if f != "timestamps.csv"]
+        == [f for f in roof_only_expected() if f != "timestamps.csv"]
         if using_v3()
-        else ROOF_ONLY_FILES
+        else roof_only_expected()
     )
 
     validate(
@@ -2439,9 +2447,9 @@ def test_roof_mem_levels_LDS(binary_handler_profile_rocprof_compute):
 
     assert (
         sorted(list(file_dict.keys()))
-        == [f for f in ROOF_ONLY_FILES if f != "timestamps.csv"]
+        == [f for f in roof_only_expected() if f != "timestamps.csv"]
         if using_v3()
-        else ROOF_ONLY_FILES
+        else roof_only_expected()
     )
 
     validate(

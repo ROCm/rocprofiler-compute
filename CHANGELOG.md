@@ -2,6 +2,34 @@
 
 Full documentation for ROCm Compute Profiler is available at [https://rocm.docs.amd.com/projects/rocprofiler-compute/en/latest/](https://rocm.docs.amd.com/projects/rocprofiler-compute/en/latest/).
 
+## ROCm Compute Profiler 3.2.4 for ROCm 7.0.2.1
+
+### Added
+
+#### Roofline
+
+* ``roofline_detailed_<datatype>.csv`` output on AMD Instinct MI350 series, one file per floating-point data type in ``--roofline-data-type``, with one row per kernel: the limiting roof (compute or a memory level), performance against that roof, arithmetic intensity and bandwidth at each memory level, dispatch count, and duration.
+  * ``roofline_detailed_<datatype>.csv`` is captured in profile and analyze mode automatically if the file does not already exist.
+  * Default data type is FP32 if the user does not specify a ``--roofline-data-type``.
+  * Note: ``roofline_detailed_<datatype>.csv`` is only generated for the first data type provided with ``--roofline-data-type``. To generate an additional detailed roofline csv specific to a different data type, repeat the analyze process with the different data type in ``--roofline-data-type``.  
+
+* MXFP8 data type for roofline on AMD Instinct MI350 series (``--roofline-data-type MXFP8``).
+
+### Changed
+
+* The roofline benchmark now reports the best of its runs instead of the average.
+* FP8 and BF16 rooflines no longer show a VALU peak.
+
+### Resolved issues
+
+* Fixed the MFMA FLOPs (F6F4) peak on AMD Instinct MI350 series.
+* Fixed the BF16 roofline, which used the FP16 MFMA peak.
+* Fixed profiling and analysis with pandas 3.0.
+
+### Known issues
+
+* MXFP8 roofline and the updated roofline benchmark are only in the RHEL 8 roofline binary.
+
 ## ROCm Compute Profiler 3.2.3 for ROCm 7.0.0
 
 ### Added

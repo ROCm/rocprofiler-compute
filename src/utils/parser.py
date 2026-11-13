@@ -816,6 +816,10 @@ def eval_metric(dfs, dfs_type, sys_info, raw_pmc_df, debug):
     # df['Value'] = df['Value'].apply(lambda s: eval(compile(str(s), '<string>', 'eval')))
     for id, df in dfs.items():
         if dfs_type[id] == "metric_table":
+            # pandas 3.0+ gives str dtype to the columns that build_metric_value_string
+            # fills with apply(), and a str column rejects floats.
+            metric_columns = [col for col in df.columns if col in schema.supported_field]
+            df[metric_columns] = df[metric_columns].astype(object)
             for idx, row in df.iterrows():
                 for expr in df.columns:
                     if expr in schema.supported_field:
@@ -885,24 +889,30 @@ def eval_metric(dfs, dfs_type, sys_info, raw_pmc_df, debug):
                                     out = eval(compile(row[expr], "<string>", "eval"))
 
                                     if np.isnan(out):
-                                        row[expr] = ""
+                                        df.at[idx, expr] = ""
                                     else:
-                                        row[expr] = out
+                                        df.at[idx, expr] = out
                                 except TypeError:
-                                    row[expr] = ""
+                                    df.at[idx, expr] = ""
                                 except AttributeError as ae:
                                     if (
                                         str(ae)
                                         == "'NoneType' object has no attribute 'get'"
                                     ):
-                                        row[expr] = ""
+                                        df.at[idx, expr] = ""
                                     else:
                                         console_error("analysis", str(ae))
+                                except Exception as e:
+                                    df.at[idx, expr] = ""
+                                    console_warning(
+                                        "analysis",
+                                        f"Could not evaluate metric {expr}: {e}",
+                                    )
 
                             else:
                                 # If not insert nan, the whole col might be treated
                                 # as string but not nubmer if there is NONE
-                                row[expr] = ""
+                                df.at[idx, expr] = ""
 
             # print(tabulate(df, headers='keys', tablefmt='fancy_grid'))
 

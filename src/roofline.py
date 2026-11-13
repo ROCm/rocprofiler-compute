@@ -46,8 +46,11 @@ from utils.roofline_calc import (
     MFMA_DATATYPES,
     PEAK_OPS_DATATYPES,
     SUPPORTED_DATATYPES,
+    aggregate_kernels,
     calc_ai,
     constuct_roof,
+    detailed_csv_rows,
+    write_detailed_csv,
 )
 from utils.utils import mibench
 
@@ -84,6 +87,7 @@ class Roofline:
             }
         )
         self.__ai_data = None
+        self.__kernels = None
         self.__ceiling_data = None
         self.__figure = go.Figure()
         # Set roofline run parameters from args
@@ -105,6 +109,26 @@ class Roofline:
             not self.__run_parameters["is_standalone"]
         ):
             console_error("--kernel-names cannot be used with --no-roof option")
+
+    def _write_detailed_csv(self, dtype, base_dir):
+        """Write roofline_detailed_<dtype>.csv for gfx950 floating-point dtypes."""
+        if getattr(self.__mspec, "gpu_arch", "") != "gfx950":
+            return
+        if dtype.startswith("I"):
+            return
+        if not self.__ceiling_data or not self.__kernels:
+            return
+        rows = detailed_csv_rows(self.__kernels, self.__ceiling_data)
+        if not rows:
+            return
+        csv_path = Path(base_dir) / f"roofline_detailed_{dtype}.csv"
+        if csv_path.exists():
+            console_log(
+                "roofline", f"roofline_detailed_{dtype}.csv already exists, skipping"
+            )
+            return
+        write_detailed_csv(str(csv_path), rows)
+        console_log("roofline", f"roofline_detailed_{dtype}.csv saved to {csv_path}")
 
     def roof_setup(self):
         # Setup the workload directory for roofline profiling.
@@ -174,9 +198,10 @@ class Roofline:
             self.roof_setup()
 
         console_debug("roofline", "Path: %s" % self.__run_parameters.get("workload_dir"))
-        self.__ai_data = calc_ai(
+        self.__kernels = aggregate_kernels(
             self.__mspec, self.__run_parameters.get("sort_type"), ret_df
         )
+        self.__ai_data = calc_ai(self.__kernels)
 
         msg = "AI at each mem level:"
         for i in self.__ai_data:
@@ -223,6 +248,21 @@ class Roofline:
                 else:
                     flops_figure = self.generate_plot(dtype=str(dt))
                 flops_dt_list += "_" + str(dt)
+
+            # Generate one roofline_detailed_<dtype>.csv per dtype
+            workload_dir = self.__run_parameters.get("workload_dir")
+            if workload_dir:
+                base_dir = (
+                    workload_dir[0][0]
+                    if isinstance(workload_dir, list)
+                    and isinstance(workload_dir[0], (list, tuple))
+                    else (
+                        workload_dir[0]
+                        if isinstance(workload_dir, list)
+                        else workload_dir
+                    )
+                )
+                self._write_detailed_csv(dt, base_dir)
 
         if self.__run_parameters.get("include_kernel_names", False):
             if self.__ai_data is None:
@@ -696,7 +736,10 @@ class Roofline:
             roofline_parameters=self.__run_parameters,
             dtype=dtype,
         )
-        self.__ai_data = calc_ai(self.__mspec, self.__run_parameters["sort_type"], t_df)
+        self.__kernels = aggregate_kernels(
+            self.__mspec, self.__run_parameters["sort_type"], t_df
+        )
+        self.__ai_data = calc_ai(self.__kernels)
 
         plt.clf()
         plt.plotsize(plt.tw(), plt.th())
@@ -835,6 +878,9 @@ class Roofline:
         plt.theme("pro")
         plt.xscale("log")
         plt.yscale("log")
+
+        # Generate roofline_detailed_<dtype>.csv
+        self._write_detailed_csv(dtype, base_path)
 
         # Build figure
         # Print plot using `plt._utility.write(self.cli_generate_plot(dtype))`

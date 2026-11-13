@@ -52,7 +52,7 @@ SUPPORTED_DATATYPES = {
         "I8",
         "I32",
         "I64",
-    ],  # Unsupported: F4, F6, F8
+    ],  # Unsupported: F4, F6, F8, MXFP8
     "gfx940": [
         "FP8",
         "FP16",
@@ -62,7 +62,7 @@ SUPPORTED_DATATYPES = {
         "I8",
         "I32",
         "I64",
-    ],  # Unsupported: F4, F6
+    ],  # Unsupported: F4, F6, MXFP8
     "gfx941": [
         "FP8",
         "FP16",
@@ -72,7 +72,7 @@ SUPPORTED_DATATYPES = {
         "I8",
         "I32",
         "I64",
-    ],  # Unsupported: F4, F6
+    ],  # Unsupported: F4, F6, MXFP8
     "gfx942": [
         "FP8",
         "FP16",
@@ -82,11 +82,12 @@ SUPPORTED_DATATYPES = {
         "I8",
         "I32",
         "I64",
-    ],  # Unsupported: F4, F6
+    ],  # Unsupported: F4, F6, MXFP8
     "gfx950": [
         "FP4",
         "FP6",
         "FP8",
+        "MXFP8",
         "FP16",
         "BF16",
         "FP32",
@@ -97,8 +98,19 @@ SUPPORTED_DATATYPES = {
     ],  # Unsupported:
 }
 
-PEAK_OPS_DATATYPES = ["FP8", "FP16", "BF16", "FP32", "FP64", "I8", "I32", "I64"]
-MFMA_DATATYPES = ["FP4", "FP6", "FP8", "FP16", "BF16", "FP32", "FP64", "I8"]
+PEAK_OPS_DATATYPES = ["FP16", "FP32", "FP64", "I8", "I32", "I64"]
+MFMA_DATATYPES = ["FP4", "FP6", "FP8", "MXFP8", "FP16", "BF16", "FP32", "FP64", "I8"]
+MFMA_BENCHMARK_KEYS = {
+    "FP4": "F4",
+    "FP6": "F6",
+    "FP8": "F8",
+    "MXFP8": "MXF8",
+    "FP16": "F16",
+    "BF16": "BF16",
+    "FP32": "F32",
+    "FP64": "F64",
+    "I8": "I8",
+}
 
 TOP_N = 10
 
@@ -191,10 +203,8 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
             y1_mfma = peakOps
 
         if dtype in MFMA_DATATYPES:
-            target_precision = (dtype) if (dtype[:1] == "I") else ("F" + dtype[2:])
-
             peakMFMA = float(
-                benchmark_data["MFMA{}{}".format(target_precision, ops_flops)][
+                benchmark_data["MFMA" + MFMA_BENCHMARK_KEYS[dtype] + ops_flops][
                     roofline_parameters["device_id"]
                 ]
             )
@@ -252,10 +262,9 @@ def calc_ceilings(roofline_parameters, dtype, benchmark_data):
 #                              Overlay application performance
 # -------------------------------------------------------------------------------------
 # Calculate relevant metrics for ai calculation
-def calc_ai(mspec, sort_type, ret_df):
-    """Given counter data, calculate arithmetic intensity for each kernel in the application."""
+def aggregate_kernels(mspec, sort_type, ret_df):
+    """Accumulate per-kernel counter data and return a sorted list of AI_Data objects."""
     df = ret_df["pmc_perf"]
-    # Sort by top kernels or top dispatches?
     df = df.sort_values(by=["Kernel_Name"])
     df = df.reset_index(drop=True)
 
@@ -524,47 +533,45 @@ def calc_ai(mspec, sort_type, ret_df):
 
     myList.sort(key=lambda x: x.totalDuration, reverse=True)
 
+    return myList
+
+
+def calc_ai(kernels):
+    """Given a sorted AI_Data list, build plot-point coordinates for the top kernels."""
     intensities = {"ai_l1": [], "ai_l2": [], "ai_hbm": []}
     curr_perf = []
     kernelNames = []
     i = 0
-    # Create list of top 5 intensities
-    while i < TOP_N and i != len(myList):
-        if myList[i].total_flops == 0:
+    # Create list of top TOP_N intensities
+    while i < TOP_N and i != len(kernels):
+        if kernels[i].total_flops == 0:
             console_debug(
                 "No flops counted for {}, arithmetic intensities will not display on plots.".format(
-                    myList[i].KernelName
+                    kernels[i].KernelName
                 )
             )
 
-        kernelNames.append(myList[i].KernelName)
+        kernelNames.append(kernels[i].KernelName)
         (
-            intensities["ai_l1"].append(myList[i].total_flops / myList[i].L1cache_data)
-            if myList[i].L1cache_data
+            intensities["ai_l1"].append(kernels[i].total_flops / kernels[i].L1cache_data)
+            if kernels[i].L1cache_data
             else intensities["ai_l1"].append(0)
         )
-        # print("cur_ai_L1", myList[i].total_flops/myList[i].L1cache_data) if myList[i].L1cache_data else print("null")
-        # print()
         (
-            intensities["ai_l2"].append(myList[i].total_flops / myList[i].L2cache_data)
-            if myList[i].L2cache_data
+            intensities["ai_l2"].append(kernels[i].total_flops / kernels[i].L2cache_data)
+            if kernels[i].L2cache_data
             else intensities["ai_l2"].append(0)
         )
-        # print("cur_ai_L2", myList[i].total_flops/myList[i].L2cache_data) if myList[i].L2cache_data else print("null")
-        # print()
         (
-            intensities["ai_hbm"].append(myList[i].total_flops / myList[i].hbm_data)
-            if myList[i].hbm_data
+            intensities["ai_hbm"].append(kernels[i].total_flops / kernels[i].hbm_data)
+            if kernels[i].hbm_data
             else intensities["ai_hbm"].append(0)
         )
-        # print("cur_ai_hbm", myList[i].total_flops/myList[i].hbm_data) if myList[i].hbm_data else print("null")
-        # print()
         (
-            curr_perf.append(myList[i].total_flops / myList[i].avgDuration)
-            if myList[i].avgDuration
+            curr_perf.append(kernels[i].total_flops / kernels[i].avgDuration)
+            if kernels[i].avgDuration
             else curr_perf.append(0)
         )
-        # print("cur_perf", myList[i].total_flops/myList[i].avgDuration) if myList[i].avgDuration else print("null")
 
         i += 1
 
@@ -583,13 +590,178 @@ def calc_ai(mspec, sort_type, ret_df):
         intensityPoints[i].append(x)
         intensityPoints[i].append(y)
 
-    # Add an entry for kernel names
     intensityPoints["kernelNames"] = kernelNames
 
     return intensityPoints
 
 
-def constuct_roof(roofline_parameters, dtype):
+# Memory levels ordered closest-to-furthest: label -> (graphPoints key, AI_Data field)
+MEMORY_LEVELS = {
+    "LDS": ("lds", "lds_data"),
+    "L1": ("l1", "L1cache_data"),
+    "L2": ("l2", "L2cache_data"),
+    "HBM": ("hbm", "hbm_data"),
+}
+
+
+def _determine_limiter(kernel, compute_peak, bw_peaks):
+    """
+    Return (limiter, roof) for one kernel, roof in GFLOPs/s.
+
+    A kernel can run no faster than its lowest roof: the compute peak, or its
+    arithmetic intensity times the peak bandwidth (GB/s) of a memory level.
+    The level with the lowest roof is the limiter.
+    """
+    if not kernel.total_flops or not kernel.avgDuration:
+        return "Unknown", None
+
+    roofs = {}
+    if compute_peak:
+        roofs["Compute"] = compute_peak
+    for level, (_, data_field) in MEMORY_LEVELS.items():
+        data_bytes = getattr(kernel, data_field)
+        if data_bytes and bw_peaks.get(level):
+            roofs[level] = kernel.total_flops / data_bytes * bw_peaks[level]
+
+    if not roofs:
+        return "Unknown", None
+    limiter = min(roofs, key=roofs.get)
+    return limiter, roofs[limiter]
+
+
+def _graph_peak(graphPoints, key):
+    """Return the peak in graphPoints[key][2] as a float, or None if missing."""
+    try:
+        peak = graphPoints[key][2]
+        return float(peak) if peak is not None else None
+    except (KeyError, IndexError, TypeError):
+        return None
+
+
+def _round_or_blank(value, decimals=2):
+    """Round value for the CSV, or return "" when it is None."""
+    if value is None:
+        return ""
+    return round(value, decimals)
+
+
+def detailed_csv_rows(all_kernels, graphPoints):
+    """
+    Compute per-kernel roofline metrics and return them as a list of dicts.
+
+    Peaks are read from graphPoints (output of calc_ceilings) so they match
+    the dtype being plotted. graphPoints[level][2] holds peak BW in GB/s for
+    memory levels and peak ops in GFLOPs/s for valu/mfma.
+
+    Returns an empty list if all_kernels is empty or no peaks are available.
+    """
+    if not all_kernels:
+        return []
+
+    # Extract peaks from graphPoints (already computed for the current dtype).
+    # Memory levels: graphPoints[level][2] is peak BW in GB/s.
+    # Compute: take the higher of mfma and valu peaks in GFLOPs/s.
+    bw_peaks = {
+        label: _graph_peak(graphPoints, gp_key)
+        for label, (gp_key, _) in MEMORY_LEVELS.items()
+    }  # GB/s
+    compute_peaks = [
+        peak
+        for peak in (_graph_peak(graphPoints, "mfma"), _graph_peak(graphPoints, "valu"))
+        if peak is not None
+    ]
+    peak_ops = max(compute_peaks) if compute_peaks else None  # GFLOPs/s
+
+    if not any(list(bw_peaks.values()) + [peak_ops]):
+        return []
+
+    total_dispatch_count = sum(k.numCalls for k in all_kernels)
+    total_duration_ns = sum(k.totalDuration for k in all_kernels)
+
+    rows = []
+    for kernel in all_kernels:
+        # flops / ns = GFLOPs/s
+        perf_gflops = (
+            kernel.total_flops / kernel.avgDuration
+            if (kernel.total_flops and kernel.avgDuration)
+            else None
+        )
+
+        limiter, roofline_peak_gflops = _determine_limiter(kernel, peak_ops, bw_peaks)
+        limiter_cat = limiter if limiter in ("Compute", "Unknown") else "Memory"
+        limiter_detail = "Peak" if limiter == "Compute" else limiter
+        perf_pct = (
+            (perf_gflops / roofline_peak_gflops * 100)
+            if (perf_gflops and roofline_peak_gflops)
+            else None
+        )
+
+        dispatch_count = int(kernel.numCalls)
+        duration_ns = kernel.totalDuration
+
+        row = {
+            "Kernel": kernel.KernelName,
+            "Limiter Category": limiter_cat,
+            "Limiter Detail": limiter_detail,
+            "Performance (GFLOPs/s)": _round_or_blank(perf_gflops, 0),
+            "Performance (%)": _round_or_blank(perf_pct, 2),
+            "Roofline Peak (GFLOPs/s)": _round_or_blank(roofline_peak_gflops, 0),
+        }
+        for label, (_, data_field) in MEMORY_LEVELS.items():
+            data = getattr(kernel, data_field)
+            peak = bw_peaks[label]
+            bw_used = (
+                data / kernel.avgDuration if (data and kernel.avgDuration) else None
+            )  # bytes / ns = GB/s
+            row[f"{label} AI"] = _round_or_blank(
+                kernel.total_flops / data if (data and kernel.total_flops) else None, 5
+            )
+            row[f"{label} Bandwidth Used (%)"] = _round_or_blank(
+                (bw_used / peak * 100) if (bw_used and peak) else None, 2
+            )
+            row[f"{label} Bandwidth Used (GB/s)"] = _round_or_blank(bw_used, 3)
+            row[f"{label} Bandwidth Peak (GB/s)"] = _round_or_blank(peak, 3)
+        row.update(
+            {
+                "Dispatch Count (%)": _round_or_blank(
+                    (
+                        (dispatch_count / total_dispatch_count * 100)
+                        if total_dispatch_count
+                        else None
+                    ),
+                    2,
+                ),
+                "Dispatch Count": dispatch_count,
+                "Dispatch Count Total": int(total_dispatch_count),
+                "Duration (%)": _round_or_blank(
+                    (
+                        (duration_ns / total_duration_ns * 100)
+                        if total_duration_ns
+                        else None
+                    ),
+                    2,
+                ),
+                "Duration (ns)": _round_or_blank(duration_ns, 0),
+                "Duration Total (ns)": _round_or_blank(total_duration_ns, 0),
+            }
+        )
+        rows.append(row)
+
+    return rows
+
+
+def write_detailed_csv(output_path, rows):
+    """Write rows (list of dicts from detailed_csv_rows) to a CSV file."""
+    if not rows:
+        return
+    with open(output_path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def load_benchmark_data(roofline_parameters):
+    """Load roofline.csv benchmark data and return as a dict. Returns empty dict on failure."""
     workload_dir = roofline_parameters.get("workload_dir")
     if isinstance(workload_dir, list):
         base_dir = (
@@ -601,13 +773,7 @@ def constuct_roof(roofline_parameters, dtype):
         base_dir = workload_dir
 
     benchmark_results = str(Path(base_dir) / "roofline.csv")
-
-    # -----------------------------------------------------
-    # Initialize roofline data dictionary from roofline.csv
-    # -----------------------------------------------------
-    benchmark_data = (
-        {}
-    )  # TODO: consider changing this to an ordered dict for consistency over py versions
+    benchmark_data = {}
     headers = []
     try:
         with open(benchmark_results, "r") as csvfile:
@@ -622,10 +788,16 @@ def constuct_roof(roofline_parameters, dtype):
                 else:
                     for i, key in enumerate(headers):
                         benchmark_data[key].append(row[i])
-
                 rowCount += 1
         csvfile.close()
-    except:
+    except Exception:
+        return {}
+    return benchmark_data
+
+
+def constuct_roof(roofline_parameters, dtype):
+    benchmark_data = load_benchmark_data(roofline_parameters)
+    if not benchmark_data:
         graphPoints = {
             "hbm": [None, None, None],
             "l2": [None, None, None],
