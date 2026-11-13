@@ -123,7 +123,9 @@ class Roofline:
             return
         csv_path = Path(base_dir) / f"roofline_detailed_{dtype}.csv"
         if csv_path.exists():
-            console_log("roofline", f"roofline_detailed_{dtype}.csv already exists, skipping")
+            console_log(
+                "roofline", f"roofline_detailed_{dtype}.csv already exists, skipping"
+            )
             return
         write_detailed_csv(str(csv_path), rows)
         console_log("roofline", f"roofline_detailed_{dtype}.csv saved to {csv_path}")

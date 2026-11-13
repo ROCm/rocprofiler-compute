@@ -180,6 +180,7 @@ def roof_only_expected():
     """Return the expected ROOF_ONLY file list for the current soc."""
     return ROOF_ONLY_FILES_MI350 if "MI350" in soc else ROOF_ONLY_FILES
 
+
 METRIC_THRESHOLDS = {
     "2.1.12": {"absolute": 0, "relative": 8},
     "3.1.1": {"absolute": 0, "relative": 10},
